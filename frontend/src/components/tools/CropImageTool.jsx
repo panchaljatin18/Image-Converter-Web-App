@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Crop, RotateCw } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Crop } from "lucide-react";
+import Button from "@/components/Button";
 
 export default function CropImageTool() {
   const [file, setFile] = useState(null);
@@ -158,7 +159,7 @@ export default function CropImageTool() {
       : { left: 0, top: 0, width: 0, height: 0 };
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+    <div className="max-w-[900px] mx-auto">
       {!result ? (
         <>
           {!imageUrl ? (
@@ -172,50 +173,37 @@ export default function CropImageTool() {
           ) : (
             <div>
               {/* Controls */}
-              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "16px", alignItems: "center" }}>
+              <div className="flex gap-3 flex-wrap mb-4 items-center">
                 <div>
-                  <label className="form-label" style={{ marginBottom: "6px", display: "block" }}>Aspect Ratio</label>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-1.5">Aspect Ratio</label>
+                  <div className="flex gap-2">
                     {ASPECT_PRESETS.map((p) => (
                       <button
                         key={p.label}
                         onClick={() => { setAspectPreset(p); setCrop({ x: 0, y: 0, w: 0, h: 0 }); }}
-                        style={{
-                          padding: "7px 14px",
-                          borderRadius: "8px",
-                          border: aspectPreset.label === p.label ? "2px solid var(--primary)" : "1px solid var(--border-light)",
-                          background: aspectPreset.label === p.label ? "rgba(99,102,241,0.15)" : "transparent",
-                          color: aspectPreset.label === p.label ? "var(--primary-light)" : "var(--text-secondary)",
-                          fontWeight: 600,
-                          fontSize: "0.8rem",
-                          cursor: "pointer",
-                          fontFamily: "Inter, sans-serif",
-                        }}
+                        className={`py-1.5 px-3.5 rounded-lg border text-[0.8rem] font-semibold cursor-pointer font-['Inter'] transition-all duration-200 ${
+                          aspectPreset.label === p.label
+                            ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                            : "border-white/8 bg-transparent text-[#94a3b8]"
+                        }`}
                       >
                         {p.label}
                       </button>
                     ))}
                   </div>
                 </div>
-                <div style={{ marginLeft: "auto" }}>
-                  <label className="form-label" style={{ marginBottom: "6px", display: "block" }}>Format</label>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                <div className="sm:ml-auto">
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-1.5">Format</label>
+                  <div className="flex gap-2">
                     {["jpeg", "png", "webp"].map((fmt) => (
                       <button
                         key={fmt}
                         onClick={() => setOutputFormat(fmt)}
-                        style={{
-                          padding: "7px 14px",
-                          borderRadius: "8px",
-                          border: outputFormat === fmt ? "2px solid var(--primary)" : "1px solid var(--border-light)",
-                          background: outputFormat === fmt ? "rgba(99,102,241,0.15)" : "transparent",
-                          color: outputFormat === fmt ? "var(--primary-light)" : "var(--text-secondary)",
-                          fontWeight: 600,
-                          fontSize: "0.8rem",
-                          cursor: "pointer",
-                          fontFamily: "Inter, sans-serif",
-                          textTransform: "uppercase",
-                        }}
+                        className={`py-1.5 px-3.5 rounded-lg border text-[0.8rem] font-semibold cursor-pointer uppercase font-['Inter'] transition-all duration-200 ${
+                          outputFormat === fmt
+                            ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                            : "border-white/8 bg-transparent text-[#94a3b8]"
+                        }`}
                       >
                         {fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}
                       </button>
@@ -227,16 +215,7 @@ export default function CropImageTool() {
               {/* Canvas Area */}
               <div
                 ref={previewRef}
-                style={{
-                  position: "relative",
-                  display: "inline-block",
-                  cursor: "crosshair",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  border: "1px solid var(--border)",
-                  userSelect: "none",
-                  width: "100%",
-                }}
+                className="relative inline-block cursor-crosshair rounded-2xl overflow-hidden border border-white/10 select-none w-full"
                 onMouseDown={handleMouseDown}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -244,7 +223,7 @@ export default function CropImageTool() {
                   ref={imgRef}
                   src={imageUrl}
                   alt="Crop preview"
-                  style={{ display: "block", width: "100%", height: "auto", maxHeight: "500px", objectFit: "contain" }}
+                  className="block w-full h-auto max-h-[500px] object-contain"
                   onLoad={(e) => {
                     setNaturalDims({ w: e.target.naturalWidth, h: e.target.naturalHeight });
                   }}
@@ -255,59 +234,41 @@ export default function CropImageTool() {
                 {crop.w > 5 && crop.h > 5 && (
                   <>
                     {/* Dimming overlays */}
-                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", pointerEvents: "none" }} />
+                    <div className="absolute inset-0 bg-black/50 pointer-events-none" />
                     {/* Clear crop box */}
                     <div
+                      className="absolute border-2 border-[#6366f1] bg-transparent pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"
                       style={{
-                        position: "absolute",
                         left: displayCrop.left,
                         top: displayCrop.top,
                         width: displayCrop.width,
                         height: displayCrop.height,
-                        border: "2px solid var(--primary)",
-                        background: "transparent",
-                        pointerEvents: "none",
-                        boxShadow: "0 0 0 9999px rgba(0,0,0,0.5)",
                       }}
                     >
                       {/* Rule of thirds grid */}
                       {[1, 2].map((i) => (
-                        <div key={`h${i}`} style={{ position: "absolute", left: 0, right: 0, top: `${(i / 3) * 100}%`, height: "1px", background: "rgba(255,255,255,0.4)" }} />
+                        <div key={`h${i}`} className="absolute left-0 right-0 h-px bg-white/40" style={{ top: `${(i / 3) * 100}%` }} />
                       ))}
                       {[1, 2].map((i) => (
-                        <div key={`v${i}`} style={{ position: "absolute", top: 0, bottom: 0, left: `${(i / 3) * 100}%`, width: "1px", background: "rgba(255,255,255,0.4)" }} />
+                        <div key={`v${i}`} className="absolute top-0 bottom-0 w-px bg-white/40" style={{ left: `${(i / 3) * 100}%` }} />
                       ))}
                       {/* Corner handles */}
                       {[
-                        { t: -4, l: -4 }, { t: -4, r: -4 },
-                        { b: -4, l: -4 }, { b: -4, r: -4 },
+                        { top: -4, left: -4 }, { top: -4, right: -4 },
+                        { bottom: -4, left: -4 }, { bottom: -4, right: -4 },
                       ].map((pos, i) => (
                         <div
                           key={i}
-                          style={{
-                            position: "absolute",
-                            width: "12px",
-                            height: "12px",
-                            background: "var(--primary)",
-                            borderRadius: "2px",
-                            ...pos,
-                          }}
+                          className="absolute w-3 h-3 bg-[#6366f1] rounded-[2px]"
+                          style={pos}
                         />
                       ))}
                     </div>
                     <div
+                      className="absolute bg-black/70 text-white text-[11px] font-semibold py-0.5 px-1.5 rounded pointer-events-none font-mono"
                       style={{
-                        position: "absolute",
                         left: displayCrop.left + 4,
                         top: displayCrop.top + 4,
-                        background: "rgba(0,0,0,0.7)",
-                        color: "white",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        padding: "2px 6px",
-                        borderRadius: "4px",
-                        pointerEvents: "none",
-                        fontFamily: "Inter, monospace",
                       }}
                     >
                       {Math.round(crop.w)} × {Math.round(crop.h)}
@@ -316,57 +277,49 @@ export default function CropImageTool() {
                 )}
               </div>
 
-              <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "10px" }}>
+              <p className="text-center text-[#64748b] text-[0.85rem] mt-2.5">
                 Click and drag on the image to select the crop area
               </p>
 
-              <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-                <button
+              <div className="flex gap-3 mt-5">
+                <Button
                   onClick={handleCrop}
                   disabled={crop.w < 10 || crop.h < 10}
-                  className="btn btn-primary btn-lg"
-                  style={{ flex: 1, justifyContent: "center" }}
+                  variant="primary"
+                  size="lg"
+                  className="flex-1 justify-center"
                 >
                   <Crop size={18} />
                   Crop Image ({Math.round(crop.w)}×{Math.round(crop.h)}px)
-                </button>
-                <button onClick={reset} className="btn btn-secondary">
-                  <RefreshCw size={16} />
+                </Button>
+                <Button variant="secondary" size="lg" onClick={reset}>
                   Reset
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>Crop Complete!</p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">Crop Complete!</p>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.width}×{result.height}px
               </p>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
-            <a href={result.url} download={result.name} className="btn btn-primary btn-lg" style={{ flex: 1, justifyContent: "center" }}>
-              <Download size={18} />
-              Download Cropped
+          <div className="flex gap-3">
+            <a href={result.url} download={result.name} className="flex-1 no-underline">
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download Cropped
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">Crop Another</button>
+            <Button variant="secondary" size="lg" onClick={reset}>Crop Another</Button>
           </div>
         </div>
       )}

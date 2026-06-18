@@ -1,18 +1,19 @@
 import React from "react";
+import Container from "@/components/Container";
 
 export default function BlogHeader() {
   return (
-    <div style={{ background: "linear-gradient(135deg, #0f0f1a 0%, #13131f 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "64px 0 56px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: "-100px", left: "50%", transform: "translateX(-50%)", width: "500px", height: "300px", background: "rgba(99,102,241,0.1)", borderRadius: "50%", filter: "blur(80px)" }} />
-      <div className="container" style={{ position: "relative", zIndex: 1 }}>
-        <span className="badge" style={{ marginBottom: "20px", display: "inline-flex" }}>📝 Blog</span>
-        <h1 className="heading-lg" style={{ marginBottom: "16px" }}>
-          Image Tips & <span className="text-gradient">Tutorials</span>
+    <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-16 text-center relative overflow-hidden">
+      <div className="absolute -top-[100px] left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px]" />
+      <Container className="relative z-[1]">
+        <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 bg-indigo-500/15 border border-indigo-500/30 rounded-full text-[#818cf8] font-semibold text-[0.78rem] tracking-wider uppercase mb-5">📝 Blog</span>
+        <h1 className="text-3xl md:text-5xl font-bold leading-tight font-['Outfit'] tracking-tight mb-4 text-[#f8fafc]">
+          Image Tips & <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Tutorials</span>
         </h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: "480px", margin: "0 auto" }}>
+        <p className="text-[#94a3b8] text-[1.1rem] max-w-[480px] mx-auto">
           Guides, tutorials, and tips for getting the most out of your images online.
         </p>
-      </div>
+      </Container>
     </div>
   );
 }

@@ -49,13 +49,13 @@ const faqCategories = [
 function AccordionItem({ item }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`accordion-item ${open ? "open" : ""}`}>
-      <button className="accordion-button" onClick={() => setOpen(!open)} aria-expanded={open}>
+    <div className={`border rounded-2xl overflow-hidden mb-3 transition-colors duration-300 bg-[#1a1a2e] ${open ? "border-indigo-500" : "border-white/8"}`}>
+      <button className="w-full p-5 px-6 flex items-center justify-between cursor-pointer bg-transparent border-none text-[#f8fafc] hover:text-[#818cf8] font-semibold text-base font-['Inter'] text-left gap-4 transition-colors duration-200" onClick={() => setOpen(!open)} aria-expanded={open}>
         <span>{item.q}</span>
-        <ChevronDown className="accordion-icon" size={20} />
+        <ChevronDown className={`shrink-0 w-6 h-6 text-indigo-500 transition-transform duration-300 ${open ? "rotate-180" : ""}`} size={20} />
       </button>
-      <div className="accordion-content">
-        <div className="accordion-body">{item.a}</div>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[500px] pb-5" : "max-h-0 pb-0"}`}>
+        <div className="px-6 text-[#94a3b8] leading-relaxed text-[0.95rem]">{item.a}</div>
       </div>
     </div>
   );
@@ -67,26 +67,16 @@ export default function FaqAccordion() {
   return (
     <div>
       {/* Category Tabs */}
-      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "40px", justifyContent: "center" }}>
+      <div className="flex gap-2.5 flex-wrap mb-10 justify-center">
         {faqCategories.map((cat, i) => (
           <button
             key={i}
             onClick={() => setActiveCategory(i)}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "100px",
-              border: activeCategory === i ? "1px solid var(--primary)" : "1px solid var(--border-light)",
-              background: activeCategory === i ? "rgba(99,102,241,0.15)" : "transparent",
-              color: activeCategory === i ? "var(--primary-light)" : "var(--text-secondary)",
-              fontWeight: 600,
-              fontSize: "0.875rem",
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-              transition: "all 0.2s ease",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
+            className={`py-2.5 px-5 rounded-full border text-[0.875rem] font-semibold cursor-pointer transition-all duration-200 flex items-center gap-1.5 font-['Inter'] ${
+              activeCategory === i
+                ? "border-indigo-500 bg-indigo-500/15 text-[#818cf8]"
+                : "border-white/8 bg-transparent text-[#94a3b8] hover:text-[#f8fafc] hover:border-white/20"
+            }`}
           >
             <span>{cat.icon}</span>
             {cat.name}
@@ -95,7 +85,7 @@ export default function FaqAccordion() {
       </div>
 
       {/* FAQ Items */}
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+      <div className="max-w-[760px] mx-auto">
         {faqCategories[activeCategory].items.map((item, i) => (
           <AccordionItem key={i} item={item} />
         ))}

@@ -2,26 +2,30 @@ import React from "react";
 import FaqAccordion from "../FaqAccordion";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import Container from "@/components/Container";
+import Button from "@/components/Button";
 
 export default function FaqContent() {
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
+    <Container className="py-16">
       <FaqAccordion />
 
       {/* Still have questions? */}
-      <div style={{ textAlign: "center", marginTop: "64px", padding: "48px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "24px" }}>
-        <div style={{ fontSize: "3rem", marginBottom: "16px" }}>💬</div>
-        <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.5rem", marginBottom: "12px" }}>
+      <div className="text-center mt-16 p-12 bg-indigo-500/5 border border-indigo-500/15 rounded-3xl">
+        <div className="text-[3rem] mb-4">💬</div>
+        <h2 className="font-['Outfit'] font-bold text-2xl mb-3 text-[#f8fafc]">
           Still have questions?
         </h2>
-        <p style={{ color: "var(--text-secondary)", marginBottom: "24px", maxWidth: "400px", margin: "0 auto 24px", fontSize: "0.95rem", lineHeight: 1.7 }}>
+        <p className="text-[#94a3b8] mb-6 max-w-[400px] mx-auto text-[0.95rem] leading-relaxed">
           Can&apos;t find the answer you&apos;re looking for? Send us a message and we&apos;ll get back to you within 24 hours.
         </p>
-        <Link href="/contact" className="btn btn-primary">
-          <MessageCircle size={16} />
-          Contact Us
+        <Link href="/contact" className="no-underline inline-block">
+          <Button variant="primary">
+            <MessageCircle size={16} />
+            Contact Us
+          </Button>
         </Link>
       </div>
-    </div>
+    </Container>
   );
 }

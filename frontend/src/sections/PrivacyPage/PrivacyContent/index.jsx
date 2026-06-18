@@ -79,25 +79,25 @@ To exercise these rights, contact us at hello@imagetoolkit.pro. We will respond 
 
 export default function PrivacyContent() {
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+    <div className="max-w-[1200px] mx-auto px-6 py-16">
+      <div className="max-w-[760px] mx-auto">
         {/* TL;DR */}
-        <div style={{ padding: "24px 28px", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: "16px", marginBottom: "48px" }}>
-          <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#34d399", marginBottom: "10px" }}>
+        <div className="py-6 px-7 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-12">
+          <h2 className="font-['Outfit'] font-bold text-[1.1rem] text-emerald-400 mb-2.5">
             TL;DR — The Short Version
           </h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.925rem", lineHeight: 1.7 }}>
-            All image processing happens 100% in your browser. We <strong style={{ color: "white" }}>never</strong> upload, store, or access your images. We collect only anonymous analytics data (page views, tool usage counts). No images. No personal files. Ever.
+          <p className="text-[#94a3b8] text-[0.925rem] leading-relaxed">
+            All image processing happens 100% in your browser. We <strong className="text-white">never</strong> upload, store, or access your images. We collect only anonymous analytics data (page views, tool usage counts). No images. No personal files. Ever.
           </p>
         </div>
 
         {privacySections.map((section, i) => (
-          <div key={i} style={{ marginBottom: "40px" }}>
-            <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "14px", paddingBottom: "10px", borderBottom: "1px solid var(--border-light)" }}>
+          <div key={i} className="mb-10">
+            <h2 className="font-['Outfit'] font-bold text-[1.2rem] text-[#f8fafc] mb-3.5 pb-2.5 border-b border-white/8">
               {section.title}
             </h2>
             <div
-              style={{ color: "var(--text-secondary)", fontSize: "0.925rem", lineHeight: 1.8 }}
+              className="text-[#94a3b8] text-[0.925rem] leading-loose"
               dangerouslySetInnerHTML={{ __html: section.content.replace(/\n/g, "<br />") }}
             />
           </div>

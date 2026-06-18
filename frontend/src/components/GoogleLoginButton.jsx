@@ -2,6 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
+import Button from "@/components/Button";
 
 export default function GoogleLoginButton() {
   const { data: session, status } = useSession();
@@ -10,23 +11,9 @@ export default function GoogleLoginButton() {
     return (
       <button
         disabled
-        className="btn btn-secondary"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "10px",
-          opacity: 0.7,
-          cursor: "not-allowed"
-        }}
+        className="inline-flex items-center gap-2.5 py-3 px-7 rounded-xl font-semibold text-[0.95rem] font-['Inter'] cursor-not-allowed bg-transparent text-[#f8fafc] border border-white/20 backdrop-blur-md opacity-70"
       >
-        <span style={{
-          width: "16px",
-          height: "16px",
-          border: "2px solid rgba(255,255,255,0.3)",
-          borderTopColor: "#fff",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite"
-        }} />
+        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
         Loading...
       </button>
     );
@@ -34,29 +21,30 @@ export default function GoogleLoginButton() {
 
   if (session) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div className="flex items-center gap-3">
         {session.user?.image && (
           <img
             src={session.user.image}
             alt={session.user.name || "User Avatar"}
-            style={{ width: "32px", height: "32px", borderRadius: "50%", border: "1px solid var(--border)" }}
+            className="w-8 h-8 rounded-full border border-indigo-500/20"
           />
         )}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>
+        <div className="flex flex-col items-start">
+          <span className="text-[0.85rem] font-semibold text-[#f8fafc]">
             {session.user?.name}
           </span>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+          <span className="text-[0.75rem] text-[#64748b]">
             {session.user?.email}
           </span>
         </div>
-        <button
+        <Button
           onClick={() => signOut()}
-          className="btn btn-secondary btn-sm"
-          style={{ padding: "6px 12px" }}
+          variant="secondary"
+          size="sm"
+          className="py-1.5 px-3"
         >
           Sign Out
-        </button>
+        </Button>
       </div>
     );
   }
@@ -64,31 +52,7 @@ export default function GoogleLoginButton() {
   return (
     <button
       onClick={() => signIn("google")}
-      className="btn btn-secondary"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "12px",
-        background: "rgba(255, 255, 255, 0.03)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        borderRadius: "12px",
-        padding: "10px 20px",
-        fontFamily: "Outfit, sans-serif",
-        fontWeight: 600,
-        color: "var(--text-primary)",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-        e.currentTarget.style.borderColor = "var(--primary-light)";
-        e.currentTarget.style.transform = "translateY(-1px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
-        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
+      className="inline-flex items-center gap-3 bg-white/3 border border-white/8 rounded-xl py-2.5 px-5 font-['Outfit'] font-semibold text-[#f8fafc] cursor-pointer transition-all duration-200 hover:bg-white/8 hover:border-indigo-400 hover:-translate-y-0.5"
     >
       <svg width="18" height="18" viewBox="0 0 18 18">
         <path

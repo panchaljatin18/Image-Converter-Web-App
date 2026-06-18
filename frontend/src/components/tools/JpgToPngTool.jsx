@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle } from "lucide-react";
+import Button from "@/components/Button";
 
 export default function JpgToPngTool() {
   const [file, setFile] = useState(null);
@@ -82,7 +83,7 @@ export default function JpgToPngTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -107,94 +108,60 @@ export default function JpgToPngTool() {
       ) : (
         /* Result */
         <div>
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">
                 Conversion Successful!
               </p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.width}×{result.height}px
               </p>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="flex gap-3">
             <a
               href={result.url}
               download={result.name}
-              className="btn btn-primary btn-lg"
-              style={{ flex: 1, justifyContent: "center" }}
+              className="flex-1 no-underline"
             >
-              <Download size={18} />
-              Download PNG
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download PNG
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">
+            <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Info Section */}
-      <div style={{ marginTop: "48px" }}>
-        <h2
-          style={{
-            fontFamily: "Outfit, sans-serif",
-            fontWeight: 700,
-            fontSize: "1.25rem",
-            marginBottom: "16px",
-            color: "var(--text-primary)",
-          }}
-        >
+      <div className="mt-12">
+        <h2 className="font-['Outfit'] font-bold text-[1.25rem] mb-4 text-[#f8fafc]">
           About JPG to PNG Conversion
         </h2>
-        <div
-          style={{
-            color: "var(--text-secondary)",
-            fontSize: "0.9rem",
-            lineHeight: 1.8,
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-          }}
-        >
+        <div className="text-[#94a3b8] text-[0.9rem] leading-[1.8] flex flex-col gap-3">
           <p>
-            <strong style={{ color: "var(--text-primary)" }}>Why convert JPG to PNG?</strong>{" "}
+            <strong className="text-[#f8fafc]">Why convert JPG to PNG?</strong>{" "}
             PNG (Portable Network Graphics) is a lossless format that supports transparency (alpha
             channel), making it ideal for logos, icons, and graphics that need to be placed on
             different colored backgrounds.
           </p>
           <p>
-            <strong style={{ color: "var(--text-primary)" }}>Is this conversion free?</strong>{" "}
+            <strong className="text-[#f8fafc]">Is this conversion free?</strong>{" "}
             Yes, completely free. All processing happens in your browser — your images are never
             uploaded to any server.
           </p>
           <p>
-            <strong style={{ color: "var(--text-primary)" }}>Will quality be affected?</strong>{" "}
+            <strong className="text-[#f8fafc]">Will quality be affected?</strong>{" "}
             PNG is lossless, so the converted image will maintain the same visual quality as your
             original JPG, but may result in a larger file size.
           </p>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

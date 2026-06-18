@@ -77,22 +77,22 @@ Continued use of the service after changes constitutes acceptance of the updated
 
 export default function TermsContent() {
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+    <div className="max-w-[1200px] mx-auto px-6 py-16">
+      <div className="max-w-[760px] mx-auto">
         {/* Intro */}
-        <div style={{ padding: "20px 24px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "14px", marginBottom: "40px" }}>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.925rem", lineHeight: 1.7 }}>
+        <div className="py-5 px-6 bg-indigo-500/7 border border-indigo-500/15 rounded-2xl mb-10">
+          <p className="text-[#94a3b8] text-[0.925rem] leading-relaxed">
             Please read these Terms of Service (&quot;Terms&quot;) carefully before using ImageToolkit (&quot;Service&quot;, &quot;we&quot;, &quot;our&quot;, &quot;us&quot;). By accessing or using our service, you agree to be bound by these Terms.
           </p>
         </div>
 
         {termsSections.map((section, i) => (
-          <div key={i} style={{ marginBottom: "40px" }}>
-            <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "14px", paddingBottom: "10px", borderBottom: "1px solid var(--border-light)" }}>
+          <div key={i} className="mb-10">
+            <h2 className="font-['Outfit'] font-bold text-[1.2rem] text-[#f8fafc] mb-3.5 pb-2.5 border-b border-white/8">
               {section.title}
             </h2>
             <div
-              style={{ color: "var(--text-secondary)", fontSize: "0.925rem", lineHeight: 1.8 }}
+              className="text-[#94a3b8] text-[0.925rem] leading-loose"
               dangerouslySetInnerHTML={{ __html: section.content.replace(/\n/g, "<br />") }}
             />
           </div>

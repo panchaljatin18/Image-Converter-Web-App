@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Plus, Trash2, FileText, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
+import Button from "@/components/Button";
 
 const PAGE_SIZES = {
   A4: [595, 842],
@@ -151,7 +152,7 @@ export default function ImageToPdfTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -167,82 +168,104 @@ export default function ImageToPdfTool() {
 
           {/* Image Queue */}
           {images.length > 0 && (
-            <div style={{ marginTop: "24px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                <p style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-semibold text-[0.9rem] text-[#94a3b8]">
                   {images.length} image{images.length > 1 ? "s" : ""} • {images.length} page{images.length > 1 ? "s" : ""}
                 </p>
-                <button onClick={() => setImages([])} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.8rem", fontFamily: "Inter" }}>
+                <button onClick={() => setImages([])} className="bg-transparent border-none text-[#64748b] cursor-pointer text-[0.8rem] font-['Inter'] hover:text-white transition-colors duration-150">
                   Clear all
                 </button>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
+              <div className="flex flex-col gap-2 mb-6">
                 {images.map((img, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "10px" }}>
-                    <span style={{ color: "var(--text-muted)", fontSize: "0.8rem", fontWeight: 700, minWidth: "24px", textAlign: "center" }}>{i + 1}</span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt={img.name} style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "6px" }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: "0.85rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{img.name}</p>
-                      <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{img.size}</p>
+                  <div key={i} className="flex items-center gap-2.5 p-[10px_14px] bg-indigo-500/7 border border-indigo-500/15 rounded-lg">
+                    <span className="text-[#64748b] text-[0.8rem] font-bold min-w-[24px] text-center">{i + 1}</span>
+                    <img src={img.url} alt={img.name} className="w-10 h-10 object-cover rounded-md" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[0.85rem] font-semibold overflow-hidden text-ellipsis white-space-nowrap text-[#f8fafc]">{img.name}</p>
+                      <p className="text-[0.75rem] text-[#64748b]">{img.size}</p>
                     </div>
-                    <div style={{ display: "flex", gap: "4px" }}>
-                      <button onClick={() => moveImage(i, -1)} disabled={i === 0} className="btn btn-ghost btn-sm" style={{ padding: "6px", opacity: i === 0 ? 0.4 : 1 }} aria-label="Move up">
+                    <div className="flex gap-1">
+                      <Button onClick={() => moveImage(i, -1)} disabled={i === 0} variant="ghost" size="sm" className="p-1.5" style={{ opacity: i === 0 ? 0.4 : 1 }} aria-label="Move up">
                         <ArrowUp size={14} />
-                      </button>
-                      <button onClick={() => moveImage(i, 1)} disabled={i === images.length - 1} className="btn btn-ghost btn-sm" style={{ padding: "6px", opacity: i === images.length - 1 ? 0.4 : 1 }} aria-label="Move down">
+                      </Button>
+                      <Button onClick={() => moveImage(i, 1)} disabled={i === images.length - 1} variant="ghost" size="sm" className="p-1.5" style={{ opacity: i === images.length - 1 ? 0.4 : 1 }} aria-label="Move down">
                         <ArrowDown size={14} />
-                      </button>
-                      <button onClick={() => removeImage(i)} className="btn btn-ghost btn-sm" style={{ padding: "6px", color: "#f87171" }} aria-label="Remove">
+                      </Button>
+                      <Button onClick={() => removeImage(i)} variant="ghost" size="sm" className="p-1.5 text-red-400 hover:text-red-300" aria-label="Remove">
                         <Trash2 size={14} />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* PDF Settings */}
-              <div style={{ padding: "24px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "16px", marginBottom: "20px" }}>
-                <h3 style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "20px" }}>PDF Settings</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="font-bold text-[1rem] mb-5 text-[#f8fafc]">PDF Settings</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="form-label">Page Size</label>
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Page Size</label>
                     <select
-                      className="form-input"
+                      className="w-full py-3 px-4 rounded-xl bg-[#13131f] border border-white/8 text-[#f8fafc] text-[0.95rem] transition-all duration-200 outline-none cursor-pointer focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
                       value={pageSize}
                       onChange={(e) => setPageSize(e.target.value)}
-                      style={{ appearance: "none", cursor: "pointer" }}
                       aria-label="PDF page size"
                     >
                       {Object.keys(PAGE_SIZES).map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="form-label">Orientation</label>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Orientation</label>
+                    <div className="flex gap-2">
                       {["portrait", "landscape"].map((o) => (
-                        <button key={o} onClick={() => setOrientation(o)} style={{ flex: 1, padding: "10px", borderRadius: "10px", border: orientation === o ? "2px solid var(--primary)" : "1px solid var(--border-light)", background: orientation === o ? "rgba(99,102,241,0.15)" : "transparent", color: orientation === o ? "var(--primary-light)" : "var(--text-secondary)", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", textTransform: "capitalize", fontFamily: "Inter" }}>
+                        <button
+                          key={o}
+                          onClick={() => setOrientation(o)}
+                          className={`flex-1 py-2.5 px-4 rounded-lg border text-[0.8rem] font-semibold cursor-pointer capitalize font-['Inter'] transition-all duration-200 ${
+                            orientation === o
+                              ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                              : "border-white/8 bg-transparent text-[#94a3b8]"
+                          }`}
+                        >
                           {o}
                         </button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                      <label className="form-label" style={{ margin: 0 }}>Margin</label>
-                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary-light)" }}>{margin}pt</span>
+                    <div className="flex justify-between mb-2.5">
+                      <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Margin</label>
+                      <span className="text-[0.85rem] font-bold text-[#818cf8]">{margin}pt</span>
                     </div>
-                    <input type="range" min="0" max="80" value={margin} onChange={(e) => setMargin(Number(e.target.value))} aria-label="Page margin" />
+                    <input
+                      type="range"
+                      min="0"
+                      max="80"
+                      value={margin}
+                      onChange={(e) => setMargin(Number(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
+                      aria-label="Page margin"
+                    />
                   </div>
                   <div>
-                    <label className="form-label">Image Fit</label>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Image Fit</label>
+                    <div className="flex gap-2">
                       {[
                         { value: "contain", label: "Contain" },
                         { value: "fill", label: "Stretch" },
                       ].map((f) => (
-                        <button key={f.value} onClick={() => setFit(f.value)} style={{ flex: 1, padding: "10px", borderRadius: "10px", border: fit === f.value ? "2px solid var(--primary)" : "1px solid var(--border-light)", background: fit === f.value ? "rgba(99,102,241,0.15)" : "transparent", color: fit === f.value ? "var(--primary-light)" : "var(--text-secondary)", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "Inter" }}>
+                        <button
+                          key={f.value}
+                          onClick={() => setFit(f.value)}
+                          className={`flex-1 py-2.5 px-4 rounded-lg border text-[0.8rem] font-semibold cursor-pointer font-['Inter'] transition-all duration-200 ${
+                            fit === f.value
+                              ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                              : "border-white/8 bg-transparent text-[#94a3b8]"
+                          }`}
+                        >
                           {f.label}
                         </button>
                       ))}
@@ -252,48 +275,58 @@ export default function ImageToPdfTool() {
               </div>
 
               {converting && (
-                <div style={{ marginBottom: "20px" }}>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>Creating PDF... {progress}%</p>
-                  <div className="progress-bar">
-                    <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                <div className="mb-5">
+                  <p className="text-[0.85rem] text-[#64748b] mb-2">Creating PDF... {progress}%</p>
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-300" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               )}
 
-              <button onClick={handleConvert} disabled={converting} className="btn btn-primary btn-lg" style={{ width: "100%", justifyContent: "center" }}>
-                {converting ? <><RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} /> Creating PDF...</> : <><FileText size={18} /> Create PDF ({images.length} page{images.length > 1 ? "s" : ""})</>}
-              </button>
+              <Button
+                onClick={handleConvert}
+                disabled={converting}
+                variant="primary"
+                size="lg"
+                className="w-full justify-center"
+              >
+                {converting ? (
+                  <><RefreshCw size={18} className="animate-spin" /> Creating PDF...</>
+                ) : (
+                  <><FileText size={18} /> Create PDF ({images.length} page{images.length > 1 ? "s" : ""})</>
+                )}
+              </Button>
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
-          <div style={{ padding: "24px", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: "16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>PDF Created Successfully!</p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">PDF Created Successfully!</p>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.pages} page{result.pages > 1 ? "s" : ""}
               </p>
             </div>
           </div>
-          <div style={{ padding: "48px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "16px", marginBottom: "20px", textAlign: "center" }}>
-            <FileText size={48} color="var(--primary)" style={{ marginBottom: "16px" }} />
-            <p style={{ fontWeight: 700, fontSize: "1.1rem", marginBottom: "6px" }}>{result.name}</p>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{result.size} · {result.pages} page{result.pages > 1 ? "s" : ""}</p>
+          <div className="p-12 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5 text-center flex flex-col items-center">
+            <FileText size={48} className="text-[#6366f1] mb-4" />
+            <p className="font-bold text-[1.1rem] mb-1.5 text-[#f8fafc]">{result.name}</p>
+            <p className="text-[#64748b] text-[0.875rem]">{result.size} · {result.pages} page{result.pages > 1 ? "s" : ""}</p>
           </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <a href={result.url} download={result.name} className="btn btn-primary btn-lg" style={{ flex: 1, justifyContent: "center" }}>
-              <Download size={18} />
-              Download PDF
+          <div className="flex gap-3">
+            <a href={result.url} download={result.name} className="flex-1 no-underline">
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download PDF
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">Convert More</button>
+            <Button variant="secondary" size="lg" onClick={reset}>Convert More</Button>
           </div>
         </div>
       )}
-      <style jsx global>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }

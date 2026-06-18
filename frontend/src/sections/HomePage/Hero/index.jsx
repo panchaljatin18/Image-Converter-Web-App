@@ -10,8 +10,9 @@ import dropboxService from "../../../services/dropboxService";
 import OneDrivePicker from "../../../components/OneDrivePicker";
 import onedriveService from "../../../services/onedriveService";
 import authService from "../../../services/authService";
+import Container from "@/components/Container";
+import Button from "@/components/Button";
 import {
-  ArrowRight,
   AlertCircle,
   CheckCircle,
   ChevronDown,
@@ -29,38 +30,42 @@ import {
 } from "lucide-react";
 
 const googleDriveIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
+    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
+    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
+    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
   </svg>
 );
 
 const dropboxIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
+    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
   </svg>
 );
 
 const onedriveIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
+    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
   </svg>
 );
 
 const googleDriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
+    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
+    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
   </svg>
 );
 
 const dropboxIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
   </svg>
 );
 
 const onedriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
   </svg>
 );
 
@@ -369,12 +374,8 @@ const ALL_FORMAT_CATEGORIES = [
 ];
 
 // Build flat lookup across ALL categories
-const IMAGE_FORMATS = ALL_FORMAT_CATEGORIES.find(c => c.id === "image").formats;
 const ALL_FORMATS_FLAT = ALL_FORMAT_CATEGORIES.flatMap(c => c.formats.map(f => ({ ...f, catId: c.id })));
 const ALL_FORMAT_LOOKUP = new Map(ALL_FORMATS_FLAT.map(f => [f.value, f]));
-const TARGET_FORMAT_LOOKUP = ALL_FORMAT_LOOKUP; // compat alias
-const TARGET_FORMAT_GROUPS = [{ label: "Image", items: IMAGE_FORMATS }];
-const TARGET_FORMATS = IMAGE_FORMATS;
 
 function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
   const [activeCat, setActiveCat] = useState(null);
@@ -394,24 +395,11 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
   return (
     <div
       onClick={e => e.stopPropagation()}
-      style={{
-        borderRadius: "16px",
-        border: "1px solid rgba(99,102,241,0.25)",
-        background: "linear-gradient(180deg, rgba(14,14,30,0.95) 0%, rgba(10,10,22,0.98) 100%)",
-        overflow: "hidden",
-        boxShadow: "0 0 40px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.05)",
-      }}
+      className="rounded-2xl border border-indigo-500/25 bg-gradient-to-b from-[#0e0e1e]/95 to-[#0a0a16]/98 overflow-hidden shadow-[0_0_40px_rgba(99,102,241,0.1),_inset_0_1px_0_rgba(255,255,255,0.05)]"
     >
       {/* Search bar */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        padding: "10px 14px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.02)",
-      }}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <div className="flex items-center gap-2.5 p-[10px_14px] border-b border-white/6 bg-white/2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="stroke-white/40" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input
@@ -419,57 +407,34 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
           placeholder="Search Format"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{
-            flex: 1,
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "rgba(255,255,255,0.8)",
-            fontSize: "0.85rem",
-            fontFamily: "inherit",
-          }}
+          className="flex-1 bg-transparent border-none outline-none text-white/80 text-[0.85rem] font-inherit"
         />
         {search && (
           <button
             onClick={() => setSearch("")}
-            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: 0, lineHeight: 1 }}
+            className="bg-transparent border-none text-white/40 cursor-pointer p-0 leading-none"
           >✕</button>
         )}
       </div>
 
-      <div style={{ display: "flex", height: "160px" }}>
+      <div className="flex h-40">
         {/* Category sidebar */}
         {!search && (
-          <div style={{
-            width: "105px",
-            flexShrink: 0,
-            borderRight: "1px solid rgba(255,255,255,0.06)",
-            overflowY: "auto",
-            padding: "4px 0",
-            scrollbarWidth: "thin",
-            scrollbarColor: "rgba(255,255,255,0.1) transparent",
-          }}>
+          <div className="w-[105px] shrink-0 border-r border-white/6 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {ALL_FORMAT_CATEGORIES.map(cat => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCat(cat.id)}
+                className={`w-full flex items-center justify-between py-1.5 px-2 bg-transparent border-none border-l-2 text-[0.75rem] cursor-pointer text-left transition-all duration-150 font-['Outfit'] ${
+                  activeCat === cat.id
+                    ? "border-l-indigo-500 text-[#818cf8]"
+                    : "border-l-transparent text-white/55 hover:text-white/80"
+                }`}
                 style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "6px 8px",
                   background: activeCat === cat.id ? `linear-gradient(90deg, ${cat.glow} 0%, transparent 100%)` : "transparent",
-                  border: "none",
-                  borderLeft: activeCat === cat.id ? `2px solid ${cat.color}` : "2px solid transparent",
-                  color: activeCat === cat.id ? cat.color : "rgba(255,255,255,0.55)",
-                  fontSize: "0.75rem",
-                  fontWeight: activeCat === cat.id ? 700 : 500,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.15s ease",
-                  fontFamily: "Outfit, sans-serif",
+                  borderColor: activeCat === cat.id ? cat.color : "transparent",
+                  color: activeCat === cat.id ? cat.color : undefined,
                 }}
               >
                 <span>{cat.label}</span>
@@ -484,27 +449,16 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
         )}
 
         {/* Format chips grid */}
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "6px",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(65px, 1fr))",
-          gridAutoRows: "28px",
-          gap: "5px",
-          alignContent: "start",
-          scrollbarWidth: "thin",
-          scrollbarColor: "rgba(255,255,255,0.1) transparent",
-        }}>
+        <div className="flex-1 overflow-y-auto p-1.5 grid grid-cols-[repeat(auto-fit,minmax(65px,1fr))] grid-rows-[28px] auto-rows-[28px] gap-1.25 content-start scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {!activeCat && !search ? (
-            <div style={{ gridColumn: "1/-1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", color: "rgba(255,255,255,0.25)", fontSize: "0.82rem", padding: "24px 16px", textAlign: "center" }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <div className="col-span-full flex flex-col items-center justify-center gap-2.5 text-white/25 text-[0.82rem] p-[24px_16px] text-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="stroke-indigo-500/40" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
               </svg>
               <span>Select a category<br/>to see output formats</span>
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ gridColumn: "1/-1", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", padding: "20px" }}>
+            <div className="col-span-full flex items-center justify-center text-white/30 text-[0.8rem] p-5">
               No formats found
             </div>
           ) : (
@@ -530,29 +484,21 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
                     }
                     onChange(fmt.value);
                   }}
+                  className={`flex items-center justify-center rounded-lg text-[0.65rem] transition-all duration-120 tracking-wide font-['Outfit'] border ${
+                    isSameAsSource ? "cursor-not-allowed opacity-90" : "cursor-pointer"
+                  } ${isSelected ? "font-bold" : "font-medium"}`}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: isSelected
-                      ? `1.5px solid ${fmtCat.color}`
+                    borderColor: isSelected
+                      ? fmtCat.color
                       : isSameAsSource
-                        ? "1px solid rgba(220, 38, 38, 0.4)"
-                        : "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "8px",
+                        ? "rgba(220, 38, 38, 0.4)"
+                        : "rgba(255,255,255,0.1)",
                     background: isSelected
                       ? `linear-gradient(135deg, ${fmtCat.glow}, rgba(255,255,255,0.03))`
                       : isSameAsSource
                         ? "rgba(220, 38, 38, 0.15)"
                         : "rgba(255,255,255,0.03)",
                     color: isSelected ? fmtCat.color : isSameAsSource ? "rgba(239, 68, 68, 0.9)" : "rgba(255,255,255,0.7)",
-                    fontSize: "0.65rem",
-                    fontWeight: isSelected ? 700 : 500,
-                    cursor: isSameAsSource ? "not-allowed" : "pointer",
-                    opacity: isSameAsSource ? 0.9 : 1,
-                    transition: "all 0.12s ease",
-                    letterSpacing: "0.03em",
-                    fontFamily: "Outfit, monospace",
                     boxShadow: isSelected ? `0 0 12px ${fmtCat.glow}` : "none",
                   }}
                 >
@@ -565,29 +511,22 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
       </div>
 
       {/* Selected format footer */}
-      <div style={{
-        padding: "8px 14px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.02)",
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-      }}>
-        <div style={{
-          width: "8px", height: "8px", borderRadius: "50%",
-          background: currentCat ? currentCat.color : "rgba(255,255,255,0.2)",
-          boxShadow: currentCat ? `0 0 8px ${currentCat.glow}` : "none",
-          flexShrink: 0,
-          transition: "all 0.2s ease",
-        }} />
-        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
+      <div className="p-[8px_14px] border-t border-white/6 bg-white/2 flex items-center gap-2.5">
+        <div
+          className="w-2 h-2 rounded-full shrink-0 transition-all duration-200"
+          style={{
+            background: currentCat ? currentCat.color : "rgba(255,255,255,0.2)",
+            boxShadow: currentCat ? `0 0 8px ${currentCat.glow}` : "none",
+          }}
+        />
+        <span className="text-[0.75rem] text-white/40">
           {current && currentCat ? (
             <>
               Selected: <strong style={{ color: currentCat.color }}>{current.label}</strong>
-              {current.note && <span style={{ marginLeft: "6px", opacity: 0.6 }}>— {current.note}</span>}
+              {current.note && <span className="ml-1.5 opacity-60">— {current.note}</span>}
             </>
           ) : (
-            <span style={{ fontStyle: "italic" }}>Select a category and output format</span>
+            <span className="italic">Select a category and output format</span>
           )}
         </span>
       </div>
@@ -848,8 +787,6 @@ const getSourceFormat = (file) => {
   };
 };
 
-
-
 export default function Hero() {
   const [targetFormat, setTargetFormat] = useState("");
   const [file, setFile] = useState(null);
@@ -1078,9 +1015,6 @@ export default function Hero() {
       setProgress(0);
       setConverting(false);
 
-
-
-
       // Extract image dimensions for scaling UI
       if (candidate) {
         const tempImg = new window.Image();
@@ -1290,113 +1224,69 @@ export default function Hero() {
   }, [clearOutputUrl]);
 
   return (
-    <section
-      className="relative min-h-screen flex items-start md:items-center overflow-hidden pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[64px] 2xl:pt-[148px] 2xl:pb-[72px]"
-      style={{
-        background: "linear-gradient(135deg, #0f0f1a 0%, #121221 55%, #0f1729 100%)",
-      }}
-    >
-      {/* RESPONSIVE SCALING ADDED */}
-      <div
-        className="hero-orb absolute bg-indigo-500/14 w-[270px] h-[270px] -top-[90px] -left-[80px] sm:w-[324px] sm:h-[324px] sm:-top-[108px] sm:-left-[96px] md:w-[378px] md:h-[378px] md:-top-[126px] md:-left-[112px] lg:w-[432px] lg:h-[432px] lg:-top-[144px] lg:-left-[128px] xl:w-[486px] xl:h-[486px] xl:-top-[162px] xl:-left-[144px] 2xl:w-[540px] 2xl:h-[540px] 2xl:-top-[180px] 2xl:-left-[160px]"
-      />
-      {/* RESPONSIVE SCALING ADDED */}
-      <div
-        className="hero-orb absolute bg-cyan-500/10 w-[200px] h-[200px] -bottom-[60px] -right-[60px] sm:w-[240px] sm:h-[240px] sm:-bottom-[72px] sm:-right-[72px] md:w-[280px] md:h-[280px] md:-bottom-[84px] md:-right-[84px] lg:w-[320px] lg:h-[320px] lg:-bottom-[96px] lg:-right-[96px] xl:w-[360px] xl:h-[360px] xl:-bottom-[108px] xl:-right-[108px] 2xl:w-[400px] 2xl:h-[400px] 2xl:-bottom-[120px] 2xl:-right-[120px]"
-        style={{
-          animationDelay: "2s",
-        }}
-      />
+    <section className="relative min-h-screen flex items-start md:items-center overflow-hidden pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[64px] 2xl:pt-[148px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
+      
 
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-          maskImage: "radial-gradient(ellipse at center, black 42%, transparent 80%)",
-        }}
-      />
+      <div className="absolute inset-0 [background-image:linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_42%,transparent_80%)]" />
 
-      {/* RESPONSIVE SCALING ADDED */}
-      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16" style={{ position: "relative", zIndex: 1 }}>
-        {/* RESPONSIVE SCALING ADDED */}
-        <div
-          className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[38px] 2xl:gap-[40px] w-full"
-        >
+      <Container className="relative z-[1]">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[38px] 2xl:gap-[40px] w-full">
           <div className="w-full md:flex-[1_1_50%] max-w-full md:max-w-[448px] lg:max-w-[512px] xl:max-w-[576px] 2xl:max-w-[640px]">
-            <div style={{ marginBottom: "24px" }}>
-              <span className="badge" style={{ fontSize: "0.78rem" }}>
+            <div className="mb-6">
+              <span className="inline-flex items-center gap-2 py-2 px-4 bg-indigo-500/8 border border-indigo-500/20 rounded-full text-[#818cf8] font-semibold font-['Outfit'] tracking-wide text-[0.78rem]">
                 <Sparkles size={12} />
                 Convert directly in your browser
               </span>
             </div>
 
-            {/* RESPONSIVE SCALING ADDED */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold" style={{ marginBottom: "16px", letterSpacing: "-0.04em", lineHeight: 1.1, fontFamily: "Outfit, sans-serif" }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold mb-4 tracking-[-0.04em] leading-[1.1] font-['Outfit']">
               Convert Any Image
               <br />
-              <span className="text-gradient">without the clutter</span>
+              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">without the clutter</span>
             </h1>
 
-            {/* RESPONSIVE SCALING ADDED */}
-            <p
-              className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl"
-              style={{
-                color: "var(--text-secondary)",
-                lineHeight: 1.75,
-                maxWidth: "560px",
-                marginBottom: "28px",
-              }}
-            >
+            <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">
               Upload any image, let the source type detect itself, pick from a wide range of output
               formats, and download the result instantly. No account, no server upload, and no extra steps.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "28px" }}>
+            <div className="flex flex-wrap gap-2.5 mb-7">
               {["Auto detect", "Browser only", "Fast output"].map((item) => (
                 <span
                   key={item}
-                  className="tag"
-                  style={{
-                    padding: "6px 12px",
-                    fontSize: "0.75rem",
-                  }}
+                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-white/3 border border-white/8 rounded-full text-[#94a3b8] font-medium text-[0.75rem] transition-all duration-200"
                 >
                   {item}
                 </span>
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-              <Link href="/tools" className="btn btn-secondary btn-lg">
-                <FileImage size={18} />
-                Browse Tools
+            <div className="flex gap-3 sm:gap-3.5">
+              <Link href="/tools" className="no-underline flex-1 min-w-0">
+                <Button variant="secondary" size="lg" className="w-full justify-center">
+                  <FileImage size={18} />
+                  Browse Tools
+                </Button>
               </Link>
-              <a href="#converter-panel" className="btn btn-primary btn-lg">
-                <Zap size={18} />
-                Start Converting
+              <a href="#converter-panel" className="no-underline flex-1 min-w-0">
+                <Button variant="primary" size="lg" className="w-full justify-center">
+                  <Zap size={18} />
+                  Start Converting
+                </Button>
               </a>
             </div>
           </div>
 
-          {/* RESPONSIVE SCALING ADDED */}
           <div id="converter-panel" className="w-full md:flex-[1_1_50%] max-w-[320px] sm:max-w-[360px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[440px] 2xl:max-w-[460px] mx-auto mt-0 md:-mt-[70px] lg:-mt-[80px] xl:-mt-[90px] 2xl:-mt-[100px]">
-            <div
-              style={{
-                borderRadius: "28px",
-                border: "1px solid rgba(99,102,241,0.18)",
-                background: "linear-gradient(180deg, rgba(18,18,33,0.92) 0%, rgba(14,14,26,0.98) 100%)",
-                boxShadow: "0 30px 90px rgba(0,0,0,0.45)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                padding: "20px",
-              }}
-            >
-
+            <div className="rounded-[28px] border border-indigo-500/18 bg-gradient-to-b from-[#121221]/92 to-[#0e0e1a]/98 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-3xl p-5">
               <div
-                className={`upload-zone ${isDragging ? "drag-over" : ""}`}
+                className={`border rounded-2xl flex items-center justify-center cursor-default transition-all duration-300 ${
+                  file && !result ? "min-h-0 p-4" : "min-h-[360px] p-[34px_24px]"
+                } ${
+                  isDragging
+                    ? "border-indigo-500 bg-gradient-to-b from-indigo-500/16 to-cyan-500/5"
+                    : "border-white/8 bg-gradient-to-b from-white/3 to-white/[0.015]"
+                }`}
                 onDragOver={(e) => {
                   e.preventDefault();
                   setIsDragging(true);
@@ -1406,78 +1296,35 @@ export default function Hero() {
                   setUploadMethod("file");
                   handleDrop(e);
                 }}
-                style={{
-                  borderStyle: "solid",
-                  borderWidth: "1px",
-                  borderColor: isDragging ? "rgba(99,102,241,0.9)" : "rgba(255,255,255,0.08)",
-                  background: isDragging
-                    ? "linear-gradient(180deg, rgba(99,102,241,0.16) 0%, rgba(6,182,212,0.05) 100%)"
-                    : "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%)",
-                  cursor: "default",
-                  minHeight: file && !result ? "auto" : "360px",
-                  padding: file && !result ? "16px" : "34px 24px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
               >
                 <input
                   ref={inputRef}
                   type="file"
                   accept={INPUT_ACCEPT}
                   onChange={(e) => handleFile(e.target.files?.[0])}
+                  className="hidden"
                   aria-hidden="true"
-                  style={{ display: "none" }}
                 />
 
                 {!file && !result ? (
                   uploadMethod === "url" ? (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "16px",
-                        textAlign: "center",
-                        width: "100%",
-                        maxWidth: "420px",
-                        padding: "20px 10px"
-                      }}
+                      className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-[20px_10px]"
                     >
-                      <div
-                        style={{
-                          width: "64px",
-                          height: "64px",
-                          borderRadius: "18px",
-                          background: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(99,102,241,0.1))",
-                          border: "1px solid rgba(6,182,212,0.3)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "var(--secondary)",
-                        }}
-                      >
+                      <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-cyan-500/20 to-[#6366f1]/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                         <Link2 size={28} />
                       </div>
                       
-                      <div style={{ width: "100%" }}>
-                        <p
-                          style={{
-                            fontFamily: "Outfit, sans-serif",
-                            fontWeight: 700,
-                            fontSize: "1.22rem",
-                            color: "var(--text-primary)",
-                            marginBottom: "6px",
-                          }}
-                        >
+                      <div className="w-full">
+                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5">
                           Load image from URL
                         </p>
-                        <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", marginBottom: "16px" }}>
+                        <p className="text-[#64748b] text-[0.92rem] mb-4">
                           Enter the public direct link to an image file.
                         </p>
                         
-                        <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                        <div className="flex gap-2.5 w-full">
                           <input
                             type="url"
                             placeholder="https://example.com/image.jpg"
@@ -1491,17 +1338,17 @@ export default function Hero() {
                                 handleUrlLoad(inputUrl);
                               }
                             }}
-                            className="form-input"
-                            style={{ flex: 1, textAlign: "center" }}
+                            className="w-full py-3 px-4 rounded-xl bg-[#13131f] border border-white/8 text-[#f8fafc] text-[0.95rem] transition-all duration-200 outline-none placeholder:text-slate-500 focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] flex-1 text-center"
                           />
                         </div>
                       </div>
 
-                      <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
-                        <button
+                      <div className="flex gap-3 w-full justify-center">
+                        <Button
                           type="button"
-                          className="btn btn-secondary btn-sm"
-                          style={{ minWidth: "100px", justifyContent: "center" }}
+                          variant="secondary"
+                          size="sm"
+                          className="min-w-[100px] justify-center"
                           onClick={() => {
                             setUploadMethod("file");
                             setInputUrl("");
@@ -1509,33 +1356,34 @@ export default function Hero() {
                           }}
                         >
                           Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="button"
-                          className="btn btn-primary btn-sm"
-                          style={{ minWidth: "120px", justifyContent: "center" }}
+                          variant="primary"
+                          size="sm"
+                          className="min-w-[120px] justify-center"
                           disabled={isLoadingUrl || !inputUrl}
                           onClick={() => handleUrlLoad(inputUrl)}
                         >
                           {isLoadingUrl ? (
                             <>
-                              <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
+                              <RefreshCw size={14} className="animate-spin" />
                               Loading...
                             </>
                           ) : (
                             "Load Image"
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ) : uploadMethod === "cloud" ? (
                     (checkingDrive || checkingDropbox || checkingOneDrive) ? (
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px" }} onClick={(e) => e.stopPropagation()}>
-                        <RefreshCw size={24} className="animate-spin" style={{ color: "var(--primary-light)" }} />
-                        <p style={{ margin: "10px 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Checking connection status...</p>
+                      <div className="flex flex-col items-center justify-center p-10" onClick={(e) => e.stopPropagation()}>
+                        <RefreshCw size={24} className="animate-spin text-[#818cf8]" />
+                        <p className="mt-2.5 text-[0.85rem] text-[#64748b]">Checking connection status...</p>
                       </div>
                     ) : cloudProvider === "google-drive" && isDriveConnected ? (
-                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                         <GoogleDrivePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1550,7 +1398,7 @@ export default function Hero() {
                         />
                       </div>
                     ) : cloudProvider === "dropbox" && isDropboxConnected ? (
-                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                         <DropboxFilePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1565,7 +1413,7 @@ export default function Hero() {
                         />
                       </div>
                     ) : cloudProvider === "onedrive" && isOneDriveConnected ? (
-                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                         <OneDrivePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1582,59 +1430,29 @@ export default function Hero() {
                     ) : (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "16px",
-                          textAlign: "center",
-                          width: "100%",
-                          maxWidth: "420px",
-                          padding: "20px 10px"
-                        }}
+                        className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-[20px_10px]"
                       >
-                        <div
-                          style={{
-                            width: "64px",
-                            height: "64px",
-                            borderRadius: "18px",
-                            background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.1))",
-                            border: "1px solid rgba(99,102,241,0.3)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--primary-light)",
-                          }}
-                        >
+                        <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-indigo-500/20 to-cyan-500/10 border border-indigo-500/35 flex items-center justify-center text-[#818cf8]">
                           {cloudProvider === "google-drive" ? googleDriveIconLarge : 
                            cloudProvider === "dropbox" ? dropboxIconLarge : 
                            onedriveIconLarge}
                         </div>
 
                         <div>
-                          <p
-                            style={{
-                              fontFamily: "Outfit, sans-serif",
-                              fontWeight: 700,
-                              fontSize: "1.22rem",
-                              color: "var(--text-primary)",
-                              marginBottom: "6px",
-                              textTransform: "capitalize"
-                            }}
-                          >
+                          <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5 capitalize">
                             Connect to {cloudProvider?.replace("-", " ")}
                           </p>
-                          <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "16px" }}>
+                          <p className="text-[#64748b] text-[0.92rem] leading-relaxed mb-4">
                             Authorize your account to browse and convert files directly from your cloud storage.
                           </p>
                         </div>
 
-
-                        <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
-                          <button
+                        <div className="flex gap-3 w-full justify-center">
+                          <Button
                             type="button"
-                            className="btn btn-secondary btn-sm"
-                            style={{ minWidth: "100px", justifyContent: "center" }}
+                            variant="secondary"
+                            size="sm"
+                            className="min-w-[100px] justify-center"
                             onClick={() => {
                               setUploadMethod("file");
                               setCloudProvider(null);
@@ -1642,16 +1460,17 @@ export default function Hero() {
                             }}
                           >
                             Back
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
-                            className="btn btn-primary btn-sm"
-                            style={{ minWidth: "160px", justifyContent: "center" }}
+                            variant="primary"
+                            size="sm"
+                            className="min-w-[160px] justify-center"
                             onClick={async () => {
                               const token = getEffectiveToken();
                               if (!token) {
                                 setError("Please log in to your account first.");
-                                        return;
+                                return;
                               }
                               if (cloudProvider === "google-drive") {
                                 try {
@@ -1695,69 +1514,39 @@ export default function Hero() {
                             }}
                           >
                             Connect Account
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )
                   ) : (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "14px",
-                        textAlign: "center",
-                        maxWidth: "390px",
-                      }}
+                      className="flex flex-col items-center gap-3.5 text-center max-w-[390px]"
                     >
-                      <div
-                        style={{
-                          width: "64px",
-                          height: "64px",
-                          borderRadius: "18px",
-                          background: "linear-gradient(135deg, rgba(239,68,68,0.24), rgba(248,113,113,0.12))",
-                          border: "1px solid rgba(239,68,68,0.3)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#fca5a5",
-                        }}
-                      >
+                      <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-red-500/24 to-red-400/12 border border-red-500/30 flex items-center justify-center text-red-300">
                         <Upload size={28} />
                       </div>
                       <div>
-                        <p
-                          style={{
-                            fontFamily: "Outfit, sans-serif",
-                            fontWeight: 700,
-                            fontSize: "1.22rem",
-                            color: "var(--text-primary)",
-                            marginBottom: "6px",
-                          }}
-                        >
+                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5">
                           Drop your file here
                         </p>
-                        <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.6 }}>
+                        <p className="text-[#64748b] text-[0.92rem] leading-relaxed">
                           Upload a file and we will detect the source format automatically, then let you choose
                           the output type.
                         </p>
                       </div>
                       
-                      <div style={{ position: "relative", zIndex: 100 }} onClick={(e) => e.stopPropagation()}>
-                        <button
+                      <div className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
+                        <Button
                           type="button"
-                          className="btn btn-primary btn-lg"
-                          style={{ 
-                            justifyContent: "space-between", 
-                            minWidth: "200px",
-                            gap: "12px",
-                          }}
+                          variant="primary"
+                          size="lg"
+                          className="justify-between min-w-[200px] gap-3"
                           onClick={() => {
                             setIsDropdownOpen((prev) => !prev);
                           }}
                         >
-                          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span className="flex items-center gap-2">
                             <FilePlus size={18} />
                             Select File
                           </span>
@@ -1768,66 +1557,44 @@ export default function Hero() {
                               transition: "transform 0.2s ease"
                             }} 
                           />
-                        </button>
+                        </Button>
                         
                         {isDropdownOpen && (
                           <>
                             <div 
                               onClick={() => setIsDropdownOpen(false)}
-                              style={{
-                                position: "fixed",
-                                inset: 0,
-                                zIndex: 98,
-                                cursor: "default"
-                              }}
+                              className="fixed inset-0 z-[98] cursor-default"
                             />
-                            <div
-                              style={{
-                                position: "absolute",
-                                bottom: "calc(100% + 10px)",
-                                left: "50%",
-                                transform: "translateX(-50%)",
-                                width: "220px",
-                                background: "var(--bg-card)",
-                                border: "1px solid var(--border)",
-                                borderRadius: "16px",
-                                padding: "6px",
-                                boxShadow: "var(--shadow-lg), 0 0 30px rgba(99,102,241,0.1)",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "2px",
-                                zIndex: 99,
-                              }}
-                            >
+                            <div className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-60 bg-[#16162a] border border-white/10 rounded-2xl p-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_30px_rgba(99,102,241,0.1)] flex flex-col gap-0.5 z-[99]">
                               <button
                                 type="button"
-                                className="dropdown-item"
+                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   inputRef.current?.click();
                                 }}
                               >
-                                <Folder size={16} style={{ marginRight: "12px", color: "var(--primary-light)", flexShrink: 0 }} />
+                                <Folder size={19} className="mr-3 text-[#818cf8] shrink-0" />
                                 From my computer
                               </button>
                               
                               <button
                                 type="button"
-                                className="dropdown-item"
+                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("url");
                                 }}
                               >
-                                <Link2 size={16} style={{ marginRight: "12px", color: "var(--secondary)", flexShrink: 0 }} />
+                                <Link2 size={19} className="mr-3 text-cyan-400 shrink-0" />
                                 By URL
                               </button>
                               
-                              <div style={{ height: "1px", background: "var(--border-light)", margin: "4px 0" }} />
+                              <div className="h-px bg-white/8 my-1" />
                               
                               <button
                                 type="button"
-                                className="dropdown-item"
+                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -1840,7 +1607,7 @@ export default function Hero() {
                               
                               <button
                                 type="button"
-                                className="dropdown-item"
+                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -1853,7 +1620,7 @@ export default function Hero() {
                               
                               <button
                                 type="button"
-                                className="dropdown-item"
+                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -1868,126 +1635,66 @@ export default function Hero() {
                         )}
                       </div>
                       
-                      <p style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>
+                      <p className="text-[#64748b] text-[0.78rem]">
                         Common and legacy file formats are supported in a browser-first workflow.
                       </p>
                     </div>
                   )
                 ) : result ? (
-                  <div
-                    style={{
-                      width: "100%",
-                      maxWidth: "460px",
-                      margin: "0 auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "16px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "64px",
-                        height: "64px",
-                        borderRadius: "18px",
-                        background: "rgba(16,185,129,0.12)",
-                        border: "1px solid rgba(16,185,129,0.22)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#34d399",
-                      }}
-                    >
+                  <div className="w-full max-w-[460px] mx-auto flex flex-col items-center gap-4 text-center">
+                    <div className="w-16 h-16 rounded-[18px] bg-emerald-500/12 border border-emerald-500/22 flex items-center justify-center text-emerald-400">
                       <CheckCircle size={28} />
                     </div>
                     <div>
-                      <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "6px" }}>
+                      <p className="font-bold text-emerald-400 mb-1.5">
                         Conversion Successful
                       </p>
-                      <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                      <p className="text-[#94a3b8] text-[0.9rem]">
                         {result.name} | {result.size} | {result.width}x{result.height}px
                       </p>
                     </div>
-                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
+                    <div className="flex gap-3 flex-wrap justify-center">
                       <a
                         href={result.url}
                         download={result.name}
-                        className="btn btn-primary btn-lg"
-                        style={{ justifyContent: "center" }}
+                        className="no-underline"
                       >
-                        <Download size={18} />
-                        Download {target?.label || targetFormat.toUpperCase()}
+                        <Button variant="primary" size="lg" className="justify-center">
+                          <Download size={18} />
+                          Download {target?.label || targetFormat.toUpperCase()}
+                        </Button>
                       </a>
-                      <button onClick={reset} className="btn btn-secondary btn-lg">
+                      <Button variant="secondary" size="lg" onClick={reset}>
                         Convert Another
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    style={{
-                      width: "100%",
-                      maxWidth: "400px",
-                      margin: "0 auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
+                    className="w-full max-w-[400px] mx-auto flex flex-col gap-2"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                        <div
-                          style={{
-                            width: "36px",
-                            height: "36px",
-                            borderRadius: "10px",
-                            background: "rgba(99,102,241,0.16)",
-                            border: "1px solid rgba(99,102,241,0.2)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--primary-light)",
-                            flexShrink: 0,
-                          }}
-                        >
+                    <div className="flex items-center gap-3 justify-between flex-wrap">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-indigo-500/16 border border-indigo-500/20 flex items-center justify-center text-[#818cf8] shrink-0">
                           <FileImage size={18} />
                         </div>
-                        <div style={{ minWidth: 0 }}>
-                          <p
-                            style={{
-                              fontWeight: 700,
-                              color: "var(--text-primary)",
-                              marginBottom: "2px",
-                              fontSize: "0.95rem",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#f8fafc] mb-0.5 text-[0.95rem] overflow-hidden text-ellipsis whitespace-nowrap">
                             {file.name}
                           </p>
-                          <p style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
+                          <p className="text-[#64748b] text-[0.75rem]">
                             {getImageSize(file.size)} | Source {source.label} | Ready to convert to {target?.label || "a selected format"}
                           </p>
                         </div>
                       </div>
-                      <button onClick={reset} className="btn btn-secondary" style={{ padding: "4px 10px", fontSize: "0.75rem", height: "auto", minHeight: "28px", borderRadius: "8px" }}>
+                      <Button variant="secondary" onClick={reset} className="py-1 px-2.5 text-[0.75rem] h-auto min-h-[28px] rounded-lg">
                         Change file
-                      </button>
+                      </Button>
                     </div>
 
                     {/* Tool Selector Tabs */}
-                    <div style={{ display: "flex", gap: "4px", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "14px", padding: "4px" }}>
+                    <div className="flex gap-1 bg-black/25 border border-white/7 rounded-[14px] p-1">
                       {[
                         {
                           id: "convert", label: "Convert",
@@ -2014,25 +1721,16 @@ export default function Hero() {
                           key={t.id}
                           type="button"
                           onClick={() => setActiveTool(t.id)}
+                          className={`flex-1 flex flex-col items-center justify-center gap-1 py-1.5 px-1 rounded-xl text-[0.7rem] font-bold tracking-wide transition-all duration-180 font-['Outfit'] border-1.5 ${
+                            activeTool === t.id
+                              ? "text-[#818cf8]"
+                              : "border-transparent bg-transparent text-white/45 hover:text-white/60 cursor-pointer"
+                          }`}
                           style={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "4px",
-                            padding: "6px 4px",
-                            border: activeTool === t.id ? `1.5px solid ${t.color}` : "1.5px solid transparent",
-                            borderRadius: "10px",
+                            borderColor: activeTool === t.id ? t.color : "transparent",
                             background: activeTool === t.id ? t.glow : "transparent",
-                            color: activeTool === t.id ? t.color : "rgba(255,255,255,0.45)",
-                            cursor: "pointer",
-                            fontSize: "0.7rem",
-                            fontWeight: 700,
-                            letterSpacing: "0.02em",
-                            transition: "all 0.18s ease",
+                            color: activeTool === t.id ? t.color : undefined,
                             boxShadow: activeTool === t.id ? `0 0 14px ${t.glow}` : "none",
-                            fontFamily: "Outfit, sans-serif",
                           }}
                         >
                           {t.icon}
@@ -2043,8 +1741,8 @@ export default function Hero() {
 
                     {/* Tool configurations */}
                     {activeTool === "convert" && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
                           Select output format
                         </span>
                         <TargetFormatSelect value={targetFormat} onChange={setTargetFormat} sourceFormatLabel={source.label} />
@@ -2052,12 +1750,12 @@ export default function Hero() {
                     )}
 
                     {activeTool === "compress" && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
+                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
                           Compression settings
                         </span>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", color: "var(--text-primary)" }}>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex justify-between text-[0.85rem] text-[#f8fafc]">
                             <span>Quality:</span>
                             <strong>{compressionQuality}%</strong>
                           </div>
@@ -2067,14 +1765,10 @@ export default function Hero() {
                             max="100"
                             value={compressionQuality}
                             onChange={(e) => setCompressionQuality(parseInt(e.target.value))}
-                            style={{
-                              width: "100%",
-                              accentColor: "var(--primary-light)",
-                              cursor: "pointer"
-                            }}
+                            className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                           />
                         </div>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                        <div className="flex gap-2">
                           {[
                             { label: "Max Compress", value: 30 },
                             { label: "Balanced", value: 75 },
@@ -2084,16 +1778,11 @@ export default function Hero() {
                               key={preset.label}
                               type="button"
                               onClick={() => setCompressionQuality(preset.value)}
-                              style={{
-                                flex: 1,
-                                padding: "6px 8px",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                borderRadius: "8px",
-                                background: compressionQuality === preset.value ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
-                                color: compressionQuality === preset.value ? "var(--primary-light)" : "var(--text-muted)",
-                                fontSize: "0.72rem",
-                                cursor: "pointer"
-                              }}
+                              className={`flex-1 py-1.5 px-2 border rounded-lg text-[0.72rem] cursor-pointer transition-all duration-150 ${
+                                compressionQuality === preset.value
+                                  ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                                  : "border-white/8 bg-white/2 text-[#64748b] hover:text-[#94a3b8]"
+                              }`}
                             >
                               {preset.label}
                             </button>
@@ -2103,92 +1792,70 @@ export default function Hero() {
                     )}
 
                     {activeTool === "resize" && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
+                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
                           Resize dimensions
                         </span>
-                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-secondary)", cursor: "pointer" }}>
+                        <div className="flex gap-2.5 items-center">
+                          <label className="flex items-center gap-1.5 text-[0.82rem] text-[#94a3b8] cursor-pointer hover:text-[#f8fafc]">
                             <input
                               type="radio"
                               name="resizeMode"
                               checked={resizeMode === "percent"}
                               onChange={() => setResizeMode("percent")}
-                              style={{ accentColor: "var(--primary-light)" }}
+                              className="accent-[#6366f1] cursor-pointer"
                             />
                             Scale %
                           </label>
-                          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-secondary)", cursor: "pointer" }}>
+                          <label className="flex items-center gap-1.5 text-[0.82rem] text-[#94a3b8] cursor-pointer hover:text-[#f8fafc]">
                             <input
                               type="radio"
                               name="resizeMode"
                               checked={resizeMode === "custom"}
                               onChange={() => setResizeMode("custom")}
-                              style={{ accentColor: "var(--primary-light)" }}
+                              className="accent-[#6366f1] cursor-pointer"
                             />
                             Custom Px
                           </label>
                         </div>
 
                         {resizeMode === "percent" ? (
-                          <div style={{ display: "flex", gap: "8px" }}>
+                          <div className="flex gap-2">
                             {[25, 50, 75].map((pct) => (
                               <button
                                 key={pct}
                                 type="button"
                                 onClick={() => setResizePercent(pct)}
-                                style={{
-                                  flex: 1,
-                                  padding: "8px",
-                                  border: "1px solid rgba(255,255,255,0.08)",
-                                  borderRadius: "10px",
-                                  background: resizePercent === pct ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
-                                  color: resizePercent === pct ? "var(--primary-light)" : "var(--text-primary)",
-                                  fontSize: "0.8rem",
-                                  fontWeight: 600,
-                                  cursor: "pointer"
-                                }}
+                                className={`flex-1 py-2 border rounded-xl text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 ${
+                                  resizePercent === pct
+                                    ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                                    : "border-white/8 bg-white/2 text-[#f8fafc] hover:bg-white/4"
+                                }`}
                               >
                                 {pct}% Size
                               </button>
                             ))}
                           </div>
                         ) : (
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Width (px):</span>
+                          <div className="grid grid-cols-2 gap-2.5">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[0.7rem] text-[#64748b]">Width (px):</span>
                               <input
                                 type="number"
                                 placeholder={imgWidth ? `${imgWidth}px` : "Width"}
                                 value={customWidth}
                                 onChange={(e) => setCustomWidth(e.target.value)}
-                                style={{
-                                  padding: "8px 12px",
-                                  background: "rgba(0,0,0,0.2)",
-                                  border: "1px solid rgba(255,255,255,0.08)",
-                                  borderRadius: "10px",
-                                  color: "white",
-                                  fontSize: "0.85rem",
-                                  outline: "none"
-                                }}
+                                className="w-full py-2 px-3 bg-black/20 border border-white/8 rounded-xl text-white text-[0.85rem] outline-none transition-all duration-150 focus:border-[#6366f1]"
                               />
                             </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Height (px):</span>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[0.7rem] text-[#64748b]">Height (px):</span>
                               <input
                                 type="number"
                                 placeholder={imgHeight ? `${imgHeight}px` : "Height"}
                                 value={customHeight}
                                 onChange={(e) => setCustomHeight(e.target.value)}
-                                style={{
-                                  padding: "8px 12px",
-                                  background: "rgba(0,0,0,0.2)",
-                                  border: "1px solid rgba(255,255,255,0.08)",
-                                  borderRadius: "10px",
-                                  color: "white",
-                                  fontSize: "0.85rem",
-                                  outline: "none"
-                                }}
+                                className="w-full py-2 px-3 bg-black/20 border border-white/8 rounded-xl text-white text-[0.85rem] outline-none transition-all duration-150 focus:border-[#6366f1]"
                               />
                             </div>
                           </div>
@@ -2197,11 +1864,11 @@ export default function Hero() {
                     )}
 
                     {activeTool === "crop" && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
+                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
                           Crop Aspect Ratio (Centered)
                         </span>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                        <div className="grid grid-cols-3 gap-2">
                           {[
                             { label: "Square 1:1", value: "1:1" },
                             { label: "Widescreen 16:9", value: "16:9" },
@@ -2211,17 +1878,11 @@ export default function Hero() {
                               key={aspect.value}
                               type="button"
                               onClick={() => setCropAspect(aspect.value)}
-                              style={{
-                                padding: "8px 4px",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                borderRadius: "10px",
-                                background: cropAspect === aspect.value ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
-                                color: cropAspect === aspect.value ? "var(--primary-light)" : "var(--text-primary)",
-                                fontSize: "0.75rem",
-                                fontWeight: cropAspect === aspect.value ? 600 : 500,
-                                cursor: "pointer",
-                                textAlign: "center"
-                              }}
+                              className={`py-2 px-1 border rounded-xl text-[0.75rem] cursor-pointer text-center transition-all duration-150 ${
+                                cropAspect === aspect.value
+                                  ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8] font-semibold"
+                                  : "border-white/8 bg-white/2 text-[#f8fafc] hover:bg-white/4 font-medium"
+                              }`}
                             >
                               {aspect.label}
                             </button>
@@ -2231,28 +1892,29 @@ export default function Hero() {
                     )}
 
                     {converting && (
-                      <div>
-                        <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>
+                      <div className="mb-2">
+                        <p className="text-[0.85rem] text-[#64748b] mb-2">
                           Processing... {progress}%
                         </p>
-                        <div className="progress-bar">
+                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                           <div
-                            className="progress-bar-fill"
-                            style={{ width: `${progress}%`, transition: "width 0.25s ease" }}
+                            className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-[250ms]"
+                            style={{ width: `${progress}%` }}
                           />
                         </div>
                       </div>
                     )}
 
-                    <button
+                    <Button
                       onClick={handleConvert}
                       disabled={converting || (activeTool === "convert" && !targetFormat)}
-                      className="btn btn-primary btn-lg"
-                      style={{ justifyContent: "center", opacity: (activeTool === "convert" && !targetFormat) ? 0.5 : 1 }}
+                      variant="primary"
+                      size="lg"
+                      className="w-full justify-center"
                     >
                       {converting ? (
                         <>
-                          <RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} />
+                          <RefreshCw size={18} className="animate-spin" />
                           Processing...
                         </>
                       ) : activeTool === "convert" ? (
@@ -2283,26 +1945,13 @@ export default function Hero() {
                           Crop Image ({cropAspect})
                         </>
                       )}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
 
               {error && (
-                <div
-                  style={{
-                    marginTop: "14px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "12px 16px",
-                    background: "rgba(239, 68, 68, 0.1)",
-                    border: "1px solid rgba(239, 68, 68, 0.28)",
-                    borderRadius: "12px",
-                    color: "#fca5a5",
-                    fontSize: "0.875rem",
-                  }}
-                >
+                <div className="mt-3.5 flex items-center gap-2.5 p-3 px-4 bg-red-500/10 border border-red-500/28 rounded-xl text-red-300 text-[0.875rem]">
                   <AlertCircle size={16} />
                   {error}
                 </div>
@@ -2310,7 +1959,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Image,
+  Image as ImageIcon,
   Mail,
-  MapPin,
-  Phone,
   ArrowUpRight,
 } from "lucide-react";
+import Container from "./Container";
 
 const TwitterIcon = ({ size = 16, className }) => (
   <svg
@@ -101,93 +100,31 @@ export default function Footer() {
   }
 
   return (
-    <footer
-      style={{
-        background: "rgba(13, 13, 22, 0.98)",
-        borderTop: "1px solid rgba(99, 102, 241, 0.12)",
-        paddingTop: "72px",
-      }}
-    >
-      <div className="container">
+    <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-18">
+      <Container>
         {/* Top Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
-            gap: "48px",
-            paddingBottom: "64px",
-          }}
-          className="footer-grid"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-12 pb-16">
           {/* Brand Column */}
-          <div>
-            <Link
-              href="/"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                textDecoration: "none",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  background: "linear-gradient(135deg, #6366f1, #06b6d4)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 4px 15px rgba(99,102,241,0.4)",
-                }}
-              >
-                <Image color="white" size={20} />
+          <div className="col-span-1 sm:col-span-3 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 no-underline mb-5">
+              <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#6366f1] to-[#06b6d4] flex items-center justify-center shadow-[0_4px_15px_rgba(99,102,241,0.4)]">
+                <ImageIcon color="white" size={20} />
               </div>
-              <span
-                style={{
-                  fontFamily: "Outfit, sans-serif",
-                  fontWeight: 800,
-                  fontSize: "1.25rem",
-                  background: "linear-gradient(135deg, #a5b4fc, #67e8f9)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
+              <span className="font-['Outfit'] font-extrabold text-[1.25rem] bg-gradient-to-br from-[#a5b4fc] to-[#67e8f9] bg-clip-text text-transparent">
                 ImageToolkit
               </span>
             </Link>
-            <p
-              style={{
-                color: "var(--text-muted)",
-                fontSize: "0.9rem",
-                lineHeight: 1.7,
-                marginBottom: "24px",
-                maxWidth: "280px",
-              }}
-            >
+            <p className="text-[#64748b] text-[0.9rem] leading-[1.7] mb-6 max-w-[280px]">
               Free, fast, and secure online image tools. Convert, compress,
               resize, and transform your images — entirely in your browser with
               zero data uploads.
             </p>
 
             {/* Contact Info */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
+            <div className="flex flex-col gap-2.5 mb-6">
               <a
                 href="mailto:hello@imagetoolkit.pro"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  color: "var(--text-muted)",
-                  textDecoration: "none",
-                  fontSize: "0.85rem",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-light)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+                className="flex items-center gap-2 text-[#64748b] no-underline text-[0.85rem] transition-colors duration-200 hover:text-[#818cf8]"
               >
                 <Mail size={14} />
                 hello@imagetoolkit.pro
@@ -195,7 +132,7 @@ export default function Footer() {
             </div>
 
             {/* Social Links */}
-            <div style={{ display: "flex", gap: "10px" }}>
+            <div className="flex gap-2.5">
               {[
                 { icon: <TwitterIcon size={16} />, href: "https://twitter.com", label: "Twitter" },
                 { icon: <GithubIcon size={16} />, href: "https://github.com", label: "GitHub" },
@@ -207,29 +144,7 @@ export default function Footer() {
                   aria-label={s.label}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "9px",
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--text-muted)",
-                    textDecoration: "none",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(99,102,241,0.2)";
-                    e.currentTarget.style.borderColor = "rgba(99,102,241,0.4)";
-                    e.currentTarget.style.color = "var(--primary-light)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.color = "var(--text-muted)";
-                  }}
+                  className="w-9 h-9 rounded-[9px] bg-white/6 border border-white/8 flex items-center justify-center text-[#64748b] no-underline transition-all duration-200 hover:bg-indigo-500/20 hover:border-indigo-500/40 hover:text-[#818cf8]"
                 >
                   {s.icon}
                 </a>
@@ -239,21 +154,16 @@ export default function Footer() {
 
           {/* Tools Column */}
           <div>
-            <h3
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: "1rem",
-                color: "var(--text-primary)",
-                marginBottom: "20px",
-                letterSpacing: "-0.01em",
-              }}
-            >
+            <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
               Tools
             </h3>
-            <nav>
+            <nav className="flex flex-col">
               {footerTools.map((item) => (
-                <Link key={item.href} href={item.href} className="footer-link">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center text-[#64748b] text-[0.9rem] no-underline mb-3 transition-all duration-200 hover:text-[#818cf8] hover:translate-x-1"
+                >
                   {item.name}
                 </Link>
               ))}
@@ -262,21 +172,16 @@ export default function Footer() {
 
           {/* Company Column */}
           <div>
-            <h3
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: "1rem",
-                color: "var(--text-primary)",
-                marginBottom: "20px",
-                letterSpacing: "-0.01em",
-              }}
-            >
+            <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
               Company
             </h3>
-            <nav>
+            <nav className="flex flex-col">
               {footerCompany.map((item) => (
-                <Link key={item.href} href={item.href} className="footer-link">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center text-[#64748b] text-[0.9rem] no-underline mb-3 transition-all duration-200 hover:text-[#818cf8] hover:translate-x-1"
+                >
                   {item.name}
                 </Link>
               ))}
@@ -285,47 +190,27 @@ export default function Footer() {
 
           {/* Legal Column */}
           <div>
-            <h3
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: "1rem",
-                color: "var(--text-primary)",
-                marginBottom: "20px",
-                letterSpacing: "-0.01em",
-              }}
-            >
+            <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
               Legal
             </h3>
-            <nav>
+            <nav className="flex flex-col">
               {footerLegal.map((item) => (
-                <Link key={item.href} href={item.href} className="footer-link">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center text-[#64748b] text-[0.9rem] no-underline mb-3 transition-all duration-200 hover:text-[#818cf8] hover:translate-x-1"
+                >
                   {item.name}
                 </Link>
               ))}
             </nav>
 
             {/* Trust Badges */}
-            <div
-              style={{
-                marginTop: "28px",
-                padding: "16px",
-                background: "rgba(99,102,241,0.08)",
-                border: "1px solid rgba(99,102,241,0.15)",
-                borderRadius: "12px",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--primary-light)",
-                  fontWeight: 600,
-                  marginBottom: "6px",
-                }}
-              >
+            <div className="mt-7 padding-4 bg-indigo-500/8 border border-indigo-500/15 rounded-xl p-4">
+              <p className="text-[0.75rem] text-[#818cf8] font-semibold mb-1.5">
                 🔒 100% Secure
               </p>
-              <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
+              <p className="text-[0.75rem] text-[#64748b] leading-[1.5]">
                 All processing happens in your browser. We never store or
                 upload your images.
               </p>
@@ -334,47 +219,29 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="gradient-divider" />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
 
         {/* Bottom Bar */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "24px 0",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}
-        >
-          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
+        <div className="flex items-center justify-between py-6 gap-4 flex-wrap">
+          <p className="text-[#64748b] text-[0.85rem]">
             © {currentYear} ImageToolkit. All rights reserved.
           </p>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
+          <p className="text-[#64748b] text-[0.85rem]">
             Made with ❤️ for creators worldwide
           </p>
-          <div style={{ display: "flex", gap: "20px" }}>
+          <div className="flex gap-5">
             {footerLegal.slice(0, 2).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                style={{
-                  color: "var(--text-muted)",
-                  fontSize: "0.825rem",
-                  textDecoration: "none",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-light)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+                className="text-[#64748b] text-[0.825rem] no-underline transition-colors duration-200 hover:text-[#818cf8]"
               >
                 {item.name}
               </Link>
             ))}
           </div>
         </div>
-      </div>
-
-
+      </Container>
     </footer>
   );
 }

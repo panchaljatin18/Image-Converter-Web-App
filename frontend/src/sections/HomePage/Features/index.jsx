@@ -1,4 +1,6 @@
 import { Shield, Zap, Globe, Download, Star, Clock } from "lucide-react";
+import Container from "@/components/Container";
+import Card from "@/components/Card";
 
 const features = [
   { icon: <Shield size={24} />, title: "100% Private & Secure", description: "All processing happens directly in your browser. Your files never leave your device — zero server uploads, zero data collection.", color: "#10b981" },
@@ -11,36 +13,36 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="section" style={{ background: "var(--bg-primary)" }}>
-      <div className="container">
-        <div className="section-header">
-          <span className="badge">
+    <section className="py-16 md:py-24 relative overflow-hidden bg-[#0f0f1a]">
+      <Container>
+        <div className="text-center max-w-[650px] mx-auto mb-14">
+          <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <Star size={12} />
             Why ImageToolkit
           </span>
-          <h2 className="heading-lg">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
             Built for{" "}
-            <span className="text-gradient">Speed, Privacy & Quality</span>
+            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Speed, Privacy & Quality</span>
           </h2>
-          <p>
+          <p className="text-[#94a3b8] text-[1.1rem] leading-[1.7]">
             No other online image tool matches our combination of browser-based processing, zero data storage, and professional output quality.
           </p>
         </div>
 
-        <div className="features-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {features.map((feature, i) => (
-            <div key={i} className="card" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <Card key={i} className="flex flex-col gap-4">
               <div style={{ width: "52px", height: "52px", borderRadius: "13px", background: `${feature.color}18`, border: `1px solid ${feature.color}33`, display: "flex", alignItems: "center", justifyContent: "center", color: feature.color, flexShrink: 0 }}>
                 {feature.icon}
               </div>
               <div>
-                <h3 className="heading-sm" style={{ marginBottom: "8px" }}>{feature.title}</h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.65 }}>{feature.description}</p>
+                <h3 className="text-xl font-semibold leading-snug mb-2 text-[#f8fafc]">{feature.title}</h3>
+                <p className="text-[#94a3b8] text-[0.9rem] leading-relaxed">{feature.description}</p>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import ContactForm from "../ContactForm";
 import { Mail, Clock, MessageCircle } from "lucide-react";
+import Container from "@/components/Container";
 
 const TwitterIcon = ({ size = 20, className }) => (
   <svg
@@ -28,31 +29,43 @@ const contactInfo = [
 
 export default function ContactContent() {
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "48px", alignItems: "start" }} className="contact-grid">
+    <Container className="py-16">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-12 items-start">
         {/* Info Column */}
         <div>
-          <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.4rem", marginBottom: "8px" }}>
+          <h2 className="font-['Outfit'] font-bold text-[1.4rem] mb-2 text-[#f8fafc]">
             Contact Information
           </h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "32px" }}>
+          <p className="text-[#94a3b8] text-[0.9rem] leading-relaxed mb-8">
             Choose your preferred way to reach us. We typically respond within one business day.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "36px" }}>
+          <div className="flex flex-col gap-3.5 mb-9">
             {contactInfo.map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "14px", padding: "16px 18px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${item.color}18`, border: `1px solid ${item.color}30`, display: "flex", alignItems: "center", justifyContent: "center", color: item.color, flexShrink: 0 }}>
+              <div key={i} className="flex items-center gap-3.5 p-4 bg-[#1a1a2e] border border-white/8 rounded-2xl">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border"
+                  style={{ 
+                    background: `${item.color}18`, 
+                    borderColor: `${item.color}30`, 
+                    color: item.color 
+                  }}
+                >
                   {item.icon}
                 </div>
                 <div>
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "2px" }}>{item.label}</p>
+                  <p className="text-[0.75rem] text-[#64748b] font-semibold uppercase tracking-wider mb-0.5">{item.label}</p>
                   {item.href ? (
-                    <a href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)", textDecoration: "none" }}>
+                    <a 
+                      href={item.href} 
+                      target={item.href.startsWith("http") ? "_blank" : undefined} 
+                      rel="noopener noreferrer" 
+                      className="text-[0.9rem] font-semibold text-[#f8fafc] no-underline hover:text-[#818cf8] transition-colors duration-200"
+                    >
                       {item.value}
                     </a>
                   ) : (
-                    <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)" }}>{item.value}</p>
+                    <p className="text-[0.9rem] font-semibold text-[#f8fafc]">{item.value}</p>
                   )}
                 </div>
               </div>
@@ -60,24 +73,24 @@ export default function ContactContent() {
           </div>
 
           {/* Privacy note */}
-          <div style={{ padding: "16px 18px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px" }}>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
-              🔒 <strong style={{ color: "var(--primary-light)" }}>Your privacy matters.</strong> We only use your contact information to respond to your message. We never share your data with third parties.
+          <div className="p-4 bg-indigo-500/7 border border-indigo-500/15 rounded-xl">
+            <p className="text-[0.8rem] text-[#64748b] leading-relaxed">
+              🔒 <strong className="text-[#818cf8]">Your privacy matters.</strong> We only use your contact information to respond to your message. We never share your data with third parties.
             </p>
           </div>
         </div>
 
         {/* Form Column */}
-        <div style={{ padding: "36px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "24px" }}>
-          <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.25rem", marginBottom: "4px" }}>
+        <div className="p-9 bg-[#1a1a2e] border border-white/8 rounded-3xl">
+          <h2 className="font-['Outfit'] font-bold text-[1.25rem] mb-1 text-[#f8fafc]">
             Send a Message
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "28px" }}>
+          <p className="text-[#64748b] text-[0.875rem] mb-7">
             Fill in the form and we&apos;ll get back to you within 24 hours.
           </p>
           <ContactForm />
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

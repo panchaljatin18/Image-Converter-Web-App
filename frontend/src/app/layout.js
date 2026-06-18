@@ -104,7 +104,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
         <NextAuthProvider>
           <AuthProvider>
             <Navbar />

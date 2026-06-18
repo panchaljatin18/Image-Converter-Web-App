@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
+import Button from "@/components/Button";
 
 const OUTPUT_FORMATS = [
   { value: "webp", label: "To WebP", mime: "image/webp", ext: ".webp" },
@@ -104,7 +105,7 @@ export default function WebPConverterTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -125,56 +126,26 @@ export default function WebPConverterTool() {
           />
 
           {file && (
-            <div style={{ marginTop: "24px" }}>
-              <div
-                style={{
-                  padding: "24px",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-light)",
-                  borderRadius: "16px",
-                  marginBottom: "20px",
-                }}
-              >
-                <h3
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    fontWeight: 700,
-                    fontSize: "1rem",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <Sliders size={16} color="var(--primary)" />
+            <div className="mt-6">
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="flex items-center gap-2 font-bold text-[1rem] mb-5 text-[#f8fafc]">
+                  <Sliders size={16} className="text-[#6366f1]" />
                   Conversion Settings
                 </h3>
 
                 {/* Format Selector */}
-                <div style={{ marginBottom: "20px" }}>
-                  <label className="form-label">Output Format</label>
-                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <div className="mb-5">
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2.5">Output Format</label>
+                  <div className="flex gap-2.5 flex-wrap">
                     {OUTPUT_FORMATS.map((fmt) => (
                       <button
                         key={fmt.value}
                         onClick={() => setOutputFormat(fmt.value)}
-                        style={{
-                          padding: "10px 20px",
-                          borderRadius: "10px",
-                          border: outputFormat === fmt.value
-                            ? "2px solid var(--primary)"
-                            : "1px solid var(--border-light)",
-                          background: outputFormat === fmt.value
-                            ? "rgba(99,102,241,0.15)"
-                            : "transparent",
-                          color: outputFormat === fmt.value
-                            ? "var(--primary-light)"
-                            : "var(--text-secondary)",
-                          fontWeight: 600,
-                          fontSize: "0.875rem",
-                          cursor: "pointer",
-                          fontFamily: "Inter, sans-serif",
-                          transition: "all 0.2s ease",
-                        }}
+                        className={`py-2.5 px-5 rounded-lg border text-[0.875rem] font-semibold cursor-pointer font-['Inter'] transition-all duration-200 ${
+                          outputFormat === fmt.value
+                            ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                            : "border-white/8 bg-transparent text-[#94a3b8]"
+                        }`}
                       >
                         {fmt.label}
                       </button>
@@ -184,9 +155,9 @@ export default function WebPConverterTool() {
 
                 {/* Quality */}
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                    <label className="form-label" style={{ margin: 0 }}>Quality</label>
-                    <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Quality</label>
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {quality}%
                     </span>
                   </div>
@@ -196,6 +167,7 @@ export default function WebPConverterTool() {
                     max="100"
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                     aria-label="Output quality"
                   />
                 </div>
@@ -204,56 +176,47 @@ export default function WebPConverterTool() {
               {!collapseUploadAfterSelection && (
                 <>
                   {converting && (
-                    <div style={{ marginBottom: "20px" }}>
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>
+                    <div className="mb-5">
+                      <p className="text-[0.85rem] text-[#64748b] mb-2">
                         Converting... {progress}%
                       </p>
-                      <div className="progress-bar">
-                        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-300" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   )}
 
-                  <button
+                  <Button
                     onClick={handleConvert}
                     disabled={converting}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: "100%", justifyContent: "center" }}
+                    variant="primary"
+                    size="lg"
+                    className="w-full justify-center"
                   >
                     {converting ? (
-                      <><RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} /> Converting...</>
+                      <><RefreshCw size={18} className="animate-spin" /> Converting...</>
                     ) : (
                       <><RefreshCw size={18} /> Convert Image</>
                     )}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">
                 Conversion Successful! ({result.format})
               </p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.width}×{result.height}px
                 {Number(result.savings) > 0 && (
-                  <span style={{ color: "#34d399", marginLeft: "8px" }}>
+                  <span className="text-[#34d399] ml-2">
                     ↓ {result.savings}% smaller
                   </span>
                 )}
@@ -261,29 +224,23 @@ export default function WebPConverterTool() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="flex gap-3">
             <a
               href={result.url}
               download={result.name}
-              className="btn btn-primary btn-lg"
-              style={{ flex: 1, justifyContent: "center" }}
+              className="flex-1 no-underline"
             >
-              <Download size={18} />
-              Download {selectedFormat?.ext.replace(".", "").toUpperCase()}
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download {selectedFormat?.ext.replace(".", "").toUpperCase()}
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">
+            <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
-            </button>
+            </Button>
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

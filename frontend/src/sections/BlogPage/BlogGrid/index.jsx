@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
+import Container from "@/components/Container";
+import Button from "@/components/Button";
 
 const posts = [
   {
@@ -75,65 +77,54 @@ export default function BlogGrid() {
   const [featured, ...rest] = posts;
 
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
+    <Container className="py-16">
       {/* Featured Post */}
-      <div
-        style={{
-          padding: "40px",
-          background: "linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(6,182,212,0.05) 100%)",
-          border: "1px solid rgba(99,102,241,0.2)",
-          borderRadius: "24px",
-          marginBottom: "48px",
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          gap: "32px",
-          alignItems: "center",
-        }}
-        className="featured-post"
-      >
+      <div className="p-10 bg-gradient-to-br from-indigo-500/10 to-cyan-500/5 border border-indigo-500/20 rounded-3xl mb-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
         <div>
-          <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
-            <span className="tag">Featured</span>
-            <span className="tag cyan">{featured.category}</span>
-            <span style={{ color: "var(--text-muted)", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "4px" }}>
+          <div className="flex gap-2.5 mb-4 flex-wrap">
+            <span className="inline-flex items-center py-1 px-2.5 rounded-full text-[0.75rem] font-semibold bg-indigo-500/12 text-[#818cf8] border border-indigo-500/25">Featured</span>
+            <span className="inline-flex items-center py-1 px-2.5 rounded-full text-[0.75rem] font-semibold bg-cyan-500/12 text-cyan-300 border border-cyan-500/25">{featured.category}</span>
+            <span className="text-[#64748b] text-[0.8rem] flex items-center gap-1">
               <Clock size={12} /> {featured.readTime}
             </span>
-            <span style={{ color: "var(--text-muted)", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "4px" }}>
+            <span className="text-[#64748b] text-[0.8rem] flex items-center gap-1">
               <Calendar size={12} /> {featured.date}
             </span>
           </div>
-          <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 2rem)", lineHeight: 1.3, marginBottom: "14px" }}>
+          <h2 className="font-['Outfit'] font-extrabold text-2xl md:text-3xl lg:text-4xl leading-tight mb-3.5 text-[#f8fafc]">
             {featured.title}
           </h2>
-          <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px", fontSize: "1rem" }}>
+          <p className="text-[#94a3b8] leading-relaxed mb-6 text-base">
             {featured.excerpt}
           </p>
-          <Link href={`/blog/${featured.slug}`} className="btn btn-primary">
-            Read Article
-            <ArrowRight size={16} />
+          <Link href={`/blog/${featured.slug}`} className="no-underline inline-block">
+            <Button variant="primary">
+              Read Article
+              <ArrowRight size={16} />
+            </Button>
           </Link>
         </div>
-        <div style={{ fontSize: "6rem", opacity: 0.8 }} className="featured-emoji">
+        <div className="hidden md:block text-[6rem] opacity-80 select-none">
           {featured.emoji}
         </div>
       </div>
 
       {/* Post Grid */}
-      <h2 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.25rem", marginBottom: "24px" }}>
+      <h2 className="font-['Outfit'] font-bold text-xl mb-6 text-[#f8fafc]">
         Latest Articles
       </h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {rest.map((post) => (
-          <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-            <article className="blog-card">
+          <Link key={post.slug} href={`/blog/${post.slug}`} className="no-underline">
+            <article className="bg-[#1a1a2e] border border-white/8 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col hover:border-indigo-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgba(99,102,241,0.15)] group">
               <div
-                className="blog-card-img"
+                className="w-full h-[200px] flex items-center justify-center text-[3rem]"
                 style={{ background: `linear-gradient(135deg, ${post.color}20, ${post.color}08)` }}
               >
                 {post.emoji}
               </div>
-              <div className="blog-card-body">
-                <div className="blog-card-meta">
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="flex items-center gap-3 mb-3 text-[0.8rem] text-[#64748b]">
                   <span
                     style={{
                       padding: "2px 8px",
@@ -147,23 +138,27 @@ export default function BlogGrid() {
                   >
                     {post.category}
                   </span>
-                  <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <span className="flex items-center gap-1">
                     <Clock size={11} /> {post.readTime}
                   </span>
-                  <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <span className="flex items-center gap-1">
                     <Calendar size={11} /> {post.date}
                   </span>
                 </div>
-                <h3 className="blog-card-title">{post.title}</h3>
-                <p className="blog-card-excerpt">{post.excerpt}</p>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: post.color, fontSize: "0.85rem", fontWeight: 600 }}>
-                  Read More <ArrowRight size={14} />
+                <h3 className="text-[1.1rem] font-bold leading-snug mb-2.5 font-['Outfit'] text-[#f8fafc]">{post.title}</h3>
+                <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed flex-1 mb-4">{post.excerpt}</p>
+                <div
+                  className="flex items-center gap-1.5 text-[0.85rem] font-semibold"
+                  style={{ color: post.color }}
+                >
+                  Read More
+                  <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
               </div>
             </article>
           </Link>
         ))}
       </div>
-    </div>
+    </Container>
   );
 }

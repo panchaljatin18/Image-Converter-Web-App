@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import Container from "@/components/Container";
+import Card from "@/components/Card";
 
 const categories = [
   {
@@ -97,80 +99,59 @@ const categories = [
 
 export default function ToolsCategoryList() {
   return (
-    <div className="container" style={{ padding: "64px 24px" }}>
+    <Container className="py-16">
       {categories.map((cat, ci) => (
-        <div key={ci} style={{ marginBottom: "64px" }}>
-          <div style={{ marginBottom: "28px" }}>
-            <h2
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: "1.5rem",
-                color: "var(--text-primary)",
-                marginBottom: "6px",
-              }}
-            >
+        <div key={ci} className="mb-16">
+          <div className="mb-7">
+            <h2 className="font-['Outfit'] font-bold text-2xl text-[#f8fafc] mb-1.5">
               {cat.name}
             </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>{cat.description}</p>
+            <p className="text-[#64748b] text-[0.9rem]">{cat.description}</p>
           </div>
 
-          <div className="tools-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cat.tools.map((tool) => (
-              <Link key={tool.href} href={tool.href} style={{ textDecoration: "none" }}>
-                <div className="card" style={{ cursor: "pointer" }}>
+              <Link key={tool.href} href={tool.href} className="no-underline">
+                <Card className="cursor-pointer group relative">
                   {tool.tag && (
                     <span
-                      style={{
-                        position: "absolute",
-                        top: "16px",
-                        right: "16px",
-                        padding: "3px 10px",
-                        borderRadius: "100px",
-                        fontSize: "0.7rem",
-                        fontWeight: 700,
-                        letterSpacing: "0.06em",
-                        background: tool.tag === "New" ? "rgba(16,185,129,0.15)" : "rgba(99,102,241,0.15)",
-                        color: tool.tag === "New" ? "#34d399" : "var(--primary-light)",
-                        border: `1px solid ${tool.tag === "New" ? "rgba(16,185,129,0.3)" : "rgba(99,102,241,0.3)"}`,
-                      }}
+                      className={`absolute top-4 right-4 py-1 px-2.5 rounded-full text-[0.7rem] font-bold tracking-wider border ${
+                        tool.tag === "New"
+                          ? "bg-emerald-500/15 text-[#34d399] border-emerald-500/30"
+                          : "bg-indigo-500/15 text-[#818cf8] border-indigo-500/30"
+                      }`}
                     >
                       {tool.tag}
                     </span>
                   )}
                   <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl mb-4.5 transition-all duration-300 group-hover:scale-108 group-hover:-rotate-3"
                     style={{
-                      width: "56px",
-                      height: "56px",
-                      borderRadius: "14px",
                       background: tool.gradient,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "24px",
-                      marginBottom: "18px",
                       boxShadow: `0 8px 24px ${tool.color}33`,
-                      transition: "all 0.3s ease",
                     }}
                   >
                     {tool.icon}
                   </div>
-                  <h3 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.05rem", marginBottom: "8px" }}>
+                  <h3 className="font-['Outfit'] font-bold text-[1.05rem] mb-2 text-[#f8fafc]">
                     {tool.name}
                   </h3>
-                  <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "18px" }}>
+                  <p className="text-[#64748b] text-[0.875rem] leading-relaxed mb-4.5">
                     {tool.desc}
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: tool.color, fontSize: "0.85rem", fontWeight: 600 }}>
+                  <div
+                    className="flex items-center gap-1.5 text-[0.85rem] font-semibold"
+                    style={{ color: tool.color }}
+                  >
                     Open Tool
-                    <ArrowRight size={14} />
+                    <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
                   </div>
-                </div>
+                </Card>
               </Link>
             ))}
           </div>
         </div>
       ))}
-    </div>
+    </Container>
   );
 }

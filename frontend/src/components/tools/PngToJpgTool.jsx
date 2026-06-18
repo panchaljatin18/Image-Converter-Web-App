@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
+import Button from "@/components/Button";
 
 export default function PngToJpgTool() {
   const [file, setFile] = useState(null);
@@ -90,7 +91,7 @@ export default function PngToJpgTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -111,50 +112,20 @@ export default function PngToJpgTool() {
           />
 
           {file && (
-            <div style={{ marginTop: "24px" }}>
+            <div className="mt-6">
               {/* Settings */}
-              <div
-                style={{
-                  padding: "24px",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-light)",
-                  borderRadius: "16px",
-                  marginBottom: "20px",
-                }}
-              >
-                <h3
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    fontWeight: 700,
-                    fontSize: "1rem",
-                    marginBottom: "20px",
-                    color: "var(--text-primary)",
-                  }}
-                >
-                  <Sliders size={16} color="var(--primary)" />
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="flex items-center gap-2 font-bold text-[1rem] mb-5 text-[#f8fafc]">
+                  <Sliders size={16} className="text-[#6366f1]" />
                   Conversion Settings
                 </h3>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <label className="form-label" style={{ margin: 0 }}>
+                <div className="mb-5">
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">
                       JPEG Quality
                     </label>
-                    <span
-                      style={{
-                        fontWeight: 700,
-                        color: "var(--primary-light)",
-                        fontSize: "0.9rem",
-                      }}
-                    >
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {quality}%
                     </span>
                   </div>
@@ -164,41 +135,26 @@ export default function PngToJpgTool() {
                     max="100"
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                     aria-label="JPEG quality"
                   />
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "0.75rem",
-                      color: "var(--text-muted)",
-                      marginTop: "4px",
-                    }}
-                  >
+                  <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>Small file</span>
                     <span>Best quality</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="form-label">Background Color</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Background Color</label>
+                  <div className="flex items-center gap-3">
                     <input
                       type="color"
                       value={bgColor}
                       onChange={(e) => setBgColor(e.target.value)}
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "10px",
-                        border: "1px solid var(--border-light)",
-                        cursor: "pointer",
-                        background: "none",
-                        padding: "2px",
-                      }}
+                      className="w-11 h-11 rounded-lg border border-white/8 cursor-pointer bg-transparent p-0.5"
                       aria-label="Background color picker"
                     />
-                    <span style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
+                    <span className="text-[0.875rem] text-[#64748b]">
                       Fills transparent areas (PNG transparency → solid color)
                     </span>
                   </div>
@@ -208,56 +164,47 @@ export default function PngToJpgTool() {
               {!collapseUploadAfterSelection && (
                 <>
                   {converting && (
-                    <div style={{ marginBottom: "20px" }}>
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>
+                    <div className="mb-5">
+                      <p className="text-[0.85rem] text-[#64748b] mb-2">
                         Converting... {progress}%
                       </p>
-                      <div className="progress-bar">
-                        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-300" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   )}
 
-                  <button
+                  <Button
                     onClick={handleConvert}
                     disabled={converting}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: "100%", justifyContent: "center" }}
+                    variant="primary"
+                    size="lg"
+                    className="w-full justify-center"
                   >
                     {converting ? (
-                      <><RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} /> Converting...</>
+                      <><RefreshCw size={18} className="animate-spin" /> Converting...</>
                     ) : (
                       <><RefreshCw size={18} /> Convert to JPG</>
                     )}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">
                 Conversion Successful!
               </p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.width}×{result.height}px
                 {Number(result.savings) > 0 && (
-                  <span style={{ color: "#34d399", marginLeft: "8px" }}>
+                  <span className="text-[#34d399] ml-2">
                     ↓ {result.savings}% smaller
                   </span>
                 )}
@@ -265,29 +212,23 @@ export default function PngToJpgTool() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="flex gap-3">
             <a
               href={result.url}
               download={result.name}
-              className="btn btn-primary btn-lg"
-              style={{ flex: 1, justifyContent: "center" }}
+              className="flex-1 no-underline"
             >
-              <Download size={18} />
-              Download JPG
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download JPG
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">
+            <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
-            </button>
+            </Button>
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

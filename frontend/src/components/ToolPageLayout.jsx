@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Shield, Zap, Star } from "lucide-react";
+import Container from "@/components/Container";
 
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
@@ -17,99 +18,48 @@ export default function ToolPageLayout({
   relatedTools = [],
 }) {
   return (
-    <div style={{ paddingTop: "80px", minHeight: "100vh" }}>
+    <div className="pt-20 min-h-screen">
       {/* Header */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #0f0f1a 0%, #13131f 100%)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          padding: "48px 0 40px",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-12 relative overflow-hidden">
         {/* BG Orb */}
         <div
+          className="absolute -top-[100px] -right-[100px] w-[400px] h-[400px] rounded-full blur-[80px] pointer-events-none"
           style={{
-            position: "absolute",
-            top: "-100px",
-            right: "-100px",
-            width: "400px",
-            height: "400px",
             background: `${color}10`,
-            borderRadius: "50%",
-            filter: "blur(80px)",
-            pointerEvents: "none",
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 1 }}>
+        <Container className="relative z-[1]">
           {/* Back Link */}
-          <Link href="/tools" className="back-link">
+          <Link href="/tools" className="inline-flex items-center gap-1.5 text-[#64748b] no-underline text-[0.875rem] mb-6 transition-colors duration-200 hover:text-[#818cf8]">
             <ArrowLeft size={14} />
             All Tools
           </Link>
 
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "20px" }}>
+          <div className="flex items-start gap-5">
             <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-[28px] shrink-0"
               style={{
-                width: "64px",
-                height: "64px",
-                borderRadius: "16px",
                 background: gradient,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "28px",
-                flexShrink: 0,
                 boxShadow: `0 8px 32px ${color}40`,
               }}
             >
               {icon}
             </div>
-            <div style={{ flex: 1 }}>
-              <h1
-                style={{
-                  fontFamily: "Outfit, sans-serif",
-                  fontWeight: 800,
-                  fontSize: "clamp(1.6rem, 4vw, 2.5rem)",
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.2,
-                  marginBottom: "10px",
-                }}
-              >
+            <div className="flex-1">
+              <h1 className="font-['Outfit'] font-extrabold text-2xl md:text-4xl text-[#f8fafc] tracking-tight leading-tight mb-2.5">
                 {title}
               </h1>
-              <p
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "1rem",
-                  lineHeight: 1.6,
-                  maxWidth: "560px",
-                  marginBottom: "20px",
-                }}
-              >
+              <p className="text-[#94a3b8] text-base leading-relaxed max-w-[560px] mb-5">
                 {description}
               </p>
 
               {/* Trust Badges */}
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <div className="flex gap-2.5 flex-wrap">
                 {trustBadges.map((badge) => (
                   <div
                     key={badge.text}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "5px 12px",
-                      borderRadius: "100px",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "var(--text-secondary)",
-                    }}
+                    className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-[0.75rem] font-semibold bg-white/6 border border-white/10 text-[#94a3b8]"
                   >
                     <span style={{ color }}>{badge.icon}</span>
                     {badge.text}
@@ -118,54 +68,34 @@ export default function ToolPageLayout({
               </div>
             </div>
           </div>
-        </div>
+        </Container>
       </div>
 
       {/* Tool Content */}
-      <div className="container" style={{ padding: "48px 24px" }}>
+      <Container className="py-12">
         {children}
-      </div>
+      </Container>
 
       {/* Related Tools */}
       {relatedTools.length > 0 && (
-        <div
-          style={{
-            background: "var(--bg-secondary)",
-            borderTop: "1px solid var(--border-light)",
-            padding: "48px 0",
-          }}
-        >
-          <div className="container">
-            <h2
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: "1.25rem",
-                color: "var(--text-primary)",
-                marginBottom: "24px",
-              }}
-            >
+        <div className="bg-[#13131f] border-t border-white/8 py-12">
+          <Container>
+            <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
               Related Tools
             </h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                gap: "16px",
-              }}
-            >
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {relatedTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="related-tool-link"
+                  className="flex items-center gap-3 py-3.5 px-4 bg-[#1a1a2e] border border-white/8 rounded-xl no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:border-indigo-500 hover:text-[#f8fafc] hover:-translate-y-0.5"
                 >
-                  <span style={{ fontSize: "1.2rem" }}>{tool.icon}</span>
+                  <span className="text-[1.2rem]">{tool.icon}</span>
                   {tool.name}
                 </Link>
               ))}
             </div>
-          </div>
+          </Container>
         </div>
       )}
     </div>

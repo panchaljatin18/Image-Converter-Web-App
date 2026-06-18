@@ -10,40 +10,45 @@ import dropboxService from "../services/dropboxService";
 import OneDrivePicker from "./OneDrivePicker";
 import onedriveService from "../services/onedriveService";
 import authService from "../services/authService";
+import Button from "./Button";
 
 const googleDriveIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-2.5 shrink-0">
+    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
+    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
+    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
   </svg>
 );
 
 const dropboxIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-2.5 shrink-0">
+    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
   </svg>
 );
 
 const onedriveIcon = (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
-    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.8"/>
+  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-2.5 shrink-0">
+    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
   </svg>
 );
 
 const googleDriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
+    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
+    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
   </svg>
 );
 
 const dropboxIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
   </svg>
 );
 
 const onedriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
   </svg>
 );
 
@@ -75,17 +80,14 @@ export default function ToolUploader({
 
   // Google Drive Backend states
   const [isDriveConnected, setIsDriveConnected] = useState(false);
-  const [driveEmail, setDriveEmail] = useState("");
   const [checkingDrive, setCheckingDrive] = useState(false);
 
   // Dropbox Backend states
   const [isDropboxConnected, setIsDropboxConnected] = useState(false);
-  const [dropboxEmail, setDropboxEmail] = useState("");
   const [checkingDropbox, setCheckingDropbox] = useState(false);
 
   // OneDrive Backend states
   const [isOneDriveConnected, setIsOneDriveConnected] = useState(false);
-  const [onedriveEmail, setOnedriveEmail] = useState("");
   const [checkingOneDrive, setCheckingOneDrive] = useState(false);
 
   const getEffectiveToken = () => {
@@ -97,7 +99,6 @@ export default function ToolUploader({
       const token = getEffectiveToken();
       if (!token) {
         setIsDriveConnected(false);
-        setDriveEmail("");
         return;
       }
 
@@ -106,7 +107,6 @@ export default function ToolUploader({
         .then((data) => {
           if (data.success) {
             setIsDriveConnected(data.connected);
-            setDriveEmail(data.email || "");
           }
         })
         .catch((err) => {
@@ -124,7 +124,6 @@ export default function ToolUploader({
       const token = getEffectiveToken();
       if (!token) {
         setIsDropboxConnected(false);
-        setDropboxEmail("");
         return;
       }
 
@@ -133,7 +132,6 @@ export default function ToolUploader({
         .then((data) => {
           if (data.success) {
             setIsDropboxConnected(data.connected);
-            setDropboxEmail(data.email || "");
           }
         })
         .catch((err) => {
@@ -151,7 +149,6 @@ export default function ToolUploader({
       const token = getEffectiveToken();
       if (!token) {
         setIsOneDriveConnected(false);
-        setOnedriveEmail("");
         return;
       }
 
@@ -160,7 +157,6 @@ export default function ToolUploader({
         .then((data) => {
           if (data.success) {
             setIsOneDriveConnected(data.connected);
-            setOnedriveEmail(data.email || "");
           }
         })
         .catch((err) => {
@@ -173,29 +169,11 @@ export default function ToolUploader({
     }
   }, [cloudProvider, session]);
 
-
-  const wrapperMaxWidth = compact ? "760px" : "860px";
-  const uploadPadding = compact ? "40px 24px" : "56px 32px";
-  const uploadRadius = compact ? "28px" : "32px";
-  const iconBoxSize = compact ? "60px" : "72px";
-  const iconSize = compact ? 26 : 30;
-  const titleSize = compact ? "1.12rem" : "1.25rem";
-  const subtitleSize = compact ? "0.86rem" : "0.9rem";
-  const tagGap = compact ? "6px" : "8px";
-  const uploadBorder = isDragging ? "rgba(99,102,241,0.95)" : "rgba(99,102,241,0.34)";
-  const uploadShadow = isDragging ? "0 24px 80px rgba(99,102,241,0.18)" : "0 18px 60px rgba(0,0,0,0.18)";
-  const uploadBackground = isDragging
-    ? "linear-gradient(180deg, rgba(99,102,241,0.12) 0%, rgba(6,182,212,0.05) 100%)"
-    : "linear-gradient(180deg, rgba(99,102,241,0.06) 0%, rgba(6,182,212,0.02) 100%)";
   const hasSelection = previews.length > 0;
   const shouldCollapse = collapseOnSelect && hasSelection && !isDragging;
-  const compactPadding = compact ? "18px 20px" : "22px 24px";
-  const compactRadius = compact ? "22px" : "26px";
-  const compactBackground = "linear-gradient(180deg, rgba(99,102,241,0.08) 0%, rgba(6,182,212,0.03) 100%)";
-  const compactBorder = isDragging ? "rgba(99,102,241,0.95)" : "rgba(99,102,241,0.26)";
-  const compactShadow = isDragging ? "0 18px 50px rgba(99,102,241,0.18)" : "0 14px 36px rgba(0,0,0,0.16)";
   const derivedState = activity?.state || (previews.length > 0 ? "ready" : "idle");
   const PrimaryActionIcon = primaryAction?.icon;
+  const iconSize = compact ? 26 : 30;
   const status = {
     ready: {
       label: activity?.label || `${previews.length} file${previews.length > 1 ? "s" : ""} selected`,
@@ -212,7 +190,7 @@ export default function ToolUploader({
         (typeof activity?.progress === "number" ? `${activity.progress}% complete` : "Working on your file"),
       accent: "rgba(99,102,241,0.16)",
       border: "rgba(99,102,241,0.24)",
-      text: "var(--primary-light)",
+      text: "#818cf8",
       icon: RefreshCw,
     },
     complete: {
@@ -327,7 +305,7 @@ export default function ToolUploader({
     } finally {
       setIsLoadingUrl(false);
     }
-  }, [handleFiles]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleFiles]);
 
   const handleDrop = useCallback(
     (e) => {
@@ -359,9 +337,8 @@ export default function ToolUploader({
   };
 
   return (
-    <div style={{ maxWidth: wrapperMaxWidth, margin: "0 auto" }}>
+    <div className={`mx-auto ${compact ? "max-w-[760px]" : "max-w-[860px]"}`}>
       <div
-        className={`upload-zone ${isDragging ? "drag-over" : ""}`}
         onClick={() => {
           if (uploadMethod === "file") {
             openPicker();
@@ -383,17 +360,19 @@ export default function ToolUploader({
             }
           }
         }}
-        style={{
-          cursor: "pointer",
-          padding: shouldCollapse ? compactPadding : uploadPadding,
-          borderRadius: shouldCollapse ? compactRadius : uploadRadius,
-          background: shouldCollapse ? compactBackground : uploadBackground,
-          borderColor: shouldCollapse ? compactBorder : uploadBorder,
-          boxShadow: shouldCollapse ? compactShadow : uploadShadow,
-          transform: isDragging ? "translateY(-2px) scale(1.01)" : "translateY(0)",
-          transition: "all 0.3s ease",
-          overflow: "visible",
-        }}
+        className={`border-2 border-dashed overflow-visible cursor-pointer transition-all duration-300 ${
+          shouldCollapse
+            ? `${compact ? "py-4.5 px-5 rounded-[22px]" : "py-5.5 px-6 rounded-[26px]"} bg-gradient-to-b from-indigo-500/8 to-cyan-500/3 ${
+                isDragging
+                  ? "border-indigo-500 shadow-[0_18px_50px_rgba(99,102,241,0.18)] -translate-y-0.5 scale-[1.01]"
+                  : "border-indigo-500/26 shadow-[0_14px_36px_rgba(0,0,0,0.16)] translate-y-0"
+              }`
+            : `${compact ? "py-10 px-6 rounded-[28px]" : "py-14 px-8 rounded-[32px]"} ${
+                isDragging
+                  ? "border-indigo-500 bg-gradient-to-b from-indigo-500/12 to-cyan-500/5 shadow-[0_24px_80px_rgba(99,102,241,0.18)] -translate-y-0.5 scale-[1.01]"
+                  : "border-indigo-500/34 bg-gradient-to-b from-indigo-500/6 to-cyan-500/2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] translate-y-0"
+              }`
+        }`}
       >
         <input
           ref={inputRef}
@@ -405,184 +384,102 @@ export default function ToolUploader({
         />
 
         {shouldCollapse ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              position: "relative",
-              zIndex: 1,
-              width: "100%",
-              minWidth: 0,
-            }}
-          >
+          <div className="flex items-center gap-3 relative z-[1] w-full min-w-0">
             <div
-              style={{
-                width: compact ? "48px" : "56px",
-                height: compact ? "48px" : "56px",
-                borderRadius: "16px",
-                background: "linear-gradient(135deg, rgba(99,102,241,0.22), rgba(6,182,212,0.1))",
-                border: "1px solid rgba(99,102,241,0.28)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                color: isDragging ? "var(--primary-light)" : "var(--primary)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
-            }}
-          >
-            {derivedState === "processing" ? (
-              <RefreshCw
-                size={compact ? 22 : 24}
-                style={{ animation: "spin 1s linear infinite" }}
-              />
-            ) : (
-              <CheckCircle size={compact ? 22 : 24} />
-            )}
-          </div>
+              className={`rounded-2xl flex items-center justify-center shrink-0 border border-indigo-500/28 bg-gradient-to-br from-indigo-500/22 to-cyan-500/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${
+                compact ? "w-12 h-12" : "w-14 h-14"
+              } ${isDragging ? "text-[#818cf8]" : "text-[#6366f1]"}`}
+            >
+              {derivedState === "processing" ? (
+                <RefreshCw
+                  size={compact ? 22 : 24}
+                  className="animate-spin"
+                />
+              ) : (
+                <CheckCircle size={compact ? 22 : 24} />
+              )}
+            </div>
 
-          <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-            <p
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontWeight: 700,
-                fontSize: compact ? "0.98rem" : "1.05rem",
-                  color: "var(--text-primary)",
-                  marginBottom: "4px",
-                  lineHeight: 1.2,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
+            <div className="flex-1 min-w-0 text-left">
+              <p
+                className={`font-['Outfit'] font-bold text-[#f8fafc] mb-1 leading-tight overflow-hidden text-ellipsis whitespace-nowrap ${
+                  compact ? "text-[0.98rem]" : "text-[1.05rem]"
+                }`}
               >
                 {status?.label || title}
               </p>
-            <p style={{ color: "var(--text-muted)", fontSize: compact ? "0.82rem" : "0.86rem", lineHeight: 1.4 }}>
-              {status?.detail || subtitle}
-            </p>
+              <p className={`text-[#64748b] leading-normal ${compact ? "text-[0.82rem]" : "text-[0.86rem]"}`}>
+                {status?.detail || subtitle}
+              </p>
 
-            {derivedState === "processing" && typeof activity?.progress === "number" && (
-              <div style={{ marginTop: "10px" }}>
-                <div className="progress-bar" style={{ height: "5px", background: "rgba(255,255,255,0.08)" }}>
-                  <div
-                    className="progress-bar-fill"
-                    style={{
-                      width: `${Math.max(0, Math.min(100, activity.progress))}%`,
-                      transition: "width 0.25s ease",
-                    }}
-                  />
+              {derivedState === "processing" && typeof activity?.progress === "number" && (
+                <div className="mt-2.5">
+                  <div className="w-full h-[5px] bg-white/8 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full transition-all duration-250 animate-pulse"
+                      style={{
+                        width: `${Math.max(0, Math.min(100, activity.progress))}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {primaryAction ? (
+              <Button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!primaryAction.disabled && derivedState !== "processing") {
+                    primaryAction.onClick?.();
+                  }
+                }}
+                disabled={primaryAction.disabled || derivedState === "processing"}
+                variant="primary"
+                size="sm"
+                className="py-2.5 px-3.5 rounded-full shrink-0 min-w-[140px] justify-center text-[0.82rem]"
+              >
+                {derivedState === "processing" ? (
+                  <RefreshCw size={14} className="animate-spin" />
+                ) : PrimaryActionIcon ? (
+                  <PrimaryActionIcon size={14} />
+                ) : null}
+                {derivedState === "processing"
+                  ? primaryAction.loadingLabel || "Processing..."
+                  : primaryAction.label || "Convert"}
+              </Button>
+            ) : (
+              derivedState === "processing" && typeof activity?.progress === "number" && (
+                <span
+                  className="text-[0.75rem] font-bold uppercase tracking-widest whitespace-nowrap"
+                  style={{ color: status.text }}
+                >
+                  {activity.progress}%
+                </span>
+              )
             )}
           </div>
-
-          {primaryAction ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!primaryAction.disabled && derivedState !== "processing") {
-                  primaryAction.onClick?.();
-                }
-              }}
-              disabled={primaryAction.disabled || derivedState === "processing"}
-              className="btn btn-primary btn-sm"
-              style={{
-                padding: "10px 14px",
-                borderRadius: "999px",
-                flexShrink: 0,
-                minWidth: "140px",
-                justifyContent: "center",
-                fontSize: "0.82rem",
-              }}
-            >
-              {derivedState === "processing" ? (
-                <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
-              ) : PrimaryActionIcon ? (
-                <PrimaryActionIcon size={14} />
-              ) : null}
-              {derivedState === "processing"
-                ? primaryAction.loadingLabel || "Processing..."
-                : primaryAction.label || "Convert"}
-            </button>
-          ) : (
-            derivedState === "processing" && typeof activity?.progress === "number" && (
-              <span
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  color: status.text,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {activity.progress}%
-              </span>
-            )
-          )}
-          </div>
         ) : (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: compact ? "12px" : "16px",
-              position: "relative",
-              zIndex: 1,
-              maxWidth: "540px",
-              margin: "0 auto",
-              width: "100%",
-            }}
-          >
+          <div className={`flex flex-col items-center relative z-[1] max-w-[540px] mx-auto w-full ${compact ? "gap-3" : "gap-4"}`}>
             {derivedState === "idle" && uploadMethod === "url" ? (
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "16px",
-                  textAlign: "center",
-                  width: "100%",
-                  maxWidth: "420px",
-                  padding: "10px"
-                }}
+                className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-2.5"
               >
-                <div
-                  style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "18px",
-                    background: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(99,102,241,0.1))",
-                    border: "1px solid rgba(6,182,212,0.3)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--secondary)",
-                  }}
-                >
+                <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-cyan-500/20 to-indigo-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                   <Link2 size={28} />
                 </div>
                 
-                <div style={{ width: "100%" }}>
-                  <p
-                    style={{
-                      fontFamily: "Outfit, sans-serif",
-                      fontWeight: 700,
-                      fontSize: "1.18rem",
-                      color: "var(--text-primary)",
-                      marginBottom: "6px",
-                    }}
-                  >
+                <div className="w-full">
+                  <p className="font-['Outfit'] font-bold text-[1.18rem] text-[#f8fafc] mb-1.5">
                     Load image from URL
                   </p>
-                  <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", marginBottom: "14px" }}>
+                  <p className="text-[#64748b] text-[0.88rem] mb-3.5">
                     Enter the public direct link to an image file.
                   </p>
                   
-                  <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                  <div className="flex gap-2.5 w-full">
                     <input
                       type="url"
                       placeholder="https://example.com/image.jpg"
@@ -596,17 +493,17 @@ export default function ToolUploader({
                           handleUrlLoad(inputUrl);
                         }
                       }}
-                      className="form-input"
-                      style={{ flex: 1, textAlign: "center" }}
+                      className="flex-1 text-center w-full py-3 px-4 bg-white/5 border border-white/8 rounded-xl text-[#f8fafc] text-[0.95rem] font-['Inter'] outline-none transition-all duration-250 placeholder:text-[#64748b] focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
                     />
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
-                  <button
+                <div className="flex gap-3 w-full justify-center">
+                  <Button
                     type="button"
-                    className="btn btn-secondary btn-sm"
-                    style={{ minWidth: "90px", justifyContent: "center" }}
+                    variant="secondary"
+                    size="sm"
+                    className="min-w-[90px] justify-center"
                     onClick={() => {
                       setUploadMethod("file");
                       setInputUrl("");
@@ -614,132 +511,103 @@ export default function ToolUploader({
                     }}
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
-                    className="btn btn-primary btn-sm"
-                    style={{ minWidth: "110px", justifyContent: "center" }}
+                    variant="primary"
+                    size="sm"
+                    className="min-w-[110px] justify-center"
                     disabled={isLoadingUrl || !inputUrl}
                     onClick={() => handleUrlLoad(inputUrl)}
                   >
                     {isLoadingUrl ? (
                       <>
-                        <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
+                        <RefreshCw size={14} className="animate-spin" />
                         Loading...
                       </>
                     ) : (
                       "Load Image"
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : derivedState === "idle" && uploadMethod === "cloud" ? (
               (checkingDrive || checkingDropbox || checkingOneDrive) ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px" }} onClick={(e) => e.stopPropagation()}>
-                  <RefreshCw size={24} className="animate-spin" style={{ color: "var(--primary-light)" }} />
-                  <p style={{ margin: "10px 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Checking connection status...</p>
+                <div className="flex flex-col items-center justify-center p-10" onClick={(e) => e.stopPropagation()}>
+                  <RefreshCw size={24} className="animate-spin text-[#818cf8]" />
+                  <p className="mt-2.5 text-[0.85rem] text-[#64748b]">Checking connection status...</p>
                 </div>
               ) : cloudProvider === "google-drive" && isDriveConnected ? (
-                <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                   <GoogleDrivePicker
-                    onFileSelected={async (file) => {
-                      handleFiles([file]);
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                    }}
-                    onCancel={() => {
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                      setError("");
-                    }}
+                     onFileSelected={async (file) => {
+                       handleFiles([file]);
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                     }}
+                     onCancel={() => {
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                       setError("");
+                     }}
                   />
                 </div>
               ) : cloudProvider === "dropbox" && isDropboxConnected ? (
-                <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                   <DropboxFilePicker
-                    onFileSelected={async (file) => {
-                      handleFiles([file]);
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                    }}
-                    onCancel={() => {
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                      setError("");
-                    }}
+                     onFileSelected={async (file) => {
+                       handleFiles([file]);
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                     }}
+                     onCancel={() => {
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                       setError("");
+                     }}
                   />
                 </div>
               ) : cloudProvider === "onedrive" && isOneDriveConnected ? (
-                <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+                <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
                   <OneDrivePicker
-                    onFileSelected={async (file) => {
-                      handleFiles([file]);
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                    }}
-                    onCancel={() => {
-                      setUploadMethod("file");
-                      setCloudProvider(null);
-                      setError("");
-                    }}
+                     onFileSelected={async (file) => {
+                       handleFiles([file]);
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                     }}
+                     onCancel={() => {
+                       setUploadMethod("file");
+                       setCloudProvider(null);
+                       setError("");
+                     }}
                   />
                 </div>
               ) : (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "16px",
-                    textAlign: "center",
-                    width: "100%",
-                    maxWidth: "420px",
-                    padding: "10px"
-                  }}
+                  className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-2.5"
                 >
-                  <div
-                    style={{
-                      width: "64px",
-                      height: "64px",
-                      borderRadius: "18px",
-                      background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.1))",
-                      border: "1px solid rgba(99,102,241,0.3)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--primary-light)",
-                    }}
-                  >
+                  <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-indigo-500/20 to-cyan-500/10 border border-indigo-500/30 flex items-center justify-center text-[#818cf8]">
                     {cloudProvider === "google-drive" ? googleDriveIconLarge : 
                      cloudProvider === "dropbox" ? dropboxIconLarge : 
                      onedriveIconLarge}
                   </div>
 
                   <div>
-                    <p
-                      style={{
-                        fontFamily: "Outfit, sans-serif",
-                        fontWeight: 700,
-                        fontSize: "1.18rem",
-                        color: "var(--text-primary)",
-                        marginBottom: "6px",
-                        textTransform: "capitalize"
-                      }}
-                    >
+                    <p className="font-['Outfit'] font-bold text-[1.18rem] text-[#f8fafc] mb-1.5 capitalize">
                       Connect to {cloudProvider?.replace("-", " ")}
                     </p>
-                    <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "14px" }}>
+                    <p className="text-[#64748b] text-[0.88rem] leading-relaxed mb-3.5">
                       Authorize your account to browse and convert files directly from your cloud storage.
                     </p>
                   </div>
 
-
-                  <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
-                    <button
+                  <div className="flex gap-3 w-full justify-center">
+                    <Button
                       type="button"
-                      className="btn btn-secondary btn-sm"
-                      style={{ minWidth: "90px", justifyContent: "center" }}
+                      variant="secondary"
+                      size="sm"
+                      className="min-w-[90px] justify-center"
                       onClick={() => {
                         setUploadMethod("file");
                         setCloudProvider(null);
@@ -747,11 +615,12 @@ export default function ToolUploader({
                       }}
                     >
                       Back
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
-                      className="btn btn-primary btn-sm"
-                      style={{ minWidth: "140px", justifyContent: "center" }}
+                      variant="primary"
+                      size="sm"
+                      className="min-w-[140px] justify-center"
                       onClick={async () => {
                         const token = getEffectiveToken();
                         if (!token) {
@@ -794,192 +663,116 @@ export default function ToolUploader({
                           } catch (err) {
                             setError(err.message || "Failed to initiate connection.");
                           }
-                        } else {
-                          setError(`API credentials missing for OneDrive / Microsoft Graph. Please configure your credentials.`);
                         }
                       }}
                     >
                       Connect Account
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )
             ) : (
               <>
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "5px 12px",
-                    borderRadius: "999px",
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--primary-light)",
-                    background: "rgba(99,102,241,0.12)",
-                    border: "1px solid rgba(99,102,241,0.24)",
-                  }}
-                >
+                <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-[0.72rem] font-bold tracking-widest uppercase text-[#818cf8] bg-indigo-500/12 border border-indigo-500/24">
                   <Upload size={12} />
                   {multiple ? "Batch upload" : "Quick upload"}
                 </div>
 
                 <div
-                  style={
+                  className={`rounded-2.5xl flex items-center justify-center transition-all duration-300 ${
+                    compact ? "w-[60px] h-[60px]" : "w-[72px] h-[72px]"
+                  } ${
                     isDragging
-                      ? {
-                          width: iconBoxSize,
-                          height: iconBoxSize,
-                          borderRadius: "20px",
-                          background: "linear-gradient(135deg, rgba(99,102,241,0.38), rgba(6,182,212,0.22))",
-                          border: "1px solid rgba(129,140,248,0.65)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          transform: "scale(1.1)",
-                          transition: "all 0.3s ease",
-                          boxShadow: "0 0 0 8px rgba(99,102,241,0.08)",
-                        }
-                      : {
-                          width: iconBoxSize,
-                          height: iconBoxSize,
-                          borderRadius: "20px",
-                          background: "linear-gradient(135deg, rgba(99,102,241,0.22), rgba(6,182,212,0.1))",
-                          border: "1px solid rgba(99,102,241,0.3)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          transition: "all 0.3s ease",
-                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
-                        }
-                  }
+                      ? "bg-gradient-to-br from-indigo-500/38 to-cyan-500/22 border border-indigo-400/65 scale-110 shadow-[0_0_0_8px_rgba(99,102,241,0.08)]"
+                      : "bg-gradient-to-br from-indigo-500/22 to-cyan-500/10 border border-indigo-500/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                  }`}
                 >
                   <Upload
                     size={iconSize}
-                    style={{ color: isDragging ? "var(--primary-light)" : "var(--primary)" }}
+                    style={{ color: isDragging ? "#818cf8" : "#6366f1" }}
                   />
                 </div>
 
-                <div style={{ textAlign: "center" }}>
+                <div className="text-center">
                   <p
-                    style={{
-                      fontFamily: "Outfit, sans-serif",
-                      fontWeight: 700,
-                      fontSize: titleSize,
-                      color: "var(--text-primary)",
-                      marginBottom: "4px",
-                      lineHeight: 1.2,
-                    }}
+                    className={`font-['Outfit'] font-bold text-[#f8fafc] mb-1 leading-tight ${
+                      compact ? "text-[1.12rem]" : "text-[1.25rem]"
+                    }`}
                   >
                     {title}
                   </p>
-                  <p style={{ color: "var(--text-muted)", fontSize: subtitleSize, lineHeight: 1.5 }}>
+                  <p className={`text-[#64748b] leading-relaxed ${compact ? "text-[0.86rem]" : "text-[0.9rem]"}`}>
                     {subtitle}
                   </p>
                 </div>
 
-                <div style={{ display: "flex", flexWrap: "wrap", gap: tagGap, justifyContent: "center" }}>
+                <div className={`flex flex-wrap justify-center ${compact ? "gap-1.5" : "gap-2"}`}>
                   {supportedFormats.map((fmt) => (
                     <span
                       key={fmt}
-                      className="tag"
-                      style={{
-                        padding: "4px 9px",
-                        fontSize: "0.72rem",
-                        letterSpacing: "0.04em",
-                      }}
+                      className="inline-flex items-center py-1 px-2.5 rounded-full text-[0.72rem] font-semibold tracking-wider bg-indigo-500/12 text-[#818cf8] border border-indigo-500/25"
                     >
                       {fmt}
                     </span>
                   ))}
                 </div>
 
-                <div style={{ position: "relative", zIndex: 100 }} onClick={(e) => e.stopPropagation()}>
-                  <button
+                <div className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
+                  <Button
                     type="button"
-                    className="btn btn-primary btn-md"
-                    style={{ 
-                      justifyContent: "space-between", 
-                      minWidth: "185px",
-                      gap: "10px",
-                    }}
+                    variant="primary"
+                    size="md"
+                    className="justify-between min-w-[185px] gap-2.5"
                     onClick={() => {
                       setIsDropdownOpen((prev) => !prev);
                     }}
                   >
-                    <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span className="flex items-center gap-1.5">
                       <FilePlus size={16} />
                       Select File
                     </span>
                     <ChevronDown 
                       size={14} 
-                      style={{ 
-                        transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-                        transition: "transform 0.2s ease"
-                      }} 
+                      className={`transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : "rotate-0"}`}
                     />
-                  </button>
+                  </Button>
                   
                   {isDropdownOpen && (
                     <>
                       <div 
                         onClick={() => setIsDropdownOpen(false)}
-                        style={{
-                          position: "fixed",
-                          inset: 0,
-                          zIndex: 98,
-                          cursor: "default"
-                        }}
+                        className="fixed inset-0 z-[98] cursor-default"
                       />
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: "calc(100% + 10px)",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "200px",
-                          background: "var(--bg-card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "16px",
-                          padding: "6px",
-                          boxShadow: "var(--shadow-lg), 0 0 30px rgba(99,102,241,0.1)",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "2px",
-                          zIndex: 99,
-                        }}
-                      >
+                      <div className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[240px] bg-[#1a1a2e] border border-indigo-500/20 rounded-2xl p-1.5 shadow-[0_8px_48px_rgba(99,102,241,0.15)] flex flex-col gap-0.5 z-[99]">
                         <button
                           type="button"
-                          className="dropdown-item"
+                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             openPicker();
                           }}
                         >
-                          <Folder size={14} style={{ marginRight: "10px", color: "var(--primary-light)", flexShrink: 0 }} />
+                          <Folder size={19} className="mr-2.5 text-[#818cf8] shrink-0" />
                           From my computer
                         </button>
                         
                         <button
                           type="button"
-                          className="dropdown-item"
+                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             setUploadMethod("url");
                           }}
                         >
-                          <Link2 size={14} style={{ marginRight: "10px", color: "var(--secondary)", flexShrink: 0 }} />
+                          <Link2 size={19} className="mr-2.5 text-cyan-400 shrink-0" />
                           By URL
                         </button>
                         
-                        <div style={{ height: "1px", background: "var(--border-light)", margin: "4px 0" }} />
+                        <div className="h-px bg-white/8 my-1" />
                         
                         <button
                           type="button"
-                          className="dropdown-item"
+                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             setUploadMethod("cloud");
@@ -992,7 +785,7 @@ export default function ToolUploader({
                         
                         <button
                           type="button"
-                          className="dropdown-item"
+                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             setUploadMethod("cloud");
@@ -1005,7 +798,7 @@ export default function ToolUploader({
                         
                         <button
                           type="button"
-                          className="dropdown-item"
+                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             setUploadMethod("cloud");
@@ -1020,7 +813,7 @@ export default function ToolUploader({
                   )}
                 </div>
 
-                <p style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>
+                <p className="text-[#64748b] text-[0.78rem]">
                   Maximum file size: {maxSizeMB}MB
                 </p>
               </>
@@ -1028,99 +821,43 @@ export default function ToolUploader({
 
             {status && (
               <div
+                className="w-full mt-1 py-3 px-3.5 rounded-2xl backdrop-blur-md flex items-start gap-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.12)] border"
                 style={{
-                  width: "100%",
-                  marginTop: "4px",
-                  padding: "12px 14px",
-                  borderRadius: "16px",
                   background: status.accent,
-                  border: `1px solid ${status.border}`,
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "12px",
-                  textAlign: "left",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                  borderColor: status.border,
                 }}
               >
-                <div
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "12px",
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: status.text,
-                  }}
-                >
+                <div className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center bg-white/5 border border-white/8" style={{ color: status.text }}>
                   <status.icon
                     size={16}
-                    style={
-                      derivedState === "processing"
-                        ? { animation: "spin 1s linear infinite" }
-                        : undefined
-                    }
+                    className={derivedState === "processing" ? "animate-spin" : ""}
                   />
                 </div>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: "10px",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "0.84rem",
-                        fontWeight: 700,
-                        color: "var(--text-primary)",
-                        lineHeight: 1.3,
-                      }}
-                    >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2.5 mb-1">
+                    <p className="text-[0.84rem] font-bold text-[#f8fafc] leading-tight">
                       {status.label}
                     </p>
                     <span
-                      style={{
-                        fontSize: "0.72rem",
-                        fontWeight: 700,
-                        color: status.text,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
-                        whiteSpace: "nowrap",
-                      }}
+                      className="text-[0.72rem] font-bold uppercase tracking-widest whitespace-nowrap"
+                      style={{ color: status.text }}
                     >
                       {derivedState === "processing" && typeof activity?.progress === "number"
                         ? `${activity.progress}%`
                         : derivedState}
                     </span>
                   </div>
-                  <p
-                    style={{
-                      fontSize: "0.78rem",
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.4,
-                      marginBottom: derivedState === "processing" && typeof activity?.progress === "number" ? "8px" : 0,
-                    }}
-                  >
+                  <p className={`text-[0.78rem] text-[#94a3b8] leading-normal ${derivedState === "processing" && typeof activity?.progress === "number" ? "mb-2" : "mb-0"}`}>
                     {status.detail}
                   </p>
 
                   {derivedState === "processing" && typeof activity?.progress === "number" && (
-                    <div className="progress-bar" style={{ height: "5px", background: "rgba(255,255,255,0.08)" }}>
+                    <div className="w-full h-[5px] bg-white/8 rounded-full overflow-hidden">
                       <div
-                        className="progress-bar-fill"
+                        className="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full transition-all duration-250 animate-pulse"
                         style={{
                           width: `${Math.max(0, Math.min(100, activity.progress))}%`,
-                          transition: "width 0.25s ease",
                         }}
                       />
                     </div>
@@ -1134,20 +871,7 @@ export default function ToolUploader({
 
       {/* Error */}
       {error && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "12px 16px",
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.3)",
-            borderRadius: "10px",
-            marginTop: "16px",
-            color: "#fca5a5",
-            fontSize: "0.875rem",
-          }}
-        >
+        <div className="flex items-center gap-2.5 py-3 px-4 bg-red-500/10 border border-red-500/30 rounded-xl mt-4 text-[#fca5a5] text-[0.875rem]">
           <AlertCircle size={16} />
           {error}
         </div>
@@ -1155,114 +879,49 @@ export default function ToolUploader({
 
       {/* Previews */}
       {previews.length > 0 && !collapseOnSelect && (
-        <div style={{ marginTop: compact ? "20px" : "24px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "12px",
-            }}
-          >
-            <p
-              style={{
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                color: "var(--text-secondary)",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <CheckCircle size={15} color="var(--primary-light)" />
+        <div className={`${compact ? "mt-5" : "mt-6"}`}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="font-semibold text-[0.9rem] text-[#94a3b8] flex items-center gap-1.5">
+              <CheckCircle size={15} className="text-[#818cf8]" />
               {previews.length} file{previews.length > 1 ? "s" : ""} selected
             </p>
             <button
               onClick={clearAll}
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--text-muted)",
-                cursor: "pointer",
-                fontSize: "0.8rem",
-                fontFamily: "Inter, sans-serif",
-                transition: "color 0.2s ease",
-              }}
+              className="bg-none border-none text-[#64748b] hover:text-[#f8fafc] cursor-pointer text-[0.8rem] font-['Inter'] transition-colors duration-200"
             >
               Clear all
             </button>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div className="flex flex-col gap-2">
             {previews.map((preview, index) => (
               <div
                 key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "10px 14px",
-                  background: "rgba(99,102,241,0.07)",
-                  border: "1px solid rgba(99,102,241,0.15)",
-                  borderRadius: "10px",
-                }}
+                className="flex items-center gap-3 py-2.5 px-3.5 bg-indigo-500/7 border border-indigo-500/15 rounded-xl"
               >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                    background: "rgba(255,255,255,0.05)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
                   {preview.type.startsWith("image/") ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={preview.url}
                       alt={preview.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <FilePreviewIcon size={18} color="var(--text-muted)" />
+                    <FilePreviewIcon size={18} className="text-[#64748b]" />
                   )}
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: 600,
-                      color: "var(--text-primary)",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                <div className="flex-1 min-w-0">
+                  <p className="text-[0.875rem] font-semibold text-[#f8fafc] overflow-hidden text-ellipsis whitespace-nowrap">
                     {preview.name}
                   </p>
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                  <p className="text-[0.75rem] text-[#64748b]">
                     {preview.size}
                   </p>
                 </div>
                 <button
                   onClick={() => removePreview(index)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--text-muted)",
-                    cursor: "pointer",
-                    padding: "4px",
-                    borderRadius: "6px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    transition: "all 0.2s ease",
-                  }}
+                  className="bg-none border-none text-[#64748b] hover:text-[#f8fafc] cursor-pointer p-1 rounded-md flex items-center justify-center shrink-0 transition-colors duration-200"
                   aria-label="Remove file"
                 >
                   <X size={16} />

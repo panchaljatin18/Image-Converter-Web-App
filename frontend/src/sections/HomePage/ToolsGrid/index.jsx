@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FileImage } from "lucide-react";
+import Container from "@/components/Container";
+import Card from "@/components/Card";
 
 const tools = [
   { id: "jpg-to-png", name: "JPG to PNG", description: "Convert JPEG images to transparent-friendly PNG format instantly", icon: "🔄", href: "/tools/jpg-to-png", color: "#6366f1", gradient: "linear-gradient(135deg, #6366f1, #818cf8)", tag: "Popular" },
@@ -14,48 +16,56 @@ const tools = [
 
 export default function ToolsGrid() {
   return (
-    <section className="section" style={{ background: "var(--bg-secondary)" }}>
-      <div className="container">
-        <div className="section-header">
-          <span className="badge">
+    <section className="py-16 md:py-24 relative overflow-hidden bg-[#13131f]">
+      <Container>
+        <div className="text-center max-w-[650px] mx-auto mb-14">
+          <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <FileImage size={12} />
             All Tools
           </span>
-          <h2 className="heading-lg">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
             Powerful Image Tools,{" "}
-            <span className="text-gradient">Zero Complexity</span>
+            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Zero Complexity</span>
           </h2>
-          <p>
+          <p className="text-[#94a3b8] text-[1.1rem] leading-[1.7]">
             Eight professional-grade image processing tools, all running directly in your browser for maximum privacy and speed.
           </p>
         </div>
 
-        <div className="tools-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {tools.map((tool, i) => (
-            <Link key={tool.id} href={tool.href} style={{ textDecoration: "none" }}>
-              <div className="card" style={{ position: "relative", cursor: "pointer", animationDelay: `${i * 0.05}s` }}>
-                {tool.tag && (
-                  <span style={{ position: "absolute", top: "16px", right: "16px", padding: "3px 10px", borderRadius: "100px", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.06em", background: tool.tag === "New" ? "rgba(16,185,129,0.15)" : "rgba(99,102,241,0.15)", color: tool.tag === "New" ? "#34d399" : "var(--primary-light)", border: `1px solid ${tool.tag === "New" ? "rgba(16,185,129,0.3)" : "rgba(99,102,241,0.3)"}` }}>
-                    {tool.tag}
-                  </span>
-                )}
-                <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: tool.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", marginBottom: "18px", boxShadow: `0 8px 24px ${tool.color}33`, transition: "all 0.3s ease" }}>
-                  {tool.icon}
+            <Link key={tool.id} href={tool.href} className="no-underline">
+              <Card hover className="relative cursor-pointer h-full flex flex-col justify-between" style={{ animationDelay: `${i * 0.05}s` }}>
+                <div>
+                  {tool.tag && (
+                    <span className={`absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-[0.7rem] font-bold tracking-wider ${tool.tag === "New" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30"}`}>
+                      {tool.tag}
+                    </span>
+                  )}
+                  <div
+                    className="w-14 h-14 rounded-[14px] flex items-center justify-center text-2xl mb-4.5 transition-all duration-300"
+                    style={{ background: tool.gradient, boxShadow: `0 8px 24px ${tool.color}33` }}
+                  >
+                    {tool.icon}
+                  </div>
+                  <h3 className="font-['Outfit'] font-bold text-[1.05rem] text-[#f8fafc] mb-2">
+                    {tool.name}
+                  </h3>
+                  <p className="text-[#64748b] text-[0.875rem] leading-relaxed mb-4.5">
+                    {tool.description}
+                  </p>
                 </div>
-                <h3 style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.05rem", color: "var(--text-primary)", marginBottom: "8px" }}>
-                  {tool.name}
-                </h3>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "18px" }}>
-                  {tool.description}
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: tool.color, fontSize: "0.85rem", fontWeight: 600 }}>
+                <div
+                  className="flex items-center gap-1.5 text-[0.85rem] font-semibold"
+                  style={{ color: tool.color }}
+                >
                   Use Tool <ArrowRight size={14} />
                 </div>
-              </div>
+              </Card>
             </Link>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

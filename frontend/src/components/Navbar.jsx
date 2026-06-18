@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  Image,
+  Image as ImageIcon,
   Menu,
   X,
   ChevronDown,
@@ -16,6 +16,8 @@ import {
   RefreshCw,
   FileText,
 } from "lucide-react";
+import Container from "./Container";
+import Button from "./Button";
 
 const tools = [
   {
@@ -97,7 +99,6 @@ export default function Navbar() {
       setMobileOpen(false);
       setToolsOpen(false);
     }, 0);
-
     return () => clearTimeout(closeMenus);
   }, [pathname]);
 
@@ -119,168 +120,60 @@ export default function Navbar() {
   return (
     <>
       <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          padding: scrolled ? "12px 0" : "18px 0",
-          background: scrolled
-            ? "rgba(15, 15, 26, 0.95)"
-            : "rgba(15, 15, 26, 0.7)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: scrolled
-            ? "1px solid rgba(99, 102, 241, 0.15)"
-            : "1px solid rgba(255,255,255,0.05)",
-          transition: "all 0.3s ease",
-        }}
+        className={`fixed top-0 left-0 right-0 z-[1000] backdrop-blur-[20px] transition-all duration-300 ${
+          scrolled
+            ? "py-3 bg-[#0f0f1a]/95 border-b border-indigo-500/15"
+            : "py-4.5 bg-[#0f0f1a]/70 border-b border-white/5"
+        }`}
       >
-        <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
+        <Container className="flex items-center justify-between gap-6">
           {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              textDecoration: "none",
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                width: "38px",
-                height: "38px",
-                borderRadius: "10px",
-                background: "linear-gradient(135deg, #6366f1, #06b6d4)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 15px rgba(99,102,241,0.4)",
-              }}
-            >
-              <Image color="white" size={20} />
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 no-underline">
+            <div className="w-[38px] h-[38px] rounded-[10px] bg-gradient-to-br from-[#6366f1] to-[#06b6d4] flex items-center justify-center shadow-[0_4px_15px_rgba(99,102,241,0.4)]">
+              <ImageIcon color="white" size={20} />
             </div>
             <div>
-              <span
-                style={{
-                  fontFamily: "Outfit, sans-serif",
-                  fontWeight: 800,
-                  fontSize: "1.2rem",
-                  background: "linear-gradient(135deg, #a5b4fc, #67e8f9)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                }}
-              >
+              <span className="font-['Outfit'] font-extrabold text-[1.2rem] bg-gradient-to-br from-[#a5b4fc] to-[#67e8f9] bg-clip-text text-transparent tracking-tight">
                 ImageToolkit
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, justifyContent: "center" }} className="hidden-mobile">
+          <nav className="hidden md:flex items-center gap-2 flex-1 justify-center">
             {navLinks.map((link) =>
               link.hasDropdown ? (
-                <div key={link.name} style={{ position: "relative" }}>
+                <div key={link.name} className="relative">
                   <button
                     onClick={() => setToolsOpen(!toolsOpen)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      padding: "8px 14px",
-                      background: "transparent",
-                      border: "none",
-                      color: pathname.startsWith("/tools") ? "var(--primary-light)" : "var(--text-secondary)",
-                      fontWeight: 500,
-                      fontSize: "0.9rem",
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      fontFamily: "Inter, sans-serif",
-                      transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = "white";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = pathname.startsWith("/tools") ? "var(--primary-light)" : "var(--text-secondary)";
-                      e.currentTarget.style.background = "transparent";
-                    }}
+                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 ${
+                      pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
+                    }`}
                   >
                     {link.name}
                     <ChevronDown
                       size={14}
-                      style={{
-                        transform: toolsOpen ? "rotate(180deg)" : "none",
-                        transition: "transform 0.2s ease",
-                      }}
+                      className={`transition-transform duration-200 ${
+                        toolsOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
                   {/* Dropdown */}
                   {toolsOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "calc(100% + 12px)",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        background: "rgba(19, 19, 31, 0.98)",
-                        backdropFilter: "blur(20px)",
-                        border: "1px solid rgba(99,102,241,0.2)",
-                        borderRadius: "16px",
-                        padding: "12px",
-                        width: "520px",
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "4px",
-                        boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.1)",
-                        animation: "fadeInUp 0.2s ease",
-                        zIndex: 1001,
-                      }}
-                    >
+                    <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] animate-[fadeInUp_0.2s_ease]">
                       {tools.map((tool) => (
                         <Link
                           key={tool.href}
                           href={tool.href}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "10px 12px",
-                            borderRadius: "10px",
-                            textDecoration: "none",
-                            color: "var(--text-secondary)",
-                            fontSize: "0.875rem",
-                            fontWeight: 500,
-                            transition: "all 0.2s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = "rgba(99,102,241,0.1)";
-                            e.currentTarget.style.color = "white";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "transparent";
-                            e.currentTarget.style.color = "var(--text-secondary)";
-                          }}
+                          className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
                         >
                           <span
+                            className="w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 border"
                             style={{
-                              width: "28px",
-                              height: "28px",
-                              borderRadius: "7px",
                               background: `${tool.color}22`,
-                              border: `1px solid ${tool.color}44`,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
+                              borderColor: `${tool.color}44`,
                               color: tool.color,
-                              flexShrink: 0,
                             }}
                           >
                             {tool.icon}
@@ -295,28 +188,11 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    color: pathname === link.href ? "var(--primary-light)" : "var(--text-secondary)",
-                    fontWeight: 500,
-                    fontSize: "0.9rem",
-                    transition: "all 0.2s ease",
-                    background: pathname === link.href ? "rgba(99,102,241,0.1)" : "transparent",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (pathname !== link.href) {
-                      e.currentTarget.style.color = "white";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (pathname !== link.href) {
-                      e.currentTarget.style.color = "var(--text-secondary)";
-                      e.currentTarget.style.background = "transparent";
-                    }
-                  }}
+                  className={`py-2 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${
+                    pathname === link.href
+                      ? "text-[#818cf8] bg-indigo-500/10"
+                      : "text-[#94a3b8] hover:text-white hover:bg-white/5"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -325,145 +201,76 @@ export default function Navbar() {
           </nav>
 
           {/* CTA + Mobile Toggle */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
-            <Link
-              href="/tools"
-              className="btn btn-primary btn-sm hidden-mobile"
-              style={{ fontSize: "0.85rem", padding: "9px 18px" }}
-            >
-              <Zap size={14} />
-              All Tools
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/tools" className="no-underline hidden md:inline-block">
+              <Button variant="primary" size="sm" className="flex items-center gap-1.5 py-2 px-4.5 text-[0.85rem]">
+                <Zap size={14} />
+                All Tools
+              </Button>
             </Link>
 
             {user ? (
-              <Link
-                href="/dashboard"
-                className="btn btn-sm hidden-mobile"
-                style={{
-                  fontSize: "0.85rem",
-                  padding: "9px 18px",
-                  color: "white",
-                  border: "1px solid rgba(99,102,241,0.3)",
-                  background: "rgba(99,102,241,0.15)",
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  textDecoration: "none"
-                }}
-              >
-                Dashboard
+              <Link href="/dashboard" className="no-underline hidden md:inline-block">
+                <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-indigo-500/30 bg-indigo-500/15 rounded-[10px] text-white">
+                  Dashboard
+                </Button>
               </Link>
             ) : (
-              <Link
-                href="/login"
-                className="btn btn-sm hidden-mobile"
-                style={{
-                  fontSize: "0.85rem",
-                  padding: "9px 18px",
-                  color: "var(--text-secondary)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "rgba(255,255,255,0.05)",
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  textDecoration: "none"
-                }}
-              >
-                Sign In
+              <Link href="/login" className="no-underline hidden md:inline-block">
+                <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-white/15 bg-white/5 rounded-[10px] text-[#94a3b8]">
+                  Sign In
+                </Button>
               </Link>
             )}
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              style={{
-                display: "none",
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "rgba(255,255,255,0.07)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                color: "white",
-              }}
-              className="mobile-menu-btn"
+              className="flex md:hidden w-10 h-10 rounded-lg bg-white/7 border border-white/10 items-center justify-center cursor-pointer text-white"
               aria-label="Toggle mobile menu"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-        </div>
+        </Container>
       </header>
 
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.6)",
-            zIndex: 998,
-            backdropFilter: "blur(4px)",
-          }}
+          className="fixed inset-0 bg-black/60 z-[998] backdrop-blur-[4px]"
         />
       )}
 
       {/* Mobile Drawer */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: "300px",
-          background: "rgba(19, 19, 31, 0.98)",
-          backdropFilter: "blur(20px)",
-          borderLeft: "1px solid rgba(99,102,241,0.2)",
-          zIndex: 999,
-          transform: mobileOpen ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-          overflowY: "auto",
-          padding: "80px 24px 32px",
-        }}
+        className={`fixed top-0 right-0 bottom-0 w-[300px] bg-[#13131f]/98 backdrop-blur-[20px] border-l border-indigo-500/20 z-[999] overflow-y-auto p-6 pt-20 transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          mobileOpen
+            ? "translate-x-0 opacity-100 visible pointer-events-auto"
+            : "translate-x-full opacity-0 invisible pointer-events-none"
+        }`}
       >
-        <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+        <nav className="flex flex-col gap-1">
           {navLinks.map((link) => (
             <div key={link.name}>
               <Link
                 href={link.href}
-                style={{
-                  display: "block",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
-                  textDecoration: "none",
-                  color: pathname === link.href ? "white" : "var(--text-secondary)",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  background: pathname === link.href ? "rgba(99,102,241,0.15)" : "transparent",
-                  borderLeft: pathname === link.href ? "3px solid var(--primary)" : "3px solid transparent",
-                  transition: "all 0.2s ease",
-                }}
+                className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${
+                  pathname === link.href
+                    ? "text-white bg-indigo-500/15 border-[#6366f1]"
+                    : "text-[#94a3b8] border-transparent"
+                }`}
               >
                 {link.name}
               </Link>
               {link.hasDropdown && (
-                <div style={{ paddingLeft: "16px", marginTop: "4px", display: "flex", flexDirection: "column", gap: "2px" }}>
+                <div className="pl-4 mt-1 flex flex-col gap-0.5">
                   {tools.map((tool) => (
                     <Link
                       key={tool.href}
                       href={tool.href}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        textDecoration: "none",
-                        color: "var(--text-muted)",
-                        fontSize: "0.85rem",
-                        transition: "all 0.2s ease",
-                      }}
+                      className="flex items-center gap-2 p-2 rounded-lg no-underline text-[#64748b] text-[0.85rem] transition-all duration-200 hover:text-white"
                     >
                       <span style={{ color: tool.color }}>{tool.icon}</span>
                       {tool.name}
@@ -476,87 +283,52 @@ export default function Navbar() {
           {user && (
             <Link
               href="/dashboard"
-              style={{
-                display: "block",
-                padding: "12px 16px",
-                borderRadius: "10px",
-                textDecoration: "none",
-                color: pathname === "/dashboard" ? "white" : "var(--text-secondary)",
-                fontWeight: 600,
-                fontSize: "1rem",
-                background: pathname === "/dashboard" ? "rgba(99,102,241,0.15)" : "transparent",
-                borderLeft: pathname === "/dashboard" ? "3px solid var(--primary)" : "3px solid transparent",
-                transition: "all 0.2s ease",
-              }}
+              className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${
+                pathname === "/dashboard"
+                  ? "text-white bg-indigo-500/15 border-[#6366f1]"
+                  : "text-[#94a3b8] border-transparent"
+              }`}
             >
               Dashboard
             </Link>
           )}
 
-          <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <Link href="/tools" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-              <Zap size={16} />
-              All Tools
+          <div className="mt-6 flex flex-col gap-2.5">
+            <Link href="/tools" className="no-underline">
+              <Button variant="primary" className="w-full justify-center">
+                <Zap size={16} />
+                All Tools
+              </Button>
             </Link>
 
             {user ? (
               <button
                 onClick={logout}
-                className="btn"
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  color: "white",
-                  border: "1px solid rgba(239,68,68,0.3)",
-                  background: "rgba(239,68,68,0.1)",
-                  padding: "12px 24px",
-                  borderRadius: "12px",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center"
-                }}
+                className="w-full justify-center inline-flex items-center gap-2 font-semibold transition-all duration-250 cursor-pointer text-white border border-red-500/30 bg-red-500/10 py-3 px-6 rounded-xl text-[0.875rem] text-center"
               >
                 Sign Out
               </button>
             ) : (
-              <Link
-                href="/login"
-                className="btn"
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  color: "white",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "rgba(255,255,255,0.05)",
-                  padding: "12px 24px",
-                  borderRadius: "12px",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center"
-                }}
-              >
-                Sign In
+              <Link href="/login" className="no-underline">
+                <button
+                  className="w-full justify-center inline-flex items-center gap-2 font-semibold transition-all duration-250 cursor-pointer text-white border border-white/15 bg-white/5 py-3 px-6 rounded-xl text-[0.875rem] text-center"
+                >
+                  Sign In
+                </button>
               </Link>
             )}
           </div>
         </nav>
       </div>
 
-
-
       {/* Click outside to close tools dropdown */}
       {toolsOpen && (
         <div
-          style={{ position: "fixed", inset: 0, zIndex: 999 }}
+          className="fixed inset-0 z-[999]"
           onClick={() => setToolsOpen(false)}
         />
       )}
+
     </>
   );
 }

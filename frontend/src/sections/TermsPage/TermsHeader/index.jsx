@@ -1,14 +1,15 @@
 import React from "react";
+import Container from "@/components/Container";
 
 export default function TermsHeader() {
   return (
-    <div style={{ background: "linear-gradient(135deg, #0f0f1a 0%, #13131f 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "64px 0 48px", position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: "-80px", right: "-80px", width: "400px", height: "400px", background: "rgba(99,102,241,0.08)", borderRadius: "50%", filter: "blur(80px)" }} />
-      <div className="container" style={{ position: "relative", zIndex: 1 }}>
-        <span className="badge" style={{ marginBottom: "20px", display: "inline-flex" }}>📋 Legal</span>
-        <h1 className="heading-lg" style={{ marginBottom: "12px" }}>Terms of Service</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Last updated: June 11, 2025</p>
-      </div>
+    <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-16 relative overflow-hidden">
+      <div className="absolute -top-[80px] -right-[80px] w-[400px] h-[400px] bg-indigo-500/8 rounded-full blur-[80px]" />
+      <Container className="relative z-[1]">
+        <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 bg-indigo-500/15 border border-indigo-500/30 rounded-full text-[#818cf8] font-semibold text-[0.78rem] tracking-wider uppercase mb-5">📋 Legal</span>
+        <h1 className="text-3xl md:text-5xl font-bold leading-tight font-['Outfit'] tracking-tight mb-3">Terms of Service</h1>
+        <p className="text-[#64748b] text-[0.9rem]">Last updated: June 11, 2025</p>
+      </Container>
     </div>
   );
 }

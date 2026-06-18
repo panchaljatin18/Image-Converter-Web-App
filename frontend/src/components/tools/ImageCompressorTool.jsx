@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import imageCompression from "browser-image-compression";
 import { Download, RefreshCw, CheckCircle, Sliders, Zap } from "lucide-react";
+import Button from "@/components/Button";
 
 export default function ImageCompressorTool() {
   const [file, setFile] = useState(null);
@@ -79,7 +80,7 @@ export default function ImageCompressorTool() {
   ];
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -101,47 +102,40 @@ export default function ImageCompressorTool() {
           />
 
           {file && (
-            <div style={{ marginTop: "24px" }}>
+            <div className="mt-6">
               {/* Presets */}
-              <div style={{ marginBottom: "20px" }}>
-                <label className="form-label">Quick Presets</label>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <div className="mb-5">
+                <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Quick Presets</label>
+                <div className="flex gap-2.5 flex-wrap">
                   {presets.map((p) => (
-                    <button
+                    <Button
                       key={p.label}
+                      variant="ghost"
+                      size="sm"
                       onClick={() => {
                         setMaxSizeMB(p.maxSizeMB);
                         setMaxWidthOrHeight(p.maxWidthOrHeight);
                         setQuality(p.quality);
                       }}
-                      className="btn btn-ghost btn-sm"
                     >
                       <Zap size={13} />
                       {p.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "24px",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-light)",
-                  borderRadius: "16px",
-                  marginBottom: "20px",
-                }}
-              >
-                <h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, fontSize: "1rem", marginBottom: "20px" }}>
-                  <Sliders size={16} color="var(--primary)" />
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="flex items-center gap-2 font-bold text-[1rem] mb-5 text-[#f8fafc]">
+                  <Sliders size={16} className="text-[#6366f1]" />
                   Compression Settings
                 </h3>
 
                 {/* Max File Size */}
-                <div style={{ marginBottom: "20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                    <label className="form-label" style={{ margin: 0 }}>Target Max Size</label>
-                    <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>
+                <div className="mb-5">
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Target Max Size</label>
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {maxSizeMB < 1 ? `${maxSizeMB * 1000}KB` : `${maxSizeMB}MB`}
                     </span>
                   </div>
@@ -152,19 +146,20 @@ export default function ImageCompressorTool() {
                     step="0.1"
                     value={maxSizeMB}
                     onChange={(e) => setMaxSizeMB(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                     aria-label="Target max file size"
                   />
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                  <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>100KB</span>
                     <span>10MB</span>
                   </div>
                 </div>
 
                 {/* Max Dimension */}
-                <div style={{ marginBottom: "20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                    <label className="form-label" style={{ margin: 0 }}>Max Width/Height</label>
-                    <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>
+                <div className="mb-5">
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Max Width/Height</label>
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {maxWidthOrHeight}px
                     </span>
                   </div>
@@ -175,9 +170,10 @@ export default function ImageCompressorTool() {
                     step="64"
                     value={maxWidthOrHeight}
                     onChange={(e) => setMaxWidthOrHeight(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                     aria-label="Max image dimension"
                   />
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                  <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>320px</span>
                     <span>4096px</span>
                   </div>
@@ -185,9 +181,9 @@ export default function ImageCompressorTool() {
 
                 {/* Quality */}
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                    <label className="form-label" style={{ margin: 0 }}>Quality</label>
-                    <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Quality</label>
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {quality}%
                     </span>
                   </div>
@@ -197,6 +193,7 @@ export default function ImageCompressorTool() {
                     max="100"
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                     aria-label="Compression quality"
                   />
                 </div>
@@ -205,60 +202,54 @@ export default function ImageCompressorTool() {
               {!collapseUploadAfterSelection && (
                 <>
                   {compressing && (
-                    <div style={{ marginBottom: "20px" }}>
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>
+                    <div className="mb-5">
+                      <p className="text-[0.85rem] text-[#64748b] mb-2">
                         Compressing... {progress}%
                       </p>
-                      <div className="progress-bar">
-                        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-300" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   )}
 
-                  <button
+                  <Button
                     onClick={handleCompress}
                     disabled={compressing}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: "100%", justifyContent: "center" }}
+                    variant="primary"
+                    size="lg"
+                    className="w-full justify-center"
                   >
                     {compressing ? (
-                      <><RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} /> Compressing...</>
+                      <><RefreshCw size={18} className="animate-spin" /> Compressing...</>
                     ) : (
                       <><Zap size={18} /> Compress Image</>
                     )}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
           {/* Savings Banner */}
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <CheckCircle size={22} color="#34d399" />
-              <p style={{ fontWeight: 700, color: "#34d399" }}>Compression Complete!</p>
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <CheckCircle size={22} className="text-emerald-400" />
+              <p className="font-bold text-emerald-400">Compression Complete!</p>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+            <div className="grid grid-cols-3 gap-4">
               {[
-                { label: "Original Size", value: `${result.originalSize} KB`, color: "var(--text-secondary)" },
-                { label: "Compressed Size", value: `${result.compressedSize} KB`, color: "#34d399" },
-                { label: "Size Reduction", value: `${result.savings}%`, color: "#fbbf24" },
+                { label: "Original Size", value: `${result.originalSize} KB`, color: "text-[#94a3b8]" },
+                { label: "Compressed Size", value: `${result.compressedSize} KB`, color: "text-emerald-400" },
+                { label: "Size Reduction", value: `${result.savings}%`, color: "text-amber-400" },
               ].map((stat) => (
-                <div key={stat.label} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "1.4rem", fontWeight: 800, fontFamily: "Outfit, sans-serif", color: stat.color }}>
+                <div key={stat.label} className="text-center">
+                  <div className={`text-[1.4rem] font-extrabold font-['Outfit'] ${stat.color}`}>
                     {stat.value}
                   </div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "2px" }}>
+                  <div className="text-[0.75rem] text-[#64748b] mt-0.5">
                     {stat.label}
                   </div>
                 </div>
@@ -266,55 +257,38 @@ export default function ImageCompressorTool() {
             </div>
           </div>
 
-          <div
-            style={{
-              padding: "18px 20px",
-              borderRadius: "16px",
-              border: "1px solid var(--border-light)",
-              marginBottom: "20px",
-              background: "rgba(255,255,255,0.03)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <p style={{ fontWeight: 700, color: "var(--text-primary)" }}>
+          <div className="p-[18px_20px] rounded-2xl border border-white/8 mb-5 bg-white/3 flex flex-col gap-2">
+            <p className="font-bold text-[#f8fafc]">
               Output ready
             </p>
-            <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+            <p className="text-[0.85rem] text-[#94a3b8] leading-relaxed">
               {result.name} has been compressed successfully. The preview is hidden to keep the
               result area clean. Use the download button below to save the file.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            <div className="flex flex-wrap gap-2.5 text-[0.8rem] text-[#64748b]">
               <span>Original: {result.originalSize} KB</span>
               <span>Compressed: {result.compressedSize} KB</span>
               <span>Saved: {result.savings}%</span>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="flex gap-3">
             <a
               href={result.url}
               download={result.name}
-              className="btn btn-primary btn-lg"
-              style={{ flex: 1, justifyContent: "center" }}
+              className="flex-1 no-underline"
             >
-              <Download size={18} />
-              Download Compressed
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download Compressed
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">
+            <Button variant="secondary" size="lg" onClick={reset}>
               Compress Another
-            </button>
+            </Button>
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

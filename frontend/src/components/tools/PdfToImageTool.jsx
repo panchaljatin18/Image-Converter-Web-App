@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Download, FileText, AlertCircle, Info } from "lucide-react";
+import Button from "@/components/Button";
 
 const getPdfErrorMessage = (err, pdfjsLib) => {
   const rawMessage = err?.message?.trim() || "Unknown PDF conversion error.";
@@ -47,7 +48,10 @@ export default function PdfToImageTool() {
 
   const handleFileInput = (e) => {
     const f = e.target.files[0];
-    if (f) { setFile(f); setError(""); }
+    if (f) {
+      setFile(f);
+      setError("");
+    }
   };
 
   const handleConvert = useCallback(async () => {
@@ -131,15 +135,22 @@ export default function PdfToImageTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {results.length === 0 ? (
         <>
           {/* Upload Zone */}
           <div
-            className={`upload-zone ${isDragging ? "drag-over" : ""}`}
+            className={`border-2 border-dashed rounded-[24px] py-16 px-8 text-center cursor-pointer transition-all duration-300 relative overflow-hidden select-none outline-none ${
+              isDragging
+                ? "border-[#6366f1] bg-indigo-500/8 shadow-[0_0_30px_rgba(99,102,241,0.15)]"
+                : "border-indigo-500/35 bg-indigo-500/4 hover:border-[#6366f1] hover:bg-indigo-500/8 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]"
+            }`}
             onClick={() => document.getElementById("pdf-input").click()}
             onDrop={handleDrop}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
             onDragLeave={() => setIsDragging(false)}
             role="button"
             tabIndex={0}
@@ -151,50 +162,59 @@ export default function PdfToImageTool() {
               type="file"
               accept=".pdf,application/pdf"
               onChange={handleFileInput}
+              className="hidden"
               aria-hidden="true"
             />
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", position: "relative", zIndex: 1 }}>
-              <div style={{ width: "72px", height: "72px", borderRadius: "18px", background: "linear-gradient(135deg, rgba(236,72,153,0.2), rgba(249,115,22,0.1))", border: "2px solid rgba(236,72,153,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <FileText size={30} color="#ec4899" />
+            <div className="flex flex-col items-center gap-4 relative z-[1]">
+              <div className="w-[72px] h-[72px] rounded-[18px] bg-gradient-to-br from-[#ec4899]/20 to-[#f97316]/10 border border-[#ec4899]/30 flex items-center justify-center">
+                <FileText size={30} className="text-[#ec4899]" />
               </div>
               <div>
-                <p style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, fontSize: "1.25rem", color: "var(--text-primary)", marginBottom: "6px" }}>
+                <p className="font-['Outfit'] font-bold text-[1.25rem] text-[#f8fafc] mb-1.5">
                   {file ? file.name : "Drop your PDF here"}
                 </p>
-                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                <p className="text-[#64748b] text-[0.9rem]">
                   {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "or click to browse — PDF files only"}
                 </p>
               </div>
-              <span className="tag" style={{ background: "rgba(236,72,153,0.12)", color: "#f472b6", borderColor: "rgba(236,72,153,0.25)" }}>
+              <span className="py-1 px-3.5 rounded-full border text-[0.75rem] font-bold tracking-wider uppercase border-[#ec4899]/25 bg-[#ec4899]/12 text-[#f472b6]">
                 PDF
               </span>
             </div>
           </div>
 
           {error && (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 16px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "10px", marginTop: "16px", color: "#fca5a5", fontSize: "0.875rem" }}>
+            <div className="flex items-center gap-2.5 p-3 px-4 bg-red-500/10 border border-red-500/30 rounded-lg mt-4 text-red-300 text-[0.875rem]">
               <AlertCircle size={16} />
               {error}
             </div>
           )}
 
           {file && (
-            <div style={{ marginTop: "24px" }}>
+            <div className="mt-6">
               {/* Info */}
-              <div style={{ padding: "14px 18px", background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "12px", display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-                <Info size={16} color="var(--primary-light)" />
+              <div className="p-[14px_18px] bg-indigo-500/7 border border-indigo-500/15 rounded-xl flex items-center gap-2.5 mb-5 text-[0.875rem] text-[#94a3b8]">
+                <Info size={16} className="text-[#818cf8]" />
                 Each PDF page will be converted to a separate image. Password-protected PDFs are not supported.
               </div>
 
               {/* Settings */}
-              <div style={{ padding: "24px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "16px", marginBottom: "20px" }}>
-                <h3 style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "20px" }}>Conversion Settings</h3>
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="font-bold text-[1rem] mb-5 text-[#f8fafc]">Conversion Settings</h3>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label className="form-label">Output Format</label>
-                  <div style={{ display: "flex", gap: "10px" }}>
+                <div className="mb-5">
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Output Format</label>
+                  <div className="flex gap-2.5">
                     {["jpeg", "png"].map((fmt) => (
-                      <button key={fmt} onClick={() => setOutputFormat(fmt)} style={{ padding: "10px 24px", borderRadius: "10px", border: outputFormat === fmt ? "2px solid var(--primary)" : "1px solid var(--border-light)", background: outputFormat === fmt ? "rgba(99,102,241,0.15)" : "transparent", color: outputFormat === fmt ? "var(--primary-light)" : "var(--text-secondary)", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer", fontFamily: "Inter", textTransform: "uppercase", transition: "all 0.2s ease" }}>
+                      <button
+                        key={fmt}
+                        onClick={() => setOutputFormat(fmt)}
+                        className={`py-2.5 px-6 rounded-lg border text-[0.875rem] font-semibold cursor-pointer font-['Inter'] transition-all duration-200 ${
+                          outputFormat === fmt
+                            ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                            : "border-white/8 bg-transparent text-[#94a3b8]"
+                        }`}
+                      >
                         {fmt === "jpeg" ? "JPG" : "PNG"}
                       </button>
                     ))}
@@ -202,12 +222,21 @@ export default function PdfToImageTool() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                    <label className="form-label" style={{ margin: 0 }}>Resolution Scale</label>
-                    <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>{scale}x</span>
+                  <div className="flex justify-between mb-2.5">
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Resolution Scale</label>
+                    <span className="font-bold text-[#818cf8] text-[0.9rem]">{scale}x</span>
                   </div>
-                  <input type="range" min="1" max="4" step="0.5" value={scale} onChange={(e) => setScale(Number(e.target.value))} aria-label="Resolution scale" />
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                  <input
+                    type="range"
+                    min="1"
+                    max="4"
+                    step="0.5"
+                    value={scale}
+                    onChange={(e) => setScale(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
+                    aria-label="Resolution scale"
+                  />
+                  <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>72 DPI (fast)</span>
                     <span>288 DPI (print quality)</span>
                   </div>
@@ -215,61 +244,72 @@ export default function PdfToImageTool() {
               </div>
 
               {converting && (
-                <div style={{ marginBottom: "20px" }}>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>Converting pages... {progress}%</p>
-                  <div className="progress-bar">
-                    <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                <div className="mb-5">
+                  <p className="text-[0.85rem] text-[#64748b] mb-2">Converting pages... {progress}%</p>
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-300" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               )}
 
-              <button onClick={handleConvert} disabled={converting} className="btn btn-primary btn-lg" style={{ width: "100%", justifyContent: "center" }}>
+              <Button
+                onClick={handleConvert}
+                disabled={converting}
+                variant="primary"
+                size="lg"
+                className="w-full justify-center"
+              >
                 {converting ? (
-                  <><FileText size={18} style={{ animation: "spin 1s linear infinite" }} /> Converting PDF...</>
+                  <><FileText size={18} className="animate-spin" /> Converting PDF...</>
                 ) : (
                   <><FileText size={18} /> Convert PDF to Images</>
                 )}
-              </button>
+              </Button>
             </div>
           )}
         </>
       ) : (
+        /* Results view */
         <div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
-            <p style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--text-primary)" }}>
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            <p className="font-bold text-[1.1rem] text-[#f8fafc]">
               ✅ {results.length} page{results.length > 1 ? "s" : ""} converted
             </p>
-            <div style={{ display: "flex", gap: "10px" }}>
+            <div className="flex gap-2.5">
               {results.length > 1 && (
-                <button onClick={downloadAll} className="btn btn-primary">
+                <Button onClick={downloadAll} variant="primary">
                   <Download size={16} />
                   Download All
-                </button>
+                </Button>
               )}
-              <button onClick={reset} className="btn btn-secondary">Convert Another</button>
+              <Button onClick={reset} variant="secondary">Convert Another</Button>
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {results.map((r) => (
-              <div key={r.page} style={{ background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "16px", overflow: "hidden" }}>
-                <div style={{ background: "rgba(99,102,241,0.08)", height: "160px", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "18px" }}>
+              <div key={r.page} className="bg-[#1a1a2e] border border-white/8 rounded-2xl overflow-hidden flex flex-col">
+                <div className="bg-indigo-500/8 h-40 flex items-center justify-center text-center p-[18px]">
                   <div>
-                    <FileText size={34} color="var(--primary)" style={{ marginBottom: "10px" }} />
-                    <p style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Page {r.page}</p>
-                    <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
-                      {r.width}Ã—{r.height}px
+                    <FileText size={34} className="text-[#6366f1] mb-2.5 mx-auto" />
+                    <p className="font-bold text-[#f8fafc] mb-1">Page {r.page}</p>
+                    <p className="text-[#64748b] text-[0.8rem]">
+                      {r.width}×{r.height}px
                     </p>
                   </div>
                 </div>
-                <div style={{ padding: "14px" }}>
-                  <p style={{ fontWeight: 600, fontSize: "0.875rem", marginBottom: "4px" }}>Page {r.page}</p>
-                  <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginBottom: "12px" }}>
-                    {r.size} · {r.width}×{r.height}px
-                  </p>
-                  <a href={r.url} download={r.name} className="btn btn-primary btn-sm" style={{ width: "100%", justifyContent: "center" }}>
-                    <Download size={13} />
-                    Download
+                <div className="p-3.5 flex-1 flex flex-col justify-between">
+                  <div className="mb-3">
+                    <p className="font-semibold text-[0.875rem] mb-1 text-[#f8fafc]">Page {r.page}</p>
+                    <p className="text-[#64748b] text-[0.75rem]">
+                      {r.size} · {r.width}×{r.height}px
+                    </p>
+                  </div>
+                  <a href={r.url} download={r.name} className="w-full no-underline block">
+                    <Button variant="primary" size="sm" className="w-full justify-center gap-1.5">
+                      <Download size={13} />
+                      Download
+                    </Button>
                   </a>
                 </div>
               </div>
@@ -277,10 +317,6 @@ export default function PdfToImageTool() {
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }

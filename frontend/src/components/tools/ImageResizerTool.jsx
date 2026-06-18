@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders, Lock, Unlock } from "lucide-react";
+import Button from "@/components/Button";
 
 const PRESETS = [
   { label: "HD (1280×720)", w: 1280, h: 720 },
@@ -135,7 +136,7 @@ export default function ImageResizerTool() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto">
       {!result ? (
         <>
           <ToolUploader
@@ -156,50 +157,43 @@ export default function ImageResizerTool() {
           />
 
           {file && (
-            <div style={{ marginTop: "24px" }}>
+            <div className="mt-6">
               {/* Presets */}
-              <div style={{ marginBottom: "20px" }}>
-                <label className="form-label">Quick Presets</label>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div className="mb-5">
+                <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Quick Presets</label>
+                <div className="flex gap-2.5 flex-wrap">
                   {PRESETS.map((p) => (
-                    <button
+                    <Button
                       key={p.label}
+                      variant="ghost"
+                      size="sm"
                       onClick={() => applyPreset(p)}
-                      className="btn btn-ghost btn-sm"
-                      style={{ fontSize: "0.78rem" }}
+                      className="text-[0.78rem]"
                     >
                       {p.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "24px",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border-light)",
-                  borderRadius: "16px",
-                  marginBottom: "20px",
-                }}
-              >
-                <h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, fontSize: "1rem", marginBottom: "20px" }}>
-                  <Sliders size={16} color="var(--primary)" />
+              <div className="p-6 bg-[#1a1a2e] border border-white/8 rounded-2xl mb-5">
+                <h3 className="flex items-center gap-2 font-bold text-[1rem] mb-5 text-[#f8fafc]">
+                  <Sliders size={16} className="text-[#6366f1]" />
                   Resize Settings
                   {originalDims.w > 0 && (
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 400, marginLeft: "8px" }}>
+                    <span className="text-[0.8rem] text-[#64748b] font-normal ml-2">
                       (Original: {originalDims.w}×{originalDims.h}px)
                     </span>
                   )}
                 </h3>
 
                 {/* Width / Height */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "12px", alignItems: "end", marginBottom: "20px" }}>
+                <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-end mb-5">
                   <div>
-                    <label className="form-label">Width (px)</label>
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Width (px)</label>
                     <input
                       type="number"
-                      className="form-input"
+                      className="w-full py-3 px-4 rounded-xl bg-[#13131f] border border-white/8 text-[#f8fafc] text-[0.95rem] transition-all duration-200 outline-none placeholder:text-slate-500 focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
                       value={width}
                       min="1"
                       max="8000"
@@ -210,30 +204,20 @@ export default function ImageResizerTool() {
                   <button
                     onClick={() => setLockAspect(!lockAspect)}
                     title={lockAspect ? "Unlock aspect ratio" : "Lock aspect ratio"}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "10px",
-                      background: lockAspect ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.06)",
-                      border: lockAspect ? "1px solid rgba(99,102,241,0.4)" : "1px solid var(--border-light)",
-                      color: lockAspect ? "var(--primary-light)" : "var(--text-muted)",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      transition: "all 0.2s ease",
-                      marginBottom: "0",
-                    }}
+                    className={`w-10 h-10 rounded-lg cursor-pointer flex items-center justify-center shrink-0 transition-all duration-200 mb-0 border ${
+                      lockAspect
+                        ? "bg-indigo-500/15 border-indigo-500/40 text-[#818cf8]"
+                        : "bg-white/6 border-white/8 text-[#64748b]"
+                    }`}
                     aria-label={lockAspect ? "Unlock aspect ratio" : "Lock aspect ratio"}
                   >
                     {lockAspect ? <Lock size={16} /> : <Unlock size={16} />}
                   </button>
                   <div>
-                    <label className="form-label">Height (px)</label>
+                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Height (px)</label>
                     <input
                       type="number"
-                      className="form-input"
+                      className="w-full py-3 px-4 rounded-xl bg-[#13131f] border border-white/8 text-[#f8fafc] text-[0.95rem] transition-all duration-200 outline-none placeholder:text-slate-500 focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
                       value={height}
                       min="1"
                       max="8000"
@@ -244,26 +228,18 @@ export default function ImageResizerTool() {
                 </div>
 
                 {/* Output Format */}
-                <div style={{ marginBottom: "20px" }}>
-                  <label className="form-label">Output Format</label>
-                  <div style={{ display: "flex", gap: "10px" }}>
+                <div className="mb-5">
+                  <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide mb-2">Output Format</label>
+                  <div className="flex gap-2.5">
                     {["jpeg", "png", "webp"].map((fmt) => (
                       <button
                         key={fmt}
                         onClick={() => setOutputFormat(fmt)}
-                        style={{
-                          padding: "10px 20px",
-                          borderRadius: "10px",
-                          border: outputFormat === fmt ? "2px solid var(--primary)" : "1px solid var(--border-light)",
-                          background: outputFormat === fmt ? "rgba(99,102,241,0.15)" : "transparent",
-                          color: outputFormat === fmt ? "var(--primary-light)" : "var(--text-secondary)",
-                          fontWeight: 600,
-                          fontSize: "0.875rem",
-                          cursor: "pointer",
-                          fontFamily: "Inter, sans-serif",
-                          textTransform: "uppercase",
-                          transition: "all 0.2s ease",
-                        }}
+                        className={`py-2.5 px-5 rounded-lg border text-[0.875rem] font-semibold cursor-pointer uppercase font-['Inter'] transition-all duration-200 ${
+                          outputFormat === fmt
+                            ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
+                            : "border-white/8 bg-transparent text-[#94a3b8]"
+                        }`}
                       >
                         {fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}
                       </button>
@@ -274,9 +250,9 @@ export default function ImageResizerTool() {
                 {/* Quality */}
                 {outputFormat !== "png" && (
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                      <label className="form-label" style={{ margin: 0 }}>Quality</label>
-                      <span style={{ fontWeight: 700, color: "var(--primary-light)", fontSize: "0.9rem" }}>{quality}%</span>
+                    <div className="flex justify-between mb-2.5">
+                      <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">Quality</label>
+                      <span className="font-bold text-[#818cf8] text-[0.9rem]">{quality}%</span>
                     </div>
                     <input
                       type="range"
@@ -284,6 +260,7 @@ export default function ImageResizerTool() {
                       max="100"
                       value={quality}
                       onChange={(e) => setQuality(Number(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
                       aria-label="Output quality"
                     />
                   </div>
@@ -291,58 +268,47 @@ export default function ImageResizerTool() {
               </div>
 
               {!collapseUploadAfterSelection && (
-                <button
-                onClick={handleResize}
-                disabled={resizing || !width || !height}
-                className="btn btn-primary btn-lg"
-                style={{ width: "100%", justifyContent: "center" }}
-              >
-                {resizing ? (
-                  <><RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} /> Resizing...</>
-                ) : (
-                  <><RefreshCw size={18} /> Resize to {width}×{height}px</>
-                )}
-                </button>
+                <Button
+                  onClick={handleResize}
+                  disabled={resizing || !width || !height}
+                  variant="primary"
+                  size="lg"
+                  className="w-full justify-center"
+                >
+                  {resizing ? (
+                    <><RefreshCw size={18} className="animate-spin" /> Resizing...</>
+                  ) : (
+                    <><RefreshCw size={18} /> Resize to {width}×{height}px</>
+                  )}
+                </Button>
               )}
             </div>
           )}
         </>
       ) : (
+        /* Result */
         <div>
-          <div
-            style={{
-              padding: "24px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: "16px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <CheckCircle size={22} color="#34d399" />
+          <div className="p-6 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl mb-6 flex items-center gap-3">
+            <CheckCircle size={22} className="text-emerald-400" />
             <div>
-              <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "2px" }}>Resize Complete!</p>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              <p className="font-bold text-emerald-400 mb-0.5">Resize Complete!</p>
+              <p className="text-[0.85rem] text-[#94a3b8]">
                 {result.name} · {result.size} · {result.width}×{result.height}px
               </p>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
-            <a href={result.url} download={result.name} className="btn btn-primary btn-lg" style={{ flex: 1, justifyContent: "center" }}>
-              <Download size={18} />
-              Download Resized
+          <div className="flex gap-3">
+            <a href={result.url} download={result.name} className="flex-1 no-underline">
+              <Button variant="primary" size="lg" className="w-full justify-center">
+                <Download size={18} />
+                Download Resized
+              </Button>
             </a>
-            <button onClick={reset} className="btn btn-secondary btn-lg">Resize Another</button>
+            <Button variant="secondary" size="lg" onClick={reset}>Resize Another</Button>
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }

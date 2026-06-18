@@ -1,4 +1,5 @@
 import { CheckCircle } from "lucide-react";
+import Container from "@/components/Container";
 
 const steps = [
   { step: "01", icon: "📂", title: "Upload Your Image", desc: "Drag and drop your image file or click to browse. Supports JPG, PNG, WebP, GIF, BMP and more." },
@@ -8,41 +9,39 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="section" style={{ background: "var(--bg-secondary)" }}>
-      <div className="container">
-        <div className="section-header">
-          <span className="badge">
+    <section className="py-16 md:py-24 relative overflow-hidden bg-[#13131f]">
+      <Container>
+        <div className="text-center max-w-[650px] mx-auto mb-14">
+          <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <CheckCircle size={12} />
             How It Works
           </span>
-          <h2 className="heading-lg">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
             Convert Images in{" "}
-            <span className="text-gradient">3 Simple Steps</span>
+            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">3 Simple Steps</span>
           </h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "32px" }} className="steps-grid">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((s, i) => (
             <div
               key={i}
-              style={{ textAlign: "center", padding: "40px 32px", background: "var(--bg-card)", border: "1px solid var(--border-light)", borderRadius: "24px", position: "relative", overflow: "hidden" }}
+              className="text-center py-10 px-8 bg-[#1a1a2e] border border-white/8 rounded-[24px] relative overflow-hidden"
             >
               {/* Watermark */}
-              <div style={{ position: "absolute", top: "-20px", right: "-10px", fontSize: "100px", fontWeight: 900, fontFamily: "Outfit, sans-serif", color: "rgba(99,102,241,0.04)", lineHeight: 1, userSelect: "none" }}>
+              <div className="absolute -top-5 -right-2.5 text-[100px] font-black font-['Outfit'] text-indigo-500/[0.04] leading-none select-none">
                 {s.step}
               </div>
-              <div style={{ fontSize: "3rem", marginBottom: "20px" }}>{s.icon}</div>
-              <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "28px", height: "28px", borderRadius: "50%", background: "var(--gradient-primary)", fontSize: "0.75rem", fontWeight: 800, color: "white", marginBottom: "16px" }}>
+              <div className="text-[3rem] mb-5">{s.icon}</div>
+              <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] text-[0.75rem] font-extrabold text-white mb-4">
                 {i + 1}
               </div>
-              <h3 className="heading-sm" style={{ marginBottom: "12px" }}>{s.title}</h3>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: 1.65 }}>{s.desc}</p>
+              <h3 className="text-xl font-semibold leading-snug mb-3 text-[#f8fafc]">{s.title}</h3>
+              <p className="text-[#64748b] text-[0.9rem] leading-relaxed">{s.desc}</p>
             </div>
           ))}
         </div>
-      </div>
-
-
+      </Container>
     </section>
   );
 }
