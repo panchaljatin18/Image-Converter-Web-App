@@ -1,0 +1,123 @@
+"use client";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
+import authService from "../services/authService";
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Check auth status on mount
+  useEffect(() => {
+    async function loadUser() {
+      const token = authService.getToken();
+      if (token) {
+        try {
+          const data = await authService.getCurrentUser();
+          if (data.success && data.user) {
+            setUser(data.user);
+          }
+        } catch (err) {
+          console.error("Failed to authenticate session token:", err);
+          authService.logout(); // Clean invalid token
+        }
+      }
+      setLoading(false);
+    }
+    loadUser();
+  }, []);
+
+  // Login handler
+  const login = async (email, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.login(email, password);
+      if (data.success && data.user) {
+        setUser(data.user);
+      }
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.message || "Login failed");
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  // Register handler
+  const register = async (name, email, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.register(name, email, password);
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.message || "Registration failed");
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  // Forgot Password handler
+  const forgotPassword = async (email) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.forgotPassword(email);
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.message || "Request failed");
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  // Reset Password handler
+  const resetPassword = async (token, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.resetPassword(token, password);
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.message || "Reset failed");
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  // Logout handler
+  const logout = () => {
+    authService.logout();
+    setUser(null);
+  };
+
+  const value = {
+    user,
+    loading,
+    error,
+    isAuthenticated: !!user,
+    login,
+    register,
+    forgotPassword,
+    resetPassword,
+    logout
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
