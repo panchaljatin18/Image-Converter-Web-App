@@ -1224,13 +1224,13 @@ export default function Hero() {
   }, [clearOutputUrl]);
 
   return (
-    <section className="relative min-h-screen flex items-start md:items-center overflow-hidden pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[64px] 2xl:pt-[148px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
+    <section className="relative min-h-screen flex items-start md:items-center overflow-hidden pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[90px] 2xl:pt-[148px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
       
 
       <div className="absolute inset-0 [background-image:linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_42%,transparent_80%)]" />
 
       <Container className="relative z-[1]">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[38px] 2xl:gap-[40px] w-full">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[138px] 2xl:gap-[120px] w-full">
           <div className="w-full md:flex-[1_1_50%] max-w-full md:max-w-[448px] lg:max-w-[512px] xl:max-w-[576px] 2xl:max-w-[640px]">
             <div className="mb-6">
               <span className="inline-flex items-center gap-2 py-2 px-4 bg-indigo-500/8 border border-indigo-500/20 rounded-full text-[#818cf8] font-semibold font-['Outfit'] tracking-wide text-[0.78rem]">
@@ -1239,10 +1239,10 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold mb-4 tracking-[-0.04em] leading-[1.1] font-['Outfit']">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold whitespace-nowrap mb-4 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
               Convert Any Image
               <br />
-              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">without the clutter</span>
+              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Without the clutter</span>
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">
