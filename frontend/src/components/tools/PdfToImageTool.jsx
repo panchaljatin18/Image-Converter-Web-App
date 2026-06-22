@@ -162,7 +162,7 @@ export default function PdfToImageTool() {
               type="file"
               accept=".pdf,application/pdf"
               onChange={handleFileInput}
-              className="hidden"
+              className="absolute w-0 h-0 opacity-0 pointer-events-none"
               aria-hidden="true"
             />
             <div className="flex flex-col items-center gap-4 relative z-[1]">

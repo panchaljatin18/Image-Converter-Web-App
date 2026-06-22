@@ -1239,7 +1239,7 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold whitespace-nowrap mb-4 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold lg:whitespace-nowrap whitespace-normal mb-4 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
               Convert Any Image
               <br />
               <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Without the clutter</span>
@@ -1302,7 +1302,7 @@ export default function Hero() {
                   type="file"
                   accept={INPUT_ACCEPT}
                   onChange={(e) => handleFile(e.target.files?.[0])}
-                  className="hidden"
+                  className="absolute w-0 h-0 opacity-0 pointer-events-none"
                   aria-hidden="true"
                 />
 
@@ -1565,13 +1565,15 @@ export default function Hero() {
                               onClick={() => setIsDropdownOpen(false)}
                               className="fixed inset-0 z-[98] cursor-default"
                             />
-                            <div className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-60 bg-[#16162a] border border-white/10 rounded-2xl p-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_30px_rgba(99,102,241,0.1)] flex flex-col gap-0.5 z-[99]">
+                            <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-60 bg-[#16162a] border border-white/10 rounded-2xl p-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_30px_rgba(99,102,241,0.1)] flex flex-col gap-0.5 z-[99]">
                               <button
                                 type="button"
                                 className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
                                 onClick={() => {
-                                  setIsDropdownOpen(false);
                                   inputRef.current?.click();
+                                  setTimeout(() => {
+                                    setIsDropdownOpen(false);
+                                  }, 50);
                                 }}
                               >
                                 <Folder size={19} className="mr-3 text-[#818cf8] shrink-0" />

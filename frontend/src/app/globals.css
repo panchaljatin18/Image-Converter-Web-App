@@ -11,61 +11,13 @@
   }
 }
 
-/* ─── Hide Scrollbar — Everywhere ───────────────────────────────── */
-
-/* Firefox */
-html,
-body,
-* {
-  scrollbar-width: none;
-}
-
-/* IE / Edge (legacy) */
-html,
-body,
-* {
-  -ms-overflow-style: none;
-}
-
-/* Chrome / Safari / Opera */
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-/* Still allow scrolling — just hidden visually */
-html,
-body {
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ─── iOS Safari auto-zoom fix for inputs ───────────────────────── */
-@media (max-width: 1023px) {
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  input[type="password"],
-  input[type="search"],
-  input[type="tel"],
-  input[type="url"],
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-}
-
-/* ─── Dynamic Viewport Heights (iOS Safari fix) ─────────────────── */
-.min-h-screen {
+/* ─── Proportional scaler wrapper ───────────────────────────────── */
+/*
+ * Always renders at 1366 px (master design width).
+ * The JS DesktopScaler sets zoom dynamically so the rendered output
+ * fills the real viewport perfectly — no layout changes to master.
+ */
+#app-scaler {
+  width: 1366px;
   min-height: 100vh;
-  min-height: 100dvh;
-}
-.h-screen {
-  height: 100vh;
-  height: 100dvh;
 }

@@ -76,6 +76,7 @@ const footerTools = [
 
 const footerCompany = [
   { name: "Home", href: "/" },
+  { name: "About Us", href: "/about" },
   { name: "All Tools", href: "/tools" },
   { name: "Blog", href: "/blog" },
   { name: "FAQ", href: "/faq" },
@@ -86,7 +87,7 @@ const footerLegal = [
   { name: "Privacy Policy", href: "/privacy" },
   { name: "Terms of Service", href: "/terms" },
   { name: "Cookie Policy", href: "/privacy#cookies" },
-  { name: "GDPR", href: "/privacy#gdpr" },
+  { name: "Disclaimer", href: "/disclaimer" },
 ];
 
 const authRoutes = new Set(["/login", "/forgot-password", "/reset-password"]);

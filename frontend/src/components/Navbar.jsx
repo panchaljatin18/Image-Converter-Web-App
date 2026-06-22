@@ -72,6 +72,7 @@ const tools = [
 
 const navLinks = [
   { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
   { name: "Tools", href: "/tools", hasDropdown: true },
   { name: "Blog", href: "/blog" },
   { name: "FAQ", href: "/faq" },
@@ -83,7 +84,6 @@ const authRoutes = new Set(["/login", "/forgot-password", "/reset-password"]);
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isAuthRoute = authRoutes.has(pathname);
@@ -97,7 +97,6 @@ export default function Navbar() {
   useEffect(() => {
     const closeMenus = setTimeout(() => {
       setMobileOpen(false);
-      setToolsOpen(false);
     }, 0);
     return () => clearTimeout(closeMenus);
   }, [pathname]);
@@ -120,11 +119,10 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-[1000] backdrop-blur-[20px] transition-all duration-300 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-[1000] backdrop-blur-[20px] transition-all duration-300 ${scrolled
             ? "py-3 bg-[#0f0f1a]/95 border-b border-indigo-500/15"
             : "py-4.5 bg-[#0f0f1a]/70 border-b border-white/5"
-        }`}
+          }`}
       >
         <Container className="flex items-center justify-between gap-6">
           {/* Logo */}
@@ -140,59 +138,53 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-2 flex-1 justify-center">
+          <nav className="hidden lg:flex items-center gap-2 flex-1 justify-center">
             {navLinks.map((link) =>
               link.hasDropdown ? (
-                <div key={link.name} className="relative">
-                  <button
-                    onClick={() => setToolsOpen(!toolsOpen)}
-                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 ${
-                      pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
-                    }`}
+                <div key={link.name} className="relative group">
+                  <Link
+                    href={link.href}
+                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
+                      }`}
                   >
                     {link.name}
                     <ChevronDown
                       size={14}
-                      className={`transition-transform duration-200 ${
-                        toolsOpen ? "rotate-180" : ""
-                      }`}
+                      className="transition-transform duration-200 group-hover:rotate-180"
                     />
-                  </button>
+                  </Link>
 
                   {/* Dropdown */}
-                  {toolsOpen && (
-                    <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] animate-[fadeInUp_0.2s_ease]">
-                      {tools.map((tool) => (
-                        <Link
-                          key={tool.href}
-                          href={tool.href}
-                          className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
+                  <div className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] opacity-0 invisible translate-y-2 scale-95 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 origin-top">
+                    {tools.map((tool) => (
+                      <Link
+                        key={tool.href}
+                        href={tool.href}
+                        className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
+                      >
+                        <span
+                          className="w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 border"
+                          style={{
+                            background: `${tool.color}22`,
+                            borderColor: `${tool.color}44`,
+                            color: tool.color,
+                          }}
                         >
-                          <span
-                            className="w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 border"
-                            style={{
-                              background: `${tool.color}22`,
-                              borderColor: `${tool.color}44`,
-                              color: tool.color,
-                            }}
-                          >
-                            {tool.icon}
-                          </span>
-                          {tool.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                          {tool.icon}
+                        </span>
+                        {tool.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`py-2 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${
-                    pathname === link.href
+                  className={`py-2 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${pathname === link.href
                       ? "text-[#818cf8] bg-indigo-500/10"
                       : "text-[#94a3b8] hover:text-white hover:bg-white/5"
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -202,7 +194,7 @@ export default function Navbar() {
 
           {/* CTA + Mobile Toggle */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link href="/tools" className="no-underline hidden md:inline-block">
+            <Link href="/tools" className="no-underline hidden lg:inline-block">
               <Button variant="primary" size="sm" className="flex items-center gap-1.5 py-2 px-4.5 text-[0.85rem]">
                 <Zap size={14} />
                 All Tools
@@ -210,23 +202,27 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <Link href="/dashboard" className="no-underline hidden md:inline-block">
+              <Link href="/dashboard" className="no-underline hidden lg:inline-block">
                 <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-indigo-500/30 bg-indigo-500/15 rounded-[10px] text-white">
                   Dashboard
                 </Button>
               </Link>
             ) : (
-              <Link href="/login" className="no-underline hidden md:inline-block">
+              <Link href="/login" className="no-underline hidden lg:inline-block">
                 <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-white/15 bg-white/5 rounded-[10px] text-[#94a3b8]">
                   Sign In
                 </Button>
               </Link>
             )}
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="flex md:hidden w-10 h-10 rounded-lg bg-white/7 border border-white/10 items-center justify-center cursor-pointer text-white"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileOpen((prev) => !prev);
+              }}
+              className="flex lg:hidden w-10 h-10 rounded-lg bg-white/7 border border-white/10 items-center justify-center cursor-pointer text-white z-[1001]"
               aria-label="Toggle mobile menu"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -245,22 +241,20 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-[300px] bg-[#13131f]/98 backdrop-blur-[20px] border-l border-indigo-500/20 z-[999] overflow-y-auto p-6 pt-20 transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          mobileOpen
+        className={`fixed top-0 right-0 bottom-0 w-[300px] bg-[#13131f]/98 backdrop-blur-[20px] border-l border-indigo-500/20 z-[999] overflow-y-auto p-6 pt-20 transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] ${mobileOpen
             ? "translate-x-0 opacity-100 visible pointer-events-auto"
             : "translate-x-full opacity-0 invisible pointer-events-none"
-        }`}
+          }`}
       >
         <nav className="flex flex-col gap-1">
           {navLinks.map((link) => (
             <div key={link.name}>
               <Link
                 href={link.href}
-                className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${
-                  pathname === link.href
+                className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${pathname === link.href
                     ? "text-white bg-indigo-500/15 border-[#6366f1]"
                     : "text-[#94a3b8] border-transparent"
-                }`}
+                  }`}
               >
                 {link.name}
               </Link>
@@ -283,11 +277,10 @@ export default function Navbar() {
           {user && (
             <Link
               href="/dashboard"
-              className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${
-                pathname === "/dashboard"
+              className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${pathname === "/dashboard"
                   ? "text-white bg-indigo-500/15 border-[#6366f1]"
                   : "text-[#94a3b8] border-transparent"
-              }`}
+                }`}
             >
               Dashboard
             </Link>
@@ -320,15 +313,6 @@ export default function Navbar() {
           </div>
         </nav>
       </div>
-
-      {/* Click outside to close tools dropdown */}
-      {toolsOpen && (
-        <div
-          className="fixed inset-0 z-[999]"
-          onClick={() => setToolsOpen(false)}
-        />
-      )}
-
     </>
   );
 }

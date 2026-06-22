@@ -339,7 +339,10 @@ export default function ToolUploader({
   return (
     <div className={`mx-auto ${compact ? "max-w-[760px]" : "max-w-[860px]"}`}>
       <div
-        onClick={() => {
+        onClick={(e) => {
+          if (e.target.closest("[data-dropdown-container]") || e.target.closest("button")) {
+            return;
+          }
           if (uploadMethod === "file") {
             openPicker();
           }
@@ -380,6 +383,7 @@ export default function ToolUploader({
           accept={accept}
           multiple={multiple}
           onChange={(e) => handleFiles(e.target.files)}
+          className="absolute w-0 h-0 opacity-0 pointer-events-none"
           aria-hidden="true"
         />
 
@@ -717,7 +721,7 @@ export default function ToolUploader({
                   ))}
                 </div>
 
-                <div className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
+                <div data-dropdown-container className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
                   <Button
                     type="button"
                     variant="primary"
@@ -743,13 +747,15 @@ export default function ToolUploader({
                         onClick={() => setIsDropdownOpen(false)}
                         className="fixed inset-0 z-[98] cursor-default"
                       />
-                      <div className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[240px] bg-[#1a1a2e] border border-indigo-500/20 rounded-2xl p-1.5 shadow-[0_8px_48px_rgba(99,102,241,0.15)] flex flex-col gap-0.5 z-[99]">
+                      <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[240px] bg-[#1a1a2e] border border-indigo-500/20 rounded-2xl p-1.5 shadow-[0_8px_48px_rgba(99,102,241,0.15)] flex flex-col gap-0.5 z-[99]">
                         <button
                           type="button"
                           className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
                           onClick={() => {
-                            setIsDropdownOpen(false);
                             openPicker();
+                            setTimeout(() => {
+                              setIsDropdownOpen(false);
+                            }, 50);
                           }}
                         >
                           <Folder size={19} className="mr-2.5 text-[#818cf8] shrink-0" />
