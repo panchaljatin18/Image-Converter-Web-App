@@ -84,6 +84,7 @@ const authRoutes = new Set(["/login", "/forgot-password", "/reset-password"]);
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isAuthRoute = authRoutes.has(pathname);
@@ -97,9 +98,16 @@ export default function Navbar() {
   useEffect(() => {
     const closeMenus = setTimeout(() => {
       setMobileOpen(false);
+      setMobileToolsOpen(false);
     }, 0);
     return () => clearTimeout(closeMenus);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      setMobileToolsOpen(false);
+    }
+  }, [mobileOpen]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -142,9 +150,9 @@ export default function Navbar() {
             {navLinks.map((link) =>
               link.hasDropdown ? (
                 <div key={link.name} className="relative group">
-                  <Link
-                    href={link.href}
-                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
+                  <button
+                    type="button"
+                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
                       }`}
                   >
                     {link.name}
@@ -152,7 +160,7 @@ export default function Navbar() {
                       size={14}
                       className="transition-transform duration-200 group-hover:rotate-180"
                     />
-                  </Link>
+                  </button>
 
                   {/* Dropdown */}
                   <div className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] opacity-0 invisible translate-y-2 scale-95 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 origin-top">
@@ -249,21 +257,43 @@ export default function Navbar() {
         <nav className="flex flex-col gap-1">
           {navLinks.map((link) => (
             <div key={link.name}>
-              <Link
-                href={link.href}
-                className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${pathname === link.href
-                    ? "text-white bg-indigo-500/15 border-[#6366f1]"
-                    : "text-[#94a3b8] border-transparent"
-                  }`}
-              >
-                {link.name}
-              </Link>
+              {link.hasDropdown ? (
+                <button
+                  type="button"
+                  onClick={() => setMobileToolsOpen((prev) => !prev)}
+                  className={`w-full flex items-center justify-between py-3 px-4 rounded-lg bg-transparent border-none font-semibold text-[1rem] transition-all duration-200 border-l-[3px] cursor-pointer text-left ${pathname.startsWith("/tools")
+                      ? "text-white bg-indigo-500/15 border-[#6366f1]"
+                      : "text-[#94a3b8] border-transparent"
+                    }`}
+                >
+                  <span>{link.name}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 text-[#94a3b8] ${mobileToolsOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+              ) : (
+                <Link
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${pathname === link.href
+                      ? "text-white bg-indigo-500/15 border-[#6366f1]"
+                      : "text-[#94a3b8] border-transparent"
+                    }`}
+                >
+                  {link.name}
+                </Link>
+              )}
               {link.hasDropdown && (
-                <div className="pl-4 mt-1 flex flex-col gap-0.5">
+                <div
+                  className={`pl-4 mt-1 flex flex-col gap-0.5 overflow-hidden transition-all duration-300 ease-in-out ${mobileToolsOpen ? "max-h-[400px] opacity-100 py-1" : "max-h-0 opacity-0 pointer-events-none"
+                    }`}
+                >
                   {tools.map((tool) => (
                     <Link
                       key={tool.href}
                       href={tool.href}
+                      onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 p-2 rounded-lg no-underline text-[#64748b] text-[0.85rem] transition-all duration-200 hover:text-white"
                     >
                       <span style={{ color: tool.color }}>{tool.icon}</span>

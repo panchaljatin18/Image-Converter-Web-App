@@ -70,6 +70,7 @@ export default function ToolUploader({
   const [error, setError] = useState("");
   const [previews, setPreviews] = useState([]);
   const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   // Cloud/URL upload states
   const [uploadMethod, setUploadMethod] = useState("file"); // "file", "url", "cloud"
@@ -77,6 +78,27 @@ export default function ToolUploader({
   const [inputUrl, setInputUrl] = useState("");
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener("click", handleOutsideClick);
+      document.addEventListener("touchstart", handleOutsideClick);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isDropdownOpen]);
 
   // Google Drive Backend states
   const [isDriveConnected, setIsDriveConnected] = useState(false);
@@ -340,7 +362,20 @@ export default function ToolUploader({
     <div className={`mx-auto ${compact ? "max-w-[760px]" : "max-w-[860px]"}`}>
       <div
         onClick={(e) => {
-          if (e.target.closest("[data-dropdown-container]") || e.target.closest("button")) {
+          let isButton = false;
+          let el = e.target;
+          while (el && el !== document.body && el !== null) {
+            if (el.tagName === "BUTTON") {
+              isButton = true;
+              break;
+            }
+            el = el.parentElement;
+          }
+
+          if (
+            (dropdownRef.current && dropdownRef.current.contains(e.target)) ||
+            isButton
+          ) {
             return;
           }
           if (uploadMethod === "file") {
@@ -721,7 +756,7 @@ export default function ToolUploader({
                   ))}
                 </div>
 
-                <div data-dropdown-container className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
+                <div ref={dropdownRef} data-dropdown-container className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
                   <Button
                     type="button"
                     variant="primary"
@@ -742,81 +777,76 @@ export default function ToolUploader({
                   </Button>
                   
                   {isDropdownOpen && (
-                    <>
-                      <div 
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="fixed inset-0 z-[98] cursor-default"
-                      />
-                      <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[240px] bg-[#1a1a2e] border border-indigo-500/20 rounded-2xl p-1.5 shadow-[0_8px_48px_rgba(99,102,241,0.15)] flex flex-col gap-0.5 z-[99]">
-                        <button
-                          type="button"
-                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
-                          onClick={() => {
-                            openPicker();
-                            setTimeout(() => {
-                              setIsDropdownOpen(false);
-                            }, 50);
-                          }}
-                        >
-                          <Folder size={19} className="mr-2.5 text-[#818cf8] shrink-0" />
-                          From my computer
-                        </button>
-                        
-                        <button
-                          type="button"
-                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
-                          onClick={() => {
+                    <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[240px] bg-[#1a1a2e] border border-indigo-500/20 rounded-2xl p-1.5 shadow-[0_8px_48px_rgba(99,102,241,0.15)] flex flex-col gap-0.5 z-[99]">
+                      <button
+                        type="button"
+                        className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
+                        onClick={() => {
+                          openPicker();
+                          setTimeout(() => {
                             setIsDropdownOpen(false);
-                            setUploadMethod("url");
-                          }}
-                        >
-                          <Link2 size={19} className="mr-2.5 text-cyan-400 shrink-0" />
-                          By URL
-                        </button>
-                        
-                        <div className="h-px bg-white/8 my-1" />
-                        
-                        <button
-                          type="button"
-                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
-                          onClick={() => {
-                            setIsDropdownOpen(false);
-                            setUploadMethod("cloud");
-                            setCloudProvider("google-drive");
-                          }}
-                        >
-                          {googleDriveIcon}
-                          From Google Drive
-                        </button>
-                        
-                        <button
-                          type="button"
-                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
-                          onClick={() => {
-                            setIsDropdownOpen(false);
-                            setUploadMethod("cloud");
-                            setCloudProvider("dropbox");
-                          }}
-                        >
-                          {dropboxIcon}
-                          From Dropbox
-                        </button>
-                        
-                        <button
-                          type="button"
-                          className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
-                          onClick={() => {
-                            setIsDropdownOpen(false);
-                            setUploadMethod("cloud");
-                            setCloudProvider("onedrive");
-                          }}
-                        >
-                          {onedriveIcon}
-                          From OneDrive
-                        </button>
-                      </div>
-                    </>
+                          }, 50);
+                        }}
+                      >
+                        <Folder size={19} className="mr-2.5 text-[#818cf8] shrink-0" />
+                        From my computer
+                      </button>
+                      
+                      <button
+                        type="button"
+                        className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setUploadMethod("url");
+                        }}
+                      >
+                        <Link2 size={19} className="mr-2.5 text-cyan-400 shrink-0" />
+                        By URL
+                      </button>
+                      
+                      <div className="h-px bg-white/8 my-1" />
+                      
+                      <button
+                        type="button"
+                        className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setUploadMethod("cloud");
+                          setCloudProvider("google-drive");
+                        }}
+                      >
+                        {googleDriveIcon}
+                        From Google Drive
+                      </button>
+                      
+                      <button
+                        type="button"
+                        className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setUploadMethod("cloud");
+                          setCloudProvider("dropbox");
+                        }}
+                      >
+                        {dropboxIcon}
+                        From Dropbox
+                      </button>
+                      
+                      <button
+                        type="button"
+                        className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-indigo-500/15 text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 hover:translate-x-[3px] outline-none"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setUploadMethod("cloud");
+                          setCloudProvider("onedrive");
+                        }}
+                      >
+                        {onedriveIcon}
+                        From OneDrive
+                      </button>
+                    </div>
                   )}
+
                 </div>
 
                 <p className="text-[#64748b] text-[0.78rem]">

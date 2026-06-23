@@ -47,7 +47,7 @@ export default function DisclaimerContent() {
             Key Disclaimer Point
           </h2>
           <p className="text-[#94a3b8] text-[0.925rem] leading-relaxed">
-            ImageToolkit is provided "as is" without warranty. All processing occurs locally in your browser, meaning we do not access or store your files. You are solely responsible for maintaining backups and ensuring you have the legal right to process your files.
+            ImageToolkit is provided &quot;as is&quot; without warranty. All processing occurs locally in your browser, meaning we do not access or store your files. You are solely responsible for maintaining backups and ensuring you have the legal right to process your files.
           </p>
         </div>
 

@@ -72,7 +72,7 @@ export default function ToolPageLayout({
       </div>
 
       {/* Tool Content */}
-      <Container className="py-12">
+      <Container className="pt-16 pb-12 md:pt-20">
         {children}
       </Container>
 

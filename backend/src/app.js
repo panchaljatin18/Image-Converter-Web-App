@@ -26,7 +26,12 @@ app.use(cors({
   origin: (origin, callback) => {
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+    
+    // In development mode, allow any local network origin (localhost, 127.0.0.1, or local IP addresses)
+    const isLocalOrLan = process.env.NODE_ENV === "development" || 
+                         /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin);
+
+    if (isLocalOrLan || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
       return callback(null, true);
     }
     return callback(new Error("CORS policy does not allow access from this Origin."));

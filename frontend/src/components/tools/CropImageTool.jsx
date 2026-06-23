@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Crop } from "lucide-react";
 import Button from "@/components/Button";
+import imageCompression from "browser-image-compression";
 
 export default function CropImageTool() {
   const [file, setFile] = useState(null);
@@ -29,11 +30,23 @@ export default function CropImageTool() {
 
   const [aspectPreset, setAspectPreset] = useState(ASPECT_PRESETS[0]);
 
-  const handleFileSelected = useCallback((f) => {
+  const handleFileSelected = useCallback(async (f) => {
     setFile(f);
     setResult(null);
-    const url = URL.createObjectURL(f);
-    setImageUrl(url);
+    try {
+      const safeFile = await imageCompression(f, {
+        maxSizeMB: 50,
+        maxWidthOrHeight: 8192,
+        useWebWorker: true,
+        fileType: "image/png",
+        initialQuality: 1,
+      });
+      const url = URL.createObjectURL(safeFile);
+      setImageUrl(url);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to load image securely.");
+    }
   }, []);
 
   const getPreviewRect = useCallback(() => {

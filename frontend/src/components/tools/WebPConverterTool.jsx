@@ -5,6 +5,8 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
 
+import imageCompression from "browser-image-compression";
+
 const OUTPUT_FORMATS = [
   { value: "webp", label: "To WebP", mime: "image/webp", ext: ".webp" },
   { value: "png", label: "WebP → PNG", mime: "image/png", ext: ".png" },
@@ -42,57 +44,50 @@ export default function WebPConverterTool() {
   const handleConvert = useCallback(async () => {
     if (!file) return;
     setConverting(true);
-    setProgress(20);
+    setProgress(10);
 
     try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 50,
+        maxWidthOrHeight: 8192,
+        useWebWorker: true,
+        fileType: selectedFormat.mime,
+        initialQuality: quality / 100,
+        onProgress: (p) => setProgress(Math.max(10, p - 5)),
+      });
+
       const img = new window.Image();
-      const url = URL.createObjectURL(file);
-      img.src = url;
+      const outputUrl = URL.createObjectURL(compressed);
+      img.src = outputUrl;
 
       await new Promise((resolve, reject) => {
         img.onload = resolve;
-        img.onerror = reject;
+        img.onerror = () => reject(new Error("Failed to load converted image"));
       });
 
-      setProgress(65);
-
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-
-      if (selectedFormat.mime === "image/jpeg") {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (!img.naturalWidth || !img.naturalHeight) {
+        throw new Error("Invalid image dimensions resulting from conversion.");
       }
-
-      ctx.drawImage(img, 0, 0);
-      setProgress(85);
-
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, selectedFormat.mime, quality / 100)
-      );
 
       setProgress(100);
 
       const baseName = file.name.replace(/\.(webp|png|jpe?g|gif|bmp)$/i, "");
       const outputName = baseName + selectedFormat.ext;
-      const outputUrl = URL.createObjectURL(blob);
 
       setResult({
         url: outputUrl,
         name: outputName,
-        size: (blob.size / 1024).toFixed(1) + " KB",
+        size: (compressed.size / 1024).toFixed(1) + " KB",
         originalSize: (file.size / 1024).toFixed(1) + " KB",
-        savings: (((file.size - blob.size) / file.size) * 100).toFixed(1),
+        savings: (((file.size - compressed.size) / file.size) * 100).toFixed(1),
         width: img.naturalWidth,
         height: img.naturalHeight,
         format: selectedFormat.label,
       });
 
-      URL.revokeObjectURL(url);
-    } catch {
-      alert("Failed to convert. Make sure your browser supports WebP.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to convert. Make sure your file is valid.");
     } finally {
       setConverting(false);
     }

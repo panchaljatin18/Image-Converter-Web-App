@@ -1,0 +1,37 @@
+diff --git a/frontend/src/sections/HomePage/Hero/index.jsx b/frontend/src/sections/HomePage/Hero/index.jsx
+index d93757f..68b3929 100644
+--- a/frontend/src/sections/HomePage/Hero/index.jsx
++++ b/frontend/src/sections/HomePage/Hero/index.jsx
+@@ -1530,10 +1530,10 @@ export default function Hero() {
+                         <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5">
+                           Drop your file here
+                         </p>
+-                        <p className="text-[#64748b] text-[0.92rem] leading-relaxed">
+-                          Upload a file and we will detect the source format automatically, then let you choose
+-                          the output type.
++                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#818cf8] mb-1.5">
++                          Select your file here
+                         </p>
++
+                       </div>
+                       
+                       <div className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
+@@ -1637,9 +1637,6 @@ export default function Hero() {
+                         )}
+                       </div>
+                       
+-                      <p className="text-[#64748b] text-[0.78rem]">
+-                        Common and legacy file formats are supported in a browser-first workflow.
+-                      </p>
+                     </div>
+                   )
+                 ) : result ? (
+@@ -1953,7 +1950,7 @@ export default function Hero() {
+               </div>
+ 
+               {error && (
+-                <div className="mt-3.5 flex items-center gap-2.5 p-3 px-4 bg-red-500/10 border border-red-500/28 rounded-xl text-red-300 text-[0.875rem]">
++                <div className="mt-3.5 flex items-center gap-2.5 p-3 px-4 bg-indigo-500/10 border border-red-500/28 rounded-xl text-red-300 text-[0.875rem]">
+                   <AlertCircle size={16} />
+                   {error}
+                 </div>

@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import GoogleDrivePicker from "../../../components/GoogleDrivePicker";
@@ -11,9 +10,8 @@ import dropboxService from "../../../services/dropboxService";
 import OneDrivePicker from "../../../components/OneDrivePicker";
 import onedriveService from "../../../services/onedriveService";
 import authService from "../../../services/authService";
-import Container from "@/components/Container";
-import Button from "@/components/Button";
 import {
+  ArrowRight,
   AlertCircle,
   CheckCircle,
   ChevronDown,
@@ -31,42 +29,38 @@ import {
 } from "lucide-react";
 
 const googleDriveIcon = (
-  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
-    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
-    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
-    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
+    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" opacity="0.8"/>
   </svg>
 );
 
 const dropboxIcon = (
-  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
-    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
+    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" opacity="0.8"/>
   </svg>
 );
 
 const onedriveIcon = (
-  <svg viewBox="0 0 24 24" width="19" height="19" className="mr-3 shrink-0">
-    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ marginRight: "12px", flexShrink: 0 }}>
+    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.8"/>
   </svg>
 );
 
 const googleDriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28">
-    <path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574z" fill="#4285F4" />
-    <path d="M7.25 3.214a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214z" fill="#0F9D58" />
-    <path d="M9.509 15.867l-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="#FFBA00" />
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+    <path d="M14.3 2.5L22.6 17h-5.2L9.1 2.5h5.2zM7.9 18.5L3.7 11.2l5.2-9L13.1 9.5l-5.2 9zM9.6 18.5h10.3l-4.1-7.2H5.5l4.1 7.2z" />
   </svg>
 );
 
 const dropboxIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28">
-    <path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="#0061ff" />
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+    <path d="M4 4l6 4-6 4-4-4zm6 8l6-4-6-4-6 4zm6-4l6 4-4 4-6-4zm0 8l6-4-6-4-6 4zm-6.2 1.3l6.2-4.1 6.2 4.1-6.2 4.1z" />
   </svg>
 );
 
 const onedriveIconLarge = (
-  <svg viewBox="0 0 24 24" width="28" height="28">
-    <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
   </svg>
 );
 
@@ -80,50 +74,50 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#6366f1",
     glow: "rgba(99,102,241,0.35)",
     formats: [
-      { value: "3fr", label: "3FR", note: "Hasselblad Raw" },
-      { value: "arw", label: "ARW", note: "Sony Raw" },
+      { value: "3fr",  label: "3FR",  note: "Hasselblad Raw" },
+      { value: "arw",  label: "ARW",  note: "Sony Raw" },
       { value: "avif", label: "AVIF", note: "Modern compression" },
-      { value: "bmp", label: "BMP", note: "Bitmap output" },
-      { value: "cr2", label: "CR2", note: "Canon Raw" },
-      { value: "cr3", label: "CR3", note: "Canon Raw 3" },
-      { value: "crw", label: "CRW", note: "Canon Raw CIFF" },
-      { value: "dcr", label: "DCR", note: "Kodak Raw" },
-      { value: "dng", label: "DNG", note: "Digital Negative" },
-      { value: "eps", label: "EPS", note: "PostScript" },
-      { value: "erf", label: "ERF", note: "Epson Raw" },
-      { value: "gif", label: "GIF", note: "Animated graphics" },
+      { value: "bmp",  label: "BMP",  note: "Bitmap output" },
+      { value: "cr2",  label: "CR2",  note: "Canon Raw" },
+      { value: "cr3",  label: "CR3",  note: "Canon Raw 3" },
+      { value: "crw",  label: "CRW",  note: "Canon Raw CIFF" },
+      { value: "dcr",  label: "DCR",  note: "Kodak Raw" },
+      { value: "dng",  label: "DNG",  note: "Digital Negative" },
+      { value: "eps",  label: "EPS",  note: "PostScript" },
+      { value: "erf",  label: "ERF",  note: "Epson Raw" },
+      { value: "gif",  label: "GIF",  note: "Animated graphics" },
       { value: "heic", label: "HEIC", note: "Apple photo format" },
       { value: "heif", label: "HEIF", note: "High-efficiency" },
       { value: "icns", label: "ICNS", note: "Apple Icon" },
-      { value: "ico", label: "ICO", note: "Icon files" },
+      { value: "ico",  label: "ICO",  note: "Icon files" },
       { value: "jfif", label: "JFIF", note: "JPEG File Interchange" },
       { value: "jpeg", label: "JPEG", note: "Standard JPEG" },
-      { value: "jpg", label: "JPG", note: "Best for photos" },
-      { value: "jxl", label: "JXL", note: "JPEG XL" },
-      { value: "mos", label: "MOS", note: "Leaf Raw" },
-      { value: "mrw", label: "MRW", note: "Minolta Raw" },
-      { value: "nef", label: "NEF", note: "Nikon Raw" },
-      { value: "odd", label: "ODD", note: "OpenDocument" },
-      { value: "odg", label: "ODG", note: "OpenDocument Drawing" },
-      { value: "orf", label: "ORF", note: "Olympus Raw" },
-      { value: "pef", label: "PEF", note: "Pentax Raw" },
-      { value: "png", label: "PNG", note: "Transparent & lossless" },
-      { value: "ppm", label: "PPM", note: "Portable Pixmap" },
-      { value: "ps", label: "PS", note: "PostScript" },
-      { value: "psb", label: "PSB", note: "Photoshop Big" },
-      { value: "psd", label: "PSD", note: "Photoshop format" },
-      { value: "pub", label: "PUB", note: "MS Publisher" },
-      { value: "raf", label: "RAF", note: "Fuji Raw" },
-      { value: "raw", label: "RAW", note: "Camera raw data" },
-      { value: "rw2", label: "RW2", note: "Panasonic Raw" },
-      { value: "svg", label: "SVG", note: "Scalable vector" },
-      { value: "tga", label: "TGA", note: "Truevision TGA" },
-      { value: "tif", label: "TIF", note: "High fidelity" },
+      { value: "jpg",  label: "JPG",  note: "Best for photos" },
+      { value: "jxl",  label: "JXL",  note: "JPEG XL" },
+      { value: "mos",  label: "MOS",  note: "Leaf Raw" },
+      { value: "mrw",  label: "MRW",  note: "Minolta Raw" },
+      { value: "nef",  label: "NEF",  note: "Nikon Raw" },
+      { value: "odd",  label: "ODD",  note: "OpenDocument" },
+      { value: "odg",  label: "ODG",  note: "OpenDocument Drawing" },
+      { value: "orf",  label: "ORF",  note: "Olympus Raw" },
+      { value: "pef",  label: "PEF",  note: "Pentax Raw" },
+      { value: "png",  label: "PNG",  note: "Transparent & lossless" },
+      { value: "ppm",  label: "PPM",  note: "Portable Pixmap" },
+      { value: "ps",   label: "PS",   note: "PostScript" },
+      { value: "psb",  label: "PSB",  note: "Photoshop Big" },
+      { value: "psd",  label: "PSD",  note: "Photoshop format" },
+      { value: "pub",  label: "PUB",  note: "MS Publisher" },
+      { value: "raf",  label: "RAF",  note: "Fuji Raw" },
+      { value: "raw",  label: "RAW",  note: "Camera raw data" },
+      { value: "rw2",  label: "RW2",  note: "Panasonic Raw" },
+      { value: "svg",  label: "SVG",  note: "Scalable vector" },
+      { value: "tga",  label: "TGA",  note: "Truevision TGA" },
+      { value: "tif",  label: "TIF",  note: "High fidelity" },
       { value: "tiff", label: "TIFF", note: "High fidelity" },
       { value: "webp", label: "WebP", note: "Small & web-friendly" },
-      { value: "x3f", label: "X3F", note: "Sigma Raw" },
-      { value: "xcf", label: "XCF", note: "GIMP Image" },
-      { value: "xps", label: "XPS", note: "XML Paper Spec" },
+      { value: "x3f",  label: "X3F",  note: "Sigma Raw" },
+      { value: "xcf",  label: "XCF",  note: "GIMP Image" },
+      { value: "xps",  label: "XPS",  note: "XML Paper Spec" },
     ],
   },
   {
@@ -132,44 +126,44 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.35)",
     formats: [
-      { value: "7z", label: "7Z", note: "7-Zip archive" },
-      { value: "ace", label: "ACE", note: "ACE archive" },
-      { value: "alz", label: "ALZ", note: "ALZ archive" },
-      { value: "arc", label: "ARC", note: "ARC archive" },
-      { value: "arj", label: "ARJ", note: "ARJ archive" },
-      { value: "bz", label: "BZ", note: "Bzip archive" },
-      { value: "bz2", label: "BZ2", note: "Bzip2 archive" },
-      { value: "cab", label: "CAB", note: "Windows cabinet" },
-      { value: "cpio", label: "CPIO", note: "CPIO archive" },
-      { value: "deb", label: "DEB", note: "Debian package" },
-      { value: "dmg", label: "DMG", note: "Mac disk image" },
-      { value: "gz", label: "GZ", note: "Gzip compressed" },
-      { value: "img", label: "IMG", note: "Disk image" },
-      { value: "iso", label: "ISO", note: "CD/DVD image" },
-      { value: "jar", label: "JAR", note: "Java archive" },
-      { value: "lha", label: "LHA", note: "LHA archive" },
-      { value: "lz", label: "LZ", note: "Lzip archive" },
-      { value: "lzma", label: "LZMA", note: "LZMA archive" },
-      { value: "lzo", label: "LZO", note: "LZO archive" },
-      { value: "rar", label: "RAR", note: "WinRAR archive" },
-      { value: "rpm", label: "RPM", note: "Red Hat package" },
-      { value: "rz", label: "RZ", note: "Rzip archive" },
-      { value: "tar", label: "TAR", note: "Unix archive" },
-      { value: "tar.7z", label: "TAR.7Z", note: "Tar 7-Zip" },
-      { value: "tar.bz", label: "TAR.BZ", note: "Tar Bzip" },
+      { value: "7z",      label: "7Z",      note: "7-Zip archive" },
+      { value: "ace",     label: "ACE",     note: "ACE archive" },
+      { value: "alz",     label: "ALZ",     note: "ALZ archive" },
+      { value: "arc",     label: "ARC",     note: "ARC archive" },
+      { value: "arj",     label: "ARJ",     note: "ARJ archive" },
+      { value: "bz",      label: "BZ",      note: "Bzip archive" },
+      { value: "bz2",     label: "BZ2",     note: "Bzip2 archive" },
+      { value: "cab",     label: "CAB",     note: "Windows cabinet" },
+      { value: "cpio",    label: "CPIO",    note: "CPIO archive" },
+      { value: "deb",     label: "DEB",     note: "Debian package" },
+      { value: "dmg",     label: "DMG",     note: "Mac disk image" },
+      { value: "gz",      label: "GZ",      note: "Gzip compressed" },
+      { value: "img",     label: "IMG",     note: "Disk image" },
+      { value: "iso",     label: "ISO",     note: "CD/DVD image" },
+      { value: "jar",     label: "JAR",     note: "Java archive" },
+      { value: "lha",     label: "LHA",     note: "LHA archive" },
+      { value: "lz",      label: "LZ",      note: "Lzip archive" },
+      { value: "lzma",    label: "LZMA",    note: "LZMA archive" },
+      { value: "lzo",     label: "LZO",     note: "LZO archive" },
+      { value: "rar",     label: "RAR",     note: "WinRAR archive" },
+      { value: "rpm",     label: "RPM",     note: "Red Hat package" },
+      { value: "rz",      label: "RZ",      note: "Rzip archive" },
+      { value: "tar",     label: "TAR",     note: "Unix archive" },
+      { value: "tar.7z",  label: "TAR.7Z",  note: "Tar 7-Zip" },
+      { value: "tar.bz",  label: "TAR.BZ",  note: "Tar Bzip" },
       { value: "tar.bz2", label: "TAR.BZ2", note: "Tar Bzip2" },
-      { value: "tar.gz", label: "TAR.GZ", note: "Tar Gzip" },
+      { value: "tar.gz",  label: "TAR.GZ",  note: "Tar Gzip" },
       { value: "tar.lzo", label: "TAR.LZO", note: "Tar LZO" },
-      { value: "tar.xz", label: "TAR.XZ", note: "Tar XZ" },
-      { value: "tar.z", label: "TAR.Z", note: "Tar Z" },
-      { value: "tbz", label: "TBZ", note: "Tar Bzip" },
-      { value: "tbz2", label: "TBZ2", note: "Tar Bzip2" },
-      { value: "tgz", label: "TGZ", note: "Tar Gzip" },
-      { value: "tz", label: "TZ", note: "Tar Z" },
-      { value: "tzo", label: "TZO", note: "Tar LZO" },
-      { value: "xz", label: "XZ", note: "XZ archive" },
-      { value: "z", label: "Z", note: "Z archive" },
-      { value: "zip", label: "ZIP", note: "Universal archive" },
+      { value: "tar.xz",  label: "TAR.XZ",  note: "Tar XZ" },
+      { value: "tar.z",   label: "TAR.Z",   note: "Tar Z" },
+      { value: "tbz",     label: "TBZ",     note: "Tar Bzip" },
+      { value: "tbz2",    label: "TBZ2",    note: "Tar Bzip2" },
+      { value: "tgz",     label: "TGZ",     note: "Tar Gzip" },
+      { value: "tz",      label: "TZ",      note: "Tar Z" },
+      { value: "tzo",     label: "TZO",     note: "Tar LZO" },
+      { value: "xz",      label: "XZ",      note: "XZ archive" },
+      { value: "z",       label: "Z",       note: "Z archive" },
+      { value: "zip",     label: "ZIP",     note: "Universal archive" },
     ],
   },
   {
@@ -178,27 +172,27 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#10b981",
     glow: "rgba(16,185,129,0.35)",
     formats: [
-      { value: "aac", label: "AAC", note: "Apple audio" },
-      { value: "ac3", label: "AC3", note: "Dolby Digital" },
-      { value: "aif", label: "AIF", note: "AIFF audio" },
+      { value: "aac",  label: "AAC",  note: "Apple audio" },
+      { value: "ac3",  label: "AC3",  note: "Dolby Digital" },
+      { value: "aif",  label: "AIF",  note: "AIFF audio" },
       { value: "aifc", label: "AIFC", note: "Compressed AIFF" },
       { value: "aiff", label: "AIFF", note: "Apple lossless" },
-      { value: "amr", label: "AMR", note: "Voice audio" },
-      { value: "au", label: "AU", note: "Sun audio" },
-      { value: "caf", label: "CAF", note: "Core Audio" },
-      { value: "dss", label: "DSS", note: "Digital Speech" },
+      { value: "amr",  label: "AMR",  note: "Voice audio" },
+      { value: "au",   label: "AU",   note: "Sun audio" },
+      { value: "caf",  label: "CAF",  note: "Core Audio" },
+      { value: "dss",  label: "DSS",  note: "Digital Speech" },
       { value: "flac", label: "FLAC", note: "Lossless HD audio" },
-      { value: "m4a", label: "M4A", note: "Apple MPEG4 audio" },
-      { value: "m4b", label: "M4B", note: "MPEG4 audiobook" },
+      { value: "m4a",  label: "M4A",  note: "Apple MPEG4 audio" },
+      { value: "m4b",  label: "M4B",  note: "MPEG4 audiobook" },
       { value: "midi", label: "MIDI", note: "Musical notation" },
-      { value: "mp3", label: "MP3", note: "Universal audio" },
-      { value: "oga", label: "OGA", note: "Ogg audio" },
-      { value: "ogg", label: "OGG", note: "Open source audio" },
+      { value: "mp3",  label: "MP3",  note: "Universal audio" },
+      { value: "oga",  label: "OGA",  note: "Ogg audio" },
+      { value: "ogg",  label: "OGG",  note: "Open source audio" },
       { value: "opus", label: "OPUS", note: "Web audio codec" },
-      { value: "voc", label: "VOC", note: "Creative Voice" },
-      { value: "wav", label: "WAV", note: "Lossless audio" },
+      { value: "voc",  label: "VOC",  note: "Creative Voice" },
+      { value: "wav",  label: "WAV",  note: "Lossless audio" },
       { value: "weba", label: "WEBA", note: "WebM audio" },
-      { value: "wma", label: "WMA", note: "Windows audio" },
+      { value: "wma",  label: "WMA",  note: "Windows audio" },
     ],
   },
   {
@@ -207,34 +201,34 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#ef4444",
     glow: "rgba(239,68,68,0.35)",
     formats: [
-      { value: "3g2", label: "3G2", note: "Mobile video" },
-      { value: "3gp", label: "3GP", note: "Mobile video" },
+      { value: "3g2",  label: "3G2",  note: "Mobile video" },
+      { value: "3gp",  label: "3GP",  note: "Mobile video" },
       { value: "3gpp", label: "3GPP", note: "Mobile video" },
-      { value: "avi", label: "AVI", note: "Windows video" },
+      { value: "avi",  label: "AVI",  note: "Windows video" },
       { value: "cavs", label: "CAVS", note: "Chinese audio/video" },
-      { value: "dv", label: "DV", note: "Digital video" },
-      { value: "dvr", label: "DVR", note: "Digital video record" },
-      { value: "flv", label: "FLV", note: "Flash video" },
+      { value: "dv",   label: "DV",   note: "Digital video" },
+      { value: "dvr",  label: "DVR",  note: "Digital video record" },
+      { value: "flv",  label: "FLV",  note: "Flash video" },
       { value: "m2ts", label: "M2TS", note: "Blu-ray video" },
-      { value: "m4v", label: "M4V", note: "iTunes video" },
-      { value: "mkv", label: "MKV", note: "Matroska video" },
-      { value: "mod", label: "MOD", note: "Camcorder video" },
-      { value: "mov", label: "MOV", note: "Apple QuickTime" },
-      { value: "mp4", label: "MP4", note: "Universal video" },
+      { value: "m4v",  label: "M4V",  note: "iTunes video" },
+      { value: "mkv",  label: "MKV",  note: "Matroska video" },
+      { value: "mod",  label: "MOD",  note: "Camcorder video" },
+      { value: "mov",  label: "MOV",  note: "Apple QuickTime" },
+      { value: "mp4",  label: "MP4",  note: "Universal video" },
       { value: "mpeg", label: "MPEG", note: "MPEG video" },
-      { value: "mpg", label: "MPG", note: "MPEG video" },
-      { value: "mts", label: "MTS", note: "AVCHD video" },
-      { value: "mxf", label: "MXF", note: "Material Exchange" },
-      { value: "ogg", label: "OGG", note: "Ogg video" },
-      { value: "ogv", label: "OGV", note: "Ogg video" },
-      { value: "rm", label: "RM", note: "RealMedia" },
+      { value: "mpg",  label: "MPG",  note: "MPEG video" },
+      { value: "mts",  label: "MTS",  note: "AVCHD video" },
+      { value: "mxf",  label: "MXF",  note: "Material Exchange" },
+      { value: "ogg",  label: "OGG",  note: "Ogg video" },
+      { value: "ogv",  label: "OGV",  note: "Ogg video" },
+      { value: "rm",   label: "RM",   note: "RealMedia" },
       { value: "rmvb", label: "RMVB", note: "RealMedia VBR" },
-      { value: "swf", label: "SWF", note: "Flash format" },
-      { value: "ts", label: "TS", note: "Transport stream" },
-      { value: "vob", label: "VOB", note: "DVD video" },
+      { value: "swf",  label: "SWF",  note: "Flash format" },
+      { value: "ts",   label: "TS",   note: "Transport stream" },
+      { value: "vob",  label: "VOB",  note: "DVD video" },
       { value: "webm", label: "WebM", note: "Web video format" },
-      { value: "wmv", label: "WMV", note: "Windows media" },
-      { value: "wtv", label: "WTV", note: "Windows TV" },
+      { value: "wmv",  label: "WMV",  note: "Windows media" },
+      { value: "wtv",  label: "WTV",  note: "Windows TV" },
     ],
   },
   {
@@ -243,27 +237,27 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#06b6d4",
     glow: "rgba(6,182,212,0.35)",
     formats: [
-      { value: "abw", label: "ABW", note: "AbiWord document" },
-      { value: "djvu", label: "DJVU", note: "DjVu document" },
-      { value: "doc", label: "DOC", note: "Legacy Word" },
-      { value: "docm", label: "DOCM", note: "Word macro" },
-      { value: "docx", label: "DOCX", note: "Word document" },
-      { value: "dot", label: "DOT", note: "Word template" },
-      { value: "dotx", label: "DOTX", note: "Word template" },
-      { value: "html", label: "HTML", note: "Web page" },
-      { value: "hwp", label: "HWP", note: "Hangul Word" },
-      { value: "lwp", label: "LWP", note: "Lotus Word Pro" },
-      { value: "md", label: "MD", note: "Markdown" },
-      { value: "odt", label: "ODT", note: "OpenDocument text" },
+      { value: "abw",   label: "ABW",   note: "AbiWord document" },
+      { value: "djvu",  label: "DJVU",  note: "DjVu document" },
+      { value: "doc",   label: "DOC",   note: "Legacy Word" },
+      { value: "docm",  label: "DOCM",  note: "Word macro" },
+      { value: "docx",  label: "DOCX",  note: "Word document" },
+      { value: "dot",   label: "DOT",   note: "Word template" },
+      { value: "dotx",  label: "DOTX",  note: "Word template" },
+      { value: "html",  label: "HTML",  note: "Web page" },
+      { value: "hwp",   label: "HWP",   note: "Hangul Word" },
+      { value: "lwp",   label: "LWP",   note: "Lotus Word Pro" },
+      { value: "md",    label: "MD",    note: "Markdown" },
+      { value: "odt",   label: "ODT",   note: "OpenDocument text" },
       { value: "pages", label: "PAGES", note: "Apple Pages" },
-      { value: "pdf", label: "PDF", note: "Portable document" },
-      { value: "rst", label: "RST", note: "reStructuredText" },
-      { value: "rtf", label: "RTF", note: "Rich text" },
-      { value: "tex", label: "TEX", note: "LaTeX document" },
-      { value: "txt", label: "TXT", note: "Plain text" },
-      { value: "wpd", label: "WPD", note: "WordPerfect" },
-      { value: "wps", label: "WPS", note: "Works Word" },
-      { value: "zabw", label: "ZABW", note: "Compressed AbiWord" },
+      { value: "pdf",   label: "PDF",   note: "Portable document" },
+      { value: "rst",   label: "RST",   note: "reStructuredText" },
+      { value: "rtf",   label: "RTF",   note: "Rich text" },
+      { value: "tex",   label: "TEX",   note: "LaTeX document" },
+      { value: "txt",   label: "TXT",   note: "Plain text" },
+      { value: "wpd",   label: "WPD",   note: "WordPerfect" },
+      { value: "wps",   label: "WPS",   note: "Works Word" },
+      { value: "zabw",  label: "ZABW",  note: "Compressed AbiWord" },
     ],
   },
   {
@@ -272,27 +266,27 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#8b5cf6",
     glow: "rgba(139,92,246,0.35)",
     formats: [
-      { value: "azw", label: "AZW", note: "Kindle eBook" },
-      { value: "azw3", label: "AZW3", note: "Kindle AZW3" },
-      { value: "azw4", label: "AZW4", note: "Kindle AZW4" },
-      { value: "cbc", label: "CBC", note: "Comic Book" },
-      { value: "cbr", label: "CBR", note: "Comic book RAR" },
-      { value: "cbz", label: "CBZ", note: "Comic book ZIP" },
-      { value: "chm", label: "CHM", note: "Compiled HTML" },
-      { value: "epub", label: "EPUB", note: "Standard eBook" },
-      { value: "fb2", label: "FB2", note: "FictionBook" },
-      { value: "htm", label: "HTM", note: "HTML eBook" },
+      { value: "azw",   label: "AZW",   note: "Kindle eBook" },
+      { value: "azw3",  label: "AZW3",  note: "Kindle AZW3" },
+      { value: "azw4",  label: "AZW4",  note: "Kindle AZW4" },
+      { value: "cbc",   label: "CBC",   note: "Comic Book" },
+      { value: "cbr",   label: "CBR",   note: "Comic book RAR" },
+      { value: "cbz",   label: "CBZ",   note: "Comic book ZIP" },
+      { value: "chm",   label: "CHM",   note: "Compiled HTML" },
+      { value: "epub",  label: "EPUB",  note: "Standard eBook" },
+      { value: "fb2",   label: "FB2",   note: "FictionBook" },
+      { value: "htm",   label: "HTM",   note: "HTML eBook" },
       { value: "htmlz", label: "HTMLZ", note: "Zipped HTML" },
-      { value: "lit", label: "LIT", note: "MS Reader" },
-      { value: "lrf", label: "LRF", note: "Sony Reader" },
-      { value: "mobi", label: "MOBI", note: "Kindle format" },
-      { value: "pdb", label: "PDB", note: "Palm Database" },
-      { value: "pml", label: "PML", note: "Palm Markup" },
-      { value: "prc", label: "PRC", note: "Mobipocket" },
-      { value: "rb", label: "RB", note: "Rocket eBook" },
-      { value: "snb", label: "SNB", note: "Shanda Bambook" },
-      { value: "tcr", label: "TCR", note: "Psion eBook" },
-      { value: "txtz", label: "TXTZ", note: "Zipped Text" },
+      { value: "lit",   label: "LIT",   note: "MS Reader" },
+      { value: "lrf",   label: "LRF",   note: "Sony Reader" },
+      { value: "mobi",  label: "MOBI",  note: "Kindle format" },
+      { value: "pdb",   label: "PDB",   note: "Palm Database" },
+      { value: "pml",   label: "PML",   note: "Palm Markup" },
+      { value: "prc",   label: "PRC",   note: "Mobipocket" },
+      { value: "rb",    label: "RB",    note: "Rocket eBook" },
+      { value: "snb",   label: "SNB",   note: "Shanda Bambook" },
+      { value: "tcr",   label: "TCR",   note: "Psion eBook" },
+      { value: "txtz",  label: "TXTZ",  note: "Zipped Text" },
     ],
   },
   {
@@ -301,14 +295,14 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#f97316",
     glow: "rgba(249,115,22,0.35)",
     formats: [
-      { value: "dps", label: "DPS", note: "Kingsoft Presentation" },
-      { value: "key", label: "KEY", note: "Apple Keynote" },
-      { value: "odp", label: "ODP", note: "OpenDocument" },
-      { value: "pot", label: "POT", note: "PowerPoint template" },
+      { value: "dps",  label: "DPS",  note: "Kingsoft Presentation" },
+      { value: "key",  label: "KEY",  note: "Apple Keynote" },
+      { value: "odp",  label: "ODP",  note: "OpenDocument" },
+      { value: "pot",  label: "POT",  note: "PowerPoint template" },
       { value: "potx", label: "POTX", note: "PowerPoint template" },
-      { value: "pps", label: "PPS", note: "PowerPoint show" },
+      { value: "pps",  label: "PPS",  note: "PowerPoint show" },
       { value: "ppsx", label: "PPSX", note: "PowerPoint show" },
-      { value: "ppt", label: "PPT", note: "Legacy PowerPoint" },
+      { value: "ppt",  label: "PPT",  note: "Legacy PowerPoint" },
       { value: "pptm", label: "PPTM", note: "PowerPoint macro" },
       { value: "pptx", label: "PPTX", note: "PowerPoint" },
     ],
@@ -319,13 +313,13 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#22c55e",
     glow: "rgba(34,197,94,0.35)",
     formats: [
-      { value: "csv", label: "CSV", note: "Comma separated" },
-      { value: "et", label: "ET", note: "Kingsoft Sheet" },
+      { value: "csv",     label: "CSV",     note: "Comma separated" },
+      { value: "et",      label: "ET",      note: "Kingsoft Sheet" },
       { value: "numbers", label: "NUMBERS", note: "Apple Numbers" },
-      { value: "ods", label: "ODS", note: "OpenDocument sheet" },
-      { value: "xls", label: "XLS", note: "Legacy Excel" },
-      { value: "xlsm", label: "XLSM", note: "Excel macro" },
-      { value: "xlsx", label: "XLSX", note: "Excel spreadsheet" },
+      { value: "ods",     label: "ODS",     note: "OpenDocument sheet" },
+      { value: "xls",     label: "XLS",     note: "Legacy Excel" },
+      { value: "xlsm",    label: "XLSM",    note: "Excel macro" },
+      { value: "xlsx",    label: "XLSX",    note: "Excel spreadsheet" },
     ],
   },
   {
@@ -334,16 +328,16 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#ec4899",
     glow: "rgba(236,72,153,0.35)",
     formats: [
-      { value: "ai", label: "AI", note: "Adobe Illustrator" },
-      { value: "cdr", label: "CDR", note: "CorelDRAW" },
-      { value: "cgm", label: "CGM", note: "Computer Graphics Metafile" },
-      { value: "emf", label: "EMF", note: "Enhanced metafile" },
-      { value: "sk", label: "SK", note: "Sketch" },
-      { value: "sk1", label: "SK1", note: "sK1 vector" },
-      { value: "svg", label: "SVG", note: "Scalable vector" },
+      { value: "ai",   label: "AI",   note: "Adobe Illustrator" },
+      { value: "cdr",  label: "CDR",  note: "CorelDRAW" },
+      { value: "cgm",  label: "CGM",  note: "Computer Graphics Metafile" },
+      { value: "emf",  label: "EMF",  note: "Enhanced metafile" },
+      { value: "sk",   label: "SK",   note: "Sketch" },
+      { value: "sk1",  label: "SK1",  note: "sK1 vector" },
+      { value: "svg",  label: "SVG",  note: "Scalable vector" },
       { value: "svgz", label: "SVGZ", note: "Compressed SVG" },
-      { value: "vsd", label: "VSD", note: "Visio drawing" },
-      { value: "wmf", label: "WMF", note: "Windows metafile" },
+      { value: "vsd",  label: "VSD",  note: "Visio drawing" },
+      { value: "wmf",  label: "WMF",  note: "Windows metafile" },
     ],
   },
   {
@@ -352,11 +346,11 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#a78bfa",
     glow: "rgba(167,139,250,0.35)",
     formats: [
-      { value: "ttf", label: "TTF", note: "TrueType font" },
-      { value: "otf", label: "OTF", note: "OpenType font" },
-      { value: "woff", label: "WOFF", note: "Web font" },
+      { value: "ttf",   label: "TTF",   note: "TrueType font" },
+      { value: "otf",   label: "OTF",   note: "OpenType font" },
+      { value: "woff",  label: "WOFF",  note: "Web font" },
       { value: "woff2", label: "WOFF2", note: "Modern web font" },
-      { value: "eot", label: "EOT", note: "Embedded OpenType" },
+      { value: "eot",   label: "EOT",   note: "Embedded OpenType" },
     ],
   },
   {
@@ -375,129 +369,23 @@ const ALL_FORMAT_CATEGORIES = [
 ];
 
 // Build flat lookup across ALL categories
+const IMAGE_FORMATS = ALL_FORMAT_CATEGORIES.find(c => c.id === "image").formats;
 const ALL_FORMATS_FLAT = ALL_FORMAT_CATEGORIES.flatMap(c => c.formats.map(f => ({ ...f, catId: c.id })));
 const ALL_FORMAT_LOOKUP = new Map(ALL_FORMATS_FLAT.map(f => [f.value, f]));
+const TARGET_FORMAT_LOOKUP = ALL_FORMAT_LOOKUP; // compat alias
+const TARGET_FORMAT_GROUPS = [{ label: "Image", items: IMAGE_FORMATS }];
+const TARGET_FORMATS = IMAGE_FORMATS;
 
-const conversionMap = {
-  jpg: ["png", "webp", "avif", "bmp", "tiff", "pdf"],
-  jpeg: ["png", "webp", "avif", "bmp", "tiff", "pdf"],
-  png: ["jpg", "webp", "avif", "ico", "svg", "pdf"],
-  webp: ["jpg", "png", "avif", "pdf"],
-  pdf: ["docx", "jpg", "png", "txt"],
-  docx: ["pdf", "txt"],
-  mp4: ["mp3", "wav", "gif", "webm", "mov"],
-  mp3: ["wav", "aac", "ogg", "flac"]
-};
-
-const getAllowedConversions = (sourceFmt) => {
-  const sourceCat = ALL_FORMATS_FLAT.find(f => f.value === sourceFmt)?.catId;
-
-  // User specifically requested these categories for Images
-  if (sourceCat === "image") {
-    const allowedCatIds = ["image", "document", "vector", "cad"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for Videos
-  if (sourceCat === "video") {
-    const allowedCatIds = ["video", "audio", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Documents
-  if (sourceCat === "document") {
-    const allowedCatIds = ["document", "image", "ebook"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Presentations
-  if (sourceCat === "presentation") {
-    const allowedCatIds = ["presentation", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Spreadsheets
-  if (sourceCat === "spreadsheet") {
-    const allowedCatIds = ["spreadsheet", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for CAD
-  if (sourceCat === "cad") {
-    const allowedCatIds = ["cad", "vector", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for Vector
-  if (sourceCat === "vector") {
-    const allowedCatIds = ["vector", "image", "document", "cad"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for eBooks
-  if (sourceCat === "ebook") {
-    const allowedCatIds = ["ebook", "document"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // Use explicit conversion map if available for non-images
-  if (conversionMap[sourceFmt]) return conversionMap[sourceFmt];
-
-  // Smart Fallback: Allow converting to any format within the same category
-  if (sourceCat) {
-    const cat = ALL_FORMAT_CATEGORIES.find(c => c.id === sourceCat);
-    if (cat) {
-      return cat.formats.map(f => f.value).filter(v => v !== sourceFmt);
-    }
-  }
-  return [];
-};
-
-function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats }) {
+function TargetFormatSelect({ value, onChange, sourceFormatLabel }) {
   const [activeCat, setActiveCat] = useState(null);
   const [search, setSearch] = useState("");
 
-  const effectiveFlat = allowedFormats
-    ? ALL_FORMATS_FLAT.filter(f => allowedFormats.includes(f.value))
-    : ALL_FORMATS_FLAT;
-
-  const effectiveCategories = allowedFormats
-    ? ALL_FORMAT_CATEGORIES.map(c => ({
-      ...c,
-      formats: c.formats.filter(f => allowedFormats.includes(f.value))
-    })).filter(c => c.formats.length > 0)
-    : ALL_FORMAT_CATEGORIES;
-
-  const activeCategory = activeCat ? effectiveCategories.find(c => c.id === activeCat) : null;
+  const activeCategory = activeCat ? ALL_FORMAT_CATEGORIES.find(c => c.id === activeCat) : null;
   const filtered = search.trim()
-    ? effectiveFlat.filter(f =>
-      f.label.toLowerCase().includes(search.toLowerCase()) ||
-      f.note.toLowerCase().includes(search.toLowerCase())
-    )
+    ? ALL_FORMATS_FLAT.filter(f =>
+        f.label.toLowerCase().includes(search.toLowerCase()) ||
+        f.note.toLowerCase().includes(search.toLowerCase())
+      )
     : (activeCategory ? activeCategory.formats : []);
 
   const current = value ? ALL_FORMAT_LOOKUP.get(value) : null;
@@ -506,51 +394,88 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
   return (
     <div
       onClick={e => e.stopPropagation()}
-      className="rounded-2xl border border-indigo-500/25 bg-gradient-to-b from-[#0e0e1e]/95 to-[#0a0a16]/98 overflow-hidden shadow-[0_0_40px_rgba(99,102,241,0.1),_inset_0_1px_0_rgba(255,255,255,0.05)]"
+      style={{
+        borderRadius: "16px",
+        border: "1px solid rgba(99,102,241,0.25)",
+        background: "linear-gradient(180deg, rgba(14,14,30,0.95) 0%, rgba(10,10,22,0.98) 100%)",
+        overflow: "hidden",
+        boxShadow: "0 0 40px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.05)",
+      }}
     >
       {/* Search bar */}
-      <div className="flex items-center gap-2.5 p-[10px_14px] border-b border-white/6 bg-white/2">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="stroke-white/40" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "10px 14px",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(255,255,255,0.02)",
+      }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input
           type="text"
           placeholder="Search Format"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-transparent border-none outline-none text-white/80 text-[0.85rem] font-inherit"
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            color: "rgba(255,255,255,0.8)",
+            fontSize: "0.85rem",
+            fontFamily: "inherit",
+          }}
         />
         {search && (
           <button
             onClick={() => setSearch("")}
-            className="bg-transparent border-none text-white/40 cursor-pointer p-0 leading-none"
-          >✕</button>
+            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: 0, lineHeight: 1 }}
+          >Γ£ò</button>
         )}
       </div>
 
-      <div className="flex h-40">
+      <div style={{ display: "flex", height: "160px" }}>
         {/* Category sidebar */}
         {!search && (
-          <div className="w-[105px] shrink-0 border-r border-white/6 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-            {effectiveCategories.map(cat => (
+          <div style={{
+            width: "105px",
+            flexShrink: 0,
+            borderRight: "1px solid rgba(255,255,255,0.06)",
+            overflowY: "auto",
+            padding: "4px 0",
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(255,255,255,0.1) transparent",
+          }}>
+            {ALL_FORMAT_CATEGORIES.map(cat => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCat(cat.id)}
-                className={`w-full flex items-center justify-between py-1.5 px-2 bg-transparent border-none border-l-2 text-[0.75rem] cursor-pointer text-left transition-all duration-150 font-['Outfit'] ${activeCat === cat.id
-                  ? "border-l-indigo-500 text-[#818cf8]"
-                  : "border-l-transparent text-white/55 hover:text-white/80"
-                  }`}
                 style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "6px 8px",
                   background: activeCat === cat.id ? `linear-gradient(90deg, ${cat.glow} 0%, transparent 100%)` : "transparent",
-                  borderColor: activeCat === cat.id ? cat.color : "transparent",
-                  color: activeCat === cat.id ? cat.color : undefined,
+                  border: "none",
+                  borderLeft: activeCat === cat.id ? `2px solid ${cat.color}` : "2px solid transparent",
+                  color: activeCat === cat.id ? cat.color : "rgba(255,255,255,0.55)",
+                  fontSize: "0.75rem",
+                  fontWeight: activeCat === cat.id ? 700 : 500,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s ease",
+                  fontFamily: "Outfit, sans-serif",
                 }}
               >
                 <span>{cat.label}</span>
                 {activeCat === cat.id && (
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 18l6-6-6-6" />
+                    <path d="M9 18l6-6-6-6"/>
                   </svg>
                 )}
               </button>
@@ -559,16 +484,27 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
         )}
 
         {/* Format chips grid */}
-        <div className="flex-1 overflow-y-auto p-1.5 grid grid-cols-[repeat(auto-fit,minmax(65px,1fr))] grid-rows-[28px] auto-rows-[28px] gap-1.25 content-start scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "6px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(65px, 1fr))",
+          gridAutoRows: "28px",
+          gap: "5px",
+          alignContent: "start",
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(255,255,255,0.1) transparent",
+        }}>
           {!activeCat && !search ? (
-            <div className="col-span-full flex flex-col items-center justify-center gap-2.5 text-white/25 text-[0.82rem] p-[24px_16px] text-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="stroke-indigo-500/40" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
+            <div style={{ gridColumn: "1/-1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", color: "rgba(255,255,255,0.25)", fontSize: "0.82rem", padding: "24px 16px", textAlign: "center" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
               </svg>
-              <span>{allowedFormats && allowedFormats.length === 0 ? "No conversion options available." : "Select a category\nto see output formats"}</span>
+              <span>Select a category<br/>to see output formats</span>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center text-white/30 text-[0.8rem] p-5">
+            <div style={{ gridColumn: "1/-1", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", padding: "20px" }}>
               No formats found
             </div>
           ) : (
@@ -594,20 +530,29 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
                     }
                     onChange(fmt.value);
                   }}
-                  className={`flex items-center justify-center rounded-lg text-[0.65rem] transition-all duration-120 tracking-wide font-['Outfit'] border ${isSameAsSource ? "cursor-not-allowed opacity-90" : "cursor-pointer"
-                    } ${isSelected ? "font-bold" : "font-medium"}`}
                   style={{
-                    borderColor: isSelected
-                      ? fmtCat.color
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: isSelected
+                      ? `1.5px solid ${fmtCat.color}`
                       : isSameAsSource
-                        ? "rgba(220, 38, 38, 0.4)"
-                        : "rgba(255,255,255,0.1)",
+                        ? "1px solid rgba(220, 38, 38, 0.4)"
+                        : "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "8px",
                     background: isSelected
                       ? `linear-gradient(135deg, ${fmtCat.glow}, rgba(255,255,255,0.03))`
                       : isSameAsSource
                         ? "rgba(220, 38, 38, 0.15)"
                         : "rgba(255,255,255,0.03)",
                     color: isSelected ? fmtCat.color : isSameAsSource ? "rgba(239, 68, 68, 0.9)" : "rgba(255,255,255,0.7)",
+                    fontSize: "0.65rem",
+                    fontWeight: isSelected ? 700 : 500,
+                    cursor: isSameAsSource ? "not-allowed" : "pointer",
+                    opacity: isSameAsSource ? 0.9 : 1,
+                    transition: "all 0.12s ease",
+                    letterSpacing: "0.03em",
+                    fontFamily: "Outfit, monospace",
                     boxShadow: isSelected ? `0 0 12px ${fmtCat.glow}` : "none",
                   }}
                 >
@@ -620,22 +565,29 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
       </div>
 
       {/* Selected format footer */}
-      <div className="p-[8px_14px] border-t border-white/6 bg-white/2 flex items-center gap-2.5">
-        <div
-          className="w-2 h-2 rounded-full shrink-0 transition-all duration-200"
-          style={{
-            background: currentCat ? currentCat.color : "rgba(255,255,255,0.2)",
-            boxShadow: currentCat ? `0 0 8px ${currentCat.glow}` : "none",
-          }}
-        />
-        <span className="text-[0.75rem] text-white/40">
+      <div style={{
+        padding: "8px 14px",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(255,255,255,0.02)",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+      }}>
+        <div style={{
+          width: "8px", height: "8px", borderRadius: "50%",
+          background: currentCat ? currentCat.color : "rgba(255,255,255,0.2)",
+          boxShadow: currentCat ? `0 0 8px ${currentCat.glow}` : "none",
+          flexShrink: 0,
+          transition: "all 0.2s ease",
+        }} />
+        <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
           {current && currentCat ? (
             <>
               Selected: <strong style={{ color: currentCat.color }}>{current.label}</strong>
-              {current.note && <span className="ml-1.5 opacity-60">— {current.note}</span>}
+              {current.note && <span style={{ marginLeft: "6px", opacity: 0.6 }}>ΓÇö {current.note}</span>}
             </>
           ) : (
-            <span className="italic">Select a category and output format</span>
+            <span style={{ fontStyle: "italic" }}>Select a category and output format</span>
           )}
         </span>
       </div>
@@ -896,15 +848,10 @@ const getSourceFormat = (file) => {
   };
 };
 
+
+
 export default function Hero() {
   const [targetFormat, setTargetFormat] = useState("");
-  const [sourceFormat, setSourceFormat] = useState("jpg");
-  const [isSourceDropdownOpen, setIsSourceDropdownOpen] = useState(false);
-  const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
-  const [isAutoCycling, setIsAutoCycling] = useState(true);
-  const sourceRef = useRef(null);
-  const targetRef = useRef(null);
-
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -913,79 +860,6 @@ export default function Hero() {
   const [result, setResult] = useState(null);
   const inputRef = useRef(null);
   const outputUrlRef = useRef("");
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sourceRef.current && !sourceRef.current.contains(event.target)) {
-        setIsSourceDropdownOpen(false);
-      }
-      if (targetRef.current && !targetRef.current.contains(event.target)) {
-        setIsTargetDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, []);
-
-  // Auto-cycle example formats
-  useEffect(() => {
-    if (!isAutoCycling || file || isSourceDropdownOpen || isTargetDropdownOpen) return;
-
-    const cycleExamples = [
-      { src: "jpg", tgt: "png" },
-      { src: "mp4", tgt: "mp3" },
-      { src: "pdf", tgt: "docx" },
-      { src: "csv", tgt: "xlsx" },
-      { src: "ai", tgt: "svg" },
-      { src: "webm", tgt: "gif" },
-    ];
-    
-    // Find current index
-    let currentIndex = cycleExamples.findIndex(ex => ex.src === sourceFormat);
-    if (currentIndex === -1) currentIndex = 0;
-
-    const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % cycleExamples.length;
-      setSourceFormat(cycleExamples[currentIndex].src);
-      setTargetFormat(cycleExamples[currentIndex].tgt);
-    }, 3500); // cycle every 3.5 seconds
-
-    return () => clearInterval(interval);
-  }, [isAutoCycling, file, isSourceDropdownOpen, isTargetDropdownOpen, sourceFormat]);
-
-  const floatingAnim = {
-    animate: {
-      y: [0, -6, 0],
-      transition: {
-        duration: 6,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
-    },
-  };
-
-  const handleSwap = useCallback(() => {
-    setIsAutoCycling(false);
-    const prevSource = sourceFormat;
-    setSourceFormat(targetFormat || "png");
-    setTargetFormat(prevSource);
-  }, [sourceFormat, targetFormat]);
-
-  // Synchronize available options when sourceFormat changes
-  useEffect(() => {
-    const allowedConversions = getAllowedConversions(sourceFormat);
-    if (allowedConversions && allowedConversions.length > 0) {
-      if (!targetFormat || !allowedConversions.includes(targetFormat)) {
-        setTargetFormat(""); // Reset if invalid
-      }
-    } else {
-      setTargetFormat("");
-    }
-  }, [sourceFormat]);
 
   const { data: session } = useSession();
 
@@ -1131,7 +1005,7 @@ export default function Hero() {
       const extension = url.split(".").pop()?.split("?")[0] || "png";
       const filename = url.split("/").pop()?.split("?")[0] || `image.${extension}`;
       const loadedFile = new File([blob], filename, { type: blob.type });
-
+      
       handleFile(loadedFile);
       setUploadMethod("file"); // Reset back to file representation
       setInputUrl("");
@@ -1141,7 +1015,7 @@ export default function Hero() {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = url;
-
+        
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = () => reject(new Error("CORS policy or invalid image URL prevents loading this image directly in the browser."));
@@ -1153,13 +1027,13 @@ export default function Hero() {
         const ctx = canvas.getContext("2d");
         if (!ctx) throw new Error("Could not create canvas context.");
         ctx.drawImage(img, 0, 0);
-
+        
         const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
         if (!blob) throw new Error("Failed to export canvas to Blob.");
-
+        
         const filename = url.split("/").pop()?.split("?")[0] || "downloaded-image.png";
         const loadedFile = new File([blob], filename, { type: "image/png" });
-
+        
         handleFile(loadedFile);
         setUploadMethod("file");
         setInputUrl("");
@@ -1204,12 +1078,8 @@ export default function Hero() {
       setProgress(0);
       setConverting(false);
 
-      if (candidate) {
-        const detected = getSourceFormat(candidate);
-        if (detected && detected.label !== "AUTO" && detected.label !== "FILE") {
-          setSourceFormat(detected.label.toLowerCase());
-        }
-      }
+
+
 
       // Extract image dimensions for scaling UI
       if (candidate) {
@@ -1262,8 +1132,8 @@ export default function Hero() {
 
       const lookupTarget = SOURCE_FORMATS.find(f => f.extensions.includes(target?.value));
       const targetMime = lookupTarget ? lookupTarget.mimes[0] : `image/${target?.value === "jpg" ? "jpeg" : target?.value === "svg" ? "svg+xml" : target?.value || "png"}`;
-      const mime = targetFormat ? targetMime : (file.type || "application/octet-stream");
-      const ext = targetFormat ? (lookupTarget ? `.${lookupTarget.extensions[0]}` : `.${target?.value || "png"}`) : "." + (file.name.split(".").pop() || "png");
+      const mime = activeTool === "convert" ? targetMime : file.type || "application/octet-stream";
+      const ext = activeTool === "convert" ? (lookupTarget ? `.${lookupTarget.extensions[0]}` : `.${target?.value || "png"}`) : "." + (file.name.split(".").pop() || "png");
 
       if (isImageLoaded) {
         targetWidth = img.naturalWidth;
@@ -1420,242 +1290,113 @@ export default function Hero() {
   }, [clearOutputUrl]);
 
   return (
-    <section className="relative min-h-screen flex items-start md:items-center pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[90px] 2xl:pt-[148px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
+    <section
+      className="relative min-h-screen flex items-start md:items-center overflow-hidden pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[64px] 2xl:pt-[148px] 2xl:pb-[72px]"
+      style={{
+        background: "linear-gradient(135deg, #0f0f1a 0%, #121221 55%, #0f1729 100%)",
+      }}
+    >
+      {/* RESPONSIVE SCALING ADDED */}
+      <div
+        className="hero-orb absolute bg-indigo-500/14 w-[270px] h-[270px] -top-[90px] -left-[80px] sm:w-[324px] sm:h-[324px] sm:-top-[108px] sm:-left-[96px] md:w-[378px] md:h-[378px] md:-top-[126px] md:-left-[112px] lg:w-[432px] lg:h-[432px] lg:-top-[144px] lg:-left-[128px] xl:w-[486px] xl:h-[486px] xl:-top-[162px] xl:-left-[144px] 2xl:w-[540px] 2xl:h-[540px] 2xl:-top-[180px] 2xl:-left-[160px]"
+      />
+      {/* RESPONSIVE SCALING ADDED */}
+      <div
+        className="hero-orb absolute bg-cyan-500/10 w-[200px] h-[200px] -bottom-[60px] -right-[60px] sm:w-[240px] sm:h-[240px] sm:-bottom-[72px] sm:-right-[72px] md:w-[280px] md:h-[280px] md:-bottom-[84px] md:-right-[84px] lg:w-[320px] lg:h-[320px] lg:-bottom-[96px] lg:-right-[96px] xl:w-[360px] xl:h-[360px] xl:-bottom-[108px] xl:-right-[108px] 2xl:w-[400px] 2xl:h-[400px] 2xl:-bottom-[120px] 2xl:-right-[120px]"
+        style={{
+          animationDelay: "2s",
+        }}
+      />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 [background-image:linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_42%,transparent_80%)]" />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+          maskImage: "radial-gradient(ellipse at center, black 42%, transparent 80%)",
+        }}
+      />
 
-        {/* Concentric rings centered around the converter panel area */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] rounded-full border border-indigo-500/5 opacity-15" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full border border-cyan-500/5 opacity-20" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-full border border-indigo-500/10 opacity-25" />
-      </div>
-
-      <Container className="relative z-[1]">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[138px] 2xl:gap-[120px] w-full">
+      {/* RESPONSIVE SCALING ADDED */}
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16" style={{ position: "relative", zIndex: 1 }}>
+        {/* RESPONSIVE SCALING ADDED */}
+        <div
+          className="flex flex-col md:flex-row items-center justify-between gap-[24px] sm:gap-[28px] md:gap-[32px] lg:gap-[36px] xl:gap-[38px] 2xl:gap-[40px] w-full"
+        >
           <div className="w-full md:flex-[1_1_50%] max-w-full md:max-w-[448px] lg:max-w-[512px] xl:max-w-[576px] 2xl:max-w-[640px]">
-            <div className="mb-6">
-              <span className="inline-flex items-center gap-2 py-2 px-4 bg-indigo-500/8 border border-indigo-500/20 rounded-full text-[#818cf8] font-semibold font-['Outfit'] tracking-wide text-[0.78rem]">
+            <div style={{ marginBottom: "24px" }}>
+              <span className="badge" style={{ fontSize: "0.78rem" }}>
                 <Sparkles size={12} />
                 Convert directly in your browser
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold lg:whitespace-nowrap whitespace-normal mb-4 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
+            {/* RESPONSIVE SCALING ADDED */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold" style={{ marginBottom: "16px", letterSpacing: "-0.04em", lineHeight: 1.1, fontFamily: "Outfit, sans-serif" }}>
               Convert Any Image
               <br />
-              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Without the clutter</span>
+              <span className="text-gradient">without the clutter</span>
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">
+            {/* RESPONSIVE SCALING ADDED */}
+            <p
+              className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl"
+              style={{
+                color: "var(--text-secondary)",
+                lineHeight: 1.75,
+                maxWidth: "560px",
+                marginBottom: "28px",
+              }}
+            >
               Upload any image, let the source type detect itself, pick from a wide range of output
               formats, and download the result instantly. No account, no server upload, and no extra steps.
             </p>
 
-            <div className="flex flex-wrap gap-2.5 mb-7">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "28px" }}>
               {["Auto detect", "Browser only", "Fast output"].map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-white/3 border border-white/8 rounded-full text-[#94a3b8] font-medium text-[0.75rem] transition-all duration-200"
+                  className="tag"
+                  style={{
+                    padding: "6px 12px",
+                    fontSize: "0.75rem",
+                  }}
                 >
                   {item}
                 </span>
               ))}
             </div>
 
-            <div className="flex gap-3 sm:gap-3.5">
-              <Link href="/tools" className="no-underline flex-1 min-w-0">
-                <Button variant="secondary" size="lg" className="w-full justify-center">
-                  <FileImage size={18} />
-                  Browse Tools
-                </Button>
+            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+              <Link href="/tools" className="btn btn-secondary btn-lg">
+                <FileImage size={18} />
+                Browse Tools
               </Link>
-              <a href="#converter-panel" className="no-underline flex-1 min-w-0">
-                <Button variant="primary" size="lg" className="w-full justify-center">
-                  <Zap size={18} />
-                  Start Converting
-                </Button>
+              <a href="#converter-panel" className="btn btn-primary btn-lg">
+                <Zap size={18} />
+                Start Converting
               </a>
             </div>
           </div>
 
+          {/* RESPONSIVE SCALING ADDED */}
           <div id="converter-panel" className="w-full md:flex-[1_1_50%] max-w-[320px] sm:max-w-[360px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[440px] 2xl:max-w-[460px] mx-auto mt-0 md:-mt-[70px] lg:-mt-[80px] xl:-mt-[90px] 2xl:-mt-[100px]">
+            <div
+              style={{
+                borderRadius: "28px",
+                border: "1px solid rgba(99,102,241,0.18)",
+                background: "linear-gradient(180deg, rgba(18,18,33,0.92) 0%, rgba(14,14,26,0.98) 100%)",
+                boxShadow: "0 30px 90px rgba(0,0,0,0.45)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                padding: "20px",
+              }}
+            >
 
-            {/* Row of Select Cards: Convert From -> Swap Button -> Convert To */}
-            {/* Moved OUTSIDE the dark container */}
-            <div className="flex items-center justify-between gap-2.5 mb-6 relative z-20">
-              {/* Subtle gradient connecting line */}
-                <div className="absolute top-1/2 left-3 right-3 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent -translate-y-1/2 z-0" />
-
-                {/* Convert From Card */}
-                <div ref={sourceRef} className="relative z-10 flex-1">
-                  <motion.div
-                    variants={floatingAnim}
-                    animate="animate"
-                    onClick={() => {
-                      if (!file) {
-                        setIsAutoCycling(false);
-                        setIsSourceDropdownOpen(!isSourceDropdownOpen);
-                        setIsTargetDropdownOpen(false);
-                      }
-                    }}
-                    className={`bg-gradient-to-br from-[#1e1e36]/90 to-[#121221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${file
-                      ? "cursor-not-allowed border-white/5 opacity-60"
-                      : "cursor-pointer border-indigo-500/20 hover:border-indigo-500/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-                      }`}
-                  >
-                    <span className="text-[0.68rem] font-bold text-slate-500 uppercase tracking-wider mb-1.5 font-['Inter']">
-                      Convert From
-                    </span>
-                    <div className="flex flex-col items-center gap-1.5 w-full justify-center px-2 mt-1">
-                      <div className="text-slate-300 opacity-90 drop-shadow-md">
-                        <FileImage size={26} strokeWidth={2} />
-                      </div>
-                      <span 
-                        className="text-[1.35rem] sm:text-2xl font-black text-[#f8fafc] font-['Outfit'] tracking-wide drop-shadow-sm"
-                      >
-                        {file ? (file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : source.label.toUpperCase()) : sourceFormat.toUpperCase()}
-                      </span>
-                    </div>
-                    {!file && <ChevronDown size={13} className="mt-1 text-slate-400" />}
-                  </motion.div>
-
-                  <AnimatePresence>
-                    {isSourceDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-[calc(100%+8px)] left-0 w-[270px] sm:w-[310px] z-[999]"
-                      >
-                        <TargetFormatSelect
-                          value={sourceFormat}
-                          onChange={(val) => {
-                            setSourceFormat(val);
-                            setIsSourceDropdownOpen(false);
-                          }}
-                          sourceFormatLabel={targetFormat}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Swap Button */}
-                <div className="relative z-30 shrink-0 mx-1">
-                  {/* Subtle pulsing backdrop */}
-                  {!file && (
-                    <div className="absolute inset-0 bg-indigo-500 rounded-full blur-[10px] opacity-40 animate-pulse pointer-events-none" />
-                  )}
-                  <motion.button
-                    whileHover={file ? {} : { scale: 1.15, rotate: 180 }}
-                    whileTap={file ? {} : { scale: 0.9 }}
-                    onClick={file ? undefined : handleSwap}
-                    className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white transition-all duration-300 ring-4 ring-[#0f0f1a] ${file
-                      ? "bg-white/5 border border-white/8 text-slate-600 cursor-not-allowed opacity-40 shadow-none"
-                      : "bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-500 border border-white/20 cursor-pointer shadow-[0_0_20px_rgba(99,102,241,0.4),_inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_0_28px_rgba(6,182,212,0.6),_inset_0_2px_6px_rgba(255,255,255,0.5)]"
-                      }`}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M17 3L21 7L17 11" />
-                      <path d="M3 17L7 21L3 15" />
-                      <path d="M21 7H9" />
-                      <path d="M3 17H15" />
-                    </svg>
-                  </motion.button>
-                </div>
-
-                {/* Convert To Card */}
-                <div ref={targetRef} className="relative z-10 flex-1">
-                  {(() => {
-                    const allowedConversions = getAllowedConversions(sourceFormat);
-                    const hasConversions = allowedConversions.length > 0;
-
-                    return (
-                      <>
-                        <motion.div
-                          variants={floatingAnim}
-                          animate="animate"
-                          onClick={() => {
-                            if (!hasConversions) return;
-                            setIsAutoCycling(false);
-                            setIsTargetDropdownOpen(!isTargetDropdownOpen);
-                            setIsSourceDropdownOpen(false);
-                          }}
-                          className={`bg-gradient-to-br from-[#121e36]/90 to-[#0e1221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${hasConversions
-                            ? "cursor-pointer border-cyan-500/20 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
-                            : "cursor-not-allowed border-white/5 opacity-60"
-                            }`}
-                        >
-                          <span className={`text-[0.68rem] font-bold ${hasConversions ? "text-cyan-400" : "text-slate-500"} uppercase tracking-wider mb-1.5 font-['Inter']`}>
-                            Convert To
-                          </span>
-                          <div className="flex flex-col items-center gap-1.5">
-                            {hasConversions ? (
-                              <div className="flex flex-col items-center gap-1.5 w-full justify-center px-2 mt-1">
-                                <div className="text-cyan-400 drop-shadow-[0_0_12px_rgba(6,182,212,0.6)] opacity-90">
-                                  <RefreshCw size={26} strokeWidth={2.5} />
-                                </div>
-                                <span className="text-[1.35rem] sm:text-2xl font-black text-cyan-200 font-['Outfit'] tracking-wide drop-shadow-sm">
-                                  {targetFormat ? targetFormat.toUpperCase() : "SELECT"}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-[0.65rem] text-slate-400 font-semibold mt-1">
-                                No conversion options available.
-                              </span>
-                            )}
-                          </div>
-                          {hasConversions && <ChevronDown size={13} className="mt-1 text-cyan-400/80 animate-pulse" />}
-                        </motion.div>
-
-                        <AnimatePresence>
-                          {isTargetDropdownOpen && hasConversions && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 10 }}
-                              className="absolute top-[calc(100%+8px)] right-0 w-[270px] sm:w-[310px] z-[999]"
-                            >
-                              <TargetFormatSelect
-                                value={targetFormat}
-                                onChange={(val) => {
-                                  setTargetFormat(val);
-                                  setIsTargetDropdownOpen(false);
-                                }}
-                                sourceFormatLabel={file ? source.label : sourceFormat}
-                                allowedFormats={allowedConversions}
-                              />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </>
-                    );
-                  })()}
-                </div>
-
-
-            </div>
-
-            {/* Main Converter Container */}
-            <div className="rounded-[28px] border border-indigo-500/18 bg-gradient-to-b from-[#121221]/92 to-[#0e0e1a]/98 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-3xl p-4 relative overflow-visible">
-
-              {/* Upload Dropzone Box */}
               <div
-                className={`border rounded-2xl flex items-center justify-center cursor-default transition-all duration-300 ${file && !result ? "min-h-0 p-4" : "min-h-[260px] p-[24px_16px]"
-                  } ${isDragging
-                    ? "border-indigo-500 bg-gradient-to-b from-indigo-500/16 to-cyan-500/5"
-                    : "border-white/8 bg-gradient-to-b from-white/3 to-white/[0.015]"
-                  }`}
+                className={`upload-zone ${isDragging ? "drag-over" : ""}`}
                 onDragOver={(e) => {
                   e.preventDefault();
                   setIsDragging(true);
@@ -1665,35 +1406,78 @@ export default function Hero() {
                   setUploadMethod("file");
                   handleDrop(e);
                 }}
+                style={{
+                  borderStyle: "solid",
+                  borderWidth: "1px",
+                  borderColor: isDragging ? "rgba(99,102,241,0.9)" : "rgba(255,255,255,0.08)",
+                  background: isDragging
+                    ? "linear-gradient(180deg, rgba(99,102,241,0.16) 0%, rgba(6,182,212,0.05) 100%)"
+                    : "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%)",
+                  cursor: "default",
+                  minHeight: file && !result ? "auto" : "360px",
+                  padding: file && !result ? "16px" : "34px 24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
                 <input
                   ref={inputRef}
                   type="file"
                   accept={INPUT_ACCEPT}
                   onChange={(e) => handleFile(e.target.files?.[0])}
-                  className="absolute w-0 h-0 opacity-0 pointer-events-none"
                   aria-hidden="true"
+                  style={{ display: "none" }}
                 />
 
                 {!file && !result ? (
                   uploadMethod === "url" ? (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-[20px_10px]"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "16px",
+                        textAlign: "center",
+                        width: "100%",
+                        maxWidth: "420px",
+                        padding: "20px 10px"
+                      }}
                     >
-                      <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-cyan-500/20 to-[#6366f1]/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                      <div
+                        style={{
+                          width: "64px",
+                          height: "64px",
+                          borderRadius: "18px",
+                          background: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(99,102,241,0.1))",
+                          border: "1px solid rgba(6,182,212,0.3)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--secondary)",
+                        }}
+                      >
                         <Link2 size={28} />
                       </div>
-
-                      <div className="w-full">
-                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5">
+                      
+                      <div style={{ width: "100%" }}>
+                        <p
+                          style={{
+                            fontFamily: "Outfit, sans-serif",
+                            fontWeight: 700,
+                            fontSize: "1.22rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "6px",
+                          }}
+                        >
                           Load image from URL
                         </p>
-                        <p className="text-[#64748b] text-[0.92rem] mb-4">
+                        <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", marginBottom: "16px" }}>
                           Enter the public direct link to an image file.
                         </p>
-
-                        <div className="flex gap-2.5 w-full">
+                        
+                        <div style={{ display: "flex", gap: "10px", width: "100%" }}>
                           <input
                             type="url"
                             placeholder="https://example.com/image.jpg"
@@ -1707,17 +1491,17 @@ export default function Hero() {
                                 handleUrlLoad(inputUrl);
                               }
                             }}
-                            className="w-full py-3 px-4 rounded-xl bg-[#13131f] border border-white/8 text-[#f8fafc] text-[0.95rem] transition-all duration-200 outline-none placeholder:text-slate-500 focus:border-[#6366f1] focus:bg-indigo-500/5 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] flex-1 text-center"
+                            className="form-input"
+                            style={{ flex: 1, textAlign: "center" }}
                           />
                         </div>
                       </div>
 
-                      <div className="flex gap-3 w-full justify-center">
-                        <Button
+                      <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
+                        <button
                           type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="min-w-[100px] justify-center"
+                          className="btn btn-secondary btn-sm"
+                          style={{ minWidth: "100px", justifyContent: "center" }}
                           onClick={() => {
                             setUploadMethod("file");
                             setInputUrl("");
@@ -1725,34 +1509,33 @@ export default function Hero() {
                           }}
                         >
                           Cancel
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                           type="button"
-                          variant="primary"
-                          size="sm"
-                          className="min-w-[120px] justify-center"
+                          className="btn btn-primary btn-sm"
+                          style={{ minWidth: "120px", justifyContent: "center" }}
                           disabled={isLoadingUrl || !inputUrl}
                           onClick={() => handleUrlLoad(inputUrl)}
                         >
                           {isLoadingUrl ? (
                             <>
-                              <RefreshCw size={14} className="animate-spin" />
+                              <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
                               Loading...
                             </>
                           ) : (
                             "Load Image"
                           )}
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   ) : uploadMethod === "cloud" ? (
                     (checkingDrive || checkingDropbox || checkingOneDrive) ? (
-                      <div className="flex flex-col items-center justify-center p-10" onClick={(e) => e.stopPropagation()}>
-                        <RefreshCw size={24} className="animate-spin text-[#818cf8]" />
-                        <p className="mt-2.5 text-[0.85rem] text-[#64748b]">Checking connection status...</p>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px" }} onClick={(e) => e.stopPropagation()}>
+                        <RefreshCw size={24} className="animate-spin" style={{ color: "var(--primary-light)" }} />
+                        <p style={{ margin: "10px 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>Checking connection status...</p>
                       </div>
                     ) : cloudProvider === "google-drive" && isDriveConnected ? (
-                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
+                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
                         <GoogleDrivePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1767,7 +1550,7 @@ export default function Hero() {
                         />
                       </div>
                     ) : cloudProvider === "dropbox" && isDropboxConnected ? (
-                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
+                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
                         <DropboxFilePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1782,7 +1565,7 @@ export default function Hero() {
                         />
                       </div>
                     ) : cloudProvider === "onedrive" && isOneDriveConnected ? (
-                      <div className="w-full max-w-[600px]" onClick={(e) => e.stopPropagation()}>
+                      <div style={{ width: "100%", maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
                         <OneDrivePicker
                           onFileSelected={async (file) => {
                             handleFile(file);
@@ -1799,29 +1582,59 @@ export default function Hero() {
                     ) : (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className="flex flex-col items-center gap-4 text-center w-full max-w-[420px] p-[20px_10px]"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "16px",
+                          textAlign: "center",
+                          width: "100%",
+                          maxWidth: "420px",
+                          padding: "20px 10px"
+                        }}
                       >
-                        <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-indigo-500/20 to-cyan-500/10 border border-indigo-500/35 flex items-center justify-center text-[#818cf8]">
-                          {cloudProvider === "google-drive" ? googleDriveIconLarge :
-                            cloudProvider === "dropbox" ? dropboxIconLarge :
-                              onedriveIconLarge}
+                        <div
+                          style={{
+                            width: "64px",
+                            height: "64px",
+                            borderRadius: "18px",
+                            background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.1))",
+                            border: "1px solid rgba(99,102,241,0.3)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--primary-light)",
+                          }}
+                        >
+                          {cloudProvider === "google-drive" ? googleDriveIconLarge : 
+                           cloudProvider === "dropbox" ? dropboxIconLarge : 
+                           onedriveIconLarge}
                         </div>
 
                         <div>
-                          <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5 capitalize">
+                          <p
+                            style={{
+                              fontFamily: "Outfit, sans-serif",
+                              fontWeight: 700,
+                              fontSize: "1.22rem",
+                              color: "var(--text-primary)",
+                              marginBottom: "6px",
+                              textTransform: "capitalize"
+                            }}
+                          >
                             Connect to {cloudProvider?.replace("-", " ")}
                           </p>
-                          <p className="text-[#64748b] text-[0.92rem] leading-relaxed mb-4">
+                          <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "16px" }}>
                             Authorize your account to browse and convert files directly from your cloud storage.
                           </p>
                         </div>
 
-                        <div className="flex gap-3 w-full justify-center">
-                          <Button
+
+                        <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center" }}>
+                          <button
                             type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="min-w-[100px] justify-center"
+                            className="btn btn-secondary btn-sm"
+                            style={{ minWidth: "100px", justifyContent: "center" }}
                             onClick={() => {
                               setUploadMethod("file");
                               setCloudProvider(null);
@@ -1829,17 +1642,16 @@ export default function Hero() {
                             }}
                           >
                             Back
-                          </Button>
-                          <Button
+                          </button>
+                          <button
                             type="button"
-                            variant="primary"
-                            size="sm"
-                            className="min-w-[160px] justify-center"
+                            className="btn btn-primary btn-sm"
+                            style={{ minWidth: "160px", justifyContent: "center" }}
                             onClick={async () => {
                               const token = getEffectiveToken();
                               if (!token) {
                                 setError("Please log in to your account first.");
-                                return;
+                                        return;
                               }
                               if (cloudProvider === "google-drive") {
                                 try {
@@ -1883,89 +1695,139 @@ export default function Hero() {
                             }}
                           >
                             Connect Account
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     )
                   ) : (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="flex flex-col items-center gap-3.5 text-center max-w-[390px]"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "14px",
+                        textAlign: "center",
+                        maxWidth: "390px",
+                      }}
                     >
-                      <div className="w-16 h-16 rounded-[18px] bg-gradient-to-br from-red-500/24 to-red-400/12 border border-red-500/30 flex items-center justify-center text-red-300">
+                      <div
+                        style={{
+                          width: "64px",
+                          height: "64px",
+                          borderRadius: "18px",
+                          background: "linear-gradient(135deg, rgba(239,68,68,0.24), rgba(248,113,113,0.12))",
+                          border: "1px solid rgba(239,68,68,0.3)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#fca5a5",
+                        }}
+                      >
                         <Upload size={28} />
                       </div>
                       <div>
-                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#f8fafc] mb-1.5">
+                        <p
+                          style={{
+                            fontFamily: "Outfit, sans-serif",
+                            fontWeight: 700,
+                            fontSize: "1.22rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "6px",
+                          }}
+                        >
                           Drop your file here
                         </p>
-                        <p className="font-['Outfit'] font-bold text-[1.22rem] text-[#818cf8] mb-1.5">
-                          Select your file here
+                        <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.6 }}>
+                          Upload a file and we will detect the source format automatically, then let you choose
+                          the output type.
                         </p>
-
                       </div>
-
-                      <div className="relative z-[100]" onClick={(e) => e.stopPropagation()}>
-                        <Button
+                      
+                      <div style={{ position: "relative", zIndex: 100 }} onClick={(e) => e.stopPropagation()}>
+                        <button
                           type="button"
-                          variant="primary"
-                          size="lg"
-                          className="justify-between min-w-[200px] gap-3"
+                          className="btn btn-primary btn-lg"
+                          style={{ 
+                            justifyContent: "space-between", 
+                            minWidth: "200px",
+                            gap: "12px",
+                          }}
                           onClick={() => {
                             setIsDropdownOpen((prev) => !prev);
                           }}
                         >
-                          <span className="flex items-center gap-2">
+                          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                             <FilePlus size={18} />
                             Select File
                           </span>
-                          <ChevronDown
-                            size={16}
-                            style={{
+                          <ChevronDown 
+                            size={16} 
+                            style={{ 
                               transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
                               transition: "transform 0.2s ease"
-                            }}
+                            }} 
                           />
-                        </Button>
-
+                        </button>
+                        
                         {isDropdownOpen && (
                           <>
-                            <div
+                            <div 
                               onClick={() => setIsDropdownOpen(false)}
-                              className="fixed inset-0 z-[98] cursor-default"
+                              style={{
+                                position: "fixed",
+                                inset: 0,
+                                zIndex: 98,
+                                cursor: "default"
+                              }}
                             />
-                            <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-60 bg-[#16162a] border border-white/10 rounded-2xl p-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_30px_rgba(99,102,241,0.1)] flex flex-col gap-0.5 z-[99]">
+                            <div
+                              style={{
+                                position: "absolute",
+                                bottom: "calc(100% + 10px)",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                width: "220px",
+                                background: "var(--bg-card)",
+                                border: "1px solid var(--border)",
+                                borderRadius: "16px",
+                                padding: "6px",
+                                boxShadow: "var(--shadow-lg), 0 0 30px rgba(99,102,241,0.1)",
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "2px",
+                                zIndex: 99,
+                              }}
+                            >
                               <button
                                 type="button"
-                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
+                                className="dropdown-item"
                                 onClick={() => {
+                                  setIsDropdownOpen(false);
                                   inputRef.current?.click();
-                                  setTimeout(() => {
-                                    setIsDropdownOpen(false);
-                                  }, 50);
                                 }}
                               >
-                                <Folder size={19} className="mr-3 text-[#818cf8] shrink-0" />
+                                <Folder size={16} style={{ marginRight: "12px", color: "var(--primary-light)", flexShrink: 0 }} />
                                 From my computer
                               </button>
-
+                              
                               <button
                                 type="button"
-                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
+                                className="dropdown-item"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("url");
                                 }}
                               >
-                                <Link2 size={19} className="mr-3 text-cyan-400 shrink-0" />
+                                <Link2 size={16} style={{ marginRight: "12px", color: "var(--secondary)", flexShrink: 0 }} />
                                 By URL
                               </button>
-
-                              <div className="h-px bg-white/8 my-1" />
-
+                              
+                              <div style={{ height: "1px", background: "var(--border-light)", margin: "4px 0" }} />
+                              
                               <button
                                 type="button"
-                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
+                                className="dropdown-item"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -1975,10 +1837,10 @@ export default function Hero() {
                                 {googleDriveIcon}
                                 From Google Drive
                               </button>
-
+                              
                               <button
                                 type="button"
-                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
+                                className="dropdown-item"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -1988,10 +1850,10 @@ export default function Hero() {
                                 {dropboxIcon}
                                 From Dropbox
                               </button>
-
+                              
                               <button
                                 type="button"
-                                className="flex items-center w-full py-3 px-4 bg-transparent border-none rounded-xl text-[#94a3b8] hover:text-[#f8fafc] hover:bg-white/4 text-[0.95rem] font-semibold cursor-pointer transition-all duration-150 text-left font-['Inter']"
+                                className="dropdown-item"
                                 onClick={() => {
                                   setIsDropdownOpen(false);
                                   setUploadMethod("cloud");
@@ -2005,108 +1867,172 @@ export default function Hero() {
                           </>
                         )}
                       </div>
-
+                      
+                      <p style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>
+                        Common and legacy file formats are supported in a browser-first workflow.
+                      </p>
                     </div>
                   )
                 ) : result ? (
-                  <div className="w-full max-w-[460px] mx-auto flex flex-col items-center gap-4 text-center">
-                    <div className="w-16 h-16 rounded-[18px] bg-emerald-500/12 border border-emerald-500/22 flex items-center justify-center text-emerald-400">
+                  <div
+                    style={{
+                      width: "100%",
+                      maxWidth: "460px",
+                      margin: "0 auto",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "16px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "64px",
+                        height: "64px",
+                        borderRadius: "18px",
+                        background: "rgba(16,185,129,0.12)",
+                        border: "1px solid rgba(16,185,129,0.22)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#34d399",
+                      }}
+                    >
                       <CheckCircle size={28} />
                     </div>
                     <div>
-                      <p className="font-bold text-emerald-400 mb-1.5">
+                      <p style={{ fontWeight: 700, color: "#34d399", marginBottom: "6px" }}>
                         Conversion Successful
                       </p>
-                      <p className="text-[#94a3b8] text-[0.9rem]">
+                      <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
                         {result.name} | {result.size} | {result.width}x{result.height}px
                       </p>
                     </div>
-                    <div className="flex gap-3 flex-wrap justify-center">
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
                       <a
                         href={result.url}
                         download={result.name}
-                        className="no-underline"
+                        className="btn btn-primary btn-lg"
+                        style={{ justifyContent: "center" }}
                       >
-                        <Button variant="primary" size="lg" className="justify-center">
-                          <Download size={18} />
-                          Download {target?.label || targetFormat.toUpperCase()}
-                        </Button>
+                        <Download size={18} />
+                        Download {target?.label || targetFormat.toUpperCase()}
                       </a>
-                      <Button variant="secondary" size="lg" onClick={reset}>
+                      <button onClick={reset} className="btn btn-secondary btn-lg">
                         Convert Another
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 ) : (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full max-w-[400px] mx-auto flex flex-col gap-2"
+                    style={{
+                      width: "100%",
+                      maxWidth: "400px",
+                      margin: "0 auto",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
                   >
-                    <div className="flex items-center gap-3 justify-between flex-wrap">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-9 h-9 rounded-lg bg-indigo-500/16 border border-indigo-500/20 flex items-center justify-center text-[#818cf8] shrink-0">
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                        <div
+                          style={{
+                            width: "36px",
+                            height: "36px",
+                            borderRadius: "10px",
+                            background: "rgba(99,102,241,0.16)",
+                            border: "1px solid rgba(99,102,241,0.2)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--primary-light)",
+                            flexShrink: 0,
+                          }}
+                        >
                           <FileImage size={18} />
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-bold text-[#f8fafc] mb-0.5 text-[0.95rem] overflow-hidden text-ellipsis whitespace-nowrap">
+                        <div style={{ minWidth: 0 }}>
+                          <p
+                            style={{
+                              fontWeight: 700,
+                              color: "var(--text-primary)",
+                              marginBottom: "2px",
+                              fontSize: "0.95rem",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
                             {file.name}
                           </p>
-                          <p className="text-[#64748b] text-[0.75rem]">
-                            {getImageSize(file.size)} | Source {file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : source.label.toUpperCase()} | Ready to convert to {target?.label || "a selected format"}
+                          <p style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
+                            {getImageSize(file.size)} | Source {source.label} | Ready to convert to {target?.label || "a selected format"}
                           </p>
                         </div>
                       </div>
-                      <Button 
-                        variant="secondary" 
-                        onClick={() => {
-                          if (inputRef.current) {
-                            inputRef.current.value = "";
-                            inputRef.current.click();
-                          }
-                        }} 
-                        className="py-1 px-2.5 text-[0.75rem] h-auto min-h-[28px] rounded-lg"
-                      >
+                      <button onClick={reset} className="btn btn-secondary" style={{ padding: "4px 10px", fontSize: "0.75rem", height: "auto", minHeight: "28px", borderRadius: "8px" }}>
                         Change file
-                      </Button>
+                      </button>
                     </div>
 
                     {/* Tool Selector Tabs */}
-                    <div className="flex gap-1 bg-black/25 border border-white/7 rounded-[14px] p-1">
+                    <div style={{ display: "flex", gap: "4px", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "14px", padding: "4px" }}>
                       {[
                         {
                           id: "convert", label: "Convert",
                           color: "#6366f1", glow: "rgba(99,102,241,0.3)",
-                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" /></svg>
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                         },
                         {
                           id: "compress", label: "Compress",
                           color: "#f59e0b", glow: "rgba(245,158,11,0.3)",
-                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                         },
                         {
                           id: "resize", label: "Resize",
                           color: "#06b6d4", glow: "rgba(6,182,212,0.3)",
-                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></svg>
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
                         },
                         {
                           id: "crop", label: "Crop",
                           color: "#ec4899", glow: "rgba(236,72,153,0.3)",
-                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14" /><path d="M18 22V8a2 2 0 0 0-2-2H2" /></svg>
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
                         },
                       ].map((t) => (
                         <button
                           key={t.id}
                           type="button"
                           onClick={() => setActiveTool(t.id)}
-                          className={`flex-1 flex flex-col items-center justify-center gap-1 py-1.5 px-1 rounded-xl text-[0.7rem] font-bold tracking-wide transition-all duration-180 font-['Outfit'] border-1.5 ${activeTool === t.id
-                            ? "text-[#818cf8]"
-                            : "border-transparent bg-transparent text-white/45 hover:text-white/60 cursor-pointer"
-                            }`}
                           style={{
-                            borderColor: activeTool === t.id ? t.color : "transparent",
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "4px",
+                            padding: "6px 4px",
+                            border: activeTool === t.id ? `1.5px solid ${t.color}` : "1.5px solid transparent",
+                            borderRadius: "10px",
                             background: activeTool === t.id ? t.glow : "transparent",
-                            color: activeTool === t.id ? t.color : undefined,
+                            color: activeTool === t.id ? t.color : "rgba(255,255,255,0.45)",
+                            cursor: "pointer",
+                            fontSize: "0.7rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.02em",
+                            transition: "all 0.18s ease",
                             boxShadow: activeTool === t.id ? `0 0 14px ${t.glow}` : "none",
+                            fontFamily: "Outfit, sans-serif",
                           }}
                         >
                           {t.icon}
@@ -2116,13 +2042,22 @@ export default function Hero() {
                     </div>
 
                     {/* Tool configurations */}
+                    {activeTool === "convert" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Select output format
+                        </span>
+                        <TargetFormatSelect value={targetFormat} onChange={setTargetFormat} sourceFormatLabel={source.label} />
+                      </div>
+                    )}
+
                     {activeTool === "compress" && (
-                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
-                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                           Compression settings
                         </span>
-                        <div className="flex flex-col gap-1.5">
-                          <div className="flex justify-between text-[0.85rem] text-[#f8fafc]">
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", color: "var(--text-primary)" }}>
                             <span>Quality:</span>
                             <strong>{compressionQuality}%</strong>
                           </div>
@@ -2132,10 +2067,14 @@ export default function Hero() {
                             max="100"
                             value={compressionQuality}
                             onChange={(e) => setCompressionQuality(parseInt(e.target.value))}
-                            className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
+                            style={{
+                              width: "100%",
+                              accentColor: "var(--primary-light)",
+                              cursor: "pointer"
+                            }}
                           />
                         </div>
-                        <div className="flex gap-2">
+                        <div style={{ display: "flex", gap: "8px" }}>
                           {[
                             { label: "Max Compress", value: 30 },
                             { label: "Balanced", value: 75 },
@@ -2145,10 +2084,16 @@ export default function Hero() {
                               key={preset.label}
                               type="button"
                               onClick={() => setCompressionQuality(preset.value)}
-                              className={`flex-1 py-1.5 px-2 border rounded-lg text-[0.72rem] cursor-pointer transition-all duration-150 ${compressionQuality === preset.value
-                                ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
-                                : "border-white/8 bg-white/2 text-[#64748b] hover:text-[#94a3b8]"
-                                }`}
+                              style={{
+                                flex: 1,
+                                padding: "6px 8px",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: "8px",
+                                background: compressionQuality === preset.value ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
+                                color: compressionQuality === preset.value ? "var(--primary-light)" : "var(--text-muted)",
+                                fontSize: "0.72rem",
+                                cursor: "pointer"
+                              }}
                             >
                               {preset.label}
                             </button>
@@ -2158,69 +2103,92 @@ export default function Hero() {
                     )}
 
                     {activeTool === "resize" && (
-                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
-                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                           Resize dimensions
                         </span>
-                        <div className="flex gap-2.5 items-center">
-                          <label className="flex items-center gap-1.5 text-[0.82rem] text-[#94a3b8] cursor-pointer hover:text-[#f8fafc]">
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-secondary)", cursor: "pointer" }}>
                             <input
                               type="radio"
                               name="resizeMode"
                               checked={resizeMode === "percent"}
                               onChange={() => setResizeMode("percent")}
-                              className="accent-[#6366f1] cursor-pointer"
+                              style={{ accentColor: "var(--primary-light)" }}
                             />
                             Scale %
                           </label>
-                          <label className="flex items-center gap-1.5 text-[0.82rem] text-[#94a3b8] cursor-pointer hover:text-[#f8fafc]">
+                          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-secondary)", cursor: "pointer" }}>
                             <input
                               type="radio"
                               name="resizeMode"
                               checked={resizeMode === "custom"}
                               onChange={() => setResizeMode("custom")}
-                              className="accent-[#6366f1] cursor-pointer"
+                              style={{ accentColor: "var(--primary-light)" }}
                             />
                             Custom Px
                           </label>
                         </div>
 
                         {resizeMode === "percent" ? (
-                          <div className="flex gap-2">
+                          <div style={{ display: "flex", gap: "8px" }}>
                             {[25, 50, 75].map((pct) => (
                               <button
                                 key={pct}
                                 type="button"
                                 onClick={() => setResizePercent(pct)}
-                                className={`flex-1 py-2 border rounded-xl text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 ${resizePercent === pct
-                                  ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8]"
-                                  : "border-white/8 bg-white/2 text-[#f8fafc] hover:bg-white/4"
-                                  }`}
+                                style={{
+                                  flex: 1,
+                                  padding: "8px",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  borderRadius: "10px",
+                                  background: resizePercent === pct ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
+                                  color: resizePercent === pct ? "var(--primary-light)" : "var(--text-primary)",
+                                  fontSize: "0.8rem",
+                                  fontWeight: 600,
+                                  cursor: "pointer"
+                                }}
                               >
                                 {pct}% Size
                               </button>
                             ))}
                           </div>
                         ) : (
-                          <div className="grid grid-cols-2 gap-2.5">
-                            <div className="flex flex-col gap-1">
-                              <span className="text-[0.7rem] text-[#64748b]">Width (px):</span>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Width (px):</span>
                               <input
                                 type="number"
                                 placeholder={imgWidth ? `${imgWidth}px` : "Width"}
                                 value={customWidth}
                                 onChange={(e) => setCustomWidth(e.target.value)}
-                                className="w-full py-2 px-3 bg-black/20 border border-white/8 rounded-xl text-white text-[0.85rem] outline-none transition-all duration-150 focus:border-[#6366f1]"
+                                style={{
+                                  padding: "8px 12px",
+                                  background: "rgba(0,0,0,0.2)",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  borderRadius: "10px",
+                                  color: "white",
+                                  fontSize: "0.85rem",
+                                  outline: "none"
+                                }}
                               />
                             </div>
-                            <div className="flex flex-col gap-1">
-                              <span className="text-[0.7rem] text-[#64748b]">Height (px):</span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Height (px):</span>
                               <input
                                 type="number"
                                 placeholder={imgHeight ? `${imgHeight}px` : "Height"}
                                 value={customHeight}
                                 onChange={(e) => setCustomHeight(e.target.value)}
-                                className="w-full py-2 px-3 bg-black/20 border border-white/8 rounded-xl text-white text-[0.85rem] outline-none transition-all duration-150 focus:border-[#6366f1]"
+                                style={{
+                                  padding: "8px 12px",
+                                  background: "rgba(0,0,0,0.2)",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  borderRadius: "10px",
+                                  color: "white",
+                                  fontSize: "0.85rem",
+                                  outline: "none"
+                                }}
                               />
                             </div>
                           </div>
@@ -2229,11 +2197,11 @@ export default function Hero() {
                     )}
 
                     {activeTool === "crop" && (
-                      <div className="flex flex-col gap-3 bg-white/2 border border-white/6 rounded-2xl p-3">
-                        <span className="text-[0.75rem] font-bold text-[#94a3b8] uppercase tracking-wider">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "12px" }}>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                           Crop Aspect Ratio (Centered)
                         </span>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                           {[
                             { label: "Square 1:1", value: "1:1" },
                             { label: "Widescreen 16:9", value: "16:9" },
@@ -2243,10 +2211,17 @@ export default function Hero() {
                               key={aspect.value}
                               type="button"
                               onClick={() => setCropAspect(aspect.value)}
-                              className={`py-2 px-1 border rounded-xl text-[0.75rem] cursor-pointer text-center transition-all duration-150 ${cropAspect === aspect.value
-                                ? "border-[#6366f1] bg-indigo-500/15 text-[#818cf8] font-semibold"
-                                : "border-white/8 bg-white/2 text-[#f8fafc] hover:bg-white/4 font-medium"
-                                }`}
+                              style={{
+                                padding: "8px 4px",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: "10px",
+                                background: cropAspect === aspect.value ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.02)",
+                                color: cropAspect === aspect.value ? "var(--primary-light)" : "var(--text-primary)",
+                                fontSize: "0.75rem",
+                                fontWeight: cropAspect === aspect.value ? 600 : 500,
+                                cursor: "pointer",
+                                textAlign: "center"
+                              }}
                             >
                               {aspect.label}
                             </button>
@@ -2256,29 +2231,28 @@ export default function Hero() {
                     )}
 
                     {converting && (
-                      <div className="mb-2">
-                        <p className="text-[0.85rem] text-[#64748b] mb-2">
+                      <div>
+                        <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "8px" }}>
                           Processing... {progress}%
                         </p>
-                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="progress-bar">
                           <div
-                            className="h-full bg-gradient-to-r from-[#6366f1] to-[#06b6d4] transition-all duration-[250ms]"
-                            style={{ width: `${progress}%` }}
+                            className="progress-bar-fill"
+                            style={{ width: `${progress}%`, transition: "width 0.25s ease" }}
                           />
                         </div>
                       </div>
                     )}
 
-                    <Button
+                    <button
                       onClick={handleConvert}
                       disabled={converting || (activeTool === "convert" && !targetFormat)}
-                      variant="primary"
-                      size="lg"
-                      className="w-full justify-center"
+                      className="btn btn-primary btn-lg"
+                      style={{ justifyContent: "center", opacity: (activeTool === "convert" && !targetFormat) ? 0.5 : 1 }}
                     >
                       {converting ? (
                         <>
-                          <RefreshCw size={18} className="animate-spin" />
+                          <RefreshCw size={18} style={{ animation: "spin 1s linear infinite" }} />
                           Processing...
                         </>
                       ) : activeTool === "convert" ? (
@@ -2309,13 +2283,26 @@ export default function Hero() {
                           Crop Image ({cropAspect})
                         </>
                       )}
-                    </Button>
+                    </button>
                   </div>
                 )}
               </div>
 
               {error && (
-                <div className="mt-3.5 flex items-center gap-2.5 p-3 px-4 bg-indigo-500/10 border border-red-500/28 rounded-xl text-red-300 text-[0.875rem]">
+                <div
+                  style={{
+                    marginTop: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "12px 16px",
+                    background: "rgba(239, 68, 68, 0.1)",
+                    border: "1px solid rgba(239, 68, 68, 0.28)",
+                    borderRadius: "12px",
+                    color: "#fca5a5",
+                    fontSize: "0.875rem",
+                  }}
+                >
                   <AlertCircle size={16} />
                   {error}
                 </div>
@@ -2323,7 +2310,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

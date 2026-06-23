@@ -1,4 +1,28 @@
 import CredentialsProvider from "next-auth/providers/credentials";
+import { getApiUrl } from "./apiUrl";
+
+// Dynamically configure NEXTAUTH_URL to LAN IP if not explicitly set to a production domain
+if (typeof window === "undefined") {
+  try {
+    const os = require("os");
+    const interfaces = os.networkInterfaces();
+    let localIp = "localhost";
+    for (const name of Object.keys(interfaces)) {
+      for (const iface of interfaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          localIp = iface.address;
+          break;
+        }
+      }
+      if (localIp !== "localhost") break;
+    }
+    if (!process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL.includes("localhost")) {
+      process.env.NEXTAUTH_URL = `http://${localIp}:3000`;
+    }
+  } catch (e) {
+    // Ignore require error if bundler evaluates this at build time
+  }
+}
 
 export const authOptions = {
   providers: [
@@ -10,7 +34,7 @@ export const authOptions = {
       },
       async authorize(credentials) {
         try {
-          const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          const API_URL = getApiUrl();
           const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: {

@@ -5,6 +5,8 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders, Lock, Unlock } from "lucide-react";
 import Button from "@/components/Button";
 
+import imageCompression from "browser-image-compression";
+
 const PRESETS = [
   { label: "HD (1280×720)", w: 1280, h: 720 },
   { label: "Full HD (1920×1080)", w: 1920, h: 1080 },
@@ -81,14 +83,27 @@ export default function ImageResizerTool() {
     setResizing(true);
 
     try {
+      // Safely load the image, downscaling slightly if it's monstrously huge
+      const safeFile = await imageCompression(file, {
+        maxSizeMB: 50,
+        maxWidthOrHeight: 8192,
+        useWebWorker: true,
+        fileType: "image/png",
+        initialQuality: 1,
+      });
+
       const img = new window.Image();
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(safeFile);
       img.src = url;
 
       await new Promise((resolve, reject) => {
         img.onload = resolve;
-        img.onerror = reject;
+        img.onerror = () => reject(new Error("Failed to load image"));
       });
+
+      if (!img.naturalWidth || !img.naturalHeight) {
+        throw new Error("Invalid image dimensions");
+      }
 
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -122,7 +137,8 @@ export default function ImageResizerTool() {
       });
 
       URL.revokeObjectURL(url);
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Failed to resize image.");
     } finally {
       setResizing(false);

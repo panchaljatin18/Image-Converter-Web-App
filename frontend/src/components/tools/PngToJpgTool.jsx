@@ -5,6 +5,8 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
 
+import imageCompression from "browser-image-compression";
+
 export default function PngToJpgTool() {
   const [file, setFile] = useState(null);
   const [quality, setQuality] = useState(90);
@@ -31,17 +33,31 @@ export default function PngToJpgTool() {
   const handleConvert = useCallback(async () => {
     if (!file) return;
     setConverting(true);
-    setProgress(20);
+    setProgress(10);
 
     try {
+      // 1. Ensure file is within safe dimensions to prevent canvas crash
+      const safeFile = await imageCompression(file, {
+        maxSizeMB: 50,
+        maxWidthOrHeight: 8192,
+        useWebWorker: true,
+        fileType: "image/png",
+        initialQuality: 1,
+        onProgress: (p) => setProgress(Math.max(10, p / 2)),
+      });
+
       const img = new window.Image();
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(safeFile);
       img.src = url;
 
       await new Promise((resolve, reject) => {
         img.onload = resolve;
-        img.onerror = reject;
+        img.onerror = () => reject(new Error("Failed to load image"));
       });
+
+      if (!img.naturalWidth || !img.naturalHeight) {
+        throw new Error("Invalid image dimensions");
+      }
 
       setProgress(60);
 
@@ -77,7 +93,8 @@ export default function PngToJpgTool() {
       });
 
       URL.revokeObjectURL(url);
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Failed to convert image. Please try another file.");
     } finally {
       setConverting(false);
