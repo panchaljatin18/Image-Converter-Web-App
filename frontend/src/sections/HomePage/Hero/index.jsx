@@ -11,6 +11,8 @@ import dropboxService from "../../../services/dropboxService";
 import OneDrivePicker from "../../../components/OneDrivePicker";
 import onedriveService from "../../../services/onedriveService";
 import authService from "../../../services/authService";
+import imageCompression from "browser-image-compression";
+import { PDFDocument } from "pdf-lib";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import {
@@ -1235,7 +1237,7 @@ export default function Hero() {
     [handleFile]
   );
 
-  const handleConvert = useCallback(async () => {
+    const handleConvert = useCallback(async () => {
     if (!file) return;
 
     setConverting(true);
@@ -1256,8 +1258,8 @@ export default function Hero() {
 
       setProgress(40);
 
-      let targetWidth = 0;
-      let targetHeight = 0;
+      let targetWidth = 2000;
+      let targetHeight = 2000;
       let blob = null;
 
       const lookupTarget = SOURCE_FORMATS.find(f => f.extensions.includes(target?.value));
@@ -1266,14 +1268,14 @@ export default function Hero() {
       const ext = targetFormat ? (lookupTarget ? `.${lookupTarget.extensions[0]}` : `.${target?.value || "png"}`) : "." + (file.name.split(".").pop() || "png");
 
       if (isImageLoaded) {
-        targetWidth = img.naturalWidth;
-        targetHeight = img.naturalHeight;
+        targetWidth = img.naturalWidth || 2000;
+        targetHeight = img.naturalHeight || 2000;
 
         if (activeTool === "resize") {
           if (resizeMode === "percent") {
             const ratio = resizePercent / 100;
-            targetWidth = Math.max(1, Math.round(img.naturalWidth * ratio));
-            targetHeight = Math.max(1, Math.round(img.naturalHeight * ratio));
+            targetWidth = Math.max(1, Math.round(targetWidth * ratio));
+            targetHeight = Math.max(1, Math.round(targetHeight * ratio));
           } else {
             const w = parseInt(customWidth);
             const h = parseInt(customHeight);
@@ -1282,80 +1284,121 @@ export default function Hero() {
               targetHeight = h;
             } else if (w > 0) {
               targetWidth = w;
-              targetHeight = Math.max(1, Math.round((w / img.naturalWidth) * img.naturalHeight));
+              targetHeight = Math.max(1, Math.round((w / (img.naturalWidth || 2000)) * (img.naturalHeight || 2000)));
             } else if (h > 0) {
               targetHeight = h;
-              targetWidth = Math.max(1, Math.round((h / img.naturalHeight) * img.naturalWidth));
+              targetWidth = Math.max(1, Math.round((h / (img.naturalHeight || 2000)) * (img.naturalWidth || 2000)));
             }
           }
         }
 
         let sourceX = 0;
         let sourceY = 0;
-        let sourceWidth = img.naturalWidth;
-        let sourceHeight = img.naturalHeight;
+        let sourceWidth = img.naturalWidth || 2000;
+        let sourceHeight = img.naturalHeight || 2000;
 
         if (activeTool === "crop") {
           if (cropAspect === "1:1") {
-            const size = Math.min(img.naturalWidth, img.naturalHeight);
-            sourceX = Math.round((img.naturalWidth - size) / 2);
-            sourceY = Math.round((img.naturalHeight - size) / 2);
+            const size = Math.min(sourceWidth, sourceHeight);
+            sourceX = Math.round((sourceWidth - size) / 2);
+            sourceY = Math.round((sourceHeight - size) / 2);
             sourceWidth = size;
             sourceHeight = size;
             targetWidth = size;
             targetHeight = size;
           } else if (cropAspect === "16:9") {
             const targetRatio = 16 / 9;
-            const currentRatio = img.naturalWidth / img.naturalHeight;
+            const currentRatio = sourceWidth / sourceHeight;
             if (currentRatio > targetRatio) {
-              sourceHeight = img.naturalHeight;
-              sourceWidth = Math.round(img.naturalHeight * targetRatio);
-              sourceX = Math.round((img.naturalWidth - sourceWidth) / 2);
+              sourceHeight = sourceHeight;
+              sourceWidth = Math.round(sourceHeight * targetRatio);
+              sourceX = Math.round(((img.naturalWidth || 2000) - sourceWidth) / 2);
             } else {
-              sourceWidth = img.naturalWidth;
-              sourceHeight = Math.round(img.naturalWidth / targetRatio);
-              sourceY = Math.round((img.naturalHeight - sourceHeight) / 2);
+              sourceWidth = sourceWidth;
+              sourceHeight = Math.round(sourceWidth / targetRatio);
+              sourceY = Math.round(((img.naturalHeight || 2000) - sourceHeight) / 2);
             }
             targetWidth = sourceWidth;
             targetHeight = sourceHeight;
           } else if (cropAspect === "4:3") {
             const targetRatio = 4 / 3;
-            const currentRatio = img.naturalWidth / img.naturalHeight;
+            const currentRatio = sourceWidth / sourceHeight;
             if (currentRatio > targetRatio) {
-              sourceHeight = img.naturalHeight;
-              sourceWidth = Math.round(img.naturalHeight * targetRatio);
-              sourceX = Math.round((img.naturalWidth - sourceWidth) / 2);
+              sourceHeight = sourceHeight;
+              sourceWidth = Math.round(sourceHeight * targetRatio);
+              sourceX = Math.round(((img.naturalWidth || 2000) - sourceWidth) / 2);
             } else {
-              sourceWidth = img.naturalWidth;
-              sourceHeight = Math.round(img.naturalWidth / targetRatio);
-              sourceY = Math.round((img.naturalHeight - sourceHeight) / 2);
+              sourceWidth = sourceWidth;
+              sourceHeight = Math.round(sourceWidth / targetRatio);
+              sourceY = Math.round(((img.naturalHeight || 2000) - sourceHeight) / 2);
             }
             targetWidth = sourceWidth;
             targetHeight = sourceHeight;
           }
         }
 
-        const canvas = document.createElement("canvas");
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-        const ctx = canvas.getContext("2d");
-
-        if (ctx) {
-          if (mime === "image/jpeg") {
+        if (mime === "application/pdf") {
+            const pdfDoc = await PDFDocument.create();
+            const page = pdfDoc.addPage([targetWidth, targetHeight]);
+            
+            const canvas = document.createElement("canvas");
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext("2d");
+            
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
+            ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+            
+            const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1.0));
+            const pngBytes = await pngBlob.arrayBuffer();
+            const pdfImage = await pdfDoc.embedPng(pngBytes);
+            
+            page.drawImage(pdfImage, {
+                x: 0,
+                y: 0,
+                width: targetWidth,
+                height: targetHeight,
+            });
+            
+            const pdfBytes = await pdfDoc.save();
+            blob = new Blob([pdfBytes], { type: "application/pdf" });
+        } else if (mime === "image/svg+xml") {
+            const canvas = document.createElement("canvas");
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+            
+            const dataUrl = canvas.toDataURL("image/png");
+            const svgContent = `
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${targetWidth}" height="${targetHeight}" viewBox="0 0 ${targetWidth} ${targetHeight}">
+  <image width="${targetWidth}" height="${targetHeight}" href="${dataUrl}" />
+</svg>`.trim();
+            blob = new Blob([svgContent], { type: "image/svg+xml" });
+        } else if (mime === "image/jpeg" || mime === "image/png" || mime === "image/webp") {
+            const canvas = document.createElement("canvas");
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext("2d");
 
-          ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+            if (ctx) {
+              if (mime === "image/jpeg") {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+              }
 
-          let quality = 0.95;
-          if (activeTool === "compress") {
-            quality = compressionQuality / 100;
-          } else if (mime === "image/jpeg") {
-            quality = 0.92;
-          }
+              ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
 
-          blob = await new Promise((resolve) => canvas.toBlob(resolve, mime, quality));
+              let quality = 0.95;
+              if (activeTool === "compress") {
+                quality = compressionQuality / 100;
+              } else if (mime === "image/jpeg") {
+                quality = 0.92;
+              }
+
+              blob = await new Promise((resolve) => canvas.toBlob(resolve, mime, quality));
+            }
         }
       }
 
@@ -1517,7 +1560,7 @@ export default function Hero() {
                         {file ? (file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : source.label.toUpperCase()) : sourceFormat.toUpperCase()}
                       </span>
                     </div>
-                    {!file && <ChevronDown size={13} className="mt-1 text-slate-400" />}
+                    <ChevronDown size={18} className="mt-2 text-slate-300 opacity-80" style={{ transform: isSourceDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />
                   </motion.div>
 
                   <AnimatePresence>
@@ -1615,7 +1658,7 @@ export default function Hero() {
                               </span>
                             )}
                           </div>
-                          {hasConversions && <ChevronDown size={13} className="mt-1 text-cyan-400/80 animate-pulse" />}
+                          {hasConversions && <ChevronDown size={18} className="mt-2 text-cyan-400 opacity-90" style={{ transform: isTargetDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />}
                         </motion.div>
 
                         <AnimatePresence>
