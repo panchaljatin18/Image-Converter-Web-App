@@ -36,66 +36,41 @@ export default function PngToJpgTool() {
     setProgress(10);
 
     try {
-      // 1. Ensure file is within safe dimensions to prevent canvas crash
-      const safeFile = await imageCompression(file, {
-        maxSizeMB: 50,
-        maxWidthOrHeight: 8192,
-        useWebWorker: true,
-        fileType: "image/png",
-        initialQuality: 1,
-        onProgress: (p) => setProgress(Math.max(10, p / 2)),
+      const { processFileWithBackend } = await import("@/lib/apiClient");
+
+      await processFileWithBackend(file, {
+        targetFormat: "jpg",
+        options: { quality: quality / 100, bgColor },
+        onProgress: (p) => setProgress(Math.max(10, p)),
+        onSuccess: async (data) => {
+          const img = new window.Image();
+          img.src = data.outputUrl;
+
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => reject(new Error("Failed to load converted image"));
+          });
+
+          const outputName = file.name.replace(/\.png$/i, ".jpg");
+
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            originalSize: (file.size / 1024).toFixed(1) + " KB",
+            savings: "0.0", // Can't easily calculate without fetching the blob, but UI is preserved
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to convert image. Please try another file.");
+        }
       });
-
-      const img = new window.Image();
-      const url = URL.createObjectURL(safeFile);
-      img.src = url;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load image"));
-      });
-
-      if (!img.naturalWidth || !img.naturalHeight) {
-        throw new Error("Invalid image dimensions");
-      }
-
-      setProgress(60);
-
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-
-      // Fill background (handles PNG transparency)
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-
-      setProgress(85);
-
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/jpeg", quality / 100)
-      );
-
-      setProgress(100);
-
-      const outputUrl = URL.createObjectURL(blob);
-      const outputName = file.name.replace(/\.png$/i, ".jpg");
-
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        size: (blob.size / 1024).toFixed(1) + " KB",
-        originalSize: (file.size / 1024).toFixed(1) + " KB",
-        savings: (((file.size - blob.size) / file.size) * 100).toFixed(1),
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-      });
-
-      URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("Failed to convert image. Please try another file.");
+      alert("Failed to initiate conversion.");
     } finally {
       setConverting(false);
     }

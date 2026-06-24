@@ -126,31 +126,40 @@ export default function CropImageTool() {
       return;
     }
 
-    const img = new window.Image();
-    img.src = imageUrl;
-    await new Promise((res) => (img.onload = res));
+    try {
+      const { processFileWithBackend } = await import("@/lib/apiClient");
 
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(crop.w);
-    canvas.height = Math.round(crop.h);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, Math.round(crop.x), Math.round(crop.y), Math.round(crop.w), Math.round(crop.h), 0, 0, canvas.width, canvas.height);
+      await processFileWithBackend(file, {
+        targetFormat: outputFormat,
+        options: { 
+          crop: { x: crop.x, y: crop.y, width: crop.w, height: crop.h },
+          quality: 0.95 
+        },
+        onProgress: (p) => {
+          // simulate progress if you want, but this is fast
+        },
+        onSuccess: async (data) => {
+          const ext = outputFormat === "png" ? ".png" : outputFormat === "webp" ? ".webp" : ".jpg";
+          const baseName = file.name.replace(/\.[^.]+$/, "");
+          const outputName = `${baseName}_cropped${ext}`;
 
-    const mime = outputFormat === "png" ? "image/png" : outputFormat === "webp" ? "image/webp" : "image/jpeg";
-    const ext = outputFormat === "png" ? ".png" : outputFormat === "webp" ? ".webp" : ".jpg";
-
-    const blob = await new Promise((res) => canvas.toBlob(res, mime, 0.95));
-    const baseName = file.name.replace(/\.[^.]+$/, "");
-    const outputName = `${baseName}_cropped${ext}`;
-    const outputUrl = URL.createObjectURL(blob);
-
-    setResult({
-      url: outputUrl,
-      name: outputName,
-      size: (blob.size / 1024).toFixed(1) + " KB",
-      width: canvas.width,
-      height: canvas.height,
-    });
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            width: Math.round(crop.w),
+            height: Math.round(crop.h),
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to crop image.");
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to initiate crop.");
+    }
   }, [file, crop, imageUrl, outputFormat]);
 
   const reset = () => {

@@ -20,9 +20,7 @@ const localIps = getLocalIps();
 const nextConfig = {
   reactCompiler: true,
   allowedDevOrigins: localIps,
-  experimental: {
-    allowedDevOrigins: localIps
-  }
+  experimental: {}
 };
 
 export default nextConfig;

@@ -83,63 +83,36 @@ export default function ImageResizerTool() {
     setResizing(true);
 
     try {
-      // Safely load the image, downscaling slightly if it's monstrously huge
-      const safeFile = await imageCompression(file, {
-        maxSizeMB: 50,
-        maxWidthOrHeight: 8192,
-        useWebWorker: true,
-        fileType: "image/png",
-        initialQuality: 1,
+      const { processFileWithBackend } = await import("@/lib/apiClient");
+
+      await processFileWithBackend(file, {
+        targetFormat: outputFormat,
+        options: { width, height, quality: quality / 100 },
+        // Simulate progress for UI feedback during processing since upload is fast
+        onProgress: (p) => {
+          // just UI filler since resizing doesn't have a progress state
+        },
+        onSuccess: async (data) => {
+          const ext = outputFormat === "png" ? ".png" : outputFormat === "webp" ? ".webp" : ".jpg";
+          const baseName = file.name.replace(/\.[^.]+$/, "");
+          const outputName = `${baseName}_${width}x${height}${ext}`;
+
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            width,
+            height,
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to resize image.");
+        }
       });
-
-      const img = new window.Image();
-      const url = URL.createObjectURL(safeFile);
-      img.src = url;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load image"));
-      });
-
-      if (!img.naturalWidth || !img.naturalHeight) {
-        throw new Error("Invalid image dimensions");
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-
-      if (outputFormat === "jpeg") {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, width, height);
-      }
-
-      ctx.drawImage(img, 0, 0, width, height);
-
-      const mime = outputFormat === "png" ? "image/png" : outputFormat === "webp" ? "image/webp" : "image/jpeg";
-      const ext = outputFormat === "png" ? ".png" : outputFormat === "webp" ? ".webp" : ".jpg";
-
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, mime, quality / 100)
-      );
-
-      const baseName = file.name.replace(/\.[^.]+$/, "");
-      const outputName = `${baseName}_${width}x${height}${ext}`;
-      const outputUrl = URL.createObjectURL(blob);
-
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        size: (blob.size / 1024).toFixed(1) + " KB",
-        width,
-        height,
-      });
-
-      URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("Failed to resize image.");
+      alert("Failed to initiate resize.");
     } finally {
       setResizing(false);
     }

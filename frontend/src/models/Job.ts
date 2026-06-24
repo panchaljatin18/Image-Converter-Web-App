@@ -5,6 +5,7 @@ export interface IJob extends Document {
   originalFileName: string;
   sourceFormat: string;
   targetFormat: string;
+  options?: any;
   status: "pending" | "processing" | "completed" | "failed";
   progress: number;
   fileSize: number;
@@ -20,6 +21,7 @@ const JobSchema: Schema = new Schema(
     originalFileName: { type: String, required: true },
     sourceFormat: { type: String, required: true },
     targetFormat: { type: String, required: true },
+    options: { type: Schema.Types.Mixed, required: false },
     status: {
       type: String,
       enum: ["pending", "processing", "completed", "failed"],

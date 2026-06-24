@@ -22,7 +22,7 @@ if (!fs.existsSync(downloadsPath)) {
 // Connect to MongoDB Database
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log("MongoDB Database connected successfully.");
+    console.log(`MongoDB Database connected successfully on Port- ${PORT}`);
     
     // Create HTTP server
     const server = http.createServer(app);

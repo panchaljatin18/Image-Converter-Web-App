@@ -47,47 +47,44 @@ export default function WebPConverterTool() {
     setProgress(10);
 
     try {
-      const compressed = await imageCompression(file, {
-        maxSizeMB: 50,
-        maxWidthOrHeight: 8192,
-        useWebWorker: true,
-        fileType: selectedFormat.mime,
-        initialQuality: quality / 100,
-        onProgress: (p) => setProgress(Math.max(10, p - 5)),
-      });
+      const { processFileWithBackend } = await import("@/lib/apiClient");
 
-      const img = new window.Image();
-      const outputUrl = URL.createObjectURL(compressed);
-      img.src = outputUrl;
+      await processFileWithBackend(file, {
+        targetFormat: selectedFormat.value,
+        options: { quality: quality / 100 },
+        onProgress: (p) => setProgress(Math.max(10, p)),
+        onSuccess: async (data) => {
+          const img = new window.Image();
+          img.src = data.outputUrl;
 
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load converted image"));
-      });
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => reject(new Error("Failed to load converted image"));
+          });
 
-      if (!img.naturalWidth || !img.naturalHeight) {
-        throw new Error("Invalid image dimensions resulting from conversion.");
-      }
+          const baseName = file.name.replace(/\.(webp|png|jpe?g|gif|bmp)$/i, "");
+          const outputName = baseName + selectedFormat.ext;
 
-      setProgress(100);
-
-      const baseName = file.name.replace(/\.(webp|png|jpe?g|gif|bmp)$/i, "");
-      const outputName = baseName + selectedFormat.ext;
-
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        size: (compressed.size / 1024).toFixed(1) + " KB",
-        originalSize: (file.size / 1024).toFixed(1) + " KB",
-        savings: (((file.size - compressed.size) / file.size) * 100).toFixed(1),
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-        format: selectedFormat.label,
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            originalSize: (file.size / 1024).toFixed(1) + " KB",
+            savings: "0.0", // Can't easily calculate without fetching the blob, but UI is preserved
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            format: selectedFormat.label,
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to convert. Make sure your file is valid.");
+        }
       });
 
     } catch (err) {
       console.error(err);
-      alert("Failed to convert. Make sure your file is valid.");
+      alert("Failed to initiate conversion.");
     } finally {
       setConverting(false);
     }

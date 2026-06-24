@@ -466,7 +466,7 @@ const getAllowedConversions = (sourceFmt) => {
       .filter(v => v !== sourceFmt && v !== "svg");
   }
 
-  // Use explicit conversion map if available for non-images
+  // Use explicit conversion map if available
   if (conversionMap[sourceFmt]) return conversionMap[sourceFmt];
 
   // Smart Fallback: Allow converting to any format within the same category
@@ -1336,77 +1336,6 @@ export default function Hero() {
             targetHeight = sourceHeight;
           }
         }
-
-        if (mime === "application/pdf") {
-            const pdfDoc = await PDFDocument.create();
-            const page = pdfDoc.addPage([targetWidth, targetHeight]);
-            
-            const canvas = document.createElement("canvas");
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            const ctx = canvas.getContext("2d");
-            
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
-            
-            const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1.0));
-            const pngBytes = await pngBlob.arrayBuffer();
-            const pdfImage = await pdfDoc.embedPng(pngBytes);
-            
-            page.drawImage(pdfImage, {
-                x: 0,
-                y: 0,
-                width: targetWidth,
-                height: targetHeight,
-            });
-            
-            const pdfBytes = await pdfDoc.save();
-            blob = new Blob([pdfBytes], { type: "application/pdf" });
-        } else if (mime === "image/svg+xml") {
-            const canvas = document.createElement("canvas");
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
-            
-            const dataUrl = canvas.toDataURL("image/png");
-            const svgContent = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${targetWidth}" height="${targetHeight}" viewBox="0 0 ${targetWidth} ${targetHeight}">
-  <image width="${targetWidth}" height="${targetHeight}" href="${dataUrl}" />
-</svg>`.trim();
-            blob = new Blob([svgContent], { type: "image/svg+xml" });
-        } else if (mime === "image/jpeg" || mime === "image/png" || mime === "image/webp") {
-            const canvas = document.createElement("canvas");
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            const ctx = canvas.getContext("2d");
-
-            if (ctx) {
-              if (mime === "image/jpeg") {
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-              }
-
-              ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
-
-              let quality = 0.95;
-              if (activeTool === "compress") {
-                quality = compressionQuality / 100;
-              } else if (mime === "image/jpeg") {
-                quality = 0.92;
-              }
-
-              blob = await new Promise((resolve) => canvas.toBlob(resolve, mime, quality));
-            }
-        }
-      }
-
-      setProgress(75);
-
-      if (!blob) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        blob = new Blob([await file.arrayBuffer()], { type: mime });
       }
 
       let actionSuffix = "";
@@ -1416,27 +1345,50 @@ export default function Hero() {
 
       const nameWithoutExt = file.name.replace(/\.[^.]+$/, "");
       const outputName = nameWithoutExt + actionSuffix + ext;
-      const outputUrl = URL.createObjectURL(blob);
 
-      clearOutputUrl();
-      outputUrlRef.current = outputUrl;
+      const { processFileWithBackend } = await import("@/lib/apiClient");
 
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        size: getImageSize(blob.size),
-        width: targetWidth,
-        height: targetHeight,
+      await processFileWithBackend(file, {
+        targetFormat: target?.value || ext.slice(1) || "png",
+        options: {
+          width: activeTool === "resize" ? targetWidth : undefined,
+          height: activeTool === "resize" ? targetHeight : undefined,
+          crop: activeTool === "crop" ? {
+            x: sourceX,
+            y: sourceY,
+            width: sourceWidth,
+            height: sourceHeight
+          } : undefined,
+          quality: activeTool === "compress" ? compressionQuality / 100 : undefined
+        },
+        onProgress: (p) => setProgress(Math.max(40, p)),
+        onSuccess: (data) => {
+          clearOutputUrl();
+          outputUrlRef.current = data.outputUrl;
+
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            width: targetWidth,
+            height: targetHeight,
+          });
+          setProgress(100);
+          setConverting(false);
+          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+        },
+        onError: (err) => {
+          setProgress(0);
+          setError(`Failed to process file: ${err.message || "Unknown error"}`);
+          setConverting(false);
+          if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+        }
       });
-      setProgress(100);
     } catch (err) {
       setProgress(0);
-      setError(`Failed to process image: ${err?.message || "Unknown error"}`);
-    } finally {
-      if (sourceUrl) {
-        URL.revokeObjectURL(sourceUrl);
-      }
+      setError(`Failed to process file: ${err?.message || "Unknown error"}`);
       setConverting(false);
+      if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     }
   }, [file, activeTool, target, compressionQuality, resizeMode, resizePercent, customWidth, customHeight, cropAspect, clearOutputUrl]);
 

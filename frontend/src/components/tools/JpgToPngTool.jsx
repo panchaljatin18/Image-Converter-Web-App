@@ -34,46 +34,42 @@ export default function JpgToPngTool() {
     setProgress(10);
 
     try {
-      // 1. Process via browser-image-compression to ensure it fits safe dimensions
-      //    and convert it to PNG in a background worker.
-      const compressed = await imageCompression(file, {
-        maxSizeMB: 50,
-        maxWidthOrHeight: 8192,
-        useWebWorker: true,
-        fileType: "image/png",
-        initialQuality: 1, // High quality conversion
-        onProgress: (p) => setProgress(Math.max(10, p - 5)),
+      const { processFileWithBackend } = await import("@/lib/apiClient");
+
+      await processFileWithBackend(file, {
+        targetFormat: "png",
+        options: { quality: 1, preserveMetadata: true },
+        onProgress: (p) => setProgress(Math.max(10, p)),
+        onSuccess: async (data) => {
+          // The backend returns the final URL. Let's create an image to get dimensions.
+          const img = new window.Image();
+          img.src = data.outputUrl;
+
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => reject(new Error("Failed to load converted image"));
+          });
+
+          const outputName = file.name.replace(/\.(jpe?g|jpg)$/i, ".png");
+
+          // We don't have the exact output blob size here easily without another fetch,
+          // but we can just use the UI data or fetch headers.
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            size: "Available on download",
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to convert image. Please try another file.");
+        }
       });
-
-      // 2. Load the resulting blob to get its dimensions for the UI
-      const img = new window.Image();
-      const outputUrl = URL.createObjectURL(compressed);
-      img.src = outputUrl;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load converted image"));
-      });
-
-      if (!img.naturalWidth || !img.naturalHeight) {
-        throw new Error("Invalid image dimensions resulting from conversion.");
-      }
-
-      setProgress(100);
-
-      const outputName = file.name.replace(/\.(jpe?g|jpg)$/i, ".png");
-
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        size: (compressed.size / 1024).toFixed(1) + " KB",
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-      });
-
     } catch (err) {
       console.error(err);
-      alert("Failed to convert image. Please try another file.");
+      alert("Failed to initiate conversion.");
     } finally {
       setConverting(false);
     }

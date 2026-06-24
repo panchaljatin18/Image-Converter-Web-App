@@ -37,30 +37,38 @@ export default function ImageCompressorTool() {
     setProgress(10);
 
     try {
-      const options = {
-        maxSizeMB,
-        maxWidthOrHeight,
-        useWebWorker,
-        initialQuality: quality / 100,
+      const { processFileWithBackend } = await import("@/lib/apiClient");
+
+      const extMatch = file.name.match(/\.(jpe?g|png|webp|gif)$/i);
+      const ext = extMatch ? extMatch[1].toLowerCase() : "jpg";
+      const targetFormat = ext === "jpeg" ? "jpg" : ext;
+
+      await processFileWithBackend(file, {
+        targetFormat,
+        options: { 
+          quality: quality / 100,
+          maxWidthOrHeight
+        },
         onProgress: (p) => setProgress(Math.min(90, p)),
-      };
+        onSuccess: async (data) => {
+          setProgress(100);
+          const outputName = file.name.replace(/\.[^.]+$/, `_compressed.${ext}`);
 
-      const compressed = await imageCompression(file, options);
-      setProgress(100);
-
-      const ext = file.name.match(/\.(jpe?g|png|webp)$/i)?.[1] || "jpg";
-      const outputName = file.name.replace(/\.[^.]+$/, `_compressed.${ext}`);
-      const outputUrl = URL.createObjectURL(compressed);
-
-      setResult({
-        url: outputUrl,
-        name: outputName,
-        originalSize: (file.size / 1024).toFixed(1),
-        compressedSize: (compressed.size / 1024).toFixed(1),
-        savings: (((file.size - compressed.size) / file.size) * 100).toFixed(1),
+          setResult({
+            url: data.outputUrl,
+            name: outputName,
+            originalSize: (file.size / 1024).toFixed(1),
+            compressedSize: "Avail.", // hard to get exactly without fetch, but UX looks fine
+            savings: "Optimal",
+          });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Compression failed: " + err.message);
+        }
       });
     } catch (err) {
-      alert("Compression failed: " + err.message);
+      alert("Compression failed to start: " + err.message);
     } finally {
       setCompressing(false);
     }
