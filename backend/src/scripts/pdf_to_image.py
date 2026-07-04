@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+# pyrefly: ignore [missing-import]
 from pdf2image import convert_from_path
 
 def get_poppler_path():
