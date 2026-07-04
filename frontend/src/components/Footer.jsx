@@ -101,19 +101,18 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-18">
+    <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-8">
       <Container>
         {/* Top Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-12 pb-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-6 pb-16">
           {/* Brand Column */}
-          <div className="col-span-1 sm:col-span-3 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 no-underline mb-5">
-              <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#6366f1] to-[#06b6d4] flex items-center justify-center shadow-[0_4px_15px_rgba(99,102,241,0.4)]">
-                <ImageIcon color="white" size={20} />
-              </div>
-              <span className="font-['Outfit'] font-extrabold text-[1.25rem] bg-gradient-to-br from-[#a5b4fc] to-[#67e8f9] bg-clip-text text-transparent">
-                ImageToolkit
-              </span>
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1 md:-mt-2">
+            <Link href="/" className="flex items-center shrink-0 no-underline mb-4">
+              <img
+                src="/CG.png"
+                alt="Converter Galaxy Logo"
+                className="h-[65px] md:h-[85px] w-auto object-contain"
+              />
             </Link>
             <p className="text-[#64748b] text-[0.9rem] leading-[1.7] mb-6 max-w-[280px]">
               Free, fast, and secure online image tools. Convert, compress,
@@ -124,11 +123,11 @@ export default function Footer() {
             {/* Contact Info */}
             <div className="flex flex-col gap-2.5 mb-6">
               <a
-                href="mailto:hello@imagetoolkit.pro"
+                href="mailto:hello@convertergalaxy.com"
                 className="flex items-center gap-2 text-[#64748b] no-underline text-[0.85rem] transition-colors duration-200 hover:text-[#818cf8]"
               >
                 <Mail size={14} />
-                hello@imagetoolkit.pro
+                hello@convertergalaxy.com
               </a>
             </div>
 
@@ -154,7 +153,7 @@ export default function Footer() {
           </div>
 
           {/* Tools Column */}
-          <div>
+          <div className="col-span-1">
             <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
               Tools
             </h3>
@@ -172,7 +171,7 @@ export default function Footer() {
           </div>
 
           {/* Company Column */}
-          <div>
+          <div className="col-span-1">
             <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
               Company
             </h3>
@@ -190,24 +189,26 @@ export default function Footer() {
           </div>
 
           {/* Legal Column */}
-          <div>
-            <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
-              Legal
-            </h3>
-            <nav className="flex flex-col">
-              {footerLegal.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center text-[#64748b] text-[0.9rem] no-underline mb-3 transition-all duration-200 hover:text-[#818cf8] hover:translate-x-1"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
+          <div className="col-span-2 sm:col-span-1 grid grid-cols-2 sm:grid-cols-1 gap-6 sm:gap-0">
+            <div>
+              <h3 className="font-['Outfit'] font-bold text-[1rem] text-[#f8fafc] mb-5 tracking-tight">
+                Legal
+              </h3>
+              <nav className="flex flex-col">
+                {footerLegal.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center text-[#64748b] text-[0.9rem] no-underline mb-3 transition-all duration-200 hover:text-[#818cf8] hover:translate-x-1"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
 
             {/* Trust Badges */}
-            <div className="mt-7 padding-4 bg-indigo-500/8 border border-indigo-500/15 rounded-xl p-4">
+            <div className="mt-0 sm:mt-7 bg-indigo-500/8 border border-indigo-500/15 rounded-xl p-4 self-start">
               <p className="text-[0.75rem] text-[#818cf8] font-semibold mb-1.5">
                 🔒 100% Secure
               </p>
@@ -225,7 +226,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex items-center justify-between py-6 gap-4 flex-wrap">
           <p className="text-[#64748b] text-[0.85rem]">
-            © {currentYear} ImageToolkit. All rights reserved.
+            © {currentYear} Converter Galaxy. All rights reserved.
           </p>
           <p className="text-[#64748b] text-[0.85rem]">
             Made with ❤️ for creators worldwide

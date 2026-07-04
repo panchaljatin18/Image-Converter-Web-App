@@ -1,67 +1,73 @@
+/**
+ * routes/convertRoutes.js
+ *
+ * API routes for image conversion.
+ * All existing endpoints are preserved — frontend continues working unchanged.
+ * Added: generic /convert endpoint for any-to-any format conversion.
+ */
+
 const express = require("express");
-const router = express.Router();
-const upload = require("../middleware/upload");
-const convertController = require("../controllers/convertController");
-const { validateUpload, validateResize, validateCrop } = require("../middleware/validation");
+const router  = express.Router();
 
-// ─── API Routes for Image Conversion ──────────────────────────────────────────
+const upload            = require("../middleware/upload");
+const { validateUpload }  = require("../middleware/validateUpload");
+const { uploadLimiter }   = require("../middleware/uploadLimiter");
+const convertController   = require("../controllers/convertController");
+const { validateResize, validateCrop } = require("../middleware/validation");
 
-// JPG to PNG
-router.post(
-  "/jpg-to-png",
-  upload.single("image"),
-  validateUpload,
+// ── Existing endpoints (API unchanged) ────────────────────────────────────────
+
+router.post("/jpg-to-png",
+  uploadLimiter, upload.single("image"), validateUpload,
   convertController.jpgToPng
 );
 
-// PNG to JPG
-router.post(
-  "/png-to-jpg",
-  upload.single("image"),
-  validateUpload,
+router.post("/png-to-jpg",
+  uploadLimiter, upload.single("image"), validateUpload,
   convertController.pngToJpg
 );
 
-// WEBP to JPG
-router.post(
-  "/webp-to-jpg",
-  upload.single("image"),
-  validateUpload,
+router.post("/webp-to-jpg",
+  uploadLimiter, upload.single("image"), validateUpload,
   convertController.webpToJpg
 );
 
-// JPG to WEBP
-router.post(
-  "/jpg-to-webp",
-  upload.single("image"),
-  validateUpload,
+router.post("/jpg-to-webp",
+  uploadLimiter, upload.single("image"), validateUpload,
   convertController.jpgToWebp
 );
 
-// Compress Image
-router.post(
-  "/compress-image",
-  upload.single("image"),
-  validateUpload,
+router.post("/compress-image",
+  uploadLimiter, upload.single("image"), validateUpload,
   convertController.compressImage
 );
 
-// Resize Image
-router.post(
-  "/resize-image",
-  upload.single("image"),
-  validateUpload,
-  validateResize,
+router.post("/resize-image",
+  uploadLimiter, upload.single("image"), validateUpload, validateResize,
   convertController.resizeImage
 );
 
-// Crop Image
-router.post(
-  "/crop-image",
-  upload.single("image"),
-  validateUpload,
-  validateCrop,
+router.post("/crop-image",
+  uploadLimiter, upload.single("image"), validateUpload, validateCrop,
   convertController.cropImage
+);
+
+// Rotate image
+router.post("/rotate-image",
+  uploadLimiter, upload.single("image"), validateUpload,
+  convertController.rotateImage
+);
+
+// Add text watermark
+router.post("/watermark",
+  uploadLimiter, upload.single("image"), validateUpload,
+  convertController.addWatermark
+);
+
+// POST /api/convert/convert   body: { targetFormat, quality? }
+router.post("/convert",
+  uploadLimiter, upload.single("image"), validateUpload,
+  convertController.convertGeneric
 );
 
 module.exports = router;

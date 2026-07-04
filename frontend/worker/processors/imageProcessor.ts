@@ -54,39 +54,62 @@ export async function processImage(inputPath: string, outputPath: string, target
   }
 
   // Handle format-specific options
-  const quality = options.quality ? Math.round(options.quality * 100) : 90; // quality is often passed as 0.1-1.0 from browser-image-compression
-  const finalQuality = quality > 100 ? 90 : (quality < 1 ? 90 : quality); // Fallback
+  const quality = options.quality ? Math.round(options.quality * 100) : 90;
+  const finalQuality = quality > 100 ? 90 : (quality < 1 ? 90 : quality);
 
-  // Handle background color for transparency flattening (crucial for PNG -> JPG)
   if (options.bgColor) {
     pipeline = pipeline.flatten({ background: options.bgColor });
   }
 
-  switch (cleanFormat.toLowerCase()) {
-    case "jpeg":
-    case "jpg":
-      pipeline = pipeline.jpeg({ quality: finalQuality, chromaSubsampling: '4:4:4' });
-      break;
-    case "png":
-      pipeline = pipeline.png({ quality: finalQuality, compressionLevel: 8 });
-      break;
-    case "webp":
-      pipeline = pipeline.webp({ quality: finalQuality, lossless: options.lossless });
-      break;
-    case "avif":
-      pipeline = pipeline.avif({ quality: finalQuality, lossless: options.lossless });
-      break;
-    case "gif":
-      pipeline = pipeline.gif();
-      break;
-    case "tiff":
-      pipeline = pipeline.tiff({ quality: finalQuality });
-      break;
-    default:
-      // Pass-through or generic toFormat
-      pipeline = pipeline.toFormat(cleanFormat as any);
-      break;
+  const rawFormats = ["3fr", "arw", "cr2", "cr3", "crw", "dcr", "dng", "erf", "kdc", "mdc", "mef", "mos", "mrw", "nef", "nrw", "orf", "pef", "raf", "raw", "rw2", "srf", "x3f"];
+  const isRawTarget = rawFormats.includes(cleanFormat.toLowerCase());
+  const effectiveFormat = isRawTarget ? "tiff" : cleanFormat.toLowerCase();
+
+  const useImageMagick = ["bmp", "ico", "heic"].includes(effectiveFormat);
+
+  if (useImageMagick) {
+    // If output is something sharp doesn't support writing well (like BMP, ICO, HEIC)
+    // we use ImageMagick CLI directly
+    const { execPromise } = await import("../utils/execPromise");
+    const command = `magick "${inputPath}" "${outputPath}"`;
+    console.log(`Running ImageMagick: ${command}`);
+    await execPromise(command);
+    return;
   }
 
-  await pipeline.toFile(outputPath);
+  try {
+    switch (effectiveFormat) {
+      case "jpeg":
+      case "jpg":
+        pipeline = pipeline.jpeg({ quality: finalQuality, chromaSubsampling: '4:4:4' });
+        break;
+      case "png":
+        pipeline = pipeline.png({ quality: finalQuality, compressionLevel: 8 });
+        break;
+      case "webp":
+        pipeline = pipeline.webp({ quality: finalQuality, lossless: options.lossless });
+        break;
+      case "avif":
+        pipeline = pipeline.avif({ quality: finalQuality, lossless: options.lossless });
+        break;
+      case "gif":
+        pipeline = pipeline.gif();
+        break;
+      case "tiff":
+        pipeline = pipeline.tiff({ quality: finalQuality });
+        break;
+      default:
+        pipeline = pipeline.toFormat(effectiveFormat as any);
+        break;
+    }
+
+    await pipeline.toFile(outputPath);
+  } catch (err: any) {
+    // Fallback to ImageMagick if Sharp fails to decode or encode
+    console.warn(`Sharp failed: ${err.message}. Falling back to ImageMagick.`);
+    const { execPromise } = await import("../utils/execPromise");
+    const command = `magick "${inputPath}" "${outputPath}"`;
+    console.log(`Running ImageMagick Fallback: ${command}`);
+    await execPromise(command);
+  }
 }

@@ -1,119 +1,191 @@
-const sharp = require("sharp");
-const path = require("path");
-const fs = require("fs");
+/**
+ * services/imageService.js
+ *
+ * Image processing service using ImageMagick CLI.
+ * All operations are offloaded to ImageMagick (magick) via executeCommand.
+ * No Sharp dependencies are used here to avoid native module compilation issues.
+ */
 
-// Ensure downloads directory exists
-const downloadsDir = path.join(__dirname, "../downloads");
-if (!fs.existsSync(downloadsDir)) {
-  fs.mkdirSync(downloadsDir, { recursive: true });
+const fs     = require("fs");
+const path   = require("path");
+const logger = require("../utils/logger");
+const { executeCommand } = require("../utils/executeCommand");
+const { buildOutputPath } = require("../utils/pathHelper");
+const { DOWNLOADS_DIR }   = require("../config/paths");
+const TOOLS = require("../config/tools");
+const ToolError = require("../errors/ToolError");
+
+if (!fs.existsSync(DOWNLOADS_DIR)) {
+  fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
 }
 
-/**
- * Generate output file name with target extension
- */
-const generateOutputFilename = (originalName, targetExt) => {
-  const nameWithoutExt = path.parse(originalName).name;
-  const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E4);
-  return `${nameWithoutExt}-${uniqueSuffix}.${targetExt}`;
+// Map position strings to ImageMagick gravity values
+const GRAVITY_MAP = {
+  "center": "Center",
+  "top-left": "NorthWest",
+  "top-right": "NorthEast",
+  "bottom-left": "SouthWest",
+  "bottom-right": "SouthEast",
 };
 
-/**
- * Sharp Image Processing Services
- */
 const imageService = {
   /**
-   * Convert image to a target format (png, jpeg, webp)
+   * Convert image to a target format.
+   * Supports JPG, PNG, WEBP, AVIF, etc.
    */
-  async convertFormat(filePath, originalFilename, targetFormat, quality = 85) {
-    const outputFilename = generateOutputFilename(originalFilename, targetFormat);
-    const outputPath = path.join(downloadsDir, outputFilename);
+  async convertFormat(inputPath, originalName, targetFormat, quality = 85) {
+    const ext = targetFormat.toLowerCase();
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const q = Math.min(Math.max(Math.round(quality), 1), 100);
+    const t0 = Date.now();
 
-    let sharpInstance = sharp(filePath);
+    const args = [inputPath, "-quality", String(q), fullPath];
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
 
-    if (targetFormat === "png") {
-      sharpInstance = sharpInstance.png({ quality });
-    } else if (targetFormat === "jpeg" || targetFormat === "jpg") {
-      sharpInstance = sharpInstance.jpeg({ quality, mozjpeg: true });
-    } else if (targetFormat === "webp") {
-      sharpInstance = sharpInstance.webp({ quality });
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to convert file to format "${ext}"`);
     }
 
-    await sharpInstance.toFile(outputPath);
-    return outputFilename;
+    logger.tool("imagemagick", `${originalName} → ${filename}`, { ms: Date.now() - t0, quality: q });
+    return { filename, fullPath };
   },
 
   /**
-   * Compress image (reduce file size, preserve format)
+   * Compress image while keeping its format.
    */
-  async compressImage(filePath, originalFilename, mimetype, quality = 75) {
-    let targetFormat = "jpeg";
-    if (mimetype.includes("png")) targetFormat = "png";
-    if (mimetype.includes("webp")) targetFormat = "webp";
+  async compressImage(inputPath, originalName, mimetype, quality = 75) {
+    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
+    if (ext === "jpg") ext = "jpeg";
 
-    const outputFilename = generateOutputFilename(originalFilename, targetFormat);
-    const outputPath = path.join(downloadsDir, outputFilename);
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const q = Math.min(Math.max(Math.round(quality), 1), 100);
+    const t0 = Date.now();
 
-    let sharpInstance = sharp(filePath);
+    const args = [inputPath, "-quality", String(q), fullPath];
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
 
-    if (targetFormat === "png") {
-      // PNG uses compressionLevel (0-9) and palette/colors optimization
-      sharpInstance = sharpInstance.png({ compressionLevel: 9, palette: true, quality });
-    } else if (targetFormat === "webp") {
-      sharpInstance = sharpInstance.webp({ quality, effort: 6 });
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to compress image`);
+    }
+
+    logger.tool("imagemagick", `compressed ${originalName} → ${filename}`, { ms: Date.now() - t0, quality: q });
+    return { filename, fullPath };
+  },
+
+  /**
+   * Resize image maintaining aspect ratio.
+   */
+  async resizeImage(inputPath, originalName, mimetype, width, height) {
+    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
+    if (ext === "jpg") ext = "jpeg";
+
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const t0 = Date.now();
+
+    let resizeString = "";
+    if (width && height) {
+      resizeString = `${width}x${height}`;
+    } else if (width) {
+      resizeString = String(width);
+    } else if (height) {
+      resizeString = `x${height}`;
     } else {
-      sharpInstance = sharpInstance.jpeg({ quality, mozjpeg: true });
+      resizeString = "100%"; // No-op resize if neither parameter is passed
     }
 
-    await sharpInstance.toFile(outputPath);
-    return outputFilename;
+    const args = [inputPath, "-resize", resizeString, fullPath];
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
+
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to resize image`);
+    }
+
+    logger.tool("imagemagick", `resized ${originalName} → ${filename}`, { ms: Date.now() - t0, width, height });
+    return { filename, fullPath };
   },
 
   /**
-   * Resize image with optional width and height
+   * Crop image using coordinates.
    */
-  async resizeImage(filePath, originalFilename, mimetype, width, height) {
-    let ext = path.extname(originalFilename).replace(".", "") || "jpeg";
+  async cropImage(inputPath, originalName, width, height, left, top) {
+    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
     if (ext === "jpg") ext = "jpeg";
 
-    const outputFilename = generateOutputFilename(originalFilename, ext);
-    const outputPath = path.join(downloadsDir, outputFilename);
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const t0 = Date.now();
 
-    const resizeOptions = {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true
-    };
+    const cropString = `${width}x${height}+${left}+${top}`;
+    const args = [inputPath, "-crop", cropString, "+repage", fullPath];
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
 
-    if (width) resizeOptions.width = parseInt(width, 10);
-    if (height) resizeOptions.height = parseInt(height, 10);
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to crop image`);
+    }
 
-    await sharp(filePath)
-      .resize(resizeOptions)
-      .toFile(outputPath);
-
-    return outputFilename;
+    logger.tool("imagemagick", `cropped ${originalName} → ${filename}`, { ms: Date.now() - t0 });
+    return { filename, fullPath };
   },
 
   /**
-   * Crop image using width, height, left, and top offsets
+   * Rotate image by a given angle.
    */
-  async cropImage(filePath, originalFilename, width, height, left, top) {
-    let ext = path.extname(originalFilename).replace(".", "") || "jpeg";
+  async rotateImage(inputPath, originalName, angle = 90, background = "#ffffff") {
+    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
     if (ext === "jpg") ext = "jpeg";
 
-    const outputFilename = generateOutputFilename(originalFilename, ext);
-    const outputPath = path.join(downloadsDir, outputFilename);
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const t0 = Date.now();
 
-    await sharp(filePath)
-      .extract({
-        width: parseInt(width, 10),
-        height: parseInt(height, 10),
-        left: parseInt(left, 10),
-        top: parseInt(top, 10)
-      })
-      .toFile(outputPath);
+    const args = [inputPath, "-background", background, "-rotate", String(angle), fullPath];
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
 
-    return outputFilename;
-  }
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to rotate image`);
+    }
+
+    logger.tool("imagemagick", `rotated ${originalName} ${angle}° → ${filename}`, { ms: Date.now() - t0, angle });
+    return { filename, fullPath };
+  },
+
+  /**
+   * Add a text watermark to an image.
+   */
+  async addWatermark(inputPath, originalName, text = "Watermark", opts = {}) {
+    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
+    if (ext === "jpg") ext = "jpeg";
+
+    const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const t0 = Date.now();
+
+    const fontSize = parseInt(opts.fontSize, 10) || 36;
+    const colour   = opts.colour || "rgba(255,255,255,0.5)";
+    const position = opts.position || "center";
+    const gravity  = GRAVITY_MAP[position] || "Center";
+
+    const args = [
+      inputPath,
+      "-gravity", gravity,
+      "-pointsize", String(fontSize),
+      "-fill", colour,
+      "-annotate", "0", text,
+      fullPath
+    ];
+
+    await executeCommand(TOOLS.IMAGEMAGICK, args);
+
+    if (!fs.existsSync(fullPath)) {
+      throw new ToolError("imagemagick", `Failed to add watermark to image`);
+    }
+
+    logger.tool("imagemagick", `watermarked ${originalName} → ${filename}`, { ms: Date.now() - t0, text });
+    return { filename, fullPath };
+  },
+
+  /** Startup check */
+  async checkInstallation() {
+    const { checkToolAvailable } = require("../utils/executeCommand");
+    return checkToolAvailable(TOOLS.IMAGEMAGICK, ["-version"]);
+  },
 };
 
 module.exports = imageService;

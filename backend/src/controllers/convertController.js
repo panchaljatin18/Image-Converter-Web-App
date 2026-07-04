@@ -1,155 +1,205 @@
-const fs = require("fs");
-const imageService = require("../services/imageService");
+/**
+ * controllers/convertController.js
+ *
+ * Orchestrates image conversion requests.
+ *
+ * SOLID rules enforced here:
+ *  S — Single responsibility: only orchestrates, no business logic
+ *  O — Open/closed: new formats added to services without changing controller
+ *  D — Dependency inversion: depends on service interfaces, not implementations
+ *
+ * No child_process. No path building. No Sharp. No exec.
+ * Controllers call services → services do the work → controller sends response.
+ */
 
-// Helper to safely delete input file after successful processing
-const cleanTempFile = (filePath) => {
-  fs.unlink(filePath, (err) => {
-    if (err) console.error(`Failed to delete temporary file ${filePath}:`, err);
-  });
-};
+const imageService       = require("../services/imageService");
+const { cleanFile }      = require("../utils/fileCleanup");
+const { validateUpload } = require("../middleware/validateUpload");
+const ValidationError    = require("../errors/ValidationError");
+const logger             = require("../utils/logger");
+
+// ── Internal helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Smart convert: calls imageService to handle formatting.
+ */
+async function convertWithFallback(inputPath, originalName, targetFormat, quality = 85) {
+  return imageService.convertFormat(inputPath, originalName, targetFormat, quality);
+}
+
+/**
+ * Wrap any controller action with automatic temp-file cleanup.
+ * Ensures the uploaded file is always deleted — even on error.
+ */
+function withCleanup(fn) {
+  return async (req, res, next) => {
+    try {
+      await fn(req, res, next);
+    } catch (err) {
+      next(err);
+    } finally {
+      // Always clean up — regardless of success or failure
+      await cleanFile(req.file?.path);
+    }
+  };
+}
+
+// ── Controller ────────────────────────────────────────────────────────────────
 
 const convertController = {
+
   // POST /api/convert/jpg-to-png
-  async jpgToPng(req, res, next) {
-    try {
-      const outputFilename = await imageService.convertFormat(
-        req.file.path,
-        req.file.originalname,
-        "png"
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image converted successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  jpgToPng: withCleanup(async (req, res) => {
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "png");
+    return res.status(200).json({
+      success: true,
+      message: "Converted to PNG successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/png-to-jpg
-  async pngToJpg(req, res, next) {
-    try {
-      const outputFilename = await imageService.convertFormat(
-        req.file.path,
-        req.file.originalname,
-        "jpeg"
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image converted successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  pngToJpg: withCleanup(async (req, res) => {
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg");
+    return res.status(200).json({
+      success: true,
+      message: "Converted to JPEG successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/webp-to-jpg
-  async webpToJpg(req, res, next) {
-    try {
-      const outputFilename = await imageService.convertFormat(
-        req.file.path,
-        req.file.originalname,
-        "jpeg"
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image converted successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  webpToJpg: withCleanup(async (req, res) => {
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg");
+    return res.status(200).json({
+      success: true,
+      message: "Converted to JPEG successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/jpg-to-webp
-  async jpgToWebp(req, res, next) {
-    try {
-      const outputFilename = await imageService.convertFormat(
-        req.file.path,
-        req.file.originalname,
-        "webp"
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image converted successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  jpgToWebp: withCleanup(async (req, res) => {
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "webp");
+    return res.status(200).json({
+      success: true,
+      message: "Converted to WebP successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/compress-image
-  async compressImage(req, res, next) {
-    try {
-      const quality = req.body.quality ? parseInt(req.body.quality, 10) : 75;
-      const outputFilename = await imageService.compressImage(
-        req.file.path,
-        req.file.originalname,
-        req.file.mimetype,
-        quality
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image compressed successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  compressImage: withCleanup(async (req, res) => {
+    const quality = parseInt(req.body.quality, 10) || 75;
+    const { filename } = await imageService.compressImage(
+      req.file.path,
+      req.file.originalname,
+      req.file.mimetype,
+      quality
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Image compressed successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/resize-image
-  async resizeImage(req, res, next) {
-    try {
-      const { width, height } = req.body;
-      const outputFilename = await imageService.resizeImage(
-        req.file.path,
-        req.file.originalname,
-        req.file.mimetype,
-        width,
-        height
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image resized successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
+  resizeImage: withCleanup(async (req, res) => {
+    const { width, height } = req.body;
+    const { filename } = await imageService.resizeImage(
+      req.file.path,
+      req.file.originalname,
+      req.file.mimetype,
+      width,
+      height
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Image resized successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 
   // POST /api/convert/crop-image
-  async cropImage(req, res, next) {
-    try {
-      const { width, height, left, top } = req.body;
-      const outputFilename = await imageService.cropImage(
-        req.file.path,
-        req.file.originalname,
-        width,
-        height,
-        left,
-        top
-      );
-      cleanTempFile(req.file.path);
-      return res.status(200).json({
-        success: true,
-        message: "Image cropped successfully",
-        downloadUrl: `/downloads/${outputFilename}`
-      });
-    } catch (error) {
-      next(error);
+  cropImage: withCleanup(async (req, res) => {
+    const { width, height, left, top } = req.body;
+    const { filename } = await imageService.cropImage(
+      req.file.path,
+      req.file.originalname,
+      width,
+      height,
+      left,
+      top
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Image cropped successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
+
+  // POST /api/convert/rotate-image
+  rotateImage: withCleanup(async (req, res) => {
+    const angle      = parseInt(req.body.angle, 10) || 90;
+    const background = req.body.background || "#ffffff";
+    const { filename } = await imageService.rotateImage(
+      req.file.path,
+      req.file.originalname,
+      angle,
+      background
+    );
+    return res.status(200).json({
+      success: true,
+      message: `Image rotated ${angle}° successfully.`,
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
+
+  // POST /api/convert/watermark
+  addWatermark: withCleanup(async (req, res) => {
+    const text     = req.body.text     || "Watermark";
+    const fontSize = parseInt(req.body.fontSize, 10) || 36;
+    const colour   = req.body.colour   || "rgba(255,255,255,0.5)";
+    const position = req.body.position || "center";
+    const { filename } = await imageService.addWatermark(
+      req.file.path,
+      req.file.originalname,
+      text,
+      { fontSize, colour, position }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Watermark added successfully.",
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
+
+  /**
+   * POST /api/convert/convert
+   * Generic endpoint: any supported input → any supported output format.
+   * Body: { targetFormat: "bmp" | "heic" | "avif" | "png" | ... , quality?: number }
+   */
+  convertGeneric: withCleanup(async (req, res) => {
+    const targetFormat = (req.body.targetFormat || "").toLowerCase().trim();
+    if (!targetFormat) {
+      throw new ValidationError("Missing required field: targetFormat.", "MISSING_FORMAT");
     }
-  }
+
+    const quality = parseInt(req.body.quality, 10) || 85;
+    const { filename } = await convertWithFallback(
+      req.file.path,
+      req.file.originalname,
+      targetFormat,
+      quality
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Converted to ${targetFormat.toUpperCase()} successfully.`,
+      downloadUrl: `/downloads/${filename}`,
+    });
+  }),
 };
 
 module.exports = convertController;

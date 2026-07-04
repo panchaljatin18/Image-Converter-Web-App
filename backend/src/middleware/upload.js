@@ -1,47 +1,71 @@
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+/**
+ * middleware/upload.js
+ *
+ * Multer configuration for handling file uploads.
+ *
+ * Supported formats: JPG, JPEG, PNG, WebP, AVIF, HEIC, HEIF,
+ *                    BMP, GIF, TIFF, TIF, SVG
+ *
+ * Max upload size: configured via MAX_FILE_SIZE env (default: 50 MB).
+ * All values come from config/constants.js — no magic numbers here.
+ */
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const multer = require("multer");
+const path   = require("path");
+const fs     = require("fs");
+const { UPLOADS_DIR } = require("../config/paths");
+const {
+  MAX_FILE_SIZE,
+  MAX_FILES_PER_REQUEST,
+  ALLOWED_IMAGE_EXTENSIONS,
+  ALLOWED_IMAGE_MIME_TYPES,
+} = require("../config/constants");
+
+// Ensure uploads directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-// Multer storage configuration
+// ── Storage ────────────────────────────────────────────────────────────────
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
+  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+
+  filename: (_req, file, cb) => {
+    const ext  = path.extname(file.originalname).toLowerCase();
+    const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    cb(null, name);
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
 });
 
-// File filter validation
-const fileFilter = (req, file, cb) => {
-  const allowedExtensions = /jpeg|jpg|png|webp/i;
-  const allowedMimeTypes = /image\/(jpeg|png|webp)/i;
+// ── File validation ────────────────────────────────────────────────────────
 
-  const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedMimeTypes.test(file.mimetype);
+const fileFilter = (_req, file, cb) => {
+  const ext      = path.extname(file.originalname).toLowerCase();
+  const extValid = ALLOWED_IMAGE_EXTENSIONS.includes(ext);
+  const mimeValid = ALLOWED_IMAGE_MIME_TYPES.includes(file.mimetype);
 
-  if (extname && mimetype) {
+  if (extValid && mimeValid) {
     return cb(null, true);
   }
-  cb(new Error("Invalid file format. Only JPG, PNG, and WEBP formats are supported."));
+
+  cb(
+    new multer.MulterError(
+      "LIMIT_UNEXPECTED_FILE",
+      `Unsupported format. Allowed: ${ALLOWED_IMAGE_EXTENSIONS.join(", ")}`
+    )
+  );
 };
 
-// Maximum file size configuration (20MB)
-const maxFileSize = parseInt(process.env.MAX_FILE_SIZE, 10) || 20 * 1024 * 1024;
+// ── Multer instance ────────────────────────────────────────────────────────
 
 const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
+  storage,
+  fileFilter,
   limits: {
-    fileSize: maxFileSize
-  }
+    fileSize: MAX_FILE_SIZE,
+    files: MAX_FILES_PER_REQUEST,
+  },
 });
 
 module.exports = upload;

@@ -32,3 +32,57 @@ body::-webkit-scrollbar {
   width: 1366px;
   min-height: 100vh;
 }
+
+/* ─── Logo Responsive Scaling and Alignment ─── */
+.logo-nav-desktop,
+.logo-footer-desktop {
+  display: none !important;
+}
+
+.logo-nav-mobile,
+.logo-footer-mobile {
+  display: flex !important;
+  align-items: center;
+  margin-left: -8px; /* Align mobile margin to -ml-2 */
+}
+
+.logo-nav-mobile img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-footer-mobile img {
+  height: 55px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  /* Desktop Layout - align left edges using negative margins */
+  .logo-nav-desktop,
+  .logo-footer-desktop {
+    display: flex !important;
+    align-items: center;
+    margin-left: -4px; /* Align desktop margin to -ml-11.5 */
+  }
+
+  .logo-nav-desktop img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .logo-footer-desktop img {
+    height: 85px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Hide Mobile Layout on Desktop */
+  .logo-nav-mobile,
+  .logo-footer-mobile {
+    display: none !important;
+  }
+}
+

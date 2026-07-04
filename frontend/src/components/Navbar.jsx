@@ -133,16 +133,20 @@ export default function Navbar() {
           }`}
       >
         <Container className="flex items-center justify-between gap-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 no-underline">
-            <div className="w-[38px] h-[38px] rounded-[10px] bg-gradient-to-br from-[#6366f1] to-[#06b6d4] flex items-center justify-center shadow-[0_4px_15px_rgba(99,102,241,0.4)]">
-              <ImageIcon color="white" size={20} />
-            </div>
-            <div>
-              <span className="font-['Outfit'] font-extrabold text-[1.2rem] bg-gradient-to-br from-[#a5b4fc] to-[#67e8f9] bg-clip-text text-transparent tracking-tight">
-                ImageToolkit
-              </span>
-            </div>
+          {/* Logo - Desktop */}
+          <Link href="/" className="logo-nav-desktop no-underline">
+            <img
+              src="/CG.png"
+              alt="Converter Galaxy Logo"
+            />
+          </Link>
+
+          {/* Logo - Mobile */}
+          <Link href="/" className="logo-nav-mobile no-underline">
+            <img
+              src="/CG.png"
+              alt="Converter Galaxy Logo"
+            />
           </Link>
 
           {/* Desktop Nav */}

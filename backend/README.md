@@ -1,190 +1,240 @@
-# Image Converter API Backend
+# Image Converter — Backend API
 
-A production-ready Node.js & Express.js REST API for image processing, conversion, compression, resizing, and cropping. Powered by **Sharp** and secured with **Helmet**, **CORS**, and **Rate Limiting**.
+Production-ready Node.js + Express backend for the Image Converter web application.  
+Supports **Sharp** (native) and **ImageMagick** (CLI) for images, **LibreOffice** for documents, and **Python** for script-based tasks.  
+Fully cross-platform: runs on **Windows**, **Linux**, **macOS**, and **Docker/Render**.
 
 ---
 
 ## Tech Stack
-* **Runtime:** Node.js
-* **Framework:** Express.js
-* **Image Library:** Sharp
-* **File Uploader:** Multer
-* **Security:** Helmet, CORS, Express Rate Limit
-* **Logger:** Morgan
+
+| Layer | Tool |
+|---|---|
+| Runtime | Node.js 20 |
+| Framework | Express 4 |
+| Image processing | Sharp + ImageMagick 7 |
+| Document conversion | LibreOffice (soffice) |
+| Scripting | Python 3 |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT |
+| Upload | Multer |
 
 ---
 
-## Directory Structure
-```text
+## Project Structure
+
+```
 backend/
 ├── src/
+│   ├── config/
+│   │   └── env.js              ← All env variables resolved here
 │   ├── controllers/
-│   │   └── convertController.js   # API Endpoint Handlers
-│   ├── routes/
-│   │   └── convertRoutes.js       # Router mapping routes to controllers
+│   │   ├── convertController.js
+│   │   └── authController.js
 │   ├── middleware/
-│   │   ├── upload.js              # Multer configuration & validations
-│   │   ├── validation.js          # Crop & Resize input validations
-│   │   └── errorHandler.js        # Global error handling & temp file cleanup
+│   │   ├── upload.js
+│   │   ├── validation.js
+│   │   ├── auth.js
+│   │   └── errorHandler.js
+│   ├── models/
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── convertRoutes.js
+│   │   ├── authRoutes.js
+│   │   └── ...
 │   ├── services/
-│   │   └── imageService.js        # Core Sharp image processing logic
-│   ├── uploads/                   # Temporary upload directory (auto-created)
-│   ├── downloads/                 # Processed output directory (auto-created)
-│   ├── app.js                     # Express app setup & middlewares
-│   └── server.js                  # Entry server startup file
-├── .env                           # Environment variables
-├── package.json                   # Project scripts and dependencies
-└── README.md                      # API documentation
+│   │   ├── imageService.js         ← Sharp (pure Node — no binary)
+│   │   ├── imageMagickService.js   ← ImageMagick CLI (fallback)
+│   │   ├── documentService.js      ← LibreOffice CLI
+│   │   └── pythonService.js        ← Python scripts
+│   ├── utils/
+│   │   └── shell.js                ← Promisified exec (used by services only)
+│   ├── app.js
+│   └── server.js
+├── Dockerfile
+├── .dockerignore
+├── .env.example
+└── package.json
 ```
 
 ---
 
-## Installation & Setup
+## Local Development
 
-1. **Navigate to the backend directory:**
-   ```bash
-   cd backend
-   ```
+### Prerequisites
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+- **Node.js 20+**
+- **ImageMagick 7** — [imagemagick.org](https://imagemagick.org/script/download.php)
+- **LibreOffice** — [libreoffice.org](https://www.libreoffice.org/download/)
+- **Python 3** — [python.org](https://www.python.org/downloads/)
+- **MongoDB** (local or Atlas)
 
-3. **Configure environment variables:**
-   Review or edit the `.env` file in the root of the `backend/` directory:
-   ```env
-   PORT=5000
-   NODE_ENV=development
-   CORS_ORIGIN=http://localhost:3000
-   MAX_FILE_SIZE=20971520
-   ```
+### Setup
 
-4. **Run in development mode (with nodemon auto-restart):**
-   ```bash
-   npm run dev
-   ```
+```bash
+# 1. Clone and install
+cd backend
+npm install
 
-5. **Run in production mode:**
-   ```bash
-   npm start
-   ```
+# 2. Copy and fill in your environment variables
+cp .env.example .env
+# Edit .env with your MongoDB URI, JWT secret, etc.
 
----
-
-## API Endpoints
-
-All conversion/processing endpoints accept a `multipart/form-data` request with the image file attached to the `image` field.
-
-### 1. JPG to PNG
-* **Endpoint:** `POST /api/convert/jpg-to-png`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (JPG/JPEG format)
-
-### 2. PNG to JPG
-* **Endpoint:** `POST /api/convert/png-to-jpg`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (PNG format)
-
-### 3. WEBP to JPG
-* **Endpoint:** `POST /api/convert/webp-to-jpg`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (WEBP format)
-
-### 4. JPG to WEBP
-* **Endpoint:** `POST /api/convert/jpg-to-webp`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (JPG/JPEG format)
-
-### 5. Compress Image
-* **Endpoint:** `POST /api/convert/compress-image`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (JPG, PNG, or WEBP format)
-  * `quality`: `Number` (Optional, 1-100, default is 75)
-
-### 6. Resize Image
-* **Endpoint:** `POST /api/convert/resize-image`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (JPG, PNG, or WEBP format)
-  * `width`: `Number` (Optional, pixel width)
-  * `height`: `Number` (Optional, pixel height)
-  *(Note: At least one of `width` or `height` must be specified)*
-
-### 7. Crop Image
-* **Endpoint:** `POST /api/convert/crop-image`
-* **Content-Type:** `multipart/form-data`
-* **Form Body:**
-  * `image`: `File` (JPG, PNG, or WEBP format)
-  * `width`: `Number` (Required, crop area width)
-  * `height`: `Number` (Required, crop area height)
-  * `left`: `Number` (Required, X offset from top-left)
-  * `top`: `Number` (Required, Y offset from top-left)
-
----
-
-## Response Formats
-
-### Success Response (200 OK)
-```json
-{
-  "success": true,
-  "message": "Image converted successfully",
-  "downloadUrl": "/downloads/image-name-1781203498.png"
-}
+# 3. Start the development server
+npm run dev
 ```
 
-### Error Response (400 Bad Request / 500 Internal Error)
-```json
-{
-  "success": false,
-  "message": "Invalid file format. Only JPG, PNG, and WEBP formats are supported."
-}
+The server starts on `http://localhost:5000`.
+
+### Environment Variables for Tools
+
+| Variable | Default | Description |
+|---|---|---|
+| `IMAGEMAGICK_COMMAND` | `magick` | ImageMagick CLI command |
+| `LIBREOFFICE_COMMAND` | `soffice` | LibreOffice CLI command |
+| `PYTHON_COMMAND` | `python3` | Python binary name |
+
+> **Windows users:** If your Python is `python` (not `python3`), set `PYTHON_COMMAND=python` in your `.env`.
+
+---
+
+## Docker
+
+### Build
+
+```bash
+cd backend
+docker build -t image-converter-backend .
+```
+
+### Run
+
+```bash
+docker run -p 5000:5000 \
+  -e MONGO_URI="your_mongo_connection_string" \
+  -e JWT_SECRET="your_secret" \
+  -e CORS_ORIGIN="http://localhost:3000" \
+  image-converter-backend
+```
+
+### Docker Compose (recommended for local full-stack)
+
+```yaml
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - IMAGEMAGICK_COMMAND=magick
+      - LIBREOFFICE_COMMAND=soffice
+      - PYTHON_COMMAND=python3
+    volumes:
+      - uploads_data:/app/src/uploads
+      - downloads_data:/app/src/downloads
+
+volumes:
+  uploads_data:
+  downloads_data:
 ```
 
 ---
 
-## Frontend Integration Example (Next.js)
+## Deploying on Render
 
-```javascript
-const handleImageConversion = async (file) => {
-  const formData = new FormData();
-  formData.append("image", file);
+### Step 1 — Create a new Web Service
 
-  try {
-    const response = await fetch("http://localhost:5000/api/convert/jpg-to-png", {
-      method: "POST",
-      body: formData,
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      const downloadLink = `http://localhost:5000${data.downloadUrl}`;
-      console.log("Converted image url:", downloadLink);
-      // Trigger download or display image
-    } else {
-      console.error("Conversion failed:", data.message);
-    }
-  } catch (error) {
-    console.error("Network error:", error);
-  }
-};
+1. Go to [render.com](https://render.com) → **New** → **Web Service**
+2. Connect your GitHub repository
+3. Set **Root Directory** to `backend`
+
+### Step 2 — Configure the service
+
+| Setting | Value |
+|---|---|
+| **Environment** | Docker |
+| **Dockerfile Path** | `./Dockerfile` |
+| **Build Command** | *(leave blank — Docker handles it)* |
+| **Start Command** | *(leave blank — Docker CMD handles it)* |
+
+### Step 3 — Set Environment Variables
+
+In the Render dashboard → **Environment** tab, add:
+
 ```
+NODE_ENV=production
+PORT=5000
+MONGO_URI=<your Atlas connection string>
+JWT_SECRET=<long random string>
+CORS_ORIGIN=https://your-frontend.vercel.app
+IMAGEMAGICK_COMMAND=magick
+LIBREOFFICE_COMMAND=soffice
+PYTHON_COMMAND=python3
+```
+
+> ImageMagick, LibreOffice, and Python3 are automatically installed inside the Docker container — **no extra setup needed on Render**.
+
+### Step 4 — Deploy
+
+Click **Create Web Service**. Render will build the Docker image and deploy automatically.
+
+**Health check endpoint:** `GET /health`  
+Render uses this to verify the service is running.
 
 ---
 
-## Health & Monitoring
-* **Health Check URL:** `GET /health`
-* **Response:**
-  ```json
-  {
-    "status": "OK",
-    "uptime": 124.52
-  }
-  ```
+## API Reference
+
+### Image Conversion
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/convert/jpg-to-png` | Convert JPG → PNG |
+| POST | `/api/convert/png-to-jpg` | Convert PNG → JPG |
+| POST | `/api/convert/webp-to-jpg` | Convert WebP → JPG |
+| POST | `/api/convert/jpg-to-webp` | Convert JPG → WebP |
+| POST | `/api/convert/compress-image` | Compress (reduce file size) |
+| POST | `/api/convert/resize-image` | Resize (width/height) |
+| POST | `/api/convert/crop-image` | Crop (x/y/w/h) |
+| POST | `/api/convert/convert` | Generic: any format → any format |
+
+All endpoints accept `multipart/form-data` with field name `image`.
+
+**Generic convert body fields:**
+```
+targetFormat=bmp    (or heic, tiff, avif, png, webp, …)
+quality=85          (optional, 1-100)
+```
+
+### Auth
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login |
+| GET | `/api/auth/me` | Get current user (requires Bearer token) |
+| POST | `/api/auth/forgot-password` | Request password reset |
+| POST | `/api/auth/reset-password` | Reset password with token |
+
+---
+
+## Cross-Platform Notes
+
+| Platform | ImageMagick | LibreOffice | Python |
+|---|---|---|---|
+| Windows | `magick` (IM7 installer) | `soffice` in PATH | `python` or `python3` |
+| Linux | `magick` (apt) | `soffice` (apt) | `python3` (apt) |
+| Docker | `magick` (Dockerfile apt) | `soffice` (Dockerfile apt) | `python3` (Dockerfile apt) |
+| Render | ✅ automatic via Docker | ✅ automatic | ✅ automatic |
+
+---
+
+## License
+
+ISC

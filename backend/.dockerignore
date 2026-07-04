@@ -1,0 +1,39 @@
+# ── Node dependencies ─────────────────────────────────────────────────────────
+node_modules/
+
+# ── Runtime directories (created at container startup) ────────────────────────
+src/uploads/
+src/downloads/
+src/scripts/
+
+# ── Environment files (secrets must NOT be baked into the image) ──────────────
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Git ──────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Editor & OS files ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# ── Test files ────────────────────────────────────────────────────────────────
+test.js
+*.test.js
+*.spec.js
+__tests__/
+coverage/
+
+# ── Documentation ─────────────────────────────────────────────────────────────
+README.md
+*.md

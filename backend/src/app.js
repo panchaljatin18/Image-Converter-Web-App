@@ -1,101 +1,129 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const path = require("path");
+/**
+ * app.js
+ *
+ * Express application setup.
+ *
+ * What this file does:
+ *  - Loads config (env, constants)
+ *  - Registers security, CORS, body parser middleware
+ *  - Registers API routes
+ *  - Registers global error handler (MUST be last)
+ *
+ * What this file does NOT do:
+ *  - Call child_process (moved to services)
+ *  - Connect to MongoDB (done in server.js)
+ *  - Run tool checks (done in server.js startup)
+ *  - Hardcode any paths or binary names
+ */
+
+require("dotenv").config();
+
+const express   = require("express");
+const cors      = require("cors");
+const helmet    = require("helmet");
+const path      = require("path");
 const rateLimit = require("express-rate-limit");
-const convertRoutes = require("./routes/convertRoutes");
-const authRoutes = require("./routes/authRoutes");
+
+const logger        = require("./utils/logger");
+const { DOWNLOADS_DIR } = require("./config/paths");
+const { RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX } = require("./config/constants");
+
+const convertRoutes     = require("./routes/convertRoutes");
+const authRoutes        = require("./routes/authRoutes");
 const googleDriveRoutes = require("./routes/googleDriveRoutes");
-const dropboxRoutes = require("./routes/dropboxRoutes");
-const onedriveRoutes = require("./routes/onedriveRoutes");
-const errorHandler = require("./middleware/errorHandler");
+const dropboxRoutes     = require("./routes/dropboxRoutes");
+const onedriveRoutes    = require("./routes/onedriveRoutes");
+const documentRoutes    = require("./routes/documentRoutes");
+const pdfRoutes         = require("./routes/pdfRoutes");
+const errorHandler      = require("./middleware/errorHandler");
+
+
+const NODE_ENV     = process.env.NODE_ENV || "development";
+const CORS_ORIGIN  = process.env.CORS_ORIGIN  || "http://localhost:3000";
 
 const app = express();
 
-// ─── Security & Configuration Middleware ────────────────────────────────────
-
-// Helmet headers for basic web security
+// ── Security headers ──────────────────────────────────────────────────────────
 app.use(helmet({
-  crossOriginResourcePolicy: false // Allows Next.js frontend to fetch images/downloads
+  crossOriginResourcePolicy: false, // Allow Next.js frontend to load /downloads files
 }));
 
-// CORS Configuration
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : ["http://localhost:3000"];
+// ── CORS ──────────────────────────────────────────────────────────────────────
+const allowedOrigins = CORS_ORIGIN.split(",").map((o) => o.trim());
+
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // In development mode, allow any local network origin (localhost, 127.0.0.1, or local IP addresses)
-    const isLocalOrLan = process.env.NODE_ENV === "development" || 
-                         /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin);
+    if (!origin) return callback(null, true); // non-browser clients
 
-    if (isLocalOrLan || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+    const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    const isLan   = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)\d+\.\d+(:\d+)?$/.test(origin);
+
+    if (isLocal || isLan || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
       return callback(null, true);
     }
-    return callback(new Error("CORS policy does not allow access from this Origin."));
+    callback(new Error("CORS: origin not allowed."));
   },
-  credentials: true
+  credentials: true,
 }));
 
-// Request body parsers
+// ── HTTP request logger ───────────────────────────────────────────────────────
+// Uses morgan-style output through our structured logger
+app.use((req, _res, next) => {
+  logger.debug(`${req.method} ${req.originalUrl}`, { ip: req.ip });
+  next();
+});
+
+// ── Body parsers ──────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// HTTP logger
-if (process.env.NODE_ENV !== "production") {
-  app.use(morgan("dev"));
-} else {
-  app.use(morgan("combined"));
-}
-
-// Rate Limiting to prevent brute-force attacks and abuse
-const limiterWindowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000;
-const limiterMax = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100;
-
-const apiLimiter = rateLimit({
-  windowMs: limiterWindowMs,
-  max: limiterMax,
-  message: {
-    success: false,
-    message: "Too many requests from this IP, please try again later."
-  },
+// ── General API rate limiter ──────────────────────────────────────────────────
+const generalLimiter = rateLimit({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: { success: false, message: "Too many requests. Please try again later." },
 });
 
-// Apply rate limiter to conversion and auth APIs
-app.use("/api/convert", apiLimiter);
-app.use("/api/auth", apiLimiter);
-app.use("/api/google-drive", apiLimiter);
-app.use("/api/dropbox", apiLimiter);
-app.use("/api/onedrive", apiLimiter);
+app.use("/api/auth",         generalLimiter);
+app.use("/api/google-drive", generalLimiter);
+app.use("/api/dropbox",      generalLimiter);
+app.use("/api/onedrive",     generalLimiter);
+// Note: /api/convert uses uploadLimiter (per-route) defined in convertRoutes.js
 
-// ─── Serve Static Processed Files ───────────────────────────────────────────
-app.use("/downloads", express.static(path.join(__dirname, "downloads")));
+// ── Static file serving ───────────────────────────────────────────────────────
+app.use("/downloads", express.static(DOWNLOADS_DIR));
 
-// ─── API Routes ─────────────────────────────────────────────────────────────
-app.use("/api/convert", convertRoutes);
-app.use("/api/auth", authRoutes);
+// ── API Routes ────────────────────────────────────────────────────────────────
+app.use("/api/convert",      convertRoutes);
+app.use("/api/auth",         authRoutes);
 app.use("/api/google-drive", googleDriveRoutes);
-app.use("/api/dropbox", dropboxRoutes);
-app.use("/api/onedrive", onedriveRoutes);
+app.use("/api/dropbox",      dropboxRoutes);
+app.use("/api/onedrive",     onedriveRoutes);
+app.use("/api/documents",    documentRoutes);
+app.use("/api/pdf",          pdfRoutes);
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", uptime: process.uptime() });
-});
-
-// Catch-all 404 for unhandled routes
-app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: `Cannot ${req.method} ${req.originalUrl}`
+// ── Health check ──────────────────────────────────────────────────────────────
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "OK",
+    environment: NODE_ENV,
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
   });
 });
 
-// Global Error Handler Middleware
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+    code: "NOT_FOUND",
+  });
+});
+
+// ── Global error handler (must be last) ───────────────────────────────────────
 app.use(errorHandler);
 
 module.exports = app;
