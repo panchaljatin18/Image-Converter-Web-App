@@ -52,7 +52,7 @@ export const standardImageFormats = [
 export const documentFormats = ["pdf", "docx", "doc", "txt", "rtf", "odt", "html"];
 export const spreadsheetFormats = ["xlsx", "xls", "csv", "ods"];
 export const presentationFormats = ["pptx", "ppt", "odp"];
-export const archiveFormats = ["zip", "7z", "tar", "gz"];
+export const archiveFormats = ["zip", "tar", "gz"];
 
 /**
  * Checks if conversion from a source format to a target format is supported.

@@ -73,7 +73,7 @@ const onedriveIconLarge = (
   </svg>
 );
 const INPUT_ACCEPT =
-  ".jpg,.jpeg,.png,.webp,.gif,.bmp,.tiff,.tif,.ico,.heic,.avif,.svg,.3fr,.arw,.cr2,.cr3,.crw,.dcr,.dng,.erf,.kdc,.mdc,.mef,.mos,.mrw,.nef,.nrw,.orf,.pef,.raf,.raw,.rw2,.srf,.x3f,.pdf,.docx,.doc,.txt,.rtf,.odt,.html,.xlsx,.xls,.csv,.ods,.pptx,.ppt,.odp,.zip,.7z,.tar,.gz";
+  ".jpg,.jpeg,.png,.webp,.gif,.bmp,.tiff,.tif,.ico,.heic,.avif,.svg,.3fr,.arw,.cr2,.cr3,.crw,.dcr,.dng,.erf,.kdc,.mdc,.mef,.mos,.mrw,.nef,.nrw,.orf,.pef,.raf,.raw,.rw2,.srf,.x3f,.pdf,.docx,.doc,.txt,.rtf,.odt,.html,.xlsx,.xls,.csv,.ods,.pptx,.ppt,.odp,.zip,.tar,.gz";
 
 const ALL_FORMAT_CATEGORIES = [
   {
@@ -163,7 +163,6 @@ const ALL_FORMAT_CATEGORIES = [
     glow: "rgba(245,158,11,0.35)",
     formats: [
       { value: "zip", label: "ZIP", note: "Universal archive" },
-      { value: "7z", label: "7Z", note: "7-Zip archive" },
       { value: "tar", label: "TAR", note: "Unix archive" },
       { value: "gz", label: "GZ", note: "Gzip compressed" },
     ],
