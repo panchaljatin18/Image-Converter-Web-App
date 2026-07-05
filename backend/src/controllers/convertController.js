@@ -17,6 +17,8 @@ const { cleanFile }      = require("../utils/fileCleanup");
 const { validateUpload } = require("../middleware/validateUpload");
 const ValidationError    = require("../errors/ValidationError");
 const logger             = require("../utils/logger");
+const path               = require("path");
+const { isConversionSupported } = require("../utils/conversions");
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -184,6 +186,14 @@ const convertController = {
     const targetFormat = (req.body.targetFormat || "").toLowerCase().trim();
     if (!targetFormat) {
       throw new ValidationError("Missing required field: targetFormat.", "MISSING_FORMAT");
+    }
+
+    const sourceFormat = path.extname(req.file.originalname).replace(".", "").toLowerCase();
+    if (!isConversionSupported(sourceFormat, targetFormat)) {
+      return res.status(400).json({
+        success: false,
+        message: `Conversion from ${sourceFormat.toUpperCase()} to ${targetFormat.toUpperCase()} is not supported.`
+      });
     }
 
     const quality = parseInt(req.body.quality, 10) || 85;

@@ -12,9 +12,6 @@ const imageService       = require("../services/imageService");
 const documentService     = require("../services/documentService");
 const pdfService          = require("../services/pdfService");
 const pythonService       = require("../services/pythonService");
-const ffmpegService       = require("../services/ffmpegService");
-const popplerService      = require("../services/popplerService");
-const ocrService          = require("../services/ocrService");
 const TOOLS = require("../config/tools");
 
 // ANSI colours
@@ -48,24 +45,6 @@ const tools = [
     name:     "Python",
     command:  TOOLS.PYTHON,
     check:    () => pythonService.checkInstallation(),
-    required: false,
-  },
-  {
-    name:     "FFmpeg",
-    command:  TOOLS.FFMPEG,
-    check:    () => ffmpegService.checkInstallation(),
-    required: false,
-  },
-  {
-    name:     "Poppler (pdftoppm)",
-    command:  TOOLS.PDFTOPPM,
-    check:    () => popplerService.checkInstallation(),
-    required: false,
-  },
-  {
-    name:     "Tesseract OCR",
-    command:  TOOLS.TESSERACT,
-    check:    () => ocrService.checkInstallation(),
     required: false,
   },
 ];

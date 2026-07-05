@@ -2,7 +2,7 @@ import fs from "fs";
 import { fromFile } from "file-type";
 import sharp from "sharp";
 
-export async function validateOutput(filePath: string, expectedFormat: string): Promise<void> {
+export async function validateOutput(filePath: string, expectedFormat: string, sourceFormat?: string): Promise<void> {
   // 1. Check if file exists
   if (!fs.existsSync(filePath)) {
     throw new Error("Validation Error: Output file was not generated.");
@@ -26,12 +26,15 @@ export async function validateOutput(filePath: string, expectedFormat: string): 
   } else {
     const ext = fileType.ext.toLowerCase();
     const expected = expectedFormat.toLowerCase();
+    const rawFormats = ["3fr", "arw", "cr2", "cr3", "crw", "dcr", "dng", "erf", "kdc", "mdc", "mef", "mos", "mrw", "nef", "nrw", "orf", "pef", "raf", "raw", "rw2", "srf", "x3f"];
     
     // Loosely match variations
     const isMatch = ext === expected || 
                    (expected === 'jpg' && ext === 'jpeg') ||
                    (expected === 'jpeg' && ext === 'jpg') ||
-                   (expected === 'tif' && ext === 'tiff');
+                   (expected === 'tif' && ext === 'tiff') ||
+                   (expected === 'tiff' && ext === 'tif') ||
+                   (rawFormats.includes(expected) && (ext === 'tif' || ext === 'tiff'));
                    
     if (!isMatch) {
       throw new Error(`Validation Error: Format mismatch. Expected ${expectedFormat}, but file is actually ${fileType.ext}`);

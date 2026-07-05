@@ -35,7 +35,15 @@ export async function processFileWithBackend(file: File, config: UploadOptions) 
       });
 
       if (!res.ok) {
-        throw new Error(`Upload failed with status: ${res.status}`);
+        let errMsg = `Upload failed with status: ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData) {
+            if (errData.message) errMsg = errData.message;
+            else if (errData.error) errMsg = errData.error;
+          }
+        } catch (e) {}
+        throw new Error(errMsg);
       }
 
       const data = await res.json();

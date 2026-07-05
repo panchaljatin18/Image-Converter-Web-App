@@ -5,6 +5,7 @@ import path from "path";
 import dbConnect from "@/lib/db";
 import { Job } from "@/models/Job";
 import { conversionQueue } from "@/lib/queue";
+import { isConversionSupported } from "../../../lib/conversions";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,6 +27,14 @@ export async function POST(req: NextRequest) {
 
     if (!chunk || isNaN(chunkIndex) || isNaN(totalChunks) || !fileName || !targetFormat || !uploadId) {
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
+
+    const sourceFormat = fileName.split(".").pop()?.toLowerCase() || "unknown";
+    if (!isConversionSupported(sourceFormat, targetFormat)) {
+      return NextResponse.json({
+        success: false,
+        message: `Conversion from ${sourceFormat.toUpperCase()} to ${targetFormat.toUpperCase()} is not supported.`
+      }, { status: 400 });
     }
 
     const tempDir = path.join(process.cwd(), "public", "uploads", "temp");

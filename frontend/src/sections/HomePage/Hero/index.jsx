@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { isConversionSupported } from "../../../lib/conversions";
 import { useSession } from "next-auth/react";
 import GoogleDrivePicker from "../../../components/GoogleDrivePicker";
 import googleDriveService from "../../../services/googleDriveService";
@@ -71,9 +72,8 @@ const onedriveIconLarge = (
     <path d="M19.453 9.95q.961.058 1.787.468.826.41 1.442 1.066.615.657.966 1.512.352.856.352 1.816 0 1.008-.387 1.893-.386.885-1.049 1.547-.662.662-1.546 1.049-.885.387-1.893.387H6q-1.242 0-2.332-.475-1.09-.475-1.904-1.29-.815-.814-1.29-1.903Q0 14.93 0 13.688q0-.985.31-1.887.311-.903.862-1.658.55-.756 1.324-1.325.774-.568 1.711-.861.434-.129.85-.187.416-.06.861-.082h.012q.515-.786 1.207-1.413.691-.627 1.5-1.066.808-.44 1.705-.668.896-.229 1.845-.229 1.278 0 2.456.417 1.177.416 2.144 1.16.967.744 1.658 1.78.692 1.038 1.008 2.28zm-7.265-4.137q-1.325 0-2.52.544-1.195.545-2.04 1.565.446.117.85.299.405.181.792.416l4.78 2.86 2.731-1.15q.27-.117.545-.204.276-.088.58-.147-.293-.937-.855-1.705-.563-.768-1.319-1.318-.755-.551-1.658-.856-.902-.304-1.886-.304zM2.414 16.395l9.914-4.184-3.832-2.297q-.586-.351-1.23-.539-.645-.188-1.325-.188-.914 0-1.722.364-.809.363-1.412.978-.604.616-.955 1.436-.352.82-.352 1.723 0 .703.234 1.423.235.721.68 1.284zm16.711 1.793q.563 0 1.078-.176.516-.176.961-.516l-7.23-4.324-10.301 4.336q.527.328 1.13.504.604.175 1.237.175zm3.012-1.852q.363-.727.363-1.523 0-.774-.293-1.407t-.791-1.072q-.498-.44-1.166-.68-.668-.24-1.406-.24-.422 0-.838.1t-.815.252q-.398.152-.785.334-.386.181-.761.345Z" fill="#0078d4" />
   </svg>
 );
-
 const INPUT_ACCEPT =
-  ".jpg,.jpeg,.jpe,.jfif,.png,.webp,.avif,.gif,.bmp,.ico,.tif,.tiff,.heic,.heif,.jxl,.svg,image/*,.7z,.ace,.alz,.arc,.arj,.bz,.bz2,.cab,.cpio,.deb,.dmg,.gz,.img,.iso,.jar,.lha,.lz,.lzma,.lzo,.rar,.rpm,.rz,.tar,.tar.7z,.tar.bz,.tar.bz2,.tar.gz,.tar.lzo,.tar.xz,.tar.z,.tbz,.tbz2,.tgz,.tz,.tzo,.xz,.z,.zip,.aac,.ac3,.aif,.aifc,.aiff,.amr,.au,.caf,.dss,.flac,.m4a,.m4b,.mp3,.oga,.opus,.voc,.wav,.weba,.wma,.3g2,.3gp,.3gpp,.avi,.cavs,.dv,.dvr,.flv,.m2ts,.m4v,.mkv,.mod,.mov,.mp4,.mpeg,.mpg,.mts,.mxf,.ogg,.ogv,.rm,.rmvb,.swf,.ts,.vob,.webm,.wmv,.wtv,.abw,.djvu,.doc,.docm,.docx,.dot,.dotx,.html,.hwp,.lwp,.md,.odt,.pages,.pdf,.rst,.rtf,.tex,.txt,.wpd,.wps,.zabw,.azw,.azw3,.azw4,.cbc,.cbr,.cbz,.chm,.epub,.fb2,.htm,.htmlz,.lit,.lrf,.mobi,.pdb,.pml,.prc,.rb,.snb,.tcr,.txtz,.dps,.key,.odp,.pot,.potx,.pps,.ppsx,.ppt,.pptm,.pptx,.csv,.et,.numbers,.ods,.xls,.xlsm,.xlsx,.ai,.cdr,.cgm,.emf,.sk,.sk1,.svgz,.vsd,.wmf";
+  ".jpg,.jpeg,.png,.webp,.gif,.bmp,.tiff,.tif,.ico,.heic,.avif,.svg,.3fr,.arw,.cr2,.cr3,.crw,.dcr,.dng,.erf,.kdc,.mdc,.mef,.mos,.mrw,.nef,.nrw,.orf,.pef,.raf,.raw,.rw2,.srf,.x3f,.pdf,.docx,.doc,.txt,.rtf,.odt,.html,.xlsx,.xls,.csv,.ods,.pptx,.ppt,.odp,.zip,.7z,.tar,.gz";
 
 const ALL_FORMAT_CATEGORIES = [
   {
@@ -82,161 +82,40 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#6366f1",
     glow: "rgba(99,102,241,0.35)",
     formats: [
+      { value: "png", label: "PNG", note: "Transparent & lossless" },
+      { value: "jpg", label: "JPG", note: "Best for photos" },
+      { value: "jpeg", label: "JPEG", note: "Standard JPEG" },
+      { value: "webp", label: "WebP", note: "Small & web-friendly" },
+      { value: "gif", label: "GIF", note: "Animated graphics" },
+      { value: "bmp", label: "BMP", note: "Bitmap output" },
+      { value: "tiff", label: "TIFF", note: "High fidelity" },
+      { value: "tif", label: "TIF", note: "High fidelity" },
+      { value: "ico", label: "ICO", note: "Icon files" },
+      { value: "heic", label: "HEIC", note: "Apple photo format" },
+      { value: "avif", label: "AVIF", note: "Modern compression" },
+      { value: "svg", label: "SVG", note: "Scalable vector" },
       { value: "3fr", label: "3FR", note: "Hasselblad Raw" },
       { value: "arw", label: "ARW", note: "Sony Raw" },
-      { value: "avif", label: "AVIF", note: "Modern compression" },
-      { value: "bmp", label: "BMP", note: "Bitmap output" },
       { value: "cr2", label: "CR2", note: "Canon Raw" },
       { value: "cr3", label: "CR3", note: "Canon Raw 3" },
       { value: "crw", label: "CRW", note: "Canon Raw CIFF" },
       { value: "dcr", label: "DCR", note: "Kodak Raw" },
       { value: "dng", label: "DNG", note: "Digital Negative" },
-      { value: "eps", label: "EPS", note: "PostScript" },
       { value: "erf", label: "ERF", note: "Epson Raw" },
-      { value: "gif", label: "GIF", note: "Animated graphics" },
-      { value: "heic", label: "HEIC", note: "Apple photo format" },
-      { value: "heif", label: "HEIF", note: "High-efficiency" },
-      { value: "icns", label: "ICNS", note: "Apple Icon" },
-      { value: "ico", label: "ICO", note: "Icon files" },
-      { value: "jfif", label: "JFIF", note: "JPEG File Interchange" },
-      { value: "jpeg", label: "JPEG", note: "Standard JPEG" },
-      { value: "jpg", label: "JPG", note: "Best for photos" },
-      { value: "jxl", label: "JXL", note: "JPEG XL" },
+      { value: "kdc", label: "KDC", note: "Kodak Raw" },
+      { value: "mdc", label: "MDC", note: "Minolta Raw" },
+      { value: "mef", label: "MEF", note: "Mamiya Raw" },
       { value: "mos", label: "MOS", note: "Leaf Raw" },
       { value: "mrw", label: "MRW", note: "Minolta Raw" },
       { value: "nef", label: "NEF", note: "Nikon Raw" },
-      { value: "odd", label: "ODD", note: "OpenDocument" },
-      { value: "odg", label: "ODG", note: "OpenDocument Drawing" },
+      { value: "nrw", label: "NRW", note: "Nikon Coolpix Raw" },
       { value: "orf", label: "ORF", note: "Olympus Raw" },
       { value: "pef", label: "PEF", note: "Pentax Raw" },
-      { value: "png", label: "PNG", note: "Transparent & lossless" },
-      { value: "ppm", label: "PPM", note: "Portable Pixmap" },
-      { value: "ps", label: "PS", note: "PostScript" },
-      { value: "psb", label: "PSB", note: "Photoshop Big" },
-      { value: "psd", label: "PSD", note: "Photoshop format" },
-      { value: "pub", label: "PUB", note: "MS Publisher" },
       { value: "raf", label: "RAF", note: "Fuji Raw" },
       { value: "raw", label: "RAW", note: "Camera raw data" },
       { value: "rw2", label: "RW2", note: "Panasonic Raw" },
-      { value: "svg", label: "SVG", note: "Scalable vector" },
-      { value: "tga", label: "TGA", note: "Truevision TGA" },
-      { value: "tif", label: "TIF", note: "High fidelity" },
-      { value: "tiff", label: "TIFF", note: "High fidelity" },
-      { value: "webp", label: "WebP", note: "Small & web-friendly" },
+      { value: "srf", label: "SRF", note: "Sony Raw" },
       { value: "x3f", label: "X3F", note: "Sigma Raw" },
-      { value: "xcf", label: "XCF", note: "GIMP Image" },
-      { value: "xps", label: "XPS", note: "XML Paper Spec" },
-    ],
-  },
-  {
-    id: "archive",
-    label: "Archive",
-    color: "#f59e0b",
-    glow: "rgba(245,158,11,0.35)",
-    formats: [
-      { value: "7z", label: "7Z", note: "7-Zip archive" },
-      { value: "ace", label: "ACE", note: "ACE archive" },
-      { value: "alz", label: "ALZ", note: "ALZ archive" },
-      { value: "arc", label: "ARC", note: "ARC archive" },
-      { value: "arj", label: "ARJ", note: "ARJ archive" },
-      { value: "bz", label: "BZ", note: "Bzip archive" },
-      { value: "bz2", label: "BZ2", note: "Bzip2 archive" },
-      { value: "cab", label: "CAB", note: "Windows cabinet" },
-      { value: "cpio", label: "CPIO", note: "CPIO archive" },
-      { value: "deb", label: "DEB", note: "Debian package" },
-      { value: "dmg", label: "DMG", note: "Mac disk image" },
-      { value: "gz", label: "GZ", note: "Gzip compressed" },
-      { value: "img", label: "IMG", note: "Disk image" },
-      { value: "iso", label: "ISO", note: "CD/DVD image" },
-      { value: "jar", label: "JAR", note: "Java archive" },
-      { value: "lha", label: "LHA", note: "LHA archive" },
-      { value: "lz", label: "LZ", note: "Lzip archive" },
-      { value: "lzma", label: "LZMA", note: "LZMA archive" },
-      { value: "lzo", label: "LZO", note: "LZO archive" },
-      { value: "rar", label: "RAR", note: "WinRAR archive" },
-      { value: "rpm", label: "RPM", note: "Red Hat package" },
-      { value: "rz", label: "RZ", note: "Rzip archive" },
-      { value: "tar", label: "TAR", note: "Unix archive" },
-      { value: "tar.7z", label: "TAR.7Z", note: "Tar 7-Zip" },
-      { value: "tar.bz", label: "TAR.BZ", note: "Tar Bzip" },
-      { value: "tar.bz2", label: "TAR.BZ2", note: "Tar Bzip2" },
-      { value: "tar.gz", label: "TAR.GZ", note: "Tar Gzip" },
-      { value: "tar.lzo", label: "TAR.LZO", note: "Tar LZO" },
-      { value: "tar.xz", label: "TAR.XZ", note: "Tar XZ" },
-      { value: "tar.z", label: "TAR.Z", note: "Tar Z" },
-      { value: "tbz", label: "TBZ", note: "Tar Bzip" },
-      { value: "tbz2", label: "TBZ2", note: "Tar Bzip2" },
-      { value: "tgz", label: "TGZ", note: "Tar Gzip" },
-      { value: "tz", label: "TZ", note: "Tar Z" },
-      { value: "tzo", label: "TZO", note: "Tar LZO" },
-      { value: "xz", label: "XZ", note: "XZ archive" },
-      { value: "z", label: "Z", note: "Z archive" },
-      { value: "zip", label: "ZIP", note: "Universal archive" },
-    ],
-  },
-  {
-    id: "audio",
-    label: "Audio",
-    color: "#10b981",
-    glow: "rgba(16,185,129,0.35)",
-    formats: [
-      { value: "aac", label: "AAC", note: "Apple audio" },
-      { value: "ac3", label: "AC3", note: "Dolby Digital" },
-      { value: "aif", label: "AIF", note: "AIFF audio" },
-      { value: "aifc", label: "AIFC", note: "Compressed AIFF" },
-      { value: "aiff", label: "AIFF", note: "Apple lossless" },
-      { value: "amr", label: "AMR", note: "Voice audio" },
-      { value: "au", label: "AU", note: "Sun audio" },
-      { value: "caf", label: "CAF", note: "Core Audio" },
-      { value: "dss", label: "DSS", note: "Digital Speech" },
-      { value: "flac", label: "FLAC", note: "Lossless HD audio" },
-      { value: "m4a", label: "M4A", note: "Apple MPEG4 audio" },
-      { value: "m4b", label: "M4B", note: "MPEG4 audiobook" },
-      { value: "midi", label: "MIDI", note: "Musical notation" },
-      { value: "mp3", label: "MP3", note: "Universal audio" },
-      { value: "oga", label: "OGA", note: "Ogg audio" },
-      { value: "ogg", label: "OGG", note: "Open source audio" },
-      { value: "opus", label: "OPUS", note: "Web audio codec" },
-      { value: "voc", label: "VOC", note: "Creative Voice" },
-      { value: "wav", label: "WAV", note: "Lossless audio" },
-      { value: "weba", label: "WEBA", note: "WebM audio" },
-      { value: "wma", label: "WMA", note: "Windows audio" },
-    ],
-  },
-  {
-    id: "video",
-    label: "Video",
-    color: "#ef4444",
-    glow: "rgba(239,68,68,0.35)",
-    formats: [
-      { value: "3g2", label: "3G2", note: "Mobile video" },
-      { value: "3gp", label: "3GP", note: "Mobile video" },
-      { value: "3gpp", label: "3GPP", note: "Mobile video" },
-      { value: "avi", label: "AVI", note: "Windows video" },
-      { value: "cavs", label: "CAVS", note: "Chinese audio/video" },
-      { value: "dv", label: "DV", note: "Digital video" },
-      { value: "dvr", label: "DVR", note: "Digital video record" },
-      { value: "flv", label: "FLV", note: "Flash video" },
-      { value: "m2ts", label: "M2TS", note: "Blu-ray video" },
-      { value: "m4v", label: "M4V", note: "iTunes video" },
-      { value: "mkv", label: "MKV", note: "Matroska video" },
-      { value: "mod", label: "MOD", note: "Camcorder video" },
-      { value: "mov", label: "MOV", note: "Apple QuickTime" },
-      { value: "mp4", label: "MP4", note: "Universal video" },
-      { value: "mpeg", label: "MPEG", note: "MPEG video" },
-      { value: "mpg", label: "MPG", note: "MPEG video" },
-      { value: "mts", label: "MTS", note: "AVCHD video" },
-      { value: "mxf", label: "MXF", note: "Material Exchange" },
-      { value: "ogg", label: "OGG", note: "Ogg video" },
-      { value: "ogv", label: "OGV", note: "Ogg video" },
-      { value: "rm", label: "RM", note: "RealMedia" },
-      { value: "rmvb", label: "RMVB", note: "RealMedia VBR" },
-      { value: "swf", label: "SWF", note: "Flash format" },
-      { value: "ts", label: "TS", note: "Transport stream" },
-      { value: "vob", label: "VOB", note: "DVD video" },
-      { value: "webm", label: "WebM", note: "Web video format" },
-      { value: "wmv", label: "WMV", note: "Windows media" },
-      { value: "wtv", label: "WTV", note: "Windows TV" },
     ],
   },
   {
@@ -245,56 +124,13 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#06b6d4",
     glow: "rgba(6,182,212,0.35)",
     formats: [
-      { value: "abw", label: "ABW", note: "AbiWord document" },
-      { value: "djvu", label: "DJVU", note: "DjVu document" },
-      { value: "doc", label: "DOC", note: "Legacy Word" },
-      { value: "docm", label: "DOCM", note: "Word macro" },
-      { value: "docx", label: "DOCX", note: "Word document" },
-      { value: "dot", label: "DOT", note: "Word template" },
-      { value: "dotx", label: "DOTX", note: "Word template" },
-      { value: "html", label: "HTML", note: "Web page" },
-      { value: "hwp", label: "HWP", note: "Hangul Word" },
-      { value: "lwp", label: "LWP", note: "Lotus Word Pro" },
-      { value: "md", label: "MD", note: "Markdown" },
-      { value: "odt", label: "ODT", note: "OpenDocument text" },
-      { value: "pages", label: "PAGES", note: "Apple Pages" },
       { value: "pdf", label: "PDF", note: "Portable document" },
-      { value: "rst", label: "RST", note: "reStructuredText" },
-      { value: "rtf", label: "RTF", note: "Rich text" },
-      { value: "tex", label: "TEX", note: "LaTeX document" },
+      { value: "docx", label: "DOCX", note: "Word document" },
+      { value: "doc", label: "DOC", note: "Legacy Word" },
       { value: "txt", label: "TXT", note: "Plain text" },
-      { value: "wpd", label: "WPD", note: "WordPerfect" },
-      { value: "wps", label: "WPS", note: "Works Word" },
-      { value: "zabw", label: "ZABW", note: "Compressed AbiWord" },
-    ],
-  },
-  {
-    id: "ebook",
-    label: "eBook",
-    color: "#8b5cf6",
-    glow: "rgba(139,92,246,0.35)",
-    formats: [
-      { value: "azw", label: "AZW", note: "Kindle eBook" },
-      { value: "azw3", label: "AZW3", note: "Kindle AZW3" },
-      { value: "azw4", label: "AZW4", note: "Kindle AZW4" },
-      { value: "cbc", label: "CBC", note: "Comic Book" },
-      { value: "cbr", label: "CBR", note: "Comic book RAR" },
-      { value: "cbz", label: "CBZ", note: "Comic book ZIP" },
-      { value: "chm", label: "CHM", note: "Compiled HTML" },
-      { value: "epub", label: "EPUB", note: "Standard eBook" },
-      { value: "fb2", label: "FB2", note: "FictionBook" },
-      { value: "htm", label: "HTM", note: "HTML eBook" },
-      { value: "htmlz", label: "HTMLZ", note: "Zipped HTML" },
-      { value: "lit", label: "LIT", note: "MS Reader" },
-      { value: "lrf", label: "LRF", note: "Sony Reader" },
-      { value: "mobi", label: "MOBI", note: "Kindle format" },
-      { value: "pdb", label: "PDB", note: "Palm Database" },
-      { value: "pml", label: "PML", note: "Palm Markup" },
-      { value: "prc", label: "PRC", note: "Mobipocket" },
-      { value: "rb", label: "RB", note: "Rocket eBook" },
-      { value: "snb", label: "SNB", note: "Shanda Bambook" },
-      { value: "tcr", label: "TCR", note: "Psion eBook" },
-      { value: "txtz", label: "TXTZ", note: "Zipped Text" },
+      { value: "rtf", label: "RTF", note: "Rich text" },
+      { value: "odt", label: "ODT", note: "OpenDocument text" },
+      { value: "html", label: "HTML", note: "Web page" },
     ],
   },
   {
@@ -303,16 +139,9 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#f97316",
     glow: "rgba(249,115,22,0.35)",
     formats: [
-      { value: "dps", label: "DPS", note: "Kingsoft Presentation" },
-      { value: "key", label: "KEY", note: "Apple Keynote" },
-      { value: "odp", label: "ODP", note: "OpenDocument" },
-      { value: "pot", label: "POT", note: "PowerPoint template" },
-      { value: "potx", label: "POTX", note: "PowerPoint template" },
-      { value: "pps", label: "PPS", note: "PowerPoint show" },
-      { value: "ppsx", label: "PPSX", note: "PowerPoint show" },
-      { value: "ppt", label: "PPT", note: "Legacy PowerPoint" },
-      { value: "pptm", label: "PPTM", note: "PowerPoint macro" },
       { value: "pptx", label: "PPTX", note: "PowerPoint" },
+      { value: "ppt", label: "PPT", note: "Legacy PowerPoint" },
+      { value: "odp", label: "ODP", note: "OpenDocument" },
     ],
   },
   {
@@ -321,162 +150,35 @@ const ALL_FORMAT_CATEGORIES = [
     color: "#22c55e",
     glow: "rgba(34,197,94,0.35)",
     formats: [
-      { value: "csv", label: "CSV", note: "Comma separated" },
-      { value: "et", label: "ET", note: "Kingsoft Sheet" },
-      { value: "numbers", label: "NUMBERS", note: "Apple Numbers" },
-      { value: "ods", label: "ODS", note: "OpenDocument sheet" },
-      { value: "xls", label: "XLS", note: "Legacy Excel" },
-      { value: "xlsm", label: "XLSM", note: "Excel macro" },
       { value: "xlsx", label: "XLSX", note: "Excel spreadsheet" },
+      { value: "xls", label: "XLS", note: "Legacy Excel" },
+      { value: "csv", label: "CSV", note: "Comma separated" },
+      { value: "ods", label: "ODS", note: "OpenDocument sheet" },
     ],
   },
   {
-    id: "vector",
-    label: "Vector",
-    color: "#ec4899",
-    glow: "rgba(236,72,153,0.35)",
+    id: "archive",
+    label: "Archive",
+    color: "#f59e0b",
+    glow: "rgba(245,158,11,0.35)",
     formats: [
-      { value: "ai", label: "AI", note: "Adobe Illustrator" },
-      { value: "cdr", label: "CDR", note: "CorelDRAW" },
-      { value: "cgm", label: "CGM", note: "Computer Graphics Metafile" },
-      { value: "emf", label: "EMF", note: "Enhanced metafile" },
-      { value: "sk", label: "SK", note: "Sketch" },
-      { value: "sk1", label: "SK1", note: "sK1 vector" },
-      { value: "svg", label: "SVG", note: "Scalable vector" },
-      { value: "svgz", label: "SVGZ", note: "Compressed SVG" },
-      { value: "vsd", label: "VSD", note: "Visio drawing" },
-      { value: "wmf", label: "WMF", note: "Windows metafile" },
-    ],
-  },
-  {
-    id: "font",
-    label: "Font",
-    color: "#a78bfa",
-    glow: "rgba(167,139,250,0.35)",
-    formats: [
-      { value: "ttf", label: "TTF", note: "TrueType font" },
-      { value: "otf", label: "OTF", note: "OpenType font" },
-      { value: "woff", label: "WOFF", note: "Web font" },
-      { value: "woff2", label: "WOFF2", note: "Modern web font" },
-      { value: "eot", label: "EOT", note: "Embedded OpenType" },
-    ],
-  },
-  {
-    id: "cad",
-    label: "CAD",
-    color: "#14b8a6",
-    glow: "rgba(20,184,166,0.35)",
-    formats: [
-      { value: "dwg", label: "DWG", note: "AutoCAD drawing" },
-      { value: "dxf", label: "DXF", note: "Drawing exchange" },
-      { value: "dwf", label: "DWF", note: "Design web format" },
-      { value: "stl", label: "STL", note: "3D print format" },
-      { value: "step", label: "STEP", note: "STEP 3D model" },
+      { value: "zip", label: "ZIP", note: "Universal archive" },
+      { value: "7z", label: "7Z", note: "7-Zip archive" },
+      { value: "tar", label: "TAR", note: "Unix archive" },
+      { value: "gz", label: "GZ", note: "Gzip compressed" },
     ],
   },
 ];
 
-// Build flat lookup across ALL categories
 const ALL_FORMATS_FLAT = ALL_FORMAT_CATEGORIES.flatMap(c => c.formats.map(f => ({ ...f, catId: c.id })));
 const ALL_FORMAT_LOOKUP = new Map(ALL_FORMATS_FLAT.map(f => [f.value, f]));
 
-const conversionMap = {
-  jpg: ["png", "webp", "avif", "bmp", "tiff", "pdf"],
-  jpeg: ["png", "webp", "avif", "bmp", "tiff", "pdf"],
-  png: ["jpg", "webp", "avif", "ico", "svg", "pdf"],
-  webp: ["jpg", "png", "avif", "pdf"],
-  pdf: ["docx", "jpg", "png", "txt"],
-  docx: ["pdf", "txt"],
-  mp4: ["mp3", "wav", "gif", "webm", "mov"],
-  mp3: ["wav", "aac", "ogg", "flac"]
-};
-
 const getAllowedConversions = (sourceFmt) => {
   const sourceCat = ALL_FORMATS_FLAT.find(f => f.value === sourceFmt)?.catId;
+  if (!sourceCat) return [];
 
-  // User specifically requested these categories for Images
-  if (sourceCat === "image") {
-    const allowedCatIds = ["image", "document", "vector", "cad"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for Videos
-  if (sourceCat === "video") {
-    const allowedCatIds = ["video", "audio", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Documents
-  if (sourceCat === "document") {
-    const allowedCatIds = ["document", "image", "ebook"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Presentations
-  if (sourceCat === "presentation") {
-    const allowedCatIds = ["presentation", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for Spreadsheets
-  if (sourceCat === "spreadsheet") {
-    const allowedCatIds = ["spreadsheet", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // User specifically requested these categories for CAD
-  if (sourceCat === "cad") {
-    const allowedCatIds = ["cad", "vector", "document", "image"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for Vector
-  if (sourceCat === "vector") {
-    const allowedCatIds = ["vector", "image", "document", "cad"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt);
-  }
-
-  // User specifically requested these categories for eBooks
-  if (sourceCat === "ebook") {
-    const allowedCatIds = ["ebook", "document"];
-    return ALL_FORMAT_CATEGORIES
-      .filter(c => allowedCatIds.includes(c.id))
-      .flatMap(c => c.formats.map(f => f.value))
-      .filter(v => v !== sourceFmt && v !== "svg");
-  }
-
-  // Use explicit conversion map if available
-  if (conversionMap[sourceFmt]) return conversionMap[sourceFmt];
-
-  // Smart Fallback: Allow converting to any format within the same category
-  if (sourceCat) {
-    const cat = ALL_FORMAT_CATEGORIES.find(c => c.id === sourceCat);
-    if (cat) {
-      return cat.formats.map(f => f.value).filter(v => v !== sourceFmt);
-    }
-  }
-  return [];
+  const rawList = ALL_FORMATS_FLAT.map(f => f.value);
+  return rawList.filter(target => isConversionSupported(sourceFmt, target));
 };
 
 function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats }) {

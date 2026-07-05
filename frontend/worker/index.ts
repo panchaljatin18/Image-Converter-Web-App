@@ -10,13 +10,19 @@ import { Job as JobModel } from "../src/models/Job"
 import path from "path"
 import fs from "fs"
 import { processImage } from "./processors/imageProcessor"
-import { processVideoAudio } from "./processors/videoAudioProcessor"
 import { processDocument } from "./processors/documentProcessor"
 import { processArchive } from "./processors/archiveProcessor"
 import { processSpreadsheet } from "./processors/spreadsheetProcessor"
 import { processPresentation } from "./processors/presentationProcessor"
-import { processEbook } from "./processors/ebookProcessor"
 import { validateOutput } from "./validators/outputValidator"
+import {
+  isConversionSupported,
+  imageFormats,
+  documentFormats,
+  spreadsheetFormats,
+  presentationFormats,
+  archiveFormats,
+} from "../src/lib/conversions"
 
 // Connect DB
 const MONGODB_URI =
@@ -42,48 +48,6 @@ if (redisUrl.protocol === "rediss:") {
 
 console.log("Worker waiting for jobs on 'conversion-jobs' queue...")
 
-const imageFormats = [
-  "jpg",
-  "jpeg",
-  "png",
-  "webp",
-  "avif",
-  "gif",
-  "bmp",
-  "tiff",
-  "svg",
-  "ico",
-  "heic",
-  "3fr",
-  "arw",
-  "cr2",
-  "cr3",
-  "crw",
-  "dcr",
-  "dng",
-  "erf",
-  "kdc",
-  "mdc",
-  "mef",
-  "mos",
-  "mrw",
-  "nef",
-  "nrw",
-  "orf",
-  "pef",
-  "raf",
-  "raw",
-  "rw2",
-  "srf",
-  "x3f",
-]
-const documentFormats = ["pdf", "docx", "doc", "txt", "rtf", "odt", "html"]
-const spreadsheetFormats = ["xlsx", "xls", "csv", "ods"]
-const presentationFormats = ["pptx", "ppt", "odp"]
-const audioFormats = ["mp3", "wav", "aac", "flac", "ogg", "m4a"]
-const videoFormats = ["mp4", "mov", "avi", "mkv", "webm", "wmv"]
-const archiveFormats = ["zip", "7z", "tar", "gz"]
-const ebookFormats = ["epub", "mobi", "azw3"] // pdf is in documentFormats
 
 const worker = new Worker(
   "conversion-jobs",
@@ -115,19 +79,13 @@ const worker = new Worker(
           cleanFormat,
           options || {},
         )
-      } else if (
-        videoFormats.includes(cleanFormat) ||
-        audioFormats.includes(cleanFormat)
-      ) {
-        await processVideoAudio(inputFilePath, outputPath, cleanFormat, job)
+
       } else if (documentFormats.includes(cleanFormat)) {
         await processDocument(inputFilePath, outputPath, cleanFormat)
       } else if (spreadsheetFormats.includes(cleanFormat)) {
         await processSpreadsheet(inputFilePath, outputPath, cleanFormat)
       } else if (presentationFormats.includes(cleanFormat)) {
         await processPresentation(inputFilePath, outputPath, cleanFormat)
-      } else if (ebookFormats.includes(cleanFormat)) {
-        await processEbook(inputFilePath, outputPath, cleanFormat)
       } else if (archiveFormats.includes(cleanFormat)) {
         await processArchive(inputFilePath, outputPath, cleanFormat)
       } else {
