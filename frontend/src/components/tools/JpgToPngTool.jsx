@@ -57,7 +57,7 @@ export default function JpgToPngTool() {
           setResult({
             url: data.outputUrl,
             name: outputName,
-            size: "Available on download",
+            size: data.outputSize ? `${(data.outputSize / 1024).toFixed(1)} KB` : "Available on download",
             width: img.naturalWidth,
             height: img.naturalHeight,
           });

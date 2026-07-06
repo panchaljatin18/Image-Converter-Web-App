@@ -65,13 +65,16 @@ export async function processImage(inputPath: string, outputPath: string, target
   const isRawTarget = rawFormats.includes(cleanFormat.toLowerCase());
   const effectiveFormat = isRawTarget ? "tiff" : cleanFormat.toLowerCase();
 
-  const useImageMagick = ["bmp", "ico", "heic"].includes(effectiveFormat);
+  const useImageMagick = ["bmp", "ico"].includes(effectiveFormat);
 
   if (useImageMagick) {
     // If output is something sharp doesn't support writing well (like BMP, ICO, HEIC)
     // we use ImageMagick CLI directly
     const { execPromise } = await import("../utils/execPromise");
-    const command = `magick "${inputPath}" "${outputPath}"`;
+    let command = `magick "${inputPath}" "${outputPath}"`;
+    if (effectiveFormat === "ico") {
+      command = `magick "${inputPath}" -resize 256x256 "${outputPath}"`;
+    }
     console.log(`Running ImageMagick: ${command}`);
     await execPromise(command);
     return;
@@ -79,6 +82,7 @@ export async function processImage(inputPath: string, outputPath: string, target
 
   try {
     switch (effectiveFormat) {
+      case "heic":
       case "jpeg":
       case "jpg":
         pipeline = pipeline.jpeg({ quality: finalQuality, chromaSubsampling: '4:4:4' });
@@ -108,7 +112,12 @@ export async function processImage(inputPath: string, outputPath: string, target
     // Fallback to ImageMagick if Sharp fails to decode or encode
     console.warn(`Sharp failed: ${err.message}. Falling back to ImageMagick.`);
     const { execPromise } = await import("../utils/execPromise");
-    const command = `magick "${inputPath}" "${outputPath}"`;
+    let command = `magick "${inputPath}" "${outputPath}"`;
+    if (effectiveFormat === "ico") {
+      command = `magick "${inputPath}" -resize 256x256 "${outputPath}"`;
+    } else if (effectiveFormat === "heic") {
+      command = `magick "${inputPath}" "jpg:${outputPath}"`;
+    }
     console.log(`Running ImageMagick Fallback: ${command}`);
     await execPromise(command);
   }

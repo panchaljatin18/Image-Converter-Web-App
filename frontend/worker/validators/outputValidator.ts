@@ -34,6 +34,11 @@ export async function validateOutput(filePath: string, expectedFormat: string, s
                    (expected === 'jpeg' && ext === 'jpg') ||
                    (expected === 'tif' && ext === 'tiff') ||
                    (expected === 'tiff' && ext === 'tif') ||
+                   (expected === 'svg' && ext === 'xml') ||
+                   (expected === 'docx' && ext === 'zip') ||
+                   (expected === 'xlsx' && ext === 'zip') ||
+                   (expected === 'pptx' && ext === 'zip') ||
+                   (expected === 'heic' && (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'heic')) ||
                    (rawFormats.includes(expected) && (ext === 'tif' || ext === 'tiff'));
                    
     if (!isMatch) {

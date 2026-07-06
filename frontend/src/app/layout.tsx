@@ -42,9 +42,9 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://imagetoolkit.pro",
-    siteName: "ImageToolkit",
-    title: "ImageToolkit – Free Online Image Converter & Editor",
+    url: "https://convertgalaxy.com",
+    siteName: "ConvertGalaxy",
+    title: "ConvertGalaxy – Free Online Image Converter & Editor",
     description:
       "Free, fast, browser-based image tools. Convert, compress, resize, crop images and more — no upload required.",
     images: [
@@ -52,13 +52,13 @@ export const metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ImageToolkit – Free Online Image Tools",
+        alt: "ConvertGalaxy – Free Online Image Tools",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ImageToolkit – Free Online Image Converter & Editor",
+    title: "ConvertGalaxy – Free Online Image Converter & Editor",
     description:
       "Free browser-based image tools. Convert, compress, resize, crop and more.",
     images: ["/og-image.png"],

@@ -53,12 +53,18 @@ export default function PngToJpgTool() {
 
           const outputName = file.name.replace(/\.png$/i, ".jpg");
 
+          const originalSizeKB = file.size / 1024;
+          const compressedSizeKB = data.outputSize ? data.outputSize / 1024 : originalSizeKB;
+          const savings = originalSizeKB > 0
+            ? Math.round(((originalSizeKB - compressedSizeKB) / originalSizeKB) * 100)
+            : 0;
+
           setResult({
             url: data.outputUrl,
             name: outputName,
-            size: "Available on download",
-            originalSize: (file.size / 1024).toFixed(1) + " KB",
-            savings: "0.0", // Can't easily calculate without fetching the blob, but UI is preserved
+            size: data.outputSize ? `${(data.outputSize / 1024).toFixed(1)} KB` : "Available on download",
+            originalSize: originalSizeKB.toFixed(1) + " KB",
+            savings: savings > 0 ? savings.toFixed(1) : "0.0",
             width: img.naturalWidth,
             height: img.naturalHeight,
           });

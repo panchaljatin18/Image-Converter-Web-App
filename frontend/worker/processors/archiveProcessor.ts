@@ -1,4 +1,4 @@
-import archiver = require("archiver");
+import { ZipArchive, TarArchive } from "archiver";
 import fs from "fs";
 import path from "path";
 
@@ -19,7 +19,15 @@ export async function processArchive(inputPath: string, outputPath: string, targ
       ? { gzip: true, gzipOptions: { level: 9 } }
       : { zlib: { level: 9 } };
 
-    const archive = (archiver as any)(format, archiveOptions);
+    let archive: any;
+    if (format === "zip") {
+      archive = new ZipArchive(archiveOptions);
+    } else if (format === "tar") {
+      archive = new TarArchive(archiveOptions);
+    } else {
+      reject(new Error(`Unsupported archive format: ${format}`));
+      return;
+    }
 
     output.on("close", () => {
       console.log(`Archiving finished. Total bytes: ${archive.pointer()}`);
@@ -38,3 +46,4 @@ export async function processArchive(inputPath: string, outputPath: string, targ
     archive.finalize();
   });
 }
+

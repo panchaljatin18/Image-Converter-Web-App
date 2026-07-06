@@ -146,7 +146,7 @@ export default function CropImageTool() {
           setResult({
             url: data.outputUrl,
             name: outputName,
-            size: "Available on download",
+            size: data.outputSize ? `${(data.outputSize / 1024).toFixed(1)} KB` : "Available on download",
             width: Math.round(crop.w),
             height: Math.round(crop.h),
           });

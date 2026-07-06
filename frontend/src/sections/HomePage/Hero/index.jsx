@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { isConversionSupported } from "../../../lib/conversions";
+import { isConversionSupported, standardImageFormats } from "../../../lib/conversions";
 import { useSession } from "next-auth/react";
 import GoogleDrivePicker from "../../../components/GoogleDrivePicker";
 import googleDriveService from "../../../services/googleDriveService";
@@ -911,6 +911,11 @@ export default function Hero() {
         const detected = getSourceFormat(candidate);
         if (detected && detected.label !== "AUTO" && detected.label !== "FILE") {
           setSourceFormat(detected.label.toLowerCase());
+        } else {
+          const ext = candidate.name.split(".").pop()?.toLowerCase();
+          if (ext) {
+            setSourceFormat(ext);
+          }
         }
       }
 
@@ -938,8 +943,14 @@ export default function Hero() {
     [handleFile]
   );
 
-    const handleConvert = useCallback(async () => {
+    const handleConvert = useCallback(async (e) => {
     if (!file) return;
+
+    if (e && e.currentTarget) {
+      try {
+        e.currentTarget.blur();
+      } catch (err) {}
+    }
 
     setConverting(true);
     setProgress(8);
@@ -1070,7 +1081,7 @@ export default function Hero() {
           setResult({
             url: data.outputUrl,
             name: outputName,
-            size: "Available on download",
+            size: data.outputSize ? getImageSize(data.outputSize) : "Available on download",
             width: targetWidth,
             height: targetHeight,
           });
@@ -1109,6 +1120,13 @@ export default function Hero() {
     setCropAspect("1:1");
     setImgWidth(0);
     setImgHeight(0);
+    setSourceFormat("jpg");
+    setTargetFormat("");
+    setIsAutoCycling(true);
+    setUploadMethod("file");
+    setCloudProvider(null);
+    setInputUrl("");
+    setIsLoadingUrl(false);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -1175,7 +1193,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div id="converter-panel" className="w-full md:flex-[1_1_50%] max-w-[320px] sm:max-w-[360px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[440px] 2xl:max-w-[460px] mx-auto mt-0 md:-mt-[70px] lg:-mt-[80px] xl:-mt-[90px] 2xl:-mt-[100px]">
+          <div id="converter-panel" className="w-full md:flex-[1_1_50%] max-w-[320px] sm:max-w-[360px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[440px] 2xl:max-w-[460px] mx-auto mt-0 md:mt-2 lg:mt-4 xl:mt-6 md:self-start">
 
             {/* Row of Select Cards: Convert From -> Swap Button -> Convert To */}
             {/* Moved OUTSIDE the dark container */}
@@ -1343,7 +1361,7 @@ export default function Hero() {
             </div>
 
             {/* Main Converter Container */}
-            <div className="rounded-[28px] border border-indigo-500/18 bg-gradient-to-b from-[#121221]/92 to-[#0e0e1a]/98 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-3xl p-4 relative overflow-visible">
+            <div className="rounded-[28px] border border-indigo-500/18 bg-gradient-to-b from-[#121221]/92 to-[#0e0e1a]/98 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-3xl p-4 relative overflow-visible mt-6">
 
               {/* Upload Dropzone Box */}
               <div
@@ -1714,7 +1732,10 @@ export default function Hero() {
                         Conversion Successful
                       </p>
                       <p className="text-[#94a3b8] text-[0.9rem]">
-                        {result.name} | {result.size} | {result.width}x{result.height}px
+                        {result.name} | {result.size}
+                        {standardImageFormats.includes(targetFormat.replace(".", "").toLowerCase()) && (
+                          <> | {result.width}x{result.height}px</>
+                        )}
                       </p>
                     </div>
                     <div className="flex gap-3 flex-wrap justify-center">

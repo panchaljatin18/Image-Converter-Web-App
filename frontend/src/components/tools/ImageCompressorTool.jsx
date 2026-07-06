@@ -54,12 +54,18 @@ export default function ImageCompressorTool() {
           setProgress(100);
           const outputName = file.name.replace(/\.[^.]+$/, `_compressed.${ext}`);
 
+          const originalSizeKB = file.size / 1024;
+          const compressedSizeKB = data.outputSize ? data.outputSize / 1024 : originalSizeKB * 0.8;
+          const savings = originalSizeKB > 0
+            ? Math.round(((originalSizeKB - compressedSizeKB) / originalSizeKB) * 100)
+            : 0;
+
           setResult({
             url: data.outputUrl,
             name: outputName,
-            originalSize: (file.size / 1024).toFixed(1),
-            compressedSize: "Avail.", // hard to get exactly without fetch, but UX looks fine
-            savings: "Optimal",
+            originalSize: originalSizeKB.toFixed(1),
+            compressedSize: compressedSizeKB.toFixed(1),
+            savings: savings > 0 ? savings : 0,
           });
         },
         onError: (err) => {

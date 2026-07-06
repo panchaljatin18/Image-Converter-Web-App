@@ -7,6 +7,7 @@ export const imageFormats = [
   "gif",
   "bmp",
   "tiff",
+  "tif",
   "svg",
   "ico",
   "heic",
