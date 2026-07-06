@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 
 export const metadata = {
-  metadataBase: new URL("https://imagetoolkit.pro"),
+  metadataBase: new URL("https://convertgalaxy.com"),
   title: {
     default: "ImageToolkit – Free Online Image Converter, Compressor & Editor",
     template: "%s | ImageToolkit",
