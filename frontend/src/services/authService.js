@@ -114,6 +114,34 @@ const authService = {
     return this.fetchWithAuth(`${API_URL}/auth/me`);
   },
 
+  // Google Login
+  async googleLogin(idToken) {
+    let res;
+    try {
+      console.log("[GOOGLE OAUTH]: Sending ID token to backend API at:", `${API_URL}/auth/google-login`);
+      res = await fetch(`${API_URL}/auth/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+    } catch (networkError) {
+      console.error("[GOOGLE OAUTH]: Network/CORS fetch error calling backend API:", networkError);
+      throw new Error("Unable to connect to the backend server. Please verify that the backend API server is running on port 5000 and is accessible.");
+    }
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("[GOOGLE OAUTH]: Backend server returned error status:", res.status, data.message || "Google Login failed");
+      throw new Error(data.message || "Google Login failed");
+    }
+
+    if (data.success && data.token) {
+      console.log("[GOOGLE OAUTH]: Backend authenticated successfully. Storing JWT token.");
+      this.setToken(data.token);
+    }
+    return data;
+  },
+
   // Logout
   logout() {
     this.setToken(null);

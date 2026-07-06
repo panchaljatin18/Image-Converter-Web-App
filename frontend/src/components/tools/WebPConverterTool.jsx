@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 import imageCompression from "browser-image-compression";
 
@@ -14,6 +15,7 @@ const OUTPUT_FORMATS = [
 ];
 
 export default function WebPConverterTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [outputFormat, setOutputFormat] = useState("webp");
   const [quality, setQuality] = useState(85);
@@ -43,6 +45,7 @@ export default function WebPConverterTool() {
 
   const handleConvert = useCallback(async () => {
     if (!file) return;
+    if (!checkConversionLimit()) return;
     setConverting(true);
     setProgress(10);
 
@@ -75,6 +78,7 @@ export default function WebPConverterTool() {
             height: img.naturalHeight,
             format: selectedFormat.label,
           });
+          incrementConversionCount();
         },
         onError: (err) => {
           console.error(err);

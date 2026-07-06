@@ -4,10 +4,12 @@ import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 import imageCompression from "browser-image-compression";
 
 export default function PngToJpgTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [quality, setQuality] = useState(90);
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -32,6 +34,7 @@ export default function PngToJpgTool() {
 
   const handleConvert = useCallback(async () => {
     if (!file) return;
+    if (!checkConversionLimit()) return;
     setConverting(true);
     setProgress(10);
 
@@ -68,6 +71,7 @@ export default function PngToJpgTool() {
             width: img.naturalWidth,
             height: img.naturalHeight,
           });
+          incrementConversionCount();
         },
         onError: (err) => {
           console.error(err);

@@ -6,6 +6,7 @@ import { Download, RefreshCw, CheckCircle, Sliders, Lock, Unlock } from "lucide-
 import Button from "@/components/Button";
 
 import imageCompression from "browser-image-compression";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 const PRESETS = [
   { label: "HD (1280×720)", w: 1280, h: 720 },
@@ -19,6 +20,7 @@ const PRESETS = [
 ];
 
 export default function ImageResizerTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [originalDims, setOriginalDims] = useState({ w: 0, h: 0 });
   const [width, setWidth] = useState(0);
@@ -80,6 +82,7 @@ export default function ImageResizerTool() {
 
   const handleResize = useCallback(async () => {
     if (!file || !width || !height) return;
+    if (!checkConversionLimit()) return;
     setResizing(true);
 
     try {
@@ -104,6 +107,7 @@ export default function ImageResizerTool() {
             width,
             height,
           });
+          incrementConversionCount();
         },
         onError: (err) => {
           console.error(err);

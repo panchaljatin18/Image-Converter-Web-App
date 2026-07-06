@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -30,9 +30,130 @@ const Input = ({ className = '', ...props }) => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, register } = useAuth();
+  const { login, register, googleLogin, isAuthenticated } = useAuth();
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("[AUTH]: User is already authenticated. Redirecting directly to home page.");
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
+  const handleCredentialResponse = async (response) => {
+    clearFeedback();
+    setLoading(true);
+    console.log("[GOOGLE OAUTH]: Google Account Chooser callback triggered. ID Token received successfully.");
+    try {
+      console.log("[GOOGLE OAUTH]: Initiating verification on Express backend API...");
+      await googleLogin(response.credential);
+      console.log("[GOOGLE OAUTH]: Login verification completed successfully on backend.");
+      setSuccess("Signed in successfully!");
+      await sleep(500);
+      router.push("/");
+    } catch (err) {
+      console.error("[GOOGLE OAUTH]: Authentication flow failed:", err.message);
+      setError(err.message || "Google Sign-In failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCredentialResponseRef = useRef();
+  handleCredentialResponseRef.current = handleCredentialResponse;
+
+  useEffect(() => {
+    const initializeGsi = () => {
+      if (!window.google) return;
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "703526369514-807bosvpektob98i87qr439mk5fkkn3t.apps.googleusercontent.com",
+        callback: (response) => handleCredentialResponseRef.current?.(response),
+      });
+
+      // Render standard button in hidden container
+      const container = document.getElementById("google-hidden-btn-container");
+      if (container) {
+        window.google.accounts.id.renderButton(container, {
+          type: "standard",
+          theme: "outline",
+          size: "large",
+        });
+      }
+    };
+
+    if (window.google) {
+      initializeGsi();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeGsi;
+    document.body.appendChild(script);
+  }, []);
+
+  const handleGoogleSignIn = () => {
+    console.log("[GOOGLE OAUTH]: Custom Google button clicked. Launching standard Google OAuth flow...");
+    const hiddenBtn = document.querySelector("#google-hidden-btn-container div[role=button]");
+    if (hiddenBtn) {
+      console.log("[GOOGLE OAUTH]: Programmatically clicking GSI standard button...");
+      hiddenBtn.click();
+    } else {
+      console.log("[GOOGLE OAUTH]: GSI hidden button not found. Triggering prompt fallback...");
+      window.google?.accounts.id.prompt();
+    }
+  };
+
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState("login");
+
+  useEffect(() => {
+    const qTab = searchParams.get("tab");
+    if (qTab === "login" || qTab === "register") {
+      setTab(qTab);
+    }
+  }, [searchParams]);
+
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const slides = [
+    {
+      image: "/auth-bg-1.png",
+      title: (
+        <>
+          Capturing Moments,<br />
+          Creating Memories
+        </>
+      ),
+    },
+    {
+      image: "/auth-bg-2.png",
+      title: (
+        <>
+          Convert Any Format,<br />
+          Quick and Easy
+        </>
+      ),
+    },
+    {
+      image: "/auth-bg-3.png",
+      title: (
+        <>
+          Local Browser Power,<br />
+          Ultra Secure
+        </>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [firstName, setFirstName] = useState("");
@@ -81,10 +202,16 @@ export default function LoginPage() {
     try {
       const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
       await register(fullName, regEmail.trim(), regPass);
-      await login(regEmail.trim(), regPass);
-      setSuccess("Account created successfully. Redirecting to your dashboard...");
-      await sleep(500);
-      router.push("/dashboard");
+      setSuccess("Account created successfully! Please log in with your credentials below.");
+      
+      // Reset registration input fields
+      setFirstName("");
+      setLastName("");
+      setRegEmail("");
+      setRegPass("");
+
+      // Switch tab to login
+      setTab("login");
     } catch (err) {
       setError(err.message || "Registration failed.");
     } finally {
@@ -107,9 +234,9 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(loginEmail.trim(), loginPass);
-      setSuccess("Signed in successfully. Redirecting to your dashboard...");
+      setSuccess("Signed in successfully!");
       await sleep(400);
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       setError(err.message || "Login failed.");
     } finally {
@@ -120,38 +247,62 @@ export default function LoginPage() {
   return (
     <section className="grid min-h-screen place-items-center overflow-hidden bg-[#5d576c] px-[18px] py-2 text-white sm:px-[18px]">
       <div className="grid h-[min(501px,calc(100vh-18px))] min-h-[500px] w-full max-w-[805px] overflow-hidden rounded-[9px] bg-[#2b2535] p-[11px] shadow-[0_22px_48px_rgba(20,16,30,0.34)] md:grid-cols-[390px_1fr]">
-          <aside className="relative hidden h-full overflow-hidden rounded-[7px] md:block">
-            <img
-              src="/auth-bg.png"
-              alt="Dunes at dusk"
-              className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_58%]"
-            />
+           <aside className="relative hidden h-full overflow-hidden rounded-[7px] md:block">
+            {slides.map((slide, idx) => (
+              <div
+                key={idx}
+                className={`absolute inset-0 transition-opacity duration-1000 ${
+                  idx === activeSlide ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <img
+                  src={slide.image}
+                  alt={`Slide ${idx + 1}`}
+                  className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_58%]"
+                />
+              </div>
+            ))}
             <div className="absolute inset-0 bg-[#5d4bb0]/35 mix-blend-color" />
             <div className="absolute inset-0 bg-gradient-to-b from-[#745bca]/55 via-[#211b2b]/20 to-[#130f1d]/82" />
 
-            <div className="absolute left-[19px] top-[20px] text-[24px] font-bold leading-none tracking-[-0.06em] text-white">
+            <div className="absolute left-[19px] top-[20px] text-[24px] font-bold leading-none tracking-[-0.06em] text-white font-outfit">
               AMU
             </div>
 
             <Link
               href="/"
-              className="absolute right-[17px] top-[16px] inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.14] px-2.5 text-[10px] text-white/90 backdrop-blur-md transition hover:bg-white/[0.22]"
+              className="absolute right-[17px] top-[16px] inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.14] px-2.5 text-[10px] text-white/90 backdrop-blur-md transition hover:bg-white/[0.22] z-10"
             >
               Back to website
               <ArrowRight size={11} />
             </Link>
 
-            <div className="absolute bottom-[55px] left-[106px] w-[250px]">
-              <h2 className="text-[20px] font-normal leading-[1.2] tracking-[-0.03em] text-white">
-                Capturing Moments,<br />
-                Creating Memories
-              </h2>
+            <div className="absolute bottom-[65px] left-[35px] right-[35px] h-[65px]">
+              {slides.map((slide, idx) => (
+                <div
+                  key={idx}
+                  className={`transition-all duration-700 absolute inset-0 ${
+                    idx === activeSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
+                  }`}
+                >
+                  <h2 className="text-[20px] font-normal leading-[1.2] tracking-[-0.03em] text-white font-outfit">
+                    {slide.title}
+                  </h2>
+                </div>
+              ))}
             </div>
 
-            <div className="absolute bottom-[22px] left-1/2 flex -translate-x-1/2 items-center gap-2.5">
-              <span className="h-[3px] w-[21px] rounded-full bg-white/28" />
-              <span className="h-[3px] w-[21px] rounded-full bg-white/28" />
-              <span className="h-[3px] w-[29px] rounded-full bg-white" />
+            <div className="absolute bottom-[22px] left-1/2 flex -translate-x-1/2 items-center gap-2.5 z-10">
+              {slides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveSlide(idx)}
+                  className={`h-[3px] rounded-full transition-all duration-300 cursor-pointer ${
+                    idx === activeSlide ? "w-[29px] bg-white" : "w-[21px] bg-white/28 hover:bg-white/50"
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </aside>
 
@@ -323,28 +474,20 @@ export default function LoginPage() {
                 <span className="h-px flex-1 bg-[#70667d]" />
               </div>
 
-              <div className="grid grid-cols-2 gap-[13px]">
+              <div className="w-full flex justify-center">
                 <button
                   type="button"
-                  onClick={() => setError(`Google ${isRegister ? "sign-up" : "login"} is not configured in this build yet.`)}
+                  onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="flex h-[34px] cursor-pointer items-center justify-center gap-2.5 rounded-[4px] border border-[#6c607b] bg-transparent text-[11px] font-medium text-white transition hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <GoogleSVG />
-                  Google
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setError(`Apple ${isRegister ? "sign-up" : "login"} is not configured in this build yet.`)}
-                  disabled={loading}
-                  className="flex h-[34px] cursor-pointer items-center justify-center gap-2.5 rounded-[4px] border border-[#6c607b] bg-transparent text-[11px] font-medium text-white transition hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <AppleSVG />
-                  Apple
+                  Continue with Google
                 </button>
               </div>
-            </div>
+          <div id="google-hidden-btn-container" style={{ display: "none" }} />
           </div>
+        </div>
       </div>
     </section>
   );

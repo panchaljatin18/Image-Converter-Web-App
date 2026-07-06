@@ -5,8 +5,10 @@ import ToolUploader from "@/components/ToolUploader";
 import imageCompression from "browser-image-compression";
 import { Download, RefreshCw, CheckCircle, Sliders, Zap } from "lucide-react";
 import Button from "@/components/Button";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 export default function ImageCompressorTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [maxSizeMB, setMaxSizeMB] = useState(1);
   const [maxWidthOrHeight, setMaxWidthOrHeight] = useState(1920);
@@ -33,6 +35,7 @@ export default function ImageCompressorTool() {
 
   const handleCompress = useCallback(async () => {
     if (!file) return;
+    if (!checkConversionLimit()) return;
     setCompressing(true);
     setProgress(10);
 
@@ -67,6 +70,7 @@ export default function ImageCompressorTool() {
             compressedSize: compressedSizeKB.toFixed(1),
             savings: savings > 0 ? savings : 0,
           });
+          incrementConversionCount();
         },
         onError: (err) => {
           console.error(err);

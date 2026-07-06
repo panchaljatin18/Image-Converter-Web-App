@@ -21,9 +21,19 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please provide a password"],
+      required: function() {
+        return !this.googleId;
+      },
       minlength: [8, "Password must be at least 8 characters"],
       select: false // Exclude from queries by default
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+    avatar: {
+      type: String
     },
     role: {
       type: String,
@@ -69,13 +79,12 @@ const UserSchema = new mongoose.Schema(
 );
 
 // Hash password before saving to database
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function () {
   if (!this.isModified("password")) {
-    return next();
+    return;
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Compare user-provided password with hashed password

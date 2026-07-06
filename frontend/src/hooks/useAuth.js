@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import authService from "../services/authService";
 
 const AuthContext = createContext(null);
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Login handler
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setLoading(true);
     setError(null);
     try {
@@ -46,10 +46,10 @@ export function AuthProvider({ children }) {
       setLoading(false);
       throw err;
     }
-  };
+  }, []);
 
   // Register handler
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +61,25 @@ export function AuthProvider({ children }) {
       setLoading(false);
       throw err;
     }
-  };
+  }, []);
+
+  // Google Login handler
+  const googleLogin = useCallback(async (idToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.googleLogin(idToken);
+      if (data.success && data.user) {
+        setUser(data.user);
+      }
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.message || "Google Login failed");
+      setLoading(false);
+      throw err;
+    }
+  }, []);
 
   // Forgot Password handler
   const forgotPassword = async (email) => {
@@ -106,6 +124,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     login,
     register,
+    googleLogin,
     forgotPassword,
     resetPassword,
     logout

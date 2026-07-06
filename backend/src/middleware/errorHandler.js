@@ -89,9 +89,14 @@ const errorHandler = (err, req, res, next) => {
       Object.entries(err.errors).map(([k, v]) => [k, v.message])
     );
     logger.warn("Mongoose validation error", { fields });
+    logger.error("Full Mongoose Validation Error Object:", err);
+
+    // Compile individual error messages into a readable list
+    const errorMessage = Object.values(fields).join(", ");
+
     return res.status(400).json({
       success: false,
-      message: "Validation failed.",
+      message: errorMessage || "Validation failed.",
       code: "MONGOOSE_VALIDATION",
       fields,
     });
@@ -109,9 +114,10 @@ const errorHandler = (err, req, res, next) => {
   // ── MongoDB duplicate key ──────────────────────────────────────────────────
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || "field";
+    const message = field === "email" ? "Email already registered." : `A record with this ${field} already exists.`;
     return res.status(409).json({
       success: false,
-      message: `A record with this ${field} already exists.`,
+      message,
       code: "DUPLICATE_KEY",
     });
   }

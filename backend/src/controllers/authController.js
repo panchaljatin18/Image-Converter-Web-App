@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const mailService = require("../services/mailService");
 
 // Helper to sign JWT token
 const generateToken = (id) => {
@@ -26,7 +27,7 @@ const authController = {
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          message: "Email address is already registered."
+          message: "Email already registered."
         });
       }
 
@@ -36,6 +37,9 @@ const authController = {
         email,
         password
       });
+
+      // Send welcome email alert
+      await mailService.sendWelcomeEmail(email, name);
 
       return res.status(201).json({
         success: true,
@@ -78,6 +82,9 @@ const authController = {
 
       // Generate token
       const token = generateToken(user._id);
+
+      // Send login alert email
+      await mailService.sendLoginAlertEmail(user.email, user.name);
 
       return res.status(200).json({
         success: true,
@@ -207,6 +214,104 @@ const authController = {
         }
       });
     } catch (error) {
+      next(error);
+    }
+  },
+
+  // POST /api/auth/google-login
+  async googleLogin(req, res, next) {
+    const logger = require("../utils/logger");
+    try {
+      const { idToken } = req.body;
+
+      logger.info("[GOOGLE OAUTH]: Received Google login request on backend.");
+
+      if (!idToken) {
+        logger.warn("[GOOGLE OAUTH]: Missing Google ID token in request body.");
+        return res.status(400).json({
+          success: false,
+          message: "Google ID token is required."
+        });
+      }
+
+      const { OAuth2Client } = require("google-auth-library");
+      const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+      let payload;
+      try {
+        logger.info("[GOOGLE OAUTH]: Verifying ID token with Google API...");
+        const ticket = await client.verifyIdToken({
+          idToken,
+          audience: process.env.GOOGLE_CLIENT_ID
+        });
+        payload = ticket.getPayload();
+        logger.info("[GOOGLE OAUTH]: Google ID token verified successfully.", { email: payload.email });
+      } catch (err) {
+        logger.error("[GOOGLE OAUTH]: Google token verification failed.", { error: err.message });
+        return res.status(401).json({
+          success: false,
+          message: "Invalid Google ID token. Please make sure you are selecting a valid account."
+        });
+      }
+
+      const { sub: googleId, email, name, picture: avatar } = payload;
+
+      logger.info("[GOOGLE OAUTH]: Searching MongoDB for user...", { email, googleId });
+      let user = await User.findOne({ $or: [{ googleId }, { email }] });
+      let isNewUser = false;
+
+      if (user) {
+        logger.info("[GOOGLE OAUTH]: User found in database.");
+        let updated = false;
+        if (!user.googleId) {
+          user.googleId = googleId;
+          updated = true;
+          logger.info("[GOOGLE OAUTH]: Linking Google ID to existing email account.");
+        }
+        if (avatar && !user.avatar) {
+          user.avatar = avatar;
+          updated = true;
+        }
+        if (updated) {
+          await user.save();
+          logger.info("[GOOGLE OAUTH]: User record updated in MongoDB.");
+        }
+      } else {
+        logger.info("[GOOGLE OAUTH]: User not found in database. Creating new user.");
+        user = await User.create({
+          name,
+          email,
+          googleId,
+          avatar
+        });
+        logger.info("[GOOGLE OAUTH]: New user created successfully in MongoDB.");
+        isNewUser = true;
+      }
+
+      // Send email notifications
+      if (isNewUser) {
+        await mailService.sendWelcomeEmail(user.email, user.name);
+      } else {
+        await mailService.sendLoginAlertEmail(user.email, user.name);
+      }
+
+      logger.info("[GOOGLE OAUTH]: Generating JWT token...");
+      const token = generateToken(user._id);
+      logger.info("[GOOGLE OAUTH]: JWT token generated successfully.");
+
+      return res.status(200).json({
+        success: true,
+        token: token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar
+        }
+      });
+    } catch (error) {
+      logger.error("[GOOGLE OAUTH]: Unexpected server error in googleLogin.", { error: error.message, stack: error.stack });
       next(error);
     }
   }

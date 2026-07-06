@@ -214,11 +214,14 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <Link href="/dashboard" className="no-underline hidden lg:inline-block">
-                <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-indigo-500/30 bg-indigo-500/15 rounded-[10px] text-white">
-                  Dashboard
-                </Button>
-              </Link>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={logout}
+                className="py-2 px-4.5 text-[0.85rem] border border-red-500/30 bg-red-500/15 rounded-[10px] text-white cursor-pointer hover:bg-red-500/25 hidden lg:inline-block"
+              >
+                Sign Out
+              </Button>
             ) : (
               <Link href="/login" className="no-underline hidden lg:inline-block">
                 <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-white/15 bg-white/5 rounded-[10px] text-[#94a3b8]">
@@ -308,17 +311,7 @@ export default function Navbar() {
               )}
             </div>
           ))}
-          {user && (
-            <Link
-              href="/dashboard"
-              className={`block py-3 px-4 rounded-lg no-underline font-semibold text-[1rem] transition-all duration-200 border-l-[3px] ${pathname === "/dashboard"
-                  ? "text-white bg-indigo-500/15 border-[#6366f1]"
-                  : "text-[#94a3b8] border-transparent"
-                }`}
-            >
-              Dashboard
-            </Link>
-          )}
+
 
           <div className="mt-6 flex flex-col gap-2.5">
             <Link href="/tools" className="no-underline">

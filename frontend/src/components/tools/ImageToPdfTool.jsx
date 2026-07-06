@@ -5,6 +5,7 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import Button from "@/components/Button";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 const PAGE_SIZES = {
   A4: [595, 842],
@@ -15,6 +16,7 @@ const PAGE_SIZES = {
 };
 
 export default function ImageToPdfTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [images, setImages] = useState([]);
   const [pageSize, setPageSize] = useState("A4");
   const [orientation, setOrientation] = useState("portrait");
@@ -65,6 +67,7 @@ export default function ImageToPdfTool() {
 
   const handleConvert = useCallback(async () => {
     if (images.length === 0) return;
+    if (!checkConversionLimit()) return;
     setConverting(true);
     setProgress(5);
 
@@ -138,6 +141,7 @@ export default function ImageToPdfTool() {
 
       setProgress(100);
       setResult({ url, name: "images.pdf", size: (blob.size / 1024).toFixed(1) + " KB", pages: images.length });
+      incrementConversionCount();
     } catch (err) {
       alert("Failed to create PDF: " + err.message);
     } finally {

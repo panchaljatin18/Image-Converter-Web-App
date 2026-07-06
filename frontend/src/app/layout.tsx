@@ -1,5 +1,6 @@
 import "./globals.css"
 import { AuthProvider } from "@/hooks/useAuth"
+import { ConversionLimitProvider } from "@/context/ConversionLimitContext"
 import NextAuthProvider from "@/components/NextAuthProvider"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
@@ -123,9 +124,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
         <NextAuthProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <ConversionLimitProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </ConversionLimitProvider>
           </AuthProvider>
         </NextAuthProvider>
       </body>

@@ -11,6 +11,9 @@ router.post("/register", authController.register);
 // Login User
 router.post("/login", authController.login);
 
+// Google Login User
+router.post("/google-login", authController.googleLogin);
+
 // Forgot Password
 router.post("/forgot-password", authController.forgotPassword);
 

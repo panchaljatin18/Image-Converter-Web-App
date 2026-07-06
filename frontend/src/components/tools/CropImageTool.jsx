@@ -5,8 +5,10 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Crop } from "lucide-react";
 import Button from "@/components/Button";
 import imageCompression from "browser-image-compression";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 export default function CropImageTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [naturalDims, setNaturalDims] = useState({ w: 0, h: 0 });
@@ -125,6 +127,7 @@ export default function CropImageTool() {
       alert("Please draw a crop area first (at least 10×10 pixels).");
       return;
     }
+    if (!checkConversionLimit()) return;
 
     try {
       const { processFileWithBackend } = await import("@/lib/apiClient");
@@ -150,6 +153,7 @@ export default function CropImageTool() {
             width: Math.round(crop.w),
             height: Math.round(crop.h),
           });
+          incrementConversionCount();
         },
         onError: (err) => {
           console.error(err);

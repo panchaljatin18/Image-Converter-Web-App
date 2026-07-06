@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Download, FileText, AlertCircle, Info } from "lucide-react";
 import Button from "@/components/Button";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 
 const getPdfErrorMessage = (err, pdfjsLib) => {
   const rawMessage = err?.message?.trim() || "Unknown PDF conversion error.";
@@ -25,6 +26,7 @@ const getPdfErrorMessage = (err, pdfjsLib) => {
 };
 
 export default function PdfToImageTool() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [outputFormat, setOutputFormat] = useState("jpeg");
@@ -56,6 +58,7 @@ export default function PdfToImageTool() {
 
   const handleConvert = useCallback(async () => {
     if (!file) return;
+    if (!checkConversionLimit()) return;
     setConverting(true);
     setProgress(5);
     setResults([]);
@@ -110,6 +113,7 @@ export default function PdfToImageTool() {
 
       setProgress(100);
       setResults(convertedPages);
+      incrementConversionCount();
     } catch (err) {
       setError(`Failed to convert PDF: ${getPdfErrorMessage(err, pdfjsLib)}`);
     } finally {

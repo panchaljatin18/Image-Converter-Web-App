@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { isConversionSupported, standardImageFormats } from "../../../lib/conversions";
+import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { useSession } from "next-auth/react";
 import GoogleDrivePicker from "../../../components/GoogleDrivePicker";
 import googleDriveService from "../../../services/googleDriveService";
@@ -600,6 +601,7 @@ const getSourceFormat = (file) => {
 };
 
 export default function Hero() {
+  const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [targetFormat, setTargetFormat] = useState("");
   const [sourceFormat, setSourceFormat] = useState("jpg");
   const [isSourceDropdownOpen, setIsSourceDropdownOpen] = useState(false);
@@ -945,6 +947,7 @@ export default function Hero() {
 
     const handleConvert = useCallback(async (e) => {
     if (!file) return;
+    if (!checkConversionLimit()) return;
 
     if (e && e.currentTarget) {
       try {
@@ -1088,6 +1091,7 @@ export default function Hero() {
           setProgress(100);
           setConverting(false);
           if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+          incrementConversionCount();
         },
         onError: (err) => {
           setProgress(0);
