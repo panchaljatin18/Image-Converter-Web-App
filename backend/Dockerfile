@@ -20,7 +20,6 @@ FROM node:22-bookworm-slim AS production
 
 # Set environment variables for production execution
 ENV NODE_ENV=production
-ENV PORT=5000
 
 # Install all required external CLI tools via apt.
 # Using --no-install-recommends and cleaning apt cache keeps the image as lean as possible.
