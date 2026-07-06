@@ -1,5 +1,7 @@
 # ── Node dependencies ─────────────────────────────────────────────────────────
 node_modules/
+npm-debug.log
+yarn-error.log
 
 # ── Runtime directories (created at container startup) ────────────────────────
 src/uploads/
@@ -12,6 +14,7 @@ src/scripts/
 .env.development
 .env.production
 .env*.local
+!.env.example
 
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
@@ -34,6 +37,12 @@ test.js
 __tests__/
 coverage/
 
-# ── Documentation ─────────────────────────────────────────────────────────────
+# ── Documentation & Workspace artifacts ───────────────────────────────────────
 README.md
 *.md
+diff.txt
+panel_segment.txt
+redesign_backup.jsx
+redesign_backup_utf8.jsx
+replace_colors.js
+docker-compose.yml
