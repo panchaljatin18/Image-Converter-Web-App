@@ -2,9 +2,9 @@ import FaqHeader from "@/sections/FaqPage/FaqHeader";
 import FaqContent from "@/sections/FaqPage/FaqContent";
 
 export const metadata = {
-  title: "FAQ – Frequently Asked Questions | ImageToolkit",
+  title: "FAQ – Frequently Asked Questions | ConvertGalaxy",
   description:
-    "Find answers to common questions about ImageToolkit — privacy, supported formats, file limits, browser compatibility, and more.",
+    "Find answers to common questions about ConvertGalaxy — privacy, supported formats, file limits, browser compatibility, and more.",
 };
 
 export default function FaqPage() {

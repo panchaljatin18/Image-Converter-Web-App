@@ -18,7 +18,7 @@ export default function Features() {
         <div className="text-center max-w-[650px] mx-auto mb-14">
           <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <Star size={12} />
-            Why ImageToolkit
+            Why ConvertGalaxy
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
             Built for{" "}

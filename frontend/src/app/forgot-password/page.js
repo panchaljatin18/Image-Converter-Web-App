@@ -1,7 +1,7 @@
 import ForgotPasswordContent from "@/sections/ForgotPasswordPage";
 
 export const metadata = {
-  title: "Reset Password | ImageToolkit",
+  title: "Reset Password | ConvertGalaxy",
   description: "Enter your email address to receive a secure link to reset your password.",
 };
 

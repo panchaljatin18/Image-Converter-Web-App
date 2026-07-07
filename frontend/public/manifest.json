@@ -1,6 +1,6 @@
 {
-  "name": "ImageToolkit",
-  "short_name": "ImageToolkit",
+  "name": "ConvertGalaxy",
+  "short_name": "ConvertGalaxy",
   "description": "Free Online Image Converter, Compressor & Editor",
   "start_url": "/",
   "display": "standalone",

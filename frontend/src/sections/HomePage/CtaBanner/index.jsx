@@ -18,7 +18,7 @@ export default function CtaBanner() {
               <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Right Now</span>
             </h2>
             <p className="text-[#94a3b8] text-[1.1rem] max-w-[520px] mx-auto mb-9 leading-[1.7]">
-              Join millions of users who trust ImageToolkit for fast, private, and high-quality image processing.
+              Join millions of users who trust ConvertGalaxy for fast, private, and high-quality image processing.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link href="/tools" className="no-underline">

@@ -9,11 +9,11 @@ const privacySections = [
 
 <strong>Contact Form Data:</strong> If you use our contact form, we collect your name, email address, and message content solely to respond to your inquiry.
 
-<strong>What We Do NOT Collect:</strong> We do not collect, upload, store, or access any images you process on ImageToolkit. All file processing happens locally in your browser.`,
+<strong>What We Do NOT Collect:</strong> We do not collect, upload, store, or access any images you process on ConvertGalaxy. All file processing happens locally in your browser.`,
   },
   {
     title: "2. How Your Images Are Processed",
-    content: `ImageToolkit uses client-side browser technologies (JavaScript Canvas API, WebAssembly) to process images entirely on your device.
+    content: `ConvertGalaxy uses client-side browser technologies (JavaScript Canvas API, WebAssembly) to process images entirely on your device.
 
 Your images are loaded directly from your device into your browser's memory. They are processed locally using your computer's resources. The converted/compressed result is generated locally and made available for download.
 
@@ -61,19 +61,19 @@ Anonymous analytics data is retained in aggregate form for up to 24 months.`,
 • Object to processing of your data
 • Data portability
 
-To exercise these rights, contact us at hello@imagetoolkit.pro. We will respond within 30 days.`,
+To exercise these rights, contact us at hello@convertgalaxy.pro. We will respond within 30 days.`,
   },
   {
     title: "7. Children's Privacy",
-    content: `ImageToolkit is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us immediately.`,
+    content: `ConvertGalaxy is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us immediately.`,
   },
   {
     title: "8. Changes to This Policy",
-    content: `We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the "Last updated" date at the top of this page. Continued use of ImageToolkit after changes constitutes acceptance of the updated policy.`,
+    content: `We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the "Last updated" date at the top of this page. Continued use of ConvertGalaxy after changes constitutes acceptance of the updated policy.`,
   },
   {
     title: "9. Contact Us",
-    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: hello@imagetoolkit.pro\n\nWe are committed to resolving any privacy concerns promptly.`,
+    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: hello@convertgalaxy.pro\n\nWe are committed to resolving any privacy concerns promptly.`,
   },
 ];
 

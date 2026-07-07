@@ -11,7 +11,7 @@ export default function FaqHeader() {
           Frequently Asked <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Questions</span>
         </h1>
         <p className="text-[#94a3b8] text-[1.1rem] max-w-[520px] mx-auto">
-          Everything you need to know about ImageToolkit — privacy, formats, limits, and more.
+          Everything you need to know about ConvertGalaxy — privacy, formats, limits, and more.
         </p>
       </Container>
     </div>

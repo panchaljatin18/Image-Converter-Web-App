@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 
 const faqs = [
   { q: "Are my images stored on your servers?", a: "No. All image processing happens entirely in your browser using client-side JavaScript and Canvas API. Your images never leave your device, ensuring complete privacy." },
-  { q: "Is ImageToolkit completely free?", a: "Yes! All tools on ImageToolkit are 100% free to use with no hidden costs, subscriptions, or account requirements." },
+  { q: "Is ConvertGalaxy completely free?", a: "Yes! All tools on ConvertGalaxy are 100% free to use with no hidden costs, subscriptions, or account requirements." },
   { q: "What image formats do you support?", a: "We support JPG/JPEG, PNG, WebP, GIF, BMP, and TIFF formats across our various tools." },
   { q: "Is there a file size limit?", a: "Most tools support files up to 50MB. For batch operations, we recommend files under 20MB each for optimal performance." },
 ];

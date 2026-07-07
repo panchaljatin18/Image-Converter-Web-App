@@ -5,7 +5,7 @@ import FaqPreview from "@/sections/HomePage/FaqPreview"
 import CtaBanner from "@/sections/HomePage/CtaBanner"
 
 export const metadata = {
-  title: "Free Online Image Converter, Compressor & Editor - ImageToolkit",
+  title: "Free Online Image Converter, Compressor & Editor - ConvertGalaxy",
   description:
     "Convert JPG to PNG, PNG to JPG, WebP, compress images, resize, crop, and convert to PDF. 100% free, fast, browser-based image tools. No upload, no account required.",
 }

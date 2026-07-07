@@ -12,7 +12,7 @@ export default function AboutContent() {
             Who We Are
           </h2>
           <p className="text-[#94a3b8] text-[0.95rem] leading-relaxed mb-6">
-            ImageToolkit is a modern web application dedicated to offering premium-grade image processing tools completely free of charge. Born out of the frustration of slow, ad-ridden online converters that require uploading confidential files to remote servers, we designed ImageToolkit to be local-first, highly secure, and instant.
+            ConvertGalaxy is a modern web application dedicated to offering premium-grade image processing tools completely free of charge. Born out of the frustration of slow, ad-ridden online converters that require uploading confidential files to remote servers, we designed ConvertGalaxy to be local-first, highly secure, and instant.
           </p>
           <p className="text-[#94a3b8] text-[0.95rem] leading-relaxed">
             By running all conversion, compression, resizing, and processing logic inside your browser using the HTML5 Canvas API and WebAssembly, your raw images never leave your computer. You get server-level speeds without sacrificing data security.
@@ -82,10 +82,10 @@ export default function AboutContent() {
             Security and Standards
           </h2>
           <p className="text-[#94a3b8] text-[0.95rem] leading-relaxed mb-4">
-            Security is the cornerstone of ImageToolkit. Because typical online utilities pose data privacy risks by processing your documents on third-party remote nodes, we take full advantage of client-side architecture to bypass cloud transmission entirely.
+            Security is the cornerstone of ConvertGalaxy. Because typical online utilities pose data privacy risks by processing your documents on third-party remote nodes, we take full advantage of client-side architecture to bypass cloud transmission entirely.
           </p>
           <p className="text-[#94a3b8] text-[0.95rem] leading-relaxed">
-            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <a href="/contact" className="text-[#818cf8] hover:underline">Contact page</a> or email us at <a href="mailto:hello@imagetoolkit.pro" className="text-[#818cf8] hover:underline">hello@imagetoolkit.pro</a>.
+            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <a href="/contact" className="text-[#818cf8] hover:underline">Contact page</a> or email us at <a href="mailto:hello@convertgalaxy.pro" className="text-[#818cf8] hover:underline">hello@convertgalaxy.pro</a>.
           </p>
         </div>
 

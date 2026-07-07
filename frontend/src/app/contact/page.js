@@ -2,8 +2,8 @@ import ContactHeader from "@/sections/ContactPage/ContactHeader";
 import ContactContent from "@/sections/ContactPage/ContactContent";
 
 export const metadata = {
-  title: "Contact Us | ImageToolkit",
-  description: "Get in touch with the ImageToolkit team. Report a bug, request a feature, or ask a question. We respond within 24 hours.",
+  title: "Contact Us | ConvertGalaxy",
+  description: "Get in touch with the ConvertGalaxy team. Report a bug, request a feature, or ask a question. We respond within 24 hours.",
 };
 
 export default function ContactPage() {

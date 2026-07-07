@@ -21,8 +21,8 @@ const TwitterIcon = ({ size = 20, className }) => (
 );
 
 const contactInfo = [
-  { icon: <Mail size={20} />, label: "Email", value: "hello@imagetoolkit.pro", href: "mailto:hello@imagetoolkit.pro", color: "#6366f1" },
-  { icon: <TwitterIcon size={20} />, label: "Twitter", value: "@imagetoolkit", href: "https://twitter.com", color: "#06b6d4" },
+  { icon: <Mail size={20} />, label: "Email", value: "hello@convertgalaxy.pro", href: "mailto:hello@convertgalaxy.pro", color: "#6366f1" },
+  { icon: <TwitterIcon size={20} />, label: "Twitter", value: "@convertgalaxy", href: "https://twitter.com", color: "#06b6d4" },
   { icon: <Clock size={20} />, label: "Response Time", value: "Within 24 hours", href: null, color: "#10b981" },
   { icon: <MessageCircle size={20} />, label: "Support Hours", value: "Mon – Fri, 9am – 6pm IST", href: null, color: "#f59e0b" },
 ];

@@ -9,8 +9,8 @@ import Script from "next/script"
 export const metadata = {
   metadataBase: new URL("https://convertgalaxy.com"),
   title: {
-    default: "ImageToolkit – Free Online Image Converter, Compressor & Editor",
-    template: "%s | ImageToolkit",
+    default: "Convert Galaxy – Free Online Image Converter, Compressor & Editor",
+    template: "%s | ConvertGalaxy",
   },
   description:
     "Convert JPG to PNG, PNG to JPG, WebP conversion, compress images, resize, crop, and convert images to PDF — all free, fast, and secure in your browser.",
@@ -27,9 +27,9 @@ export const metadata = {
     "free image tools",
     "online image editor",
   ],
-  authors: [{ name: "ImageToolkit" }],
-  creator: "ImageToolkit",
-  publisher: "ImageToolkit",
+  authors: [{ name: "ConvertGalaxy" }],
+  creator: "ConvertGalaxy",
+  publisher: "ConvertGalaxy",
   robots: {
     index: true,
     follow: true,
@@ -45,8 +45,8 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: "https://convertgalaxy.com",
-    siteName: "ConvertGalaxy",
-    title: "ConvertGalaxy – Free Online Image Converter & Editor",
+    siteName: "Convert Galaxy",
+    title: "Convert Galaxy – Free Online Image Converter & Editor",
     description:
       "Free, fast, browser-based image tools. Convert, compress, resize, crop images and more — no upload required.",
     images: [
@@ -60,13 +60,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ConvertGalaxy – Free Online Image Converter & Editor",
+    title: "Convert Galaxy – Free Online Image Converter & Editor",
     description:
       "Free browser-based image tools. Convert, compress, resize, crop and more.",
     images: ["/og-image.png"],
   },
   verification: {
-    google: "your-google-verification-code",
+    google: "google-site-verification=s0ab_86u6FyoQmZRSv69y4Ji4Q5IuJqM8lds-lyZ5HM",
   },
 }
 
@@ -99,8 +99,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "ImageToolkit",
-              url: "https://imagetoolkit.pro",
+              name: "ConvertGalaxy",
+              url: "https://convertgalaxy.com",
               description:
                 "Free online image converter, compressor, resizer, and editor tools.",
               potentialAction: {
@@ -108,7 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 target: {
                   "@type": "EntryPoint",
                   urlTemplate:
-                    "https://imagetoolkit.pro/search?q={search_term_string}",
+                    "https://convertgalaxy.com/search?q={search_term_string}",
                 },
                 "query-input": "required name=search_term_string",
               },

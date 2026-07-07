@@ -10,7 +10,7 @@ const faqCategories = [
     items: [
       { q: "Are my images stored on your servers?", a: "No. All image processing happens entirely in your browser using client-side JavaScript and the Canvas API. Your files never leave your device, ensuring complete privacy and security." },
       { q: "Do you collect any personal data?", a: "We do not collect, store, or share any personal data or images. Our tools are fully client-side. We may use anonymous analytics (page views) to improve the service." },
-      { q: "Is it safe to use ImageToolkit for sensitive images?", a: "Yes. Since all processing is local to your browser and nothing is uploaded to our servers, your sensitive images remain completely private." },
+      { q: "Is it safe to use ConvertGalaxy for sensitive images?", a: "Yes. Since all processing is local to your browser and nothing is uploaded to our servers, your sensitive images remain completely private." },
       { q: "Do you use cookies?", a: "We use minimal cookies for basic site functionality and anonymous analytics. We do not use tracking cookies for advertising purposes." },
     ],
   },
@@ -29,7 +29,7 @@ const faqCategories = [
     name: "Pricing & Account",
     icon: "💳",
     items: [
-      { q: "Is ImageToolkit really free?", a: "Yes, 100% free. All tools are available without any subscription, account, or payment. We are ad-supported to keep the service free." },
+      { q: "Is ConvertGalaxy really free?", a: "Yes, 100% free. All tools are available without any subscription, account, or payment. We are ad-supported to keep the service free." },
       { q: "Do I need to create an account?", a: "No. You can use every tool immediately without registering or logging in. Just open a tool and start processing." },
       { q: "Will you add premium features?", a: "We may introduce optional premium features in the future, but all current tools will remain free forever." },
     ],
@@ -38,10 +38,10 @@ const faqCategories = [
     name: "Technical",
     icon: "🛠️",
     items: [
-      { q: "Which browsers are supported?", a: "ImageToolkit works on all modern browsers: Chrome 80+, Firefox 75+, Safari 14+, and Edge 80+. We recommend Chrome or Firefox for the best experience." },
+      { q: "Which browsers are supported?", a: "ConvertGalaxy works on all modern browsers: Chrome 80+, Firefox 75+, Safari 14+, and Edge 80+. We recommend Chrome or Firefox for the best experience." },
       { q: "Does it work on mobile?", a: "Yes! All tools are fully responsive and work on iOS and Android browsers. The crop tool works with touch events too." },
       { q: "Why is processing slow on large files?", a: "Large files require more memory and CPU time in the browser. For files over 10MB, processing may take a few seconds. Using a desktop browser helps with large files." },
-      { q: "Can I use ImageToolkit offline?", a: "Basic tools work offline once the page is loaded. PDF-related tools require an internet connection to load the PDF.js library." },
+      { q: "Can I use ConvertGalaxy offline?", a: "Basic tools work offline once the page is loaded. PDF-related tools require an internet connection to load the PDF.js library." },
     ],
   },
 ];
