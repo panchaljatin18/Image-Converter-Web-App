@@ -4,6 +4,9 @@ import PdfToImageTool from "@/components/tools/PdfToImageTool";
 export const metadata = {
   title: "PDF to Image Converter – Extract PDF Pages as JPG/PNG Free",
   description: "Convert PDF pages to high-quality JPG or PNG images. Extract every page as a separate image file. Free, browser-based PDF to image converter with resolution control.",
+  alternates: {
+    canonical: "/tools/pdf-to-image",
+  },
 };
 
 const relatedTools = [

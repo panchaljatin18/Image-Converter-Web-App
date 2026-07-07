@@ -5,6 +5,9 @@ export const metadata = {
   title: "Blog – Image Tips, Tutorials & Guides | ConvertGalaxy",
   description:
     "Learn about image formats, compression tips, web optimization, and how-to guides for getting the most out of your images on the web.",
+  alternates: {
+    canonical: "/blog",
+  },
 };
 
 export default function BlogPage() {

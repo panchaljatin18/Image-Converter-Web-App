@@ -4,6 +4,9 @@ import ImageToPdfTool from "@/components/tools/ImageToPdfTool";
 export const metadata = {
   title: "Image to PDF Converter – Combine Images into PDF Free",
   description: "Convert JPG, PNG, WebP images to a PDF file. Combine multiple images into one PDF with page size, orientation, and margin settings. Free, browser-based, no upload.",
+  alternates: {
+    canonical: "/tools/image-to-pdf",
+  },
 };
 
 const relatedTools = [

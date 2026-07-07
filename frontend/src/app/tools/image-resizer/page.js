@@ -4,6 +4,9 @@ import ImageResizerTool from "@/components/tools/ImageResizerTool";
 export const metadata = {
   title: "Image Resizer – Resize Images Online Free",
   description: "Resize images to exact pixel dimensions or aspect ratios. Presets for social media, HD, 4K, and more. Lock aspect ratio, choose output format. Free, browser-based.",
+  alternates: {
+    canonical: "/tools/image-resizer",
+  },
 };
 
 const relatedTools = [

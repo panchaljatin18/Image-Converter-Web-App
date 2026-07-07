@@ -6,7 +6,7 @@ import { MetadataRoute } from "next";
  * while excluding private administrative/authentication paths.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://convertgalaxy.com";
+  const baseUrl = "https://www.convertgalaxy.com";
   const currentDate = new Date();
 
   // Define public indexable URLs

@@ -21,7 +21,7 @@ export default function robots(): MetadataRoute.Robots {
         "/auth/",
       ],
     },
-    sitemap: "https://convertgalaxy.com/sitemap.xml",
-    host: "https://convertgalaxy.com",
+    sitemap: "https://www.convertgalaxy.com/sitemap.xml",
+    host: "https://www.convertgalaxy.com",
   };
 }

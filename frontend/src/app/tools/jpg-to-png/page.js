@@ -5,6 +5,9 @@ export const metadata = {
   title: "JPG to PNG Converter – Free Online Tool",
   description:
     "Convert JPG/JPEG images to PNG format instantly. Free, lossless, browser-based converter. No upload required — your files stay private.",
+  alternates: {
+    canonical: "/tools/jpg-to-png",
+  },
 };
 
 const relatedTools = [

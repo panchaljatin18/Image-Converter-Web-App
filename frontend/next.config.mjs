@@ -20,7 +20,22 @@ const localIps = getLocalIps();
 const nextConfig = {
   reactCompiler: true,
   allowedDevOrigins: localIps,
-  experimental: {}
+  experimental: {},
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "convertgalaxy.com",
+          },
+        ],
+        destination: "https://www.convertgalaxy.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

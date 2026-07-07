@@ -7,7 +7,7 @@ import Footer from "@/components/Footer"
 import Script from "next/script"
 
 export const metadata = {
-  metadataBase: new URL("https://convertgalaxy.com"),
+  metadataBase: new URL("https://www.convertgalaxy.com"),
   title: {
     default: "Convert Galaxy – Free Online Image Converter, Compressor & Editor",
     template: "%s | ConvertGalaxy",

@@ -5,6 +5,9 @@ export const metadata = {
   title: "FAQ – Frequently Asked Questions | ConvertGalaxy",
   description:
     "Find answers to common questions about ConvertGalaxy — privacy, supported formats, file limits, browser compatibility, and more.",
+  alternates: {
+    canonical: "/faq",
+  },
 };
 
 export default function FaqPage() {

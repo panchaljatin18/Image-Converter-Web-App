@@ -4,6 +4,9 @@ import CropImageTool from "@/components/tools/CropImageTool";
 export const metadata = {
   title: "Crop Image – Free Online Image Cropper",
   description: "Crop images to any size or aspect ratio online. Draw a crop selection, use aspect ratio presets (1:1, 16:9, 4:3). Free, instant, browser-based image cropper.",
+  alternates: {
+    canonical: "/tools/crop-image",
+  },
 };
 
 const relatedTools = [

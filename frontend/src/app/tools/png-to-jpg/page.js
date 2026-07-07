@@ -4,6 +4,9 @@ import PngToJpgTool from "@/components/tools/PngToJpgTool";
 export const metadata = {
   title: "PNG to JPG Converter – Free Online Tool",
   description: "Convert PNG images to compressed JPEG format. Adjust quality, set background color for transparent areas. Free, fast, no upload needed.",
+  alternates: {
+    canonical: "/tools/png-to-jpg",
+  },
 };
 
 const relatedTools = [

@@ -4,6 +4,9 @@ import WebPConverterTool from "@/components/tools/WebPConverterTool";
 export const metadata = {
   title: "WebP Converter – Convert Images To & From WebP Free",
   description: "Convert JPG, PNG, GIF to WebP or WebP to JPG/PNG. WebP images are 26% smaller than PNG. Free browser-based converter with quality control.",
+  alternates: {
+    canonical: "/tools/webp-converter",
+  },
 };
 
 const relatedTools = [

@@ -4,6 +4,9 @@ import AboutContent from "@/sections/AboutPage/AboutContent";
 export const metadata = {
   title: "About Us | ConvertGalaxy",
   description: "Learn more about ConvertGalaxy. Our mission is to build fast, secure, local-first browser utilities for image processing with zero file uploads.",
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {
