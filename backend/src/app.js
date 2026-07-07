@@ -52,26 +52,28 @@ app.use(helmet({
 const allowedOrigins = CORS_ORIGIN.split(",").map((o) => o.trim());
 
 app.use(cors({
-origin: (origin, callback) => {
-  console.log("Incoming Origin:", origin);
+  origin: (origin, callback) => {
+    console.log("Incoming Origin:", origin);
 
-  if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true);
 
-  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-  const isLan = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)\d+\.\d+(:\d+)?$/.test(origin);
+    const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    const isLan = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)\d+\.\d+(:\d+)?$/.test(origin);
+    const isDomain = /^https?:\/\/(www\.)?convertgalaxy\.com(:\d+)?$/.test(origin);
 
-  if (
-    isLocal ||
-    isLan ||
-    allowedOrigins.includes(origin) ||
-    allowedOrigins.includes("*")
-  ) {
-    return callback(null, true);
-  }
+    if (
+      isLocal ||
+      isLan ||
+      isDomain ||
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes("*")
+    ) {
+      return callback(null, true);
+    }
 
-  console.log("Blocked Origin:", origin);
-  callback(new Error("CORS: origin not allowed."));
-},
+    console.log("Blocked Origin:", origin);
+    callback(new Error("CORS: origin not allowed."));
+  },
   credentials: true,
   exposedHeaders: ["Content-Length"],
 }));
