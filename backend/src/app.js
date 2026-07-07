@@ -52,17 +52,26 @@ app.use(helmet({
 const allowedOrigins = CORS_ORIGIN.split(",").map((o) => o.trim());
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // non-browser clients
+origin: (origin, callback) => {
+  console.log("Incoming Origin:", origin);
 
-    const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-    const isLan   = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)\d+\.\d+(:\d+)?$/.test(origin);
+  if (!origin) return callback(null, true);
 
-    if (isLocal || isLan || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
-      return callback(null, true);
-    }
-    callback(new Error("CORS: origin not allowed."));
-  },
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  const isLan = /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)\d+\.\d+(:\d+)?$/.test(origin);
+
+  if (
+    isLocal ||
+    isLan ||
+    allowedOrigins.includes(origin) ||
+    allowedOrigins.includes("*")
+  ) {
+    return callback(null, true);
+  }
+
+  console.log("Blocked Origin:", origin);
+  callback(new Error("CORS: origin not allowed."));
+},
   credentials: true,
   exposedHeaders: ["Content-Length"],
 }));
