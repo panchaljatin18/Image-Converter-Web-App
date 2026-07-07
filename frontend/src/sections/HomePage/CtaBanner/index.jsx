@@ -28,11 +28,11 @@ export default function CtaBanner() {
                   <ArrowRight size={18} />
                 </Button>
               </Link>
-              <Link href="/blog" className="no-underline">
+              <a href="https://jobforiti.com" target="_blank" rel="noopener noreferrer" className="no-underline">
                 <Button variant="secondary" size="lg">
-                  Read Our Blog
+                  Visit Job Portal
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>

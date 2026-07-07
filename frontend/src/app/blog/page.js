@@ -2,9 +2,9 @@ import BlogHeader from "@/sections/BlogPage/BlogHeader";
 import BlogGrid from "@/sections/BlogPage/BlogGrid";
 
 export const metadata = {
-  title: "Blog – Image Tips, Tutorials & Guides | ConvertGalaxy",
+  title: "Tools Directory & Guides – ConvertGalaxy",
   description:
-    "Learn about image formats, compression tips, web optimization, and how-to guides for getting the most out of your images on the web.",
+    "Explore detailed information, features, and best practices for converting, resizing, cropping, and optimizing your images using our free online tools.",
   alternates: {
     canonical: "/blog",
   },
