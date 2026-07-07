@@ -64,6 +64,7 @@ app.use(cors({
     callback(new Error("CORS: origin not allowed."));
   },
   credentials: true,
+  exposedHeaders: ["Content-Length"],
 }));
 
 // ── HTTP request logger ───────────────────────────────────────────────────────

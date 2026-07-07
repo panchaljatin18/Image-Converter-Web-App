@@ -47,7 +47,7 @@ const authService = {
 
   // Register User
   async register(name, email, password) {
-    const res = await fetch(`${API_URL}/auth/register`, {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -62,7 +62,7 @@ const authService = {
 
   // Login User
   async login(email, password) {
-    const res = await fetch(`${API_URL}/auth/login`, {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -81,7 +81,7 @@ const authService = {
 
   // Forgot Password
   async forgotPassword(email) {
-    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+    const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -96,7 +96,7 @@ const authService = {
 
   // Reset Password
   async resetPassword(token, password) {
-    const res = await fetch(`${API_URL}/auth/reset-password`, {
+    const res = await fetch(`${API_URL}/api/auth/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, password }),
@@ -111,22 +111,22 @@ const authService = {
 
   // Get current user profile
   async getCurrentUser() {
-    return this.fetchWithAuth(`${API_URL}/auth/me`);
+    return this.fetchWithAuth(`${API_URL}/api/auth/me`);
   },
 
   // Google Login
   async googleLogin(idToken) {
     let res;
     try {
-      console.log("[GOOGLE OAUTH]: Sending ID token to backend API at:", `${API_URL}/auth/google-login`);
-      res = await fetch(`${API_URL}/auth/google-login`, {
+      console.log("[GOOGLE OAUTH]: Sending ID token to backend API at:", `${API_URL}/api/auth/google-login`);
+      res = await fetch(`${API_URL}/api/auth/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
     } catch (networkError) {
       console.error("[GOOGLE OAUTH]: Network/CORS fetch error calling backend API:", networkError);
-      throw new Error("Unable to connect to the backend server. Please verify that the backend API server is running on port 5000 and is accessible.");
+      throw new Error(`Unable to connect to the backend server. Please verify that the backend API server is running and accessible.`);
     }
 
     const data = await res.json();

@@ -36,17 +36,17 @@ const googleDriveService = {
 
   // Get status
   async getStatus(token) {
-    return this.fetchWithAuth(`${API_URL}/google-drive/status`, token);
+    return this.fetchWithAuth(`${API_URL}/api/google-drive/status`, token);
   },
 
   // Get Auth URL
   async getAuthUrl(token, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/google-drive/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/google-drive/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   // Connect (code exchange)
   async connect(token, code, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/google-drive/connect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/google-drive/connect`, token, {
       method: "POST",
       body: JSON.stringify({ code, redirectUri })
     });
@@ -54,14 +54,14 @@ const googleDriveService = {
 
   // Disconnect
   async disconnect(token) {
-    return this.fetchWithAuth(`${API_URL}/google-drive/disconnect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/google-drive/disconnect`, token, {
       method: "POST"
     });
   },
 
   // List files/folders
   async getFiles(token, folderId = "root", query = "", pageToken = "") {
-    const url = new URL(`${API_URL}/google-drive/files`);
+    const url = new URL(`${API_URL}/api/google-drive/files`);
     url.searchParams.set("folderId", folderId);
     if (query) url.searchParams.set("query", query);
     if (pageToken) url.searchParams.set("pageToken", pageToken);
@@ -76,13 +76,13 @@ const googleDriveService = {
   // Get file metadata
   async getFileMetadata(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/google-drive/callback`;
-    return this.fetchWithAuth(`${API_URL}/google-drive/file/${fileId}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/google-drive/file/${fileId}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   // Download file (returns blob)
   async downloadFile(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/google-drive/callback`;
-    const res = await this.fetchWithAuth(`${API_URL}/google-drive/download`, token, {
+    const res = await this.fetchWithAuth(`${API_URL}/api/google-drive/download`, token, {
       method: "POST",
       body: JSON.stringify({ fileId, redirectUri })
     });

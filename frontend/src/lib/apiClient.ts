@@ -1,3 +1,5 @@
+import { getApiUrl } from "./apiUrl";
+
 export interface UploadOptions {
   targetFormat: string;
   options?: any;
@@ -6,92 +8,146 @@ export interface UploadOptions {
   onError?: (error: Error) => void;
 }
 
-export async function processFileWithBackend(file: File, config: UploadOptions) {
-  const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
-  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-  const uploadId = Math.random().toString(36).substring(7);
-  let createdJobId = null;
+export async function processFileWithBackend(file: File, config: UploadOptions): Promise<void> {
+  const API_URL = getApiUrl();
+  const sourceFormat = file.name.split(".").pop()?.toLowerCase() || "";
+  const targetFormat = config.targetFormat.toLowerCase().trim();
 
-  try {
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
+  // 1. Determine correct backend endpoint
+  let endpoint = `${API_URL}/api/convert/convert`; // generic convert fallback
 
-      const formData = new FormData();
-      formData.append("chunk", chunk);
-      formData.append("chunkIndex", chunkIndex.toString());
-      formData.append("totalChunks", totalChunks.toString());
-      formData.append("fileName", file.name);
-      formData.append("targetFormat", config.targetFormat);
-      formData.append("uploadId", uploadId);
-      if (config.options) {
-        formData.append("options", JSON.stringify(config.options));
+  if (config.options?.crop) {
+    endpoint = `${API_URL}/api/convert/crop-image`;
+  } else if (config.options?.width || config.options?.height) {
+    endpoint = `${API_URL}/api/convert/resize-image`;
+  } else if (config.options?.quality !== undefined && (targetFormat === sourceFormat || targetFormat === "compress")) {
+    endpoint = `${API_URL}/api/convert/compress-image`;
+  } else {
+    // Map specific conversion endpoints
+    if (sourceFormat === "png" && (targetFormat === "jpg" || targetFormat === "jpeg")) {
+      endpoint = `${API_URL}/api/convert/png-to-jpg`;
+    } else if ((sourceFormat === "jpg" || sourceFormat === "jpeg") && targetFormat === "png") {
+      endpoint = `${API_URL}/api/convert/jpg-to-png`;
+    } else if (sourceFormat === "webp" && (targetFormat === "jpg" || targetFormat === "jpeg")) {
+      endpoint = `${API_URL}/api/convert/webp-to-jpg`;
+    } else if ((sourceFormat === "jpg" || sourceFormat === "jpeg") && targetFormat === "webp") {
+      endpoint = `${API_URL}/api/convert/jpg-to-webp`;
+    }
+  }
+
+  // 2. Build FormData payload matching Express backend expectations
+  const formData = new FormData();
+
+  if (endpoint.endsWith("/crop-image")) {
+    formData.append("image", file);
+    formData.append("width", Math.round(config.options.crop.width).toString());
+    formData.append("height", Math.round(config.options.crop.height).toString());
+    formData.append("left", Math.round(config.options.crop.x).toString());
+    formData.append("top", Math.round(config.options.crop.y).toString());
+  } else if (endpoint.endsWith("/resize-image")) {
+    formData.append("image", file);
+    if (config.options.width) {
+      formData.append("width", Math.round(config.options.width).toString());
+    }
+    if (config.options.height) {
+      formData.append("height", Math.round(config.options.height).toString());
+    }
+  } else if (endpoint.endsWith("/compress-image")) {
+    formData.append("image", file);
+    const quality = config.options.quality 
+      ? Math.round(config.options.quality * 100) 
+      : 75;
+    formData.append("quality", quality.toString());
+  } else {
+    // Generic or specific format conversions
+    formData.append("image", file);
+    formData.append("targetFormat", targetFormat);
+    if (config.options?.quality !== undefined) {
+      const quality = Math.round(config.options.quality * 100);
+      formData.append("quality", quality.toString());
+    }
+  }
+
+  // 3. Send single POST request using XMLHttpRequest to support progress tracking
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", endpoint);
+
+    // Track upload progress up to 90%
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && config.onProgress) {
+        const percent = Math.round((event.loaded / event.total) * 90);
+        config.onProgress(percent);
       }
+    };
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        let errMsg = `Upload failed with status: ${res.status}`;
+    xhr.onload = async () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          const errData = await res.json();
-          if (errData) {
-            if (errData.message) errMsg = errData.message;
-            else if (errData.error) errMsg = errData.error;
+          const response = JSON.parse(xhr.responseText);
+          if (response.success && response.downloadUrl) {
+            const outputUrl = `${API_URL}${response.downloadUrl}`;
+
+            if (config.onProgress) {
+              config.onProgress(95);
+            }
+
+            // Retrieve output size via HEAD request (enabled by exposedHeaders on CORS)
+            let outputSize: number | undefined;
+            try {
+              const headRes = await fetch(outputUrl, { method: "HEAD" });
+              if (headRes.ok) {
+                const contentLength = headRes.headers.get("content-length");
+                if (contentLength) {
+                  outputSize = parseInt(contentLength, 10);
+                }
+              }
+            } catch (err) {
+              console.warn("Could not determine output file size via HEAD request", err);
+            }
+
+            if (config.onProgress) {
+              config.onProgress(100);
+            }
+
+            if (config.onSuccess) {
+              config.onSuccess({
+                outputUrl,
+                outputSize,
+                message: response.message,
+              });
+            }
+            resolve();
+          } else {
+            const err = new Error(response.message || "Failed to process image file");
+            if (config.onError) config.onError(err);
+            reject(err);
+          }
+        } catch (e: any) {
+          const err = new Error("Failed to parse response: " + e.message);
+          if (config.onError) config.onError(err);
+          reject(err);
+        }
+      } else {
+        let errorMsg = `Upload failed with status: ${xhr.status}`;
+        try {
+          const errData = JSON.parse(xhr.responseText);
+          if (errData && (errData.message || errData.error)) {
+            errorMsg = errData.message || errData.error;
           }
         } catch (e) {}
-        throw new Error(errMsg);
+        const err = new Error(errorMsg);
+        if (config.onError) config.onError(err);
+        reject(err);
       }
+    };
 
-      const data = await res.json();
-      if (data.complete) {
-        createdJobId = data.jobId;
-      }
+    xhr.onerror = () => {
+      const err = new Error("Network error occurred during file upload.");
+      if (config.onError) config.onError(err);
+      reject(err);
+    };
 
-      if (config.onProgress) {
-        // Upload progress takes 0-50% of total progress
-        const uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 50);
-        config.onProgress(uploadProgress);
-      }
-    }
-
-    if (createdJobId) {
-      pollJobStatus(createdJobId, config);
-    }
-  } catch (err: any) {
-    if (config.onError) config.onError(err);
-  }
-}
-
-function pollJobStatus(jobId: string, config: UploadOptions) {
-  const interval = setInterval(async () => {
-    try {
-      const res = await fetch(`/api/jobs/${jobId}`);
-      if (!res.ok) throw new Error("Failed to check job status");
-      
-      const data = await res.json();
-
-      if (data.status === "completed") {
-        clearInterval(interval);
-        if (config.onProgress) config.onProgress(100);
-        if (config.onSuccess) config.onSuccess(data);
-      } else if (data.status === "failed") {
-        clearInterval(interval);
-        if (config.onError) config.onError(new Error(data.errorMessage || "Processing failed"));
-      } else {
-        if (config.onProgress) {
-          // Processing progress takes 50-100%
-          const processingProgress = 50 + Math.round((data.progress || 0) / 2);
-          config.onProgress(processingProgress);
-        }
-      }
-    } catch (err: any) {
-      console.error("Polling error", err);
-      // We don't clear interval immediately on fetch error in case of temporary network blip, 
-      // but you might want to add a retry counter.
-    }
-  }, 2000);
+    xhr.send(formData);
+  });
 }

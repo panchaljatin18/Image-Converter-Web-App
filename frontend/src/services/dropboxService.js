@@ -34,28 +34,28 @@ const dropboxService = {
   },
 
   async getStatus(token) {
-    return this.fetchWithAuth(`${API_URL}/dropbox/status`, token);
+    return this.fetchWithAuth(`${API_URL}/api/dropbox/status`, token);
   },
 
   async getAuthUrl(token, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/dropbox/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/dropbox/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   async connect(token, code, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/dropbox/connect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/dropbox/connect`, token, {
       method: "POST",
       body: JSON.stringify({ code, redirectUri })
     });
   },
 
   async disconnect(token) {
-    return this.fetchWithAuth(`${API_URL}/dropbox/disconnect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/dropbox/disconnect`, token, {
       method: "POST"
     });
   },
 
   async getFiles(token, folderId = "", query = "", pageToken = "") {
-    const url = new URL(`${API_URL}/dropbox/files`);
+    const url = new URL(`${API_URL}/api/dropbox/files`);
     url.searchParams.set("folderId", folderId);
     if (query) url.searchParams.set("query", query);
     if (pageToken) url.searchParams.set("pageToken", pageToken);
@@ -68,12 +68,12 @@ const dropboxService = {
 
   async getFileMetadata(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/dropbox/callback`;
-    return this.fetchWithAuth(`${API_URL}/dropbox/file/${encodeURIComponent(fileId)}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/dropbox/file/${encodeURIComponent(fileId)}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   async downloadFile(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/dropbox/callback`;
-    const res = await this.fetchWithAuth(`${API_URL}/dropbox/download`, token, {
+    const res = await this.fetchWithAuth(`${API_URL}/api/dropbox/download`, token, {
       method: "POST",
       body: JSON.stringify({ fileId, redirectUri })
     });

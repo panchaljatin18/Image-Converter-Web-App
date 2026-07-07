@@ -34,28 +34,28 @@ const onedriveService = {
   },
 
   async getStatus(token) {
-    return this.fetchWithAuth(`${API_URL}/onedrive/status`, token);
+    return this.fetchWithAuth(`${API_URL}/api/onedrive/status`, token);
   },
 
   async getAuthUrl(token, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/onedrive/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/onedrive/auth-url?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   async connect(token, code, redirectUri) {
-    return this.fetchWithAuth(`${API_URL}/onedrive/connect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/onedrive/connect`, token, {
       method: "POST",
       body: JSON.stringify({ code, redirectUri })
     });
   },
 
   async disconnect(token) {
-    return this.fetchWithAuth(`${API_URL}/onedrive/disconnect`, token, {
+    return this.fetchWithAuth(`${API_URL}/api/onedrive/disconnect`, token, {
       method: "POST"
     });
   },
 
   async getFiles(token, folderId = "", query = "", pageToken = "") {
-    const url = new URL(`${API_URL}/onedrive/files`);
+    const url = new URL(`${API_URL}/api/onedrive/files`);
     if (folderId) url.searchParams.set("folderId", folderId);
     if (query) url.searchParams.set("query", query);
     if (pageToken) url.searchParams.set("pageToken", pageToken);
@@ -68,12 +68,12 @@ const onedriveService = {
 
   async getFileMetadata(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/onedrive/callback`;
-    return this.fetchWithAuth(`${API_URL}/onedrive/file/${encodeURIComponent(fileId)}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
+    return this.fetchWithAuth(`${API_URL}/api/onedrive/file/${encodeURIComponent(fileId)}?redirectUri=${encodeURIComponent(redirectUri)}`, token);
   },
 
   async downloadFile(token, fileId) {
     const redirectUri = `${window.location.origin}/dashboard/onedrive/callback`;
-    const res = await this.fetchWithAuth(`${API_URL}/onedrive/download`, token, {
+    const res = await this.fetchWithAuth(`${API_URL}/api/onedrive/download`, token, {
       method: "POST",
       body: JSON.stringify({ fileId, redirectUri })
     });
