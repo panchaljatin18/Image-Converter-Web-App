@@ -23,9 +23,9 @@ export default function robots(): MetadataRoute.Robots {
       ],
     },
     sitemap: [
-      "https://convertgalaxy.com/sitemap.xml",
-      "https://convertgalaxy.com/sitemap-images.xml",
+      "https://www.convertgalaxy.com/sitemap.xml",
+      "https://www.convertgalaxy.com/sitemap-images.xml",
     ],
-    host: "https://convertgalaxy.com",
+    host: "https://www.convertgalaxy.com",
   };
 }
