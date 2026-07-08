@@ -19,6 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         "/reset-password/",
         "/admin/",
         "/auth/",
+        "/private/",
       ],
     },
     sitemap: "https://www.convertgalaxy.com/sitemap.xml",
