@@ -76,10 +76,10 @@ const nextConfig = {
         has: [
           {
             type: "host",
-            value: "convertgalaxy.com",
+            value: "www.convertgalaxy.com",
           },
         ],
-        destination: "https://www.convertgalaxy.com/:path*",
+        destination: "https://convertgalaxy.com/:path*",
         permanent: true,
       },
     ];

@@ -22,7 +22,10 @@ export default function robots(): MetadataRoute.Robots {
         "/private/",
       ],
     },
-    sitemap: "https://www.convertgalaxy.com/sitemap.xml",
-    host: "https://www.convertgalaxy.com",
+    sitemap: [
+      "https://convertgalaxy.com/sitemap.xml",
+      "https://convertgalaxy.com/sitemap-images.xml",
+    ],
+    host: "https://convertgalaxy.com",
   };
 }

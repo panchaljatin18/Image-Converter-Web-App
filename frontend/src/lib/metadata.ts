@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-export const SITE_URL = "https://www.convertgalaxy.com";
+export const SITE_URL = "https://convertgalaxy.com";
 
 export const GLOBAL_SEO_DEFAULTS = {
   applicationName: "Convert Galaxy",
