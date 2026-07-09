@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, Check, Search } from "lucide-react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
@@ -148,8 +149,16 @@ const toolsList = [
 const categories = ["All Tools", "Image Conversion", "Image Optimization", "PDF Tools"];
 
 export default function BlogGrid() {
+  const searchParams = useSearchParams();
+  const query = searchParams ? searchParams.get("q") : null;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Tools");
+
+  useEffect(() => {
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [query]);
 
   const filteredTools = toolsList.filter((tool) => {
     const matchesCategory = selectedCategory === "All Tools" || tool.category === selectedCategory;

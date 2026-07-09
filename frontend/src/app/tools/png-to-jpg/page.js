@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import PngToJpgTool from "@/components/tools/PngToJpgTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "PNG to JPG Converter – Free Online Tool",
   description: "Convert PNG images to compressed JPEG format. Adjust quality, set background color for transparent areas. Free, fast, no upload needed.",
-  alternates: {
-    canonical: "/tools/png-to-jpg",
-  },
-};
+  canonicalPath: "/tools/png-to-jpg",
+});
 
 const relatedTools = [
   { name: "JPG to PNG", href: "/tools/jpg-to-png", icon: "🔄" },
@@ -21,10 +20,21 @@ export default function PngToJpgPage() {
     <ToolPageLayout
       title="PNG to JPG Converter"
       description="Convert PNG images to JPEG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
+      uiDescription={
+        <span>
+          Convert PNG images to JPEG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your{" "}
+          <a href="https://jobforiti.com/sfc-solution-company-recruitment-2026" target="_blank" rel="noopener noreferrer" className="text-[#06b6d4] hover:text-[#67e8f9] underline decoration-[#06b6d4]/45">
+            browser
+          </a>
+          .
+        </span>
+      }
       icon="🖼️"
       color="#06b6d4"
       gradient="linear-gradient(135deg, #06b6d4, #67e8f9)"
       relatedTools={relatedTools}
+      toolPath="tools/png-to-jpg"
+      toolCategory="Image Conversion"
     >
       <PngToJpgTool />
     </ToolPageLayout>

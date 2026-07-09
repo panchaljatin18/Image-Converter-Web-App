@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import ImageToPdfTool from "@/components/tools/ImageToPdfTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "Image to PDF Converter – Combine Images into PDF Free",
   description: "Convert JPG, PNG, WebP images to a PDF file. Combine multiple images into one PDF with page size, orientation, and margin settings. Free, browser-based, no upload.",
-  alternates: {
-    canonical: "/tools/image-to-pdf",
-  },
-};
+  canonicalPath: "/tools/image-to-pdf",
+});
 
 const relatedTools = [
   { name: "PDF to Image", href: "/tools/pdf-to-image", icon: "📑" },
@@ -25,6 +24,8 @@ export default function ImageToPdfPage() {
       color="#f97316"
       gradient="linear-gradient(135deg, #f97316, #fb923c)"
       relatedTools={relatedTools}
+      toolPath="tools/image-to-pdf"
+      toolCategory="PDF Tools"
     >
       <ImageToPdfTool />
     </ToolPageLayout>

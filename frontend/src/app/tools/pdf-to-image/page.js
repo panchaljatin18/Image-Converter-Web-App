@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import PdfToImageTool from "@/components/tools/PdfToImageTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "PDF to Image Converter – Extract PDF Pages as JPG/PNG Free",
   description: "Convert PDF pages to high-quality JPG or PNG images. Extract every page as a separate image file. Free, browser-based PDF to image converter with resolution control.",
-  alternates: {
-    canonical: "/tools/pdf-to-image",
-  },
-};
+  canonicalPath: "/tools/pdf-to-image",
+});
 
 const relatedTools = [
   { name: "Image to PDF", href: "/tools/image-to-pdf", icon: "📄" },
@@ -25,6 +24,8 @@ export default function PdfToImagePage() {
       color="#ec4899"
       gradient="linear-gradient(135deg, #ec4899, #f472b6)"
       relatedTools={relatedTools}
+      toolPath="tools/pdf-to-image"
+      toolCategory="PDF Tools"
     >
       <PdfToImageTool />
     </ToolPageLayout>

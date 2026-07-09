@@ -39,6 +39,96 @@ export function getOrganizationSchema() {
   };
 }
 
+export const HOMEPAGE_FAQS: FAQItem[] = [
+  {
+    question: "Are my images stored on your servers?",
+    answer: "No. All image processing happens entirely in your browser using client-side JavaScript and Canvas API. Your images never leave your device, ensuring complete privacy."
+  },
+  {
+    question: "Is ConvertGalaxy completely free?",
+    answer: "Yes! All tools on ConvertGalaxy are 100% free to use with no hidden costs, subscriptions, or account requirements."
+  },
+  {
+    question: "What image formats do you support?",
+    answer: "We support JPG/JPEG, PNG, WebP, GIF, BMP, and TIFF formats across our various tools."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "Most tools support files up to 50MB. For batch operations, we recommend files under 20MB each for optimal performance."
+  }
+];
+
+export const ALL_FAQS: FAQItem[] = [
+  // Privacy & Security
+  {
+    question: "Are my images stored on your servers?",
+    answer: "No. All image processing happens entirely in your browser using client-side JavaScript and the Canvas API. Your files never leave your device, ensuring complete privacy and security."
+  },
+  {
+    question: "Do you collect any personal data?",
+    answer: "We do not collect, store, or share any personal data or images. Our tools are fully client-side. We may use anonymous analytics (page views) to improve the service."
+  },
+  {
+    question: "Is it safe to use ConvertGalaxy for sensitive images?",
+    answer: "Yes. Since all processing is local to your browser and nothing is uploaded to our servers, your sensitive images remain completely private."
+  },
+  {
+    question: "Do you use cookies?",
+    answer: "We use minimal cookies for basic site functionality and anonymous analytics. We do not use tracking cookies for advertising purposes."
+  },
+  // Tools & Features
+  {
+    question: "What image formats do you support?",
+    answer: "We support JPG/JPEG, PNG, WebP, GIF, and BMP across our various tools. Some tools like the PDF converter also handle PDF files."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "Most tools support files up to 50MB. For batch operations and PDF tools, we recommend files under 20MB each for best performance."
+  },
+  {
+    question: "Can I process multiple images at once?",
+    answer: "Yes! Our Image Compressor and Image to PDF tools support batch/multiple file uploads. Other tools process one file at a time for maximum control."
+  },
+  {
+    question: "Will image quality be affected during conversion?",
+    answer: "It depends on the output format. PNG is lossless, so quality is preserved perfectly. JPEG and WebP use lossy compression — our quality sliders let you balance file size vs quality."
+  },
+  {
+    question: "Why does the converted file look slightly different?",
+    answer: "If converting from PNG with transparency to JPG, transparent areas are filled with a solid color (white by default). Use our color picker to choose a different fill."
+  },
+  // Pricing & Account
+  {
+    question: "Is ConvertGalaxy really free?",
+    answer: "Yes, 100% free. All tools are available without any subscription, account, or payment. We are ad-supported to keep the service free."
+  },
+  {
+    question: "Do I need to create an account?",
+    answer: "No. You can use every tool immediately without registering or logging in. Just open a tool and start processing."
+  },
+  {
+    question: "Will you add premium features?",
+    answer: "We may introduce optional premium features in the future, but all current tools will remain free forever."
+  },
+  // Technical
+  {
+    question: "Which browsers are supported?",
+    answer: "ConvertGalaxy works on all modern browsers: Chrome 80+, Firefox 75+, Safari 14+, and Edge 80+. We recommend Chrome or Firefox for the best experience."
+  },
+  {
+    question: "Does it work on mobile?",
+    answer: "Yes! All tools are fully responsive and work on iOS and Android browsers. The crop tool works with touch events too."
+  },
+  {
+    question: "Why is processing slow on large files?",
+    answer: "Large files require more memory and CPU time in the browser. For files over 10MB, processing may take a few seconds. Using a desktop browser helps with large files."
+  },
+  {
+    question: "Can I use ConvertGalaxy offline?",
+    answer: "Basic tools work offline once the page is loaded. PDF-related tools require an internet connection to load the PDF.js library."
+  }
+];
+
 /**
  * Homepage Schema (Combined WebSite, Organization, SoftwareApplication suite, and SearchAction)
  */
@@ -83,6 +173,7 @@ export function getHomepageSchema() {
         "@id": `${SITE_URL}/#organization`
       }
     },
+    getFAQSchema(HOMEPAGE_FAQS),
     getBreadcrumbSchema([
       { name: "Home", item: SITE_URL }
     ])

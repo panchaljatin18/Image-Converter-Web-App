@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Shield, Zap, Star } from "lucide-react";
 import Container from "@/components/Container";
+import SEO from "@/components/SEO";
 
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
@@ -16,9 +17,25 @@ export default function ToolPageLayout({
   gradient = "linear-gradient(135deg, #6366f1, #06b6d4)",
   children,
   relatedTools = [],
+  toolPath,
+  toolCategory,
+  toolFaqs,
+  uiDescription,
 }) {
   return (
     <div className="pt-20 min-h-screen">
+      {toolPath && toolCategory && (
+        <SEO
+          type="tool"
+          tool={{
+            name: title,
+            path: toolPath,
+            description: description,
+            category: toolCategory,
+            faqs: toolFaqs,
+          }}
+        />
+      )}
       {/* Header */}
       <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-12 relative overflow-hidden">
         {/* BG Orb */}
@@ -28,14 +45,14 @@ export default function ToolPageLayout({
             background: `${color}10`,
           }}
         />
-
+ 
         <Container className="relative z-[1]">
           {/* Back Link */}
           <Link href="/tools" className="inline-flex items-center gap-1.5 text-[#64748b] no-underline text-[0.875rem] mb-6 transition-colors duration-200 hover:text-[#818cf8]">
             <ArrowLeft size={14} />
             All Tools
           </Link>
-
+ 
           <div className="flex items-start gap-5">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-[28px] shrink-0"
@@ -51,7 +68,7 @@ export default function ToolPageLayout({
                 {title}
               </h1>
               <p className="text-[#94a3b8] text-base leading-relaxed max-w-[560px] mb-5">
-                {description}
+                {uiDescription || description}
               </p>
 
               {/* Trust Badges */}

@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Script from "next/script"
 import { GLOBAL_SEO_DEFAULTS } from "@/lib/metadata"
-import SEO from "@/components/SEO"
 
 export const metadata = GLOBAL_SEO_DEFAULTS;
 
@@ -47,7 +46,6 @@ export default function RootLayout({
         <NextAuthProvider>
           <AuthProvider>
             <ConversionLimitProvider>
-              <SEO type="homepage" />
               <Navbar />
               <main className="flex-1">{children}</main>
               <Footer />

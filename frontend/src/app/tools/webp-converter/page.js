@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import WebPConverterTool from "@/components/tools/WebPConverterTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "WebP Converter – Convert Images To & From WebP Free",
   description: "Convert JPG, PNG, GIF to WebP or WebP to JPG/PNG. WebP images are 26% smaller than PNG. Free browser-based converter with quality control.",
-  alternates: {
-    canonical: "/tools/webp-converter",
-  },
-};
+  canonicalPath: "/tools/webp-converter",
+});
 
 const relatedTools = [
   { name: "JPG to PNG", href: "/tools/jpg-to-png", icon: "🔄" },
@@ -21,10 +20,21 @@ export default function WebPConverterPage() {
     <ToolPageLayout
       title="WebP Converter"
       description="Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality."
+      uiDescription={
+        <span>
+          Convert any image to WebP for maximum web{" "}
+          <a href="https://jobforiti.com/maruti-suzuki-campus-placement-2026" target="_blank" rel="noopener noreferrer" className="text-[#f59e0b] hover:text-[#fbbf24] underline decoration-[#f59e0b]/45">
+            performance
+          </a>
+          , or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality.
+        </span>
+      }
       icon="⚡"
       color="#f59e0b"
       gradient="linear-gradient(135deg, #f59e0b, #fbbf24)"
       relatedTools={relatedTools}
+      toolPath="tools/webp-converter"
+      toolCategory="Image Conversion"
     >
       <WebPConverterTool />
     </ToolPageLayout>

@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import ImageResizerTool from "@/components/tools/ImageResizerTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "Image Resizer – Resize Images Online Free",
   description: "Resize images to exact pixel dimensions or aspect ratios. Presets for social media, HD, 4K, and more. Lock aspect ratio, choose output format. Free, browser-based.",
-  alternates: {
-    canonical: "/tools/image-resizer",
-  },
-};
+  canonicalPath: "/tools/image-resizer",
+});
 
 const relatedTools = [
   { name: "Image Compressor", href: "/tools/image-compressor", icon: "🗜️" },
@@ -25,6 +24,8 @@ export default function ImageResizerPage() {
       color="#8b5cf6"
       gradient="linear-gradient(135deg, #8b5cf6, #a78bfa)"
       relatedTools={relatedTools}
+      toolPath="tools/image-resizer"
+      toolCategory="Image Optimization"
     >
       <ImageResizerTool />
     </ToolPageLayout>

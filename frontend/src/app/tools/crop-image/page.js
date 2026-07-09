@@ -1,13 +1,12 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import CropImageTool from "@/components/tools/CropImageTool";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = constructMetadata({
   title: "Crop Image – Free Online Image Cropper",
   description: "Crop images to any size or aspect ratio online. Draw a crop selection, use aspect ratio presets (1:1, 16:9, 4:3). Free, instant, browser-based image cropper.",
-  alternates: {
-    canonical: "/tools/crop-image",
-  },
-};
+  canonicalPath: "/tools/crop-image",
+});
 
 const relatedTools = [
   { name: "Image Resizer", href: "/tools/image-resizer", icon: "📐" },
@@ -25,6 +24,8 @@ export default function CropImagePage() {
       color="#ef4444"
       gradient="linear-gradient(135deg, #ef4444, #f87171)"
       relatedTools={relatedTools}
+      toolPath="tools/crop-image"
+      toolCategory="Image Optimization"
     >
       <CropImageTool />
     </ToolPageLayout>

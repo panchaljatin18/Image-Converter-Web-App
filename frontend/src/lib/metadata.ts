@@ -70,7 +70,7 @@ export const GLOBAL_SEO_DEFAULTS = {
     site: "@ConvertGalaxy",
   },
   verification: {
-    google: "google-site-verification=s0ab_86u6FyoQmZRSv69y4Ji4Q5IuJqM8lds-lyZ5HM",
+    google: "s0ab_86u6FyoQmZRSv69y4Ji4Q5IuJqM8lds-lyZ5HM",
     yandex: "yandex-verification-placeholder",
   },
   other: {
