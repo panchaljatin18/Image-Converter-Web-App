@@ -61,7 +61,7 @@ export default function LoginPage() {
   const handleGoogleSignIn = () => {
     clearFeedback();
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "703526369514-807bosvpektob98i87qr439mk5fkkn3t.apps.googleusercontent.com";
-    const redirectUri = encodeURIComponent(window.location.origin + "/api/auth/callback/google");
+    const redirectUri = encodeURIComponent(window.location.origin + "/login");
     const scope = encodeURIComponent("openid email profile");
     const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
 

@@ -1,26 +1,14 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getApiUrl } from "./apiUrl";
 
-// Dynamically configure NEXTAUTH_URL to LAN IP if not explicitly set to a production domain
+// Dynamically configure NEXTAUTH_URL if not explicitly set
 if (typeof window === "undefined") {
-  try {
-    const os = require("os");
-    const interfaces = os.networkInterfaces();
-    let localIp = "localhost";
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name]) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          localIp = iface.address;
-          break;
-        }
-      }
-      if (localIp !== "localhost") break;
+  if (!process.env.NEXTAUTH_URL) {
+    if (process.env.VERCEL_URL) {
+      process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    } else {
+      process.env.NEXTAUTH_URL = "http://localhost:3000";
     }
-    if (!process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL.includes("localhost")) {
-      process.env.NEXTAUTH_URL = `http://${localIp}:3000`;
-    }
-  } catch (e) {
-    // Ignore require error if bundler evaluates this at build time
   }
 }
 
