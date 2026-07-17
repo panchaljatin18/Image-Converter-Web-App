@@ -40,7 +40,7 @@ const categories = [
         name: "WebP to JPG",
         href: "/tools/webp-to-jpg",
         icon: "🖼️",
-        desc: "Convert WebP images to compressed JPEG format",
+        desc: "Convert WebP images to compressed JPG format",
         color: "#ea580c",
         gradient: "linear-gradient(135deg, #ea580c, #f97316)",
         tag: "New",

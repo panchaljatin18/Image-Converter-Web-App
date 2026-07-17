@@ -173,16 +173,27 @@ const ALL_FORMAT_CATEGORIES = [
 const ALL_FORMATS_FLAT = ALL_FORMAT_CATEGORIES.flatMap(c => c.formats.map(f => ({ ...f, catId: c.id })));
 const ALL_FORMAT_LOOKUP = new Map(ALL_FORMATS_FLAT.map(f => [f.value, f]));
 
+const FORMAT_ALIASES = {
+  "jpeg": "jpg",
+  "jfif": "jpg",
+  "jpe": "jpg",
+  "tif": "tiff",
+};
+
 const getAllowedConversions = (sourceFmt) => {
-  const sourceCat = ALL_FORMATS_FLAT.find(f => f.value === sourceFmt)?.catId;
-  if (!sourceCat) return [];
+  if (!sourceFmt) return [];
+
+  // Normalize aliases (e.g. "jfif" → "jpg") so isConversionSupported gets a canonical format
+  const normalized = FORMAT_ALIASES[sourceFmt.toLowerCase()] || sourceFmt.toLowerCase();
 
   const rawList = ALL_FORMATS_FLAT.map(f => f.value);
-  return rawList.filter(target => isConversionSupported(sourceFmt, target));
+  return rawList.filter(target => isConversionSupported(normalized, target));
 };
 
 function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats }) {
   const [activeCat, setActiveCat] = useState(null);
+  const [hoverCat, setHoverCat] = useState(null);
+  const [hoveredFmt, setHoveredFmt] = useState(null);
   const [search, setSearch] = useState("");
 
   const effectiveFlat = allowedFormats
@@ -196,16 +207,92 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
     })).filter(c => c.formats.length > 0)
     : ALL_FORMAT_CATEGORIES;
 
-  const activeCategory = activeCat ? effectiveCategories.find(c => c.id === activeCat) : null;
+  // Auto-select first available category on mount / when allowedFormats changes
+  useEffect(() => {
+    if (effectiveCategories.length > 0) {
+      setActiveCat(prev => {
+        const valid = effectiveCategories.find(c => c.id === prev);
+        return valid ? prev : effectiveCategories[0].id;
+      });
+    }
+  }, [allowedFormats]);
+
+  // The category whose formats to show in right panel:
+  // hoverCat takes priority (live hover preview), else activeCat (clicked/locked)
+  const displayCatId = hoverCat || activeCat;
+  const displayCategory = displayCatId ? effectiveCategories.find(c => c.id === displayCatId) : effectiveCategories[0];
+
   const filtered = search.trim()
     ? effectiveFlat.filter(f =>
       f.label.toLowerCase().includes(search.toLowerCase()) ||
       f.note.toLowerCase().includes(search.toLowerCase())
     )
-    : (activeCategory ? activeCategory.formats : []);
+    : (displayCategory ? displayCategory.formats : []);
 
   const current = value ? ALL_FORMAT_LOOKUP.get(value) : null;
   const currentCat = current ? (ALL_FORMAT_CATEGORIES.find(c => c.id === (current.catId || "image")) || ALL_FORMAT_CATEGORIES[0]) : null;
+
+  const renderFormatChip = (fmt) => {
+    const isSelected = value === fmt.value;
+    const isHovered = hoveredFmt === fmt.value;
+    const isSameAsSource = sourceFormatLabel && fmt.label.toUpperCase() === sourceFormatLabel.toUpperCase();
+    const fmtCat = ALL_FORMAT_CATEGORIES.find(c => c.id === (fmt.catId || displayCatId)) || ALL_FORMAT_CATEGORIES[0];
+
+    return (
+      <button
+        key={fmt.value}
+        id={`fmt-btn-${fmt.value}`}
+        type="button"
+        title={isSameAsSource ? "File is already in this format" : fmt.note}
+        onMouseEnter={() => setHoveredFmt(fmt.value)}
+        onMouseLeave={() => setHoveredFmt(null)}
+        onClick={() => {
+          if (isSameAsSource) {
+            const el = document.getElementById(`fmt-btn-${fmt.value}`);
+            if (el) {
+              el.classList.remove('animate-zigzag');
+              void el.offsetWidth;
+              el.classList.add('animate-zigzag');
+            }
+            return;
+          }
+          onChange(fmt.value);
+        }}
+        className={`flex items-center justify-center rounded-none text-[0.65rem] transition-all duration-120 tracking-wide font-['Outfit'] border ${isSameAsSource ? "cursor-not-allowed opacity-30 pointer-events-none" : "cursor-pointer"} ${isSelected ? "font-bold" : "font-medium"}`}
+        style={{
+          borderColor: isSelected
+            ? fmtCat.color
+            : isSameAsSource
+              ? "rgba(255,255,255,0.08)"
+              : isHovered
+                ? `${fmtCat.color}60`
+                : "rgba(255,255,255,0.1)",
+          background: isSelected
+            ? `linear-gradient(135deg, ${fmtCat.glow}, rgba(255,255,255,0.03))`
+            : isSameAsSource
+              ? "rgba(255,255,255,0.02)"
+              : isHovered
+                ? `linear-gradient(135deg, ${fmtCat.glow}80, rgba(255,255,255,0.02))`
+                : "rgba(255,255,255,0.03)",
+          color: isSelected
+            ? fmtCat.color
+            : isSameAsSource
+              ? "rgba(255,255,255,0.3)"
+              : isHovered
+                ? fmtCat.color
+                : "rgba(255,255,255,0.7)",
+          boxShadow: isSelected
+            ? `0 0 12px ${fmtCat.glow}`
+            : isHovered && !isSameAsSource
+              ? `0 0 8px ${fmtCat.glow}60`
+              : "none",
+          transform: isHovered && !isSameAsSource ? "scale(1.04)" : "scale(1)",
+        }}
+      >
+        {fmt.label}
+      </button>
+    );
+  };
 
   return (
     <div
@@ -232,93 +319,42 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
         )}
       </div>
 
-      <div className="flex h-40">
-        {/* Category sidebar */}
+      <div className="flex h-40" onMouseLeave={() => setHoverCat(null)}>
+        {/* Category sidebar — hover previews, click locks */}
         {!search && (
-          <div className="w-[105px] shrink-0 border-r border-white/6 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-            {effectiveCategories.map(cat => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setActiveCat(cat.id)}
-                className={`w-full flex items-center justify-between py-1.5 px-2 bg-transparent border-none border-l-2 text-[0.75rem] cursor-pointer text-left transition-all duration-150 font-['Outfit'] ${activeCat === cat.id
-                  ? "border-l-indigo-500 text-[#818cf8]"
-                  : "border-l-transparent text-white/55 hover:text-white/80"
-                  }`}
-                style={{
-                  background: activeCat === cat.id ? `linear-gradient(90deg, ${cat.glow} 0%, transparent 100%)` : "transparent",
-                  borderColor: activeCat === cat.id ? cat.color : "transparent",
-                  color: activeCat === cat.id ? cat.color : undefined,
-                }}
-              >
-                <span>{cat.label}</span>
-                {activeCat === cat.id && (
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                )}
-              </button>
-            ))}
+          <div
+            className="w-[105px] shrink-0 border-r border-white/6 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+          >
+            {effectiveCategories.map(cat => {
+              const isHov = hoverCat === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onMouseEnter={() => setHoverCat(cat.id)}
+                  onClick={() => setActiveCat(cat.id)}
+                  className={`w-full py-1.5 px-3 bg-transparent border-none text-[0.75rem] cursor-pointer text-left transition-all duration-120 font-['Outfit'] font-medium`}
+                  style={{
+                    color: isHov ? cat.color : "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
           </div>
         )}
 
         {/* Format chips grid */}
-        <div className="flex-1 overflow-y-auto p-1.5 grid grid-cols-[repeat(auto-fit,minmax(65px,1fr))] grid-rows-[28px] auto-rows-[28px] gap-1.25 content-start scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          {!activeCat && !search ? (
-            <div className="col-span-full flex flex-col items-center justify-center gap-2.5 text-white/25 text-[0.82rem] p-[24px_16px] text-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="stroke-indigo-500/40" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
-              </svg>
-              <span>{allowedFormats && allowedFormats.length === 0 ? "No conversion options available." : "Select a category\nto see output formats"}</span>
-            </div>
-          ) : filtered.length === 0 ? (
+        <div className="flex-1 overflow-y-auto p-1.5 grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] auto-rows-[26px] gap-1 content-start scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          {filtered.length === 0 ? (
             <div className="col-span-full flex items-center justify-center text-white/30 text-[0.8rem] p-5">
-              No formats found
+              {allowedFormats && allowedFormats.length === 0
+                ? "No conversion options available."
+                : "No formats found"}
             </div>
           ) : (
-            filtered.map(fmt => {
-              const isSelected = value === fmt.value;
-              const isSameAsSource = sourceFormatLabel && fmt.label.toUpperCase() === sourceFormatLabel.toUpperCase();
-              const fmtCat = ALL_FORMAT_CATEGORIES.find(c => c.id === (fmt.catId || activeCat)) || ALL_FORMAT_CATEGORIES[0];
-              return (
-                <button
-                  key={fmt.value}
-                  id={`fmt-btn-${fmt.value}`}
-                  type="button"
-                  title={isSameAsSource ? "File is already in this format" : fmt.note}
-                  onClick={() => {
-                    if (isSameAsSource) {
-                      const el = document.getElementById(`fmt-btn-${fmt.value}`);
-                      if (el) {
-                        el.classList.remove('animate-zigzag');
-                        void el.offsetWidth; // trigger reflow
-                        el.classList.add('animate-zigzag');
-                      }
-                      return;
-                    }
-                    onChange(fmt.value);
-                  }}
-                  className={`flex items-center justify-center rounded-lg text-[0.65rem] transition-all duration-120 tracking-wide font-['Outfit'] border ${isSameAsSource ? "cursor-not-allowed opacity-90" : "cursor-pointer"
-                    } ${isSelected ? "font-bold" : "font-medium"}`}
-                  style={{
-                    borderColor: isSelected
-                      ? fmtCat.color
-                      : isSameAsSource
-                        ? "rgba(220, 38, 38, 0.4)"
-                        : "rgba(255,255,255,0.1)",
-                    background: isSelected
-                      ? `linear-gradient(135deg, ${fmtCat.glow}, rgba(255,255,255,0.03))`
-                      : isSameAsSource
-                        ? "rgba(220, 38, 38, 0.15)"
-                        : "rgba(255,255,255,0.03)",
-                    color: isSelected ? fmtCat.color : isSameAsSource ? "rgba(239, 68, 68, 0.9)" : "rgba(255,255,255,0.7)",
-                    boxShadow: isSelected ? `0 0 12px ${fmtCat.glow}` : "none",
-                  }}
-                >
-                  {fmt.label}
-                </button>
-              );
-            })
+            filtered.map(fmt => renderFormatChip(fmt))
           )}
         </div>
       </div>
@@ -339,7 +375,7 @@ function TargetFormatSelect({ value, onChange, sourceFormatLabel, allowedFormats
               {current.note && <span className="ml-1.5 opacity-60">— {current.note}</span>}
             </>
           ) : (
-            <span className="italic">Select a category and output format</span>
+            <span className="italic">Hover a category · Click a format to select</span>
           )}
         </span>
       </div>
@@ -681,7 +717,9 @@ export default function Hero() {
   }, [sourceFormat, targetFormat]);
 
   // Synchronize available options when sourceFormat changes
+  // Synchronize available options when sourceFormat changes
   useEffect(() => {
+    if (!file) return; // Only synchronize/reset if a file has been uploaded
     const allowedConversions = getAllowedConversions(sourceFormat);
     if (allowedConversions && allowedConversions.length > 0) {
       if (!targetFormat || !allowedConversions.includes(targetFormat)) {
@@ -690,7 +728,7 @@ export default function Hero() {
     } else {
       setTargetFormat("");
     }
-  }, [sourceFormat]);
+  }, [sourceFormat, file]);
 
   const { data: session } = useSession();
 
@@ -1296,7 +1334,7 @@ export default function Hero() {
                 <div ref={targetRef} className="relative z-10 flex-1">
                   {(() => {
                     const allowedConversions = getAllowedConversions(sourceFormat);
-                    const hasConversions = allowedConversions.length > 0;
+                    const hasConversions = file ? allowedConversions.length > 0 : true;
 
                     return (
                       <>
@@ -1350,8 +1388,8 @@ export default function Hero() {
                                   setTargetFormat(val);
                                   setIsTargetDropdownOpen(false);
                                 }}
-                                sourceFormatLabel={file ? source.label : sourceFormat}
-                                allowedFormats={allowedConversions}
+                                sourceFormatLabel={file ? (file.name.includes('.') ? file.name.split('.').pop() : sourceFormat) : sourceFormat}
+                                allowedFormats={file ? allowedConversions : undefined}
                               />
                             </motion.div>
                           )}

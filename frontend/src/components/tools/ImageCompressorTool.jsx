@@ -6,6 +6,7 @@ import imageCompression from "browser-image-compression";
 import { Download, RefreshCw, CheckCircle, Sliders, Zap } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 export default function ImageCompressorTool() {
   const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
@@ -17,6 +18,7 @@ export default function ImageCompressorTool() {
   const [compressing, setCompressing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState(null);
+  const [downloading, setDownloading] = useState(false);
   const collapseUploadAfterSelection = true;
   const uploaderActivity = compressing
     ? {
@@ -291,16 +293,20 @@ export default function ImageCompressorTool() {
           </div>
 
           <div className="flex gap-3">
-            <a
-              href={result.url}
-              download={result.name}
-              className="flex-1 no-underline"
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
             >
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download Compressed
-              </Button>
-            </a>
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download Compressed"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>
               Compress Another
             </Button>

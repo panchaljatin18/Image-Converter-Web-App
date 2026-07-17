@@ -58,7 +58,7 @@ const imageService = {
   /**
    * Compress image while keeping its format.
    */
-  async compressImage(inputPath, originalName, mimetype, quality = 75) {
+  async compressImage(inputPath, originalName, mimetype, quality = 75, maxDim = null) {
     let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
     if (ext === "jpg") ext = "jpeg";
 
@@ -66,25 +66,35 @@ const imageService = {
     const q = Math.min(Math.max(Math.round(quality), 1), 100);
     const t0 = Date.now();
 
-    const args = [inputPath, "-quality", String(q), fullPath];
+    const args = [inputPath];
+    if (maxDim && maxDim > 0) {
+      // Resize to fit within the given max dimension while maintaining aspect ratio
+      args.push("-resize", `${maxDim}x${maxDim}>`);
+    }
+    args.push("-quality", String(q), fullPath);
     await executeCommand(TOOLS.IMAGEMAGICK, args);
 
     if (!fs.existsSync(fullPath)) {
       throw new ToolError("imagemagick", `Failed to compress image`);
     }
 
-    logger.tool("imagemagick", `compressed ${originalName} → ${filename}`, { ms: Date.now() - t0, quality: q });
+    logger.tool("imagemagick", `compressed ${originalName} → ${filename}`, { ms: Date.now() - t0, quality: q, maxDim });
     return { filename, fullPath };
   },
 
   /**
    * Resize image maintaining aspect ratio.
+   * @param {string} targetFormat - Optional output format override (e.g., "jpeg", "png", "webp")
    */
-  async resizeImage(inputPath, originalName, mimetype, width, height) {
-    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
+  async resizeImage(inputPath, originalName, mimetype, width, height, targetFormat = null, quality = 85) {
+    // Determine output extension: prefer targetFormat if provided, else keep input ext
+    let ext = targetFormat
+      ? targetFormat.toLowerCase()
+      : (path.extname(originalName).replace(".", "").toLowerCase() || "jpeg");
     if (ext === "jpg") ext = "jpeg";
 
     const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const q = Math.min(Math.max(Math.round(quality), 1), 100);
     const t0 = Date.now();
 
     let resizeString = "";
@@ -98,36 +108,41 @@ const imageService = {
       resizeString = "100%"; // No-op resize if neither parameter is passed
     }
 
-    const args = [inputPath, "-resize", resizeString, fullPath];
+    const args = [inputPath, "-resize", resizeString, "-quality", String(q), fullPath];
     await executeCommand(TOOLS.IMAGEMAGICK, args);
 
     if (!fs.existsSync(fullPath)) {
       throw new ToolError("imagemagick", `Failed to resize image`);
     }
 
-    logger.tool("imagemagick", `resized ${originalName} → ${filename}`, { ms: Date.now() - t0, width, height });
+    logger.tool("imagemagick", `resized ${originalName} → ${filename}`, { ms: Date.now() - t0, width, height, quality: q });
     return { filename, fullPath };
   },
 
   /**
    * Crop image using coordinates.
+   * @param {string} targetFormat - Optional output format override (e.g., "jpeg", "png", "webp")
    */
-  async cropImage(inputPath, originalName, width, height, left, top) {
-    let ext = path.extname(originalName).replace(".", "").toLowerCase() || "jpeg";
+  async cropImage(inputPath, originalName, width, height, left, top, targetFormat = null, quality = 90) {
+    // Determine output extension: prefer targetFormat if provided, else keep input ext
+    let ext = targetFormat
+      ? targetFormat.toLowerCase()
+      : (path.extname(originalName).replace(".", "").toLowerCase() || "jpeg");
     if (ext === "jpg") ext = "jpeg";
 
     const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
+    const q = Math.min(Math.max(Math.round(quality), 1), 100);
     const t0 = Date.now();
 
     const cropString = `${width}x${height}+${left}+${top}`;
-    const args = [inputPath, "-crop", cropString, "+repage", fullPath];
+    const args = [inputPath, "-crop", cropString, "+repage", "-quality", String(q), fullPath];
     await executeCommand(TOOLS.IMAGEMAGICK, args);
 
     if (!fs.existsSync(fullPath)) {
       throw new ToolError("imagemagick", `Failed to crop image`);
     }
 
-    logger.tool("imagemagick", `cropped ${originalName} → ${filename}`, { ms: Date.now() - t0 });
+    logger.tool("imagemagick", `cropped ${originalName} → ${filename}`, { ms: Date.now() - t0, quality: q });
     return { filename, fullPath };
   },
 

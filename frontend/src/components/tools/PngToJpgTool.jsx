@@ -5,6 +5,7 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 import imageCompression from "browser-image-compression";
 
@@ -16,6 +17,7 @@ export default function PngToJpgTool() {
   const [converting, setConverting] = useState(false);
   const [result, setResult] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [downloading, setDownloading] = useState(false);
   const collapseUploadAfterSelection = true;
   const uploaderActivity = converting
     ? {
@@ -125,7 +127,7 @@ export default function PngToJpgTool() {
                 <div className="mb-5">
                   <div className="flex justify-between mb-2.5">
                     <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">
-                      JPEG Quality
+                      JPG Quality
                     </label>
                     <span className="font-bold text-[#818cf8] text-[0.9rem]">
                       {quality}%
@@ -138,7 +140,7 @@ export default function PngToJpgTool() {
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
                     className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#6366f1]"
-                    aria-label="JPEG quality"
+                    aria-label="JPG quality"
                   />
                   <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>Small file</span>
@@ -215,16 +217,20 @@ export default function PngToJpgTool() {
           </div>
 
           <div className="flex gap-3">
-            <a
-              href={result.url}
-              download={result.name}
-              className="flex-1 no-underline"
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
             >
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download JPG
-              </Button>
-            </a>
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download JPG"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
             </Button>

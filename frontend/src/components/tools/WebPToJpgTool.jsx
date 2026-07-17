@@ -5,6 +5,7 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders, Info, Shield, Zap, Sparkles } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 export default function WebPToJpgTool() {
   const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
@@ -14,13 +15,14 @@ export default function WebPToJpgTool() {
   const [converting, setConverting] = useState(false);
   const [result, setResult] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [downloading, setDownloading] = useState(false);
   const collapseUploadAfterSelection = true;
 
   const uploaderActivity = converting
     ? {
         state: "processing",
         label: "Converting WebP to JPG",
-        detail: "Flattening background and encoding JPEG format",
+        detail: "Flattening background and encoding JPG format",
         progress,
       }
     : file
@@ -124,7 +126,7 @@ export default function WebPToJpgTool() {
                 <div className="mb-5">
                   <div className="flex justify-between mb-2.5">
                     <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">
-                      JPEG Quality
+                      JPG Quality
                     </label>
                     <span className="font-bold text-[#f97316] text-[0.9rem]">
                       {quality}%
@@ -137,7 +139,7 @@ export default function WebPToJpgTool() {
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
                     className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#ea580c]"
-                    aria-label="JPEG quality"
+                    aria-label="JPG quality"
                   />
                   <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
                     <span>Small file</span>
@@ -216,16 +218,20 @@ export default function WebPToJpgTool() {
           </div>
 
           <div className="flex gap-3">
-            <a
-              href={result.url}
-              download={result.name}
-              className="flex-1 no-underline"
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center bg-gradient-to-r from-[#ea580c] to-[#f97316] border-[#ea580c]"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
             >
-              <Button variant="primary" size="lg" className="w-full justify-center bg-gradient-to-r from-[#ea580c] to-[#f97316] border-[#ea580c]">
-                <Download size={18} />
-                Download JPG
-              </Button>
-            </a>
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download JPG"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
             </Button>
@@ -243,7 +249,7 @@ export default function WebPToJpgTool() {
         <div className="text-[#94a3b8] text-[0.92rem] leading-[1.8] flex flex-col gap-6">
           <p>
             <strong className="text-[#f8fafc]">Why convert WebP to JPG?</strong>{" "}
-            While WebP offers advanced compression and smaller file sizes for modern web browsers, it has limited compatibility with offline software, legacy image editors, email clients, and older operating systems. Converting WebP to JPG (JPEG) ensures your files can be viewed and opened universally on any device or platform without installing additional codecs.
+            While WebP offers advanced compression and smaller file sizes for modern web browsers, it has limited compatibility with offline software, legacy image editors, email clients, and older operating systems. Converting WebP to JPG ensures your files can be viewed and opened universally on any device or platform without installing additional codecs.
           </p>
           <p>
             <strong className="text-[#f8fafc]">Transparent backgrounds:</strong>{" "}
@@ -258,7 +264,7 @@ export default function WebPToJpgTool() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
           <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Custom JPEG Quality</h4>
+            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Custom JPG Quality</h4>
             <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
               Fine-tune the compression of your output image. Slide to reduce quality for a smaller file size, or raise it to 100% to maximize visual fidelity.
             </p>
@@ -293,19 +299,19 @@ export default function WebPToJpgTool() {
           <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
             <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">How do I convert a WebP file to JPG?</h4>
             <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              Simply drop your WebP image onto the uploader panel or browse from your filesystem. Adjust the JPEG quality slider to your liking, select a custom background color if your image has transparency, and click "Convert to JPG". Once completed, click "Download" to save the image.
+              Simply drop your WebP image onto the uploader panel or browse from your filesystem. Adjust the JPG quality slider to your liking, select a custom background color if your image has transparency, and click "Convert to JPG". Once completed, click "Download" to save the image.
             </p>
           </div>
           <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
             <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Will I lose image quality during the conversion?</h4>
             <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              WebP uses highly advanced compression. Converting it to JPEG (which is a lossy format) may introduce minor compression artifacts. However, by setting the quality slider to 90% or higher, the differences are virtually indistinguishable to the human eye.
+              WebP uses highly advanced compression. Converting it to JPG (which is a lossy format) may introduce minor compression artifacts. However, by setting the quality slider to 90% or higher, the differences are virtually indistinguishable to the human eye.
             </p>
           </div>
           <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
             <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">How does the transparency backup color picker work?</h4>
             <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              JPEG files do not support transparency. If a WebP image with transparent sections is converted directly, those sections would typically turn black. To prevent this, our backdrop tool lets you specify a background fill color (white is the industry default) to ensure a clean visual output.
+              JPG files do not support transparency. If a WebP image with transparent sections is converted directly, those sections would typically turn black. To prevent this, our backdrop tool lets you specify a background fill color (white is the industry default) to ensure a clean visual output.
             </p>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { Download, RefreshCw, CheckCircle, Crop } from "lucide-react";
 import Button from "@/components/Button";
 import imageCompression from "browser-image-compression";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 export default function CropImageTool() {
   const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
@@ -16,6 +17,7 @@ export default function CropImageTool() {
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [result, setResult] = useState(null);
+  const [downloading, setDownloading] = useState(false);
   const [outputFormat, setOutputFormat] = useState("jpeg");
   const [previewRect, setPreviewRect] = useState({ w: 0, h: 0 });
   const previewRef = useRef(null);
@@ -339,12 +341,20 @@ export default function CropImageTool() {
           </div>
 
           <div className="flex gap-3">
-            <a href={result.url} download={result.name} className="flex-1 no-underline">
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download Cropped
-              </Button>
-            </a>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
+            >
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download Cropped"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>Crop Another</Button>
           </div>
         </div>

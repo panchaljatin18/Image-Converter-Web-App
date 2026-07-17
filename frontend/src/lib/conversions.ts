@@ -1,6 +1,8 @@
 export const imageFormats = [
   "jpg",
   "jpeg",
+  "jfif",
+  "jpe",
   "png",
   "webp",
   "avif",

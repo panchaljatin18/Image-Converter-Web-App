@@ -6,6 +6,7 @@ import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown 
 import { PDFDocument } from "pdf-lib";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 const PAGE_SIZES = {
   A4: [595, 842],
@@ -23,6 +24,7 @@ export default function ImageToPdfTool() {
   const [margin, setMargin] = useState(20);
   const [fit, setFit] = useState("contain");
   const [converting, setConverting] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState(null);
   const uploaderActivity = converting
@@ -321,12 +323,20 @@ export default function ImageToPdfTool() {
             <p className="text-[#64748b] text-[0.875rem]">{result.size} · {result.pages} page{result.pages > 1 ? "s" : ""}</p>
           </div>
           <div className="flex gap-3">
-            <a href={result.url} download={result.name} className="flex-1 no-underline">
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download PDF
-              </Button>
-            </a>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
+            >
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download PDF"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>Convert More</Button>
           </div>
         </div>

@@ -10,7 +10,9 @@ export interface UploadOptions {
 
 export async function processFileWithBackend(file: File, config: UploadOptions): Promise<void> {
   const API_URL = getApiUrl();
-  const sourceFormat = file.name.split(".").pop()?.toLowerCase() || "";
+  const rawSourceFormat = file.name.split(".").pop()?.toLowerCase() || "";
+  // Normalize jpeg → jpg so routing conditions work consistently for both .jpg and .jpeg files
+  const sourceFormat = rawSourceFormat === "jpeg" ? "jpg" : rawSourceFormat;
   const targetFormat = config.targetFormat.toLowerCase().trim();
 
   // 1. Determine correct backend endpoint
@@ -44,6 +46,15 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
     formData.append("height", Math.round(config.options.crop.height).toString());
     formData.append("left", Math.round(config.options.crop.x).toString());
     formData.append("top", Math.round(config.options.crop.y).toString());
+    // Forward target format so backend saves in correct format
+    if (targetFormat) {
+      formData.append("targetFormat", targetFormat);
+    }
+    // Forward quality
+    if (config.options?.quality !== undefined) {
+      const quality = Math.round(config.options.quality * 100);
+      formData.append("quality", quality.toString());
+    }
   } else if (endpoint.endsWith("/resize-image")) {
     formData.append("image", file);
     if (config.options.width) {
@@ -52,12 +63,24 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
     if (config.options.height) {
       formData.append("height", Math.round(config.options.height).toString());
     }
+    if (config.options?.quality !== undefined) {
+      const quality = Math.round(config.options.quality * 100);
+      formData.append("quality", quality.toString());
+    }
+    // Forward target format so backend can save in the right file format
+    if (targetFormat) {
+      formData.append("targetFormat", targetFormat);
+    }
   } else if (endpoint.endsWith("/compress-image")) {
     formData.append("image", file);
-    const quality = config.options.quality 
-      ? Math.round(config.options.quality * 100) 
+    const quality = config.options.quality !== undefined
+      ? Math.round(config.options.quality * 100)
       : 75;
     formData.append("quality", quality.toString());
+    // Also forward max dimension if provided (used by ImageCompressorTool)
+    if (config.options?.maxWidthOrHeight) {
+      formData.append("maxWidthOrHeight", Math.round(config.options.maxWidthOrHeight).toString());
+    }
   } else {
     // Generic or specific format conversions
     formData.append("image", file);
@@ -65,6 +88,10 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
     if (config.options?.quality !== undefined) {
       const quality = Math.round(config.options.quality * 100);
       formData.append("quality", quality.toString());
+    }
+    // Forward background color for conversions that need it (e.g., PNG→JPG, WebP→JPG)
+    if (config.options?.bgColor) {
+      formData.append("bgColor", config.options.bgColor);
     }
   }
 

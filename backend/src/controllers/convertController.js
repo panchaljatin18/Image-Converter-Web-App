@@ -98,11 +98,13 @@ const convertController = {
   // POST /api/convert/compress-image
   compressImage: withCleanup(async (req, res) => {
     const quality = parseInt(req.body.quality, 10) || 75;
+    const maxDim = parseInt(req.body.maxWidthOrHeight, 10) || null;
     const { filename } = await imageService.compressImage(
       req.file.path,
       req.file.originalname,
       req.file.mimetype,
-      quality
+      quality,
+      maxDim
     );
     return res.status(200).json({
       success: true,
@@ -114,12 +116,17 @@ const convertController = {
   // POST /api/convert/resize-image
   resizeImage: withCleanup(async (req, res) => {
     const { width, height } = req.body;
+    const quality = parseInt(req.body.quality, 10) || 85;
+    // Allow frontend to specify output format (e.g., jpeg, png, webp)
+    const targetFormat = (req.body.targetFormat || "").toLowerCase().trim() || null;
     const { filename } = await imageService.resizeImage(
       req.file.path,
       req.file.originalname,
       req.file.mimetype,
       width,
-      height
+      height,
+      targetFormat,
+      quality
     );
     return res.status(200).json({
       success: true,
@@ -131,13 +138,18 @@ const convertController = {
   // POST /api/convert/crop-image
   cropImage: withCleanup(async (req, res) => {
     const { width, height, left, top } = req.body;
+    const quality = parseInt(req.body.quality, 10) || 90;
+    // Allow frontend to specify output format (e.g., jpeg, png, webp)
+    const targetFormat = (req.body.targetFormat || "").toLowerCase().trim() || null;
     const { filename } = await imageService.cropImage(
       req.file.path,
       req.file.originalname,
       width,
       height,
       left,
-      top
+      top,
+      targetFormat,
+      quality
     );
     return res.status(200).json({
       success: true,

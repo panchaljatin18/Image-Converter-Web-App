@@ -67,7 +67,7 @@ const toolsList = [
     color: "#ea580c",
     gradient: "linear-gradient(135deg, #ea580c, #f97316)",
     badge: "Universal",
-    desc: "Convert WebP images to universally compatible JPEG format in your browser.",
+    desc: "Convert WebP images to universally compatible JPG format in your browser.",
     useCase: "Perfect for uploading images to legacy websites, email systems, or viewing on older operating systems and platforms that do not support modern WebP.",
     features: [
       "Fills transparent background layers with custom solid colors",

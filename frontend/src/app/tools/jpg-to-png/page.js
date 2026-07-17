@@ -19,10 +19,10 @@ export default function JpgToPngPage() {
   return (
     <ToolPageLayout
       title="JPG to PNG Converter"
-      description="Convert your JPEG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded."
+      description="Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded."
       uiDescription={
         <span>
-          Convert your JPEG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based —{" "}
+          Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based —{" "}
           <a href="https://jobforiti.com/revoltech-auto-engineering-campus-drive-2026" target="_blank" rel="noopener noreferrer" className="text-[#818cf8] hover:text-[#a5b4fc] underline decoration-[#818cf8]/45">
             zero data
           </a>{" "}

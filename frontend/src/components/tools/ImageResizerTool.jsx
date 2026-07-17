@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 
 import imageCompression from "browser-image-compression";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 const PRESETS = [
   { label: "HD (1280×720)", w: 1280, h: 720 },
@@ -29,6 +30,7 @@ export default function ImageResizerTool() {
   const [outputFormat, setOutputFormat] = useState("jpeg");
   const [quality, setQuality] = useState(90);
   const [resizing, setResizing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [result, setResult] = useState(null);
   const collapseUploadAfterSelection = true;
   const uploaderActivity = resizing
@@ -292,12 +294,20 @@ export default function ImageResizerTool() {
           </div>
 
           <div className="flex gap-3">
-            <a href={result.url} download={result.name} className="flex-1 no-underline">
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download Resized
-              </Button>
-            </a>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
+            >
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download Resized"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>Resize Another</Button>
           </div>
         </div>

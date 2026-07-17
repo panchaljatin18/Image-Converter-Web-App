@@ -5,6 +5,7 @@ import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 import imageCompression from "browser-image-compression";
 
@@ -14,6 +15,7 @@ export default function JpgToPngTool() {
   const [converting, setConverting] = useState(false);
   const [result, setResult] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [downloading, setDownloading] = useState(false);
   const collapseUploadAfterSelection = true;
   const uploaderActivity = converting
     ? {
@@ -124,16 +126,20 @@ export default function JpgToPngTool() {
           </div>
 
           <div className="flex gap-3">
-            <a
-              href={result.url}
-              download={result.name}
-              className="flex-1 no-underline"
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 justify-center"
+              disabled={downloading}
+              onClick={async () => {
+                setDownloading(true);
+                await downloadFile(result.url, result.name);
+                setDownloading(false);
+              }}
             >
-              <Button variant="primary" size="lg" className="w-full justify-center">
-                <Download size={18} />
-                Download PNG
-              </Button>
-            </a>
+              <Download size={18} />
+              {downloading ? "Downloading..." : "Download PNG"}
+            </Button>
             <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
             </Button>

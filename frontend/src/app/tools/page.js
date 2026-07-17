@@ -1,5 +1,5 @@
 import ToolsHeader from "@/sections/ToolsPage/ToolsHeader";
-import ToolsCategoryList from "@/sections/ToolsPage/ToolsCategoryList";
+import MegaMenu from "@/components/MegaMenu";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
@@ -12,7 +12,7 @@ export default function ToolsPage() {
   return (
     <div style={{ paddingTop: "80px" }}>
       <ToolsHeader />
-      <ToolsCategoryList />
+      <MegaMenu />
     </div>
   );
 }
