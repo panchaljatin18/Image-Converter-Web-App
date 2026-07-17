@@ -61,10 +61,10 @@ export default function LoginPage() {
   const handleGoogleSignIn = () => {
     clearFeedback();
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "703526369514-807bosvpektob98i87qr439mk5fkkn3t.apps.googleusercontent.com";
-    const redirectUri = encodeURIComponent(window.location.origin + "/login");
+    const redirectUri = encodeURIComponent(window.location.origin + "/api/auth/callback/google");
     const scope = encodeURIComponent("openid email profile");
     const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-    
+
     console.log("[GOOGLE OAUTH]: Initiating redirect-based Google OAuth flow...");
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=id_token&scope=${scope}&nonce=${nonce}`;
   };
@@ -78,7 +78,7 @@ export default function LoginPage() {
       if (idToken) {
         // Clear hash from address bar immediately to keep URL clean
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
-        
+
         const verifyToken = async () => {
           clearFeedback();
           setLoading(true);
@@ -199,7 +199,7 @@ export default function LoginPage() {
       const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
       await register(fullName, regEmail.trim(), regPass);
       setSuccess("Account created successfully! Please log in with your credentials below.");
-      
+
       // Reset registration input fields
       setFirstName("");
       setLastName("");
@@ -243,244 +243,240 @@ export default function LoginPage() {
   return (
     <section className="grid min-h-screen place-items-center overflow-hidden bg-[#5d576c] px-[18px] py-2 text-white sm:px-[18px]">
       <div className="grid h-[min(501px,calc(100vh-18px))] min-h-[500px] w-full max-w-[805px] overflow-hidden rounded-[9px] bg-[#2b2535] p-[11px] shadow-[0_22px_48px_rgba(20,16,30,0.34)] md:grid-cols-[390px_1fr]">
-           <aside className="relative hidden h-full overflow-hidden rounded-[7px] md:block">
+        <aside className="relative hidden h-full overflow-hidden rounded-[7px] md:block">
+          {slides.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeSlide ? "opacity-100" : "opacity-0"
+                }`}
+            >
+              <img
+                src={slide.image}
+                alt={`Slide ${idx + 1}`}
+                className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_58%]"
+              />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-[#5d4bb0]/35 mix-blend-color" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#745bca]/55 via-[#211b2b]/20 to-[#130f1d]/82" />
+
+          <div className="absolute left-[19px] top-[20px] text-[24px] font-bold leading-none tracking-[-0.06em] text-white font-outfit">
+            AMU
+          </div>
+
+          <Link
+            href="/"
+            className="absolute right-[17px] top-[16px] inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.14] px-2.5 text-[10px] text-white/90 backdrop-blur-md transition hover:bg-white/[0.22] z-10"
+          >
+            Back to website
+            <ArrowRight size={11} />
+          </Link>
+
+          <div className="absolute bottom-[65px] left-[35px] right-[35px] h-[65px]">
             {slides.map((slide, idx) => (
               <div
                 key={idx}
-                className={`absolute inset-0 transition-opacity duration-1000 ${
-                  idx === activeSlide ? "opacity-100" : "opacity-0"
-                }`}
+                className={`transition-all duration-700 absolute inset-0 ${idx === activeSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
+                  }`}
               >
-                <img
-                  src={slide.image}
-                  alt={`Slide ${idx + 1}`}
-                  className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_58%]"
-                />
+                <h2 className="text-[20px] font-normal leading-[1.2] tracking-[-0.03em] text-white font-outfit">
+                  {slide.title}
+                </h2>
               </div>
             ))}
-            <div className="absolute inset-0 bg-[#5d4bb0]/35 mix-blend-color" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#745bca]/55 via-[#211b2b]/20 to-[#130f1d]/82" />
+          </div>
 
-            <div className="absolute left-[19px] top-[20px] text-[24px] font-bold leading-none tracking-[-0.06em] text-white font-outfit">
-              AMU
-            </div>
-
-            <Link
-              href="/"
-              className="absolute right-[17px] top-[16px] inline-flex h-[22px] items-center gap-1.5 rounded-full bg-white/[0.14] px-2.5 text-[10px] text-white/90 backdrop-blur-md transition hover:bg-white/[0.22] z-10"
-            >
-              Back to website
-              <ArrowRight size={11} />
-            </Link>
-
-            <div className="absolute bottom-[65px] left-[35px] right-[35px] h-[65px]">
-              {slides.map((slide, idx) => (
-                <div
-                  key={idx}
-                  className={`transition-all duration-700 absolute inset-0 ${
-                    idx === activeSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
+          <div className="absolute bottom-[22px] left-1/2 flex -translate-x-1/2 items-center gap-2.5 z-10">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveSlide(idx)}
+                className={`h-[3px] rounded-full transition-all duration-300 cursor-pointer ${idx === activeSlide ? "w-[29px] bg-white" : "w-[21px] bg-white/28 hover:bg-white/50"
                   }`}
-                >
-                  <h2 className="text-[20px] font-normal leading-[1.2] tracking-[-0.03em] text-white font-outfit">
-                    {slide.title}
-                  </h2>
-                </div>
-              ))}
-            </div>
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </aside>
 
-            <div className="absolute bottom-[22px] left-1/2 flex -translate-x-1/2 items-center gap-2.5 z-10">
-              {slides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSlide(idx)}
-                  className={`h-[3px] rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === activeSlide ? "w-[29px] bg-white" : "w-[21px] bg-white/28 hover:bg-white/50"
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          </aside>
-
-          <div className="flex h-full items-start justify-center px-6 pt-[39px] md:pl-[58px] md:pr-[47px]">
-            <div className="w-full max-w-[285px]">
-              <div className="mb-[31px]" style={{ marginBottom: 31 }}>
-                <h1 className="mb-[17px] text-[34px] font-semibold leading-none tracking-[-0.04em] text-white">
-                  {isRegister ? 'Create an account' : 'Welcome back'}
-                </h1>
-                <p className="text-[10px] text-[#a49cad]">
-                  {isRegister ? 'Already have an account?' : 'Do not have an account?'}{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      clearFeedback();
-                      setTab(isRegister ? 'login' : 'register');
-                    }}
-                    className="cursor-pointer bg-transparent p-0 text-[#d8d0ef] underline underline-offset-2"
-                  >
-                    {isRegister ? 'Log in' : 'Create account'}
-                  </button>
-                </p>
-              </div>
-
-              {(error || success) && (
-                <div
-                  className={`mb-[14px] flex items-start gap-2.5 rounded-[10px] border px-[12px] py-[10px] text-[10px] leading-[1.5] ${
-                    error
-                      ? "border-red-500/25 bg-red-500/10 text-red-200"
-                      : "border-emerald-500/20 bg-emerald-500/10 text-emerald-100"
-                  }`}
-                >
-                  <span className="mt-[1px] shrink-0">
-                    {error ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
-                  </span>
-                  <span>{error || success}</span>
-                </div>
-              )}
-
-              {isRegister ? (
-                <div className="space-y-[13px]">
-                  <div className="grid grid-cols-2 gap-[13px]">
-                    <Input
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="First name"
-                    />
-                    <Input
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Last name"
-                    />
-                  </div>
-
-                  <Input
-                    type="email"
-                    value={regEmail}
-                    onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="Email"
-                  />
-
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      value={regPass}
-                      onChange={(e) => setRegPass(e.target.value)}
-                      placeholder="Enter your password"
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((value) => !value)}
-                      className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-[#8e859e] transition hover:text-white"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-
-                  <label className="flex items-center gap-[10px] text-[8px] text-[#d5cedd]">
-                    <input
-                      type="checkbox"
-                      checked={terms}
-                      onChange={(e) => setTerms(e.target.checked)}
-                      className="h-[14px] w-[14px] rounded-[2px] accent-white"
-                    />
-                    <span>
-                      I agree to the{' '}
-                      <Link href="/terms" className="text-[#dfd8ff] underline underline-offset-2">
-                        Terms &amp; Conditions
-                      </Link>
-                    </span>
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={handleRegister}
-                    disabled={loading}
-                    className="mt-[17px] flex h-[33px] w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#7757d8] text-[10px] font-semibold text-white transition hover:bg-[#8565e7] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={13} className="animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create account"
-                    )}
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-[13px]">
-                  <Input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="Email"
-                  />
-
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      value={loginPass}
-                      onChange={(e) => setLoginPass(e.target.value)}
-                      placeholder="Enter your password"
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((value) => !value)}
-                      className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-[#8e859e] transition hover:text-white"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-
-                  <div className="text-right">
-                    <Link href="/forgot-password" className="text-[10px] text-[#d8d0ef] underline underline-offset-2">
-                      Forgot password?
-                    </Link>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleLogin}
-                    disabled={loading}
-                    className="mt-[17px] flex h-[33px] w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#7757d8] text-[10px] font-semibold text-white transition hover:bg-[#8565e7] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={13} className="animate-spin" />
-                        Signing in...
-                      </>
-                    ) : (
-                      "Sign in"
-                    )}
-                  </button>
-                </div>
-              )}
-
-              <div className="my-[14px] flex items-center gap-[11px]">
-                <span className="h-px flex-1 bg-[#70667d]" />
-                <span className="text-[8px] text-[#938a9f]">
-                  Or {isRegister ? 'register' : 'login'} with
-                </span>
-                <span className="h-px flex-1 bg-[#70667d]" />
-              </div>
-
-              <div className="w-full flex justify-center">
+        <div className="flex h-full items-start justify-center px-6 pt-[39px] md:pl-[58px] md:pr-[47px]">
+          <div className="w-full max-w-[285px]">
+            <div className="mb-[31px]" style={{ marginBottom: 31 }}>
+              <h1 className="mb-[17px] text-[34px] font-semibold leading-none tracking-[-0.04em] text-white">
+                {isRegister ? 'Create an account' : 'Welcome back'}
+              </h1>
+              <p className="text-[10px] text-[#a49cad]">
+                {isRegister ? 'Already have an account?' : 'Do not have an account?'}{' '}
                 <button
                   type="button"
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
-                  className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={() => {
+                    clearFeedback();
+                    setTab(isRegister ? 'login' : 'register');
+                  }}
+                  className="cursor-pointer bg-transparent p-0 text-[#d8d0ef] underline underline-offset-2"
                 >
-                  <GoogleSVG />
-                  Continue with Google
+                  {isRegister ? 'Log in' : 'Create account'}
+                </button>
+              </p>
+            </div>
+
+            {(error || success) && (
+              <div
+                className={`mb-[14px] flex items-start gap-2.5 rounded-[10px] border px-[12px] py-[10px] text-[10px] leading-[1.5] ${error
+                    ? "border-red-500/25 bg-red-500/10 text-red-200"
+                    : "border-emerald-500/20 bg-emerald-500/10 text-emerald-100"
+                  }`}
+              >
+                <span className="mt-[1px] shrink-0">
+                  {error ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
+                </span>
+                <span>{error || success}</span>
+              </div>
+            )}
+
+            {isRegister ? (
+              <div className="space-y-[13px]">
+                <div className="grid grid-cols-2 gap-[13px]">
+                  <Input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="First name"
+                  />
+                  <Input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Last name"
+                  />
+                </div>
+
+                <Input
+                  type="email"
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  placeholder="Email"
+                />
+
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    value={regPass}
+                    onChange={(e) => setRegPass(e.target.value)}
+                    placeholder="Enter your password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-[#8e859e] transition hover:text-white"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+
+                <label className="flex items-center gap-[10px] text-[8px] text-[#d5cedd]">
+                  <input
+                    type="checkbox"
+                    checked={terms}
+                    onChange={(e) => setTerms(e.target.checked)}
+                    className="h-[14px] w-[14px] rounded-[2px] accent-white"
+                  />
+                  <span>
+                    I agree to the{' '}
+                    <Link href="/terms" className="text-[#dfd8ff] underline underline-offset-2">
+                      Terms &amp; Conditions
+                    </Link>
+                  </span>
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleRegister}
+                  disabled={loading}
+                  className="mt-[17px] flex h-[33px] w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#7757d8] text-[10px] font-semibold text-white transition hover:bg-[#8565e7] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create account"
+                  )}
                 </button>
               </div>
+            ) : (
+              <div className="space-y-[13px]">
+                <Input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="Email"
+                />
+
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                    placeholder="Enter your password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-[#8e859e] transition hover:text-white"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+
+                <div className="text-right">
+                  <Link href="/forgot-password" className="text-[10px] text-[#d8d0ef] underline underline-offset-2">
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogin}
+                  disabled={loading}
+                  className="mt-[17px] flex h-[33px] w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#7757d8] text-[10px] font-semibold text-white transition hover:bg-[#8565e7] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    "Sign in"
+                  )}
+                </button>
+              </div>
+            )}
+
+            <div className="my-[14px] flex items-center gap-[11px]">
+              <span className="h-px flex-1 bg-[#70667d]" />
+              <span className="text-[8px] text-[#938a9f]">
+                Or {isRegister ? 'register' : 'login'} with
+              </span>
+              <span className="h-px flex-1 bg-[#70667d]" />
+            </div>
+
+            <div className="w-full flex justify-center">
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={loading}
+                className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <GoogleSVG />
+                Continue with Google
+              </button>
+            </div>
           </div>
         </div>
       </div>
