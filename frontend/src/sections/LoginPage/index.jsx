@@ -58,43 +58,48 @@ export default function LoginPage() {
     }
   };
 
-  const handleCredentialResponseRef = useRef();
-  handleCredentialResponseRef.current = handleCredentialResponse;
+  const handleGoogleSignIn = () => {
+    clearFeedback();
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "703526369514-807bosvpektob98i87qr439mk5fkkn3t.apps.googleusercontent.com";
+    const redirectUri = encodeURIComponent(window.location.origin + "/login");
+    const scope = encodeURIComponent("openid email profile");
+    const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    console.log("[GOOGLE OAUTH]: Initiating redirect-based Google OAuth flow...");
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=id_token&scope=${scope}&nonce=${nonce}`;
+  };
 
   useEffect(() => {
-    const initializeGsi = () => {
-      if (!window.google) return;
-      window.google.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "703526369514-807bosvpektob98i87qr439mk5fkkn3t.apps.googleusercontent.com",
-        callback: (response) => handleCredentialResponseRef.current?.(response),
-      });
-
-      // Render standard button directly in visible container
-      const container = document.getElementById("google-btn-container");
-      if (container) {
-        window.google.accounts.id.renderButton(container, {
-          type: "standard",
-          theme: "filled_black",
-          size: "large",
-          width: 210,
-          shape: "rectangular",
-          logo_alignment: "left"
-        });
+    // Parse URL hash for id_token from Google redirect
+    const hash = window.location.hash;
+    if (hash && hash.includes("id_token=")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const idToken = params.get("id_token");
+      if (idToken) {
+        // Clear hash from address bar immediately to keep URL clean
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        
+        const verifyToken = async () => {
+          clearFeedback();
+          setLoading(true);
+          console.log("[GOOGLE OAUTH]: Google Redirect Callback matched. Verifying ID Token with backend...");
+          try {
+            await googleLogin(idToken);
+            console.log("[GOOGLE OAUTH]: Login verification completed successfully on backend.");
+            setSuccess("Signed in successfully!");
+            await sleep(500);
+            router.push("/");
+          } catch (err) {
+            console.error("[GOOGLE OAUTH]: Authentication flow failed:", err.message);
+            setError(err.message || "Google Sign-In failed.");
+          } finally {
+            setLoading(false);
+          }
+        };
+        verifyToken();
       }
-    };
-
-    if (window.google) {
-      initializeGsi();
-      return;
     }
-
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = initializeGsi;
-    document.body.appendChild(script);
-  }, []);
+  }, [googleLogin, router]);
 
   const searchParams = useSearchParams();
   const [tab, setTab] = useState("login");
@@ -465,23 +470,16 @@ export default function LoginPage() {
                 <span className="h-px flex-1 bg-[#70667d]" />
               </div>
 
-              <div className="w-full flex justify-center relative">
-                {/* Custom styled Continue with Google button */}
+              <div className="w-full flex justify-center">
                 <button
                   type="button"
+                  onClick={handleGoogleSignIn}
                   disabled={loading}
                   className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <GoogleSVG />
                   Continue with Google
                 </button>
-
-                {/* Invisible Google official button overlay */}
-                <div 
-                  id="google-btn-container" 
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-[210px] h-[34px] opacity-0 overflow-hidden cursor-pointer"
-                  style={{ zIndex: 10, pointerEvents: "auto" }}
-                />
               </div>
           </div>
         </div>
