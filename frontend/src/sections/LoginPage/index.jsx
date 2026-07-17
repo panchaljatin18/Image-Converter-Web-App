@@ -465,8 +465,23 @@ export default function LoginPage() {
                 <span className="h-px flex-1 bg-[#70667d]" />
               </div>
 
-              <div className="w-full flex justify-center">
-                <div id="google-btn-container" style={{ minHeight: "34px" }} />
+              <div className="w-full flex justify-center relative">
+                {/* Custom styled Continue with Google button */}
+                <button
+                  type="button"
+                  disabled={loading}
+                  className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <GoogleSVG />
+                  Continue with Google
+                </button>
+
+                {/* Invisible Google official button overlay */}
+                <div 
+                  id="google-btn-container" 
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-[210px] h-[34px] opacity-0 overflow-hidden cursor-pointer"
+                  style={{ zIndex: 10, pointerEvents: "auto" }}
+                />
               </div>
           </div>
         </div>
