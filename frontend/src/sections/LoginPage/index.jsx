@@ -69,13 +69,16 @@ export default function LoginPage() {
         callback: (response) => handleCredentialResponseRef.current?.(response),
       });
 
-      // Render standard button in hidden container
-      const container = document.getElementById("google-hidden-btn-container");
+      // Render standard button directly in visible container
+      const container = document.getElementById("google-btn-container");
       if (container) {
         window.google.accounts.id.renderButton(container, {
           type: "standard",
-          theme: "outline",
+          theme: "filled_black",
           size: "large",
+          width: 210,
+          shape: "rectangular",
+          logo_alignment: "left"
         });
       }
     };
@@ -92,18 +95,6 @@ export default function LoginPage() {
     script.onload = initializeGsi;
     document.body.appendChild(script);
   }, []);
-
-  const handleGoogleSignIn = () => {
-    console.log("[GOOGLE OAUTH]: Custom Google button clicked. Launching standard Google OAuth flow...");
-    const hiddenBtn = document.querySelector("#google-hidden-btn-container div[role=button]");
-    if (hiddenBtn) {
-      console.log("[GOOGLE OAUTH]: Programmatically clicking GSI standard button...");
-      hiddenBtn.click();
-    } else {
-      console.log("[GOOGLE OAUTH]: GSI hidden button not found. Triggering prompt fallback...");
-      window.google?.accounts.id.prompt();
-    }
-  };
 
   const searchParams = useSearchParams();
   const [tab, setTab] = useState("login");
@@ -475,17 +466,8 @@ export default function LoginPage() {
               </div>
 
               <div className="w-full flex justify-center">
-                <button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
-                  className="flex h-[34px] w-[210px] cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-[#5d4bb0]/55 bg-[#201a29]/60 text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition duration-250 hover:bg-[#2d253a] hover:border-[#7757d8] hover:shadow-[0_0_12px_rgba(119,87,216,0.25)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <GoogleSVG />
-                  Continue with Google
-                </button>
+                <div id="google-btn-container" style={{ minHeight: "34px" }} />
               </div>
-          <div id="google-hidden-btn-container" style={{ display: "none" }} />
           </div>
         </div>
       </div>
