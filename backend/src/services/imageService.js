@@ -33,13 +33,18 @@ const imageService = {
    * Convert image to a target format.
    * Supports JPG, PNG, WEBP, AVIF, etc.
    */
-  async convertFormat(inputPath, originalName, targetFormat, quality = 85) {
+  async convertFormat(inputPath, originalName, targetFormat, quality = 85, bgColor = null) {
     const ext = targetFormat.toLowerCase();
     const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
     const q = Math.min(Math.max(Math.round(quality), 1), 100);
     const t0 = Date.now();
 
-    const args = [inputPath, "-quality", String(q), fullPath];
+    const args = [];
+    if (bgColor && (ext === "jpg" || ext === "jpeg")) {
+      args.push(inputPath, "-background", bgColor, "-flatten", "-quality", String(q), fullPath);
+    } else {
+      args.push(inputPath, "-quality", String(q), fullPath);
+    }
     await executeCommand(TOOLS.IMAGEMAGICK, args);
 
     if (!fs.existsSync(fullPath)) {

@@ -44,6 +44,10 @@ export async function GET() {
     {
       page: "/tools/pdf-to-image",
       images: [{ loc: "/C.png", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF as images" }]
+    },
+    {
+      page: "/tools/webp-to-jpg",
+      images: [{ loc: "/C.png", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files" }]
     }
   ];
 

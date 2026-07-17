@@ -25,8 +25,8 @@ const { isConversionSupported } = require("../utils/conversions");
 /**
  * Smart convert: calls imageService to handle formatting.
  */
-async function convertWithFallback(inputPath, originalName, targetFormat, quality = 85) {
-  return imageService.convertFormat(inputPath, originalName, targetFormat, quality);
+async function convertWithFallback(inputPath, originalName, targetFormat, quality = 85, bgColor = null) {
+  return imageService.convertFormat(inputPath, originalName, targetFormat, quality, bgColor);
 }
 
 /**
@@ -62,7 +62,9 @@ const convertController = {
 
   // POST /api/convert/png-to-jpg
   pngToJpg: withCleanup(async (req, res) => {
-    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg");
+    const quality = parseInt(req.body.quality, 10) || 90;
+    const bgColor = req.body.bgColor || "#ffffff";
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg", quality, bgColor);
     return res.status(200).json({
       success: true,
       message: "Converted to JPEG successfully.",
@@ -72,7 +74,9 @@ const convertController = {
 
   // POST /api/convert/webp-to-jpg
   webpToJpg: withCleanup(async (req, res) => {
-    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg");
+    const quality = parseInt(req.body.quality, 10) || 90;
+    const bgColor = req.body.bgColor || "#ffffff";
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg", quality, bgColor);
     return res.status(200).json({
       success: true,
       message: "Converted to JPEG successfully.",
@@ -82,7 +86,8 @@ const convertController = {
 
   // POST /api/convert/jpg-to-webp
   jpgToWebp: withCleanup(async (req, res) => {
-    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "webp");
+    const quality = parseInt(req.body.quality, 10) || 90;
+    const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "webp", quality);
     return res.status(200).json({
       success: true,
       message: "Converted to WebP successfully.",
@@ -197,11 +202,13 @@ const convertController = {
     }
 
     const quality = parseInt(req.body.quality, 10) || 85;
+    const bgColor = req.body.bgColor || "#ffffff";
     const { filename } = await convertWithFallback(
       req.file.path,
       req.file.originalname,
       targetFormat,
-      quality
+      quality,
+      bgColor
     );
 
     return res.status(200).json({

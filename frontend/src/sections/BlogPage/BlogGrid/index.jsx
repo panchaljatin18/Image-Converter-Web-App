@@ -50,13 +50,30 @@ const toolsList = [
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #fbbf24)",
     badge: "Modern Web",
-    desc: "Convert photos and graphics to and from WebP, Google's next-gen high-efficiency format.",
+    desc: "Convert images to and from WebP, Google's next-gen high-efficiency format.",
     useCase: "Crucial for modern web development, SEO, and optimization. WebP delivers smaller file sizes than JPG/PNG while supporting transparent backgrounds.",
     features: [
       "Up to 30% smaller footprint than JPG and PNG",
       "Supports both lossy and lossless compression modes",
       "Translates transparent alpha layers seamlessly",
       "Improves page speed scores (Core Web Vitals)"
+    ],
+  },
+  {
+    name: "WebP to JPG Converter",
+    category: "Image Conversion",
+    href: "/tools/webp-to-jpg",
+    icon: "🖼️",
+    color: "#ea580c",
+    gradient: "linear-gradient(135deg, #ea580c, #f97316)",
+    badge: "Universal",
+    desc: "Convert WebP images to universally compatible JPEG format in your browser.",
+    useCase: "Perfect for uploading images to legacy websites, email systems, or viewing on older operating systems and platforms that do not support modern WebP.",
+    features: [
+      "Fills transparent background layers with custom solid colors",
+      "Granular compression control with standard quality percentage slider",
+      "Drastically improved load and run compatibility across older devices",
+      "100% private and offline browser-first file conversion"
     ],
   },
   {

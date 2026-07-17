@@ -36,6 +36,15 @@ const categories = [
         gradient: "linear-gradient(135deg, #f59e0b, #fbbf24)",
         tag: "New",
       },
+      {
+        name: "WebP to JPG",
+        href: "/tools/webp-to-jpg",
+        icon: "🖼️",
+        desc: "Convert WebP images to compressed JPEG format",
+        color: "#ea580c",
+        gradient: "linear-gradient(135deg, #ea580c, #f97316)",
+        tag: "New",
+      },
     ],
   },
   {
