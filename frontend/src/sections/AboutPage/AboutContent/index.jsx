@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Shield, Zap, Sparkles, Cpu } from "lucide-react";
 
 export default function AboutContent() {
@@ -85,7 +86,7 @@ export default function AboutContent() {
             Security is the cornerstone of ConvertGalaxy. Because typical online utilities pose data privacy risks by processing your documents on third-party remote nodes, we take full advantage of client-side architecture to bypass cloud transmission entirely.
           </p>
           <p className="text-[#94a3b8] text-[0.95rem] leading-relaxed">
-            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <a href="/contact" className="text-[#818cf8] hover:underline">Contact page</a> or email us at <a href="mailto:hello@convertgalaxy.pro" className="text-[#818cf8] hover:underline">hello@convertgalaxy.pro</a>.
+            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <Link href="/contact" className="text-[#818cf8] hover:underline" title="Go to Contact Page">Contact page</Link> or email us at <a href="mailto:hello@convertgalaxy.pro" className="text-[#818cf8] hover:underline" title="Email ConvertGalaxy Support">hello@convertgalaxy.pro</a>.
           </p>
         </div>
 

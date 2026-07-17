@@ -6,6 +6,15 @@ export const metadata = constructMetadata({
   title: "PDF to Image Converter – Extract PDF Pages as JPG/PNG Free",
   description: "Convert PDF pages to high-quality JPG or PNG images. Extract every page as a separate image file. Free, browser-based PDF to image converter with resolution control.",
   canonicalPath: "/tools/pdf-to-image",
+  keywords: [
+    "pdf to image",
+    "convert pdf to image",
+    "pdf to jpg",
+    "pdf to png",
+    "extract pages from pdf",
+    "pdf to image converter free",
+    "pdf to image high quality"
+  ]
 });
 
 const relatedTools = [

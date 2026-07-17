@@ -21,8 +21,8 @@ const TwitterIcon = ({ size = 20, className }) => (
 );
 
 const contactInfo = [
-  { icon: <Mail size={20} />, label: "Email", value: "hello@convertgalaxy.pro", href: "mailto:hello@convertgalaxy.pro", color: "#6366f1" },
-  { icon: <TwitterIcon size={20} />, label: "Twitter", value: "@convertgalaxy", href: "https://twitter.com", color: "#06b6d4" },
+  { icon: <Mail size={20} />, label: "Email", value: "hello@convertgalaxy.pro", href: "mailto:hello@convertgalaxy.pro", title: "Email ConvertGalaxy support", color: "#6366f1" },
+  { icon: <TwitterIcon size={20} />, label: "Twitter", value: "@convertgalaxy", href: "https://twitter.com", title: "Follow ConvertGalaxy on Twitter/X", color: "#06b6d4" },
   { icon: <Clock size={20} />, label: "Response Time", value: "Within 24 hours", href: null, color: "#10b981" },
   { icon: <MessageCircle size={20} />, label: "Support Hours", value: "Mon – Fri, 9am – 6pm IST", href: null, color: "#f59e0b" },
 ];
@@ -60,6 +60,7 @@ export default function ContactContent() {
                       href={item.href} 
                       target={item.href.startsWith("http") ? "_blank" : undefined} 
                       rel="noopener noreferrer" 
+                      title={item.title}
                       className="text-[0.9rem] font-semibold text-[#f8fafc] no-underline hover:text-[#818cf8] transition-colors duration-200"
                     >
                       {item.value}

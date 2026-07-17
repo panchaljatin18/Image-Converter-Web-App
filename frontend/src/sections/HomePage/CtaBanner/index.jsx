@@ -28,7 +28,7 @@ export default function CtaBanner() {
                   <ArrowRight size={18} />
                 </Button>
               </Link>
-              <a href="https://jobforiti.com" target="_blank" rel="noopener noreferrer" className="no-underline">
+              <a href="https://jobforiti.com" target="_blank" rel="noopener noreferrer" title="JobForITI - Latest Walk-in Interviews & Job Placements" className="no-underline">
                 <Button variant="secondary" size="lg">
                   Visit Job Portal
                 </Button>

@@ -6,6 +6,18 @@ export const metadata = constructMetadata({
   title: "Image Compressor – Reduce Image File Size Free Online",
   description: "Compress JPG, PNG, WebP images without visible quality loss. Reduce file size by up to 90% using advanced browser-based compression. 100% free, private, no upload.",
   canonicalPath: "/tools/image-compressor",
+  keywords: [
+    "compress image",
+    "image compressor",
+    "compress jpeg",
+    "png compressor",
+    "compress webp",
+    "reduce image size online",
+    "compress photo free",
+    "kb image compressor",
+    "compress image to 100kb",
+    "best online image compressor"
+  ]
 });
 
 const relatedTools = [
@@ -23,7 +35,7 @@ export default function ImageCompressorPage() {
       uiDescription={
         <span>
           Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web{" "}
-          <a href="https://jobforiti.com/walk-in-interview-at-ste-ahmedabad-2026" target="_blank" rel="noopener noreferrer" className="text-[#10b981] hover:text-[#34d399] underline decoration-[#10b981]/45">
+          <a href="https://jobforiti.com/walk-in-interview-at-ste-ahmedabad-2026" target="_blank" rel="noopener noreferrer" title="Walk-in Interview at STE Ahmedabad 2026 on JobForITI" className="text-[#10b981] hover:text-[#34d399] underline decoration-[#10b981]/45">
             optimization
           </a>
           , email attachments, and faster page loads. All processing happens in your browser.

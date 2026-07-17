@@ -6,6 +6,15 @@ export const metadata = constructMetadata({
   title: "JPG to PNG Converter – Free Online Tool",
   description: "Convert JPG/JPEG images to PNG format instantly. Free, lossless, browser-based converter. No upload required — your files stay private.",
   canonicalPath: "/tools/jpg-to-png",
+  keywords: [
+    "jpg to png",
+    "convert jpg to png",
+    "jpg to png converter",
+    "jpeg to png",
+    "convert jpeg to png online",
+    "jpg to png transparent background",
+    "change jpg to png"
+  ]
 });
 
 const relatedTools = [
@@ -23,7 +32,7 @@ export default function JpgToPngPage() {
       uiDescription={
         <span>
           Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based —{" "}
-          <a href="https://jobforiti.com/revoltech-auto-engineering-campus-drive-2026" target="_blank" rel="noopener noreferrer" className="text-[#818cf8] hover:text-[#a5b4fc] underline decoration-[#818cf8]/45">
+          <a href="https://jobforiti.com/revoltech-auto-engineering-campus-drive-2026" target="_blank" rel="noopener noreferrer" title="Revoltech Auto Engineering Campus Drive 2026 on JobForITI" className="text-[#818cf8] hover:text-[#a5b4fc] underline decoration-[#818cf8]/45">
             zero data
           </a>{" "}
           uploaded.

@@ -6,6 +6,15 @@ export const metadata = constructMetadata({
   title: "WebP to JPG Converter – Free Online Tool",
   description: "Convert WebP images to compressed JPG format. Adjust quality, set background color for transparent areas. Free, fast, no upload needed.",
   canonicalPath: "/tools/webp-to-jpg",
+  keywords: [
+    "webp to jpg",
+    "convert webp to jpg",
+    "webp to jpg online",
+    "webp to jpeg",
+    "convert webp to jpg free",
+    "webp to jpg converter free",
+    "change webp to jpg"
+  ]
 });
 
 const relatedTools = [
@@ -23,7 +32,7 @@ export default function WebPToJpgPage() {
       uiDescription={
         <span>
           Convert WebP images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your{" "}
-          <a href="https://jobforiti.com/sfc-solution-company-recruitment-2026" target="_blank" rel="noopener noreferrer" className="text-[#ea580c] hover:text-[#f97316] underline decoration-[#ea580c]/45">
+          <a href="https://jobforiti.com/sfc-solution-company-recruitment-2026" target="_blank" rel="noopener noreferrer" title="SFC Solution Company Recruitment 2026 on JobForITI" className="text-[#ea580c] hover:text-[#f97316] underline decoration-[#ea580c]/45">
             browser
           </a>
           .

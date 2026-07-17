@@ -6,6 +6,15 @@ export const metadata = constructMetadata({
   title: "Image to PDF Converter – Combine Images into PDF Free",
   description: "Convert JPG, PNG, WebP images to a PDF file. Combine multiple images into one PDF with page size, orientation, and margin settings. Free, browser-based, no upload.",
   canonicalPath: "/tools/image-to-pdf",
+  keywords: [
+    "image to pdf",
+    "convert image to pdf",
+    "jpg to pdf",
+    "png to pdf",
+    "combine images to pdf",
+    "image to pdf converter free",
+    "convert multiple images to pdf"
+  ]
 });
 
 const relatedTools = [
