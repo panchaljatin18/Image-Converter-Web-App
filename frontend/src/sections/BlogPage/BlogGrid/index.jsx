@@ -9,6 +9,23 @@ import Button from "@/components/Button";
 
 const toolsList = [
   {
+    name: "HEIC to JPG Converter",
+    category: "Image Conversion",
+    href: "/tools/heic-to-jpg",
+    icon: "📱",
+    color: "#06b6d4",
+    gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+    badge: "Apple Photos",
+    desc: "Convert iPhone & iPad HEIC/HEIF photos to universally compatible JPG images.",
+    useCase: "Ideal for Mac, iPhone, and Windows users who need to upload photos to portals, job applications, or view them on non-Apple devices.",
+    features: [
+      "Retains high resolution and image clarity",
+      "Optionally keeps original EXIF camera metadata",
+      "Auto-orients vertical/horizontal phone shots",
+      "Processes files locally in browser without server upload"
+    ],
+  },
+  {
     name: "JPG to PNG Converter",
     category: "Image Conversion",
     href: "/tools/jpg-to-png",
@@ -192,13 +209,14 @@ export default function BlogGrid() {
       {/* Search and Filters */}
       <div className="mb-12">
         <div className="max-w-md mx-auto mb-8 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748b]" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8]" size={18} />
           <input
             type="text"
             placeholder="Search tools, features, or use cases..."
+            aria-label="Search tools, features, or use cases"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-[#131325]/70 border border-white/10 rounded-2xl text-white placeholder-[#64748b] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-[0.95rem] shadow-inner"
+            className="w-full pl-12 pr-4 py-3.5 bg-[#131325]/70 border border-white/10 rounded-2xl text-white placeholder-[#94a3b8] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-[0.95rem] shadow-inner"
           />
         </div>
 
@@ -206,11 +224,14 @@ export default function BlogGrid() {
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
+              aria-label={`Filter by ${cat}`}
+              aria-pressed={selectedCategory === cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full text-[0.85rem] font-semibold transition-all duration-200 border ${
+              className={`px-5 py-2 rounded-full text-[0.85rem] font-semibold transition-all duration-200 border cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-gradient-to-r from-[#6366f1] to-[#06b6d4] text-white border-transparent shadow-[0_4px_12px_rgba(99,102,241,0.25)] scale-102"
-                  : "bg-white/5 text-[#94a3b8] border-white/8 hover:bg-white/10 hover:text-white"
+                  : "bg-white/5 text-[#cbd5e1] border-white/10 hover:bg-white/10 hover:text-white"
               }`}
             >
               {cat}
@@ -257,7 +278,7 @@ export default function BlogGrid() {
 
               {/* Card Contents */}
               <div className="p-6 flex-1 flex flex-col">
-                <span className="text-[#64748b] text-[0.75rem] font-semibold uppercase tracking-wider mb-1.5 block">
+                <span className="text-[#a5b4fc] text-[0.75rem] font-semibold uppercase tracking-wider mb-1.5 block">
                   {tool.category}
                 </span>
                 <h3 className="text-xl font-bold font-['Outfit'] text-[#f8fafc] mb-3">
@@ -273,19 +294,19 @@ export default function BlogGrid() {
                   <span className="text-xs font-bold text-[#818cf8] uppercase tracking-wider block mb-1.5">
                     💡 When to Use
                   </span>
-                  <p className="text-[#94a3b8] text-[0.82rem] leading-relaxed">
+                  <p className="text-[#cbd5e1] text-[0.82rem] leading-relaxed">
                     {tool.useCase}
                   </p>
                 </div>
 
                 {/* Key Features Bullet List */}
                 <div className="mb-6">
-                  <span className="text-xs font-bold text-[#64748b] uppercase tracking-wider block mb-2">
+                  <span className="text-xs font-bold text-[#a5b4fc] uppercase tracking-wider block mb-2">
                     Key Features
                   </span>
                   <ul className="space-y-2">
                     {tool.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-[0.8rem] text-[#94a3b8] leading-normal">
+                      <li key={idx} className="flex items-start gap-2.5 text-[0.8rem] text-[#cbd5e1] leading-normal">
                         <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
                         <span>{feature}</span>
                       </li>
@@ -294,7 +315,7 @@ export default function BlogGrid() {
                 </div>
 
                 {/* Action Link Button */}
-                <Link href={tool.href} className="no-underline w-full mt-auto block">
+                <Link href={tool.href} aria-label={`Launch ${tool.name}`} className="no-underline w-full mt-auto block">
                   <Button variant="secondary" className="w-full justify-center group/btn text-[0.9rem] py-2.5">
                     Launch Tool
                     <ArrowRight size={15} className="transition-transform duration-200 group-hover/btn:translate-x-1" />

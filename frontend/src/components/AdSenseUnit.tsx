@@ -27,18 +27,36 @@ export default function AdSenseUnit({
   useEffect(() => {
     if (typeof window === "undefined" || pushedRef.current) return;
 
-    // Use requestIdleCallback or setTimeout to defer ad loading after initial paint
-    const timer = setTimeout(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const pushAd = () => {
+      if (pushedRef.current) return;
+      pushedRef.current = true;
       try {
         const adsbygoogle = (window as any).adsbygoogle || [];
         adsbygoogle.push({});
-        pushedRef.current = true;
       } catch (err) {
         console.warn("AdSense push deferred warning:", err);
       }
-    }, 200);
+    };
 
-    return () => clearTimeout(timer);
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            pushAd();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "200px" }
+      );
+      observer.observe(el);
+      return () => observer.disconnect();
+    } else {
+      const timer = setTimeout(pushAd, 3000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (

@@ -35,7 +35,7 @@ export default function ToolsGrid() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {tools.map((tool, i) => (
-            <Link key={tool.id} href={tool.href} className="no-underline">
+            <Link key={tool.id} href={tool.href} aria-label={`Open ${tool.name}`} className="no-underline">
               <Card hover className="relative cursor-pointer h-full flex flex-col justify-between" style={{ animationDelay: `${i * 0.05}s` }}>
                 <div>
                   {tool.tag && (
@@ -52,7 +52,7 @@ export default function ToolsGrid() {
                   <h3 className="font-['Outfit'] font-bold text-[1.05rem] text-[#f8fafc] mb-2">
                     {tool.name}
                   </h3>
-                  <p className="text-[#64748b] text-[0.875rem] leading-relaxed mb-4.5">
+                  <p className="text-[#cbd5e1] text-[0.875rem] leading-relaxed mb-4.5">
                     {tool.description}
                   </p>
                 </div>

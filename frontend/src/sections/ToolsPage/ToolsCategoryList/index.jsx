@@ -124,12 +124,12 @@ export default function ToolsCategoryList() {
             <h2 className="font-['Outfit'] font-bold text-2xl text-[#f8fafc] mb-1.5">
               {cat.name}
             </h2>
-            <p className="text-[#64748b] text-[0.9rem]">{cat.description}</p>
+            <p className="text-[#cbd5e1] text-[0.9rem]">{cat.description}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cat.tools.map((tool) => (
-              <Link key={tool.href} href={tool.href} className="no-underline">
+              <Link key={tool.href} href={tool.href} aria-label={`Open ${tool.name} tool`} className="no-underline">
                 <Card className="cursor-pointer group relative">
                   {tool.tag && (
                     <span
@@ -154,7 +154,7 @@ export default function ToolsCategoryList() {
                   <h3 className="font-['Outfit'] font-bold text-[1.05rem] mb-2 text-[#f8fafc]">
                     {tool.name}
                   </h3>
-                  <p className="text-[#64748b] text-[0.875rem] leading-relaxed mb-4.5">
+                  <p className="text-[#cbd5e1] text-[0.875rem] leading-relaxed mb-4.5">
                     {tool.desc}
                   </p>
                   <div
