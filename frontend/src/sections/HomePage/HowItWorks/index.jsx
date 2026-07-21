@@ -37,7 +37,7 @@ export default function HowItWorks() {
                 {i + 1}
               </div>
               <h3 className="text-xl font-semibold leading-snug mb-3 text-[#f8fafc]">{s.title}</h3>
-              <p className="text-[#64748b] text-[0.9rem] leading-relaxed">{s.desc}</p>
+              <p className="text-[#cbd5e1] text-[0.9rem] leading-relaxed">{s.desc}</p>
             </div>
           ))}
         </div>

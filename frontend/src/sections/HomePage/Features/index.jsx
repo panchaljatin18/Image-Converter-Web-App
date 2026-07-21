@@ -24,7 +24,7 @@ export default function Features() {
             Built for{" "}
             <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Speed, Privacy & Quality</span>
           </h2>
-          <p className="text-[#94a3b8] text-[1.1rem] leading-[1.7]">
+          <p className="text-[#cbd5e1] text-[1.1rem] leading-[1.7]">
             No other online image tool matches our combination of browser-based processing, zero data storage, and professional output quality.
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function Features() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold leading-snug mb-2 text-[#f8fafc]">{feature.title}</h3>
-                <p className="text-[#94a3b8] text-[0.9rem] leading-relaxed">{feature.description}</p>
+                <p className="text-[#cbd5e1] text-[0.9rem] leading-relaxed">{feature.description}</p>
               </div>
             </Card>
           ))}

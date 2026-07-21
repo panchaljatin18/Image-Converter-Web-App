@@ -2,19 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { isConversionSupported, standardImageFormats } from "../../../lib/conversions";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { useSession } from "next-auth/react";
-import GoogleDrivePicker from "../../../components/GoogleDrivePicker";
 import googleDriveService from "../../../services/googleDriveService";
-import DropboxFilePicker from "../../../components/DropboxFilePicker";
 import dropboxService from "../../../services/dropboxService";
-import OneDrivePicker from "../../../components/OneDrivePicker";
 import onedriveService from "../../../services/onedriveService";
 import authService from "../../../services/authService";
 import imageCompression from "browser-image-compression";
 import { PDFDocument } from "pdf-lib";
+
+const GoogleDrivePicker = dynamic(() => import("../../../components/GoogleDrivePicker"), { ssr: false });
+const DropboxFilePicker = dynamic(() => import("../../../components/DropboxFilePicker"), { ssr: false });
+const OneDrivePicker = dynamic(() => import("../../../components/OneDrivePicker"), { ssr: false });
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 import {

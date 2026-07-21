@@ -167,7 +167,7 @@ export default function Navbar() {
                     type="button"
                     aria-haspopup="true"
                     aria-label="Tools navigation menu"
-                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
+                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#cbd5e1]"
                       }`}
                   >
                     {link.name}
@@ -183,7 +183,8 @@ export default function Navbar() {
                       <Link
                         key={tool.href}
                         href={tool.href}
-                        className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
+                        aria-label={`Open ${tool.name}`}
+                        className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#cbd5e1] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
                       >
                         <span
                           className="w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 border"
@@ -206,7 +207,7 @@ export default function Navbar() {
                   href={link.href}
                   className={`py-2 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${pathname === link.href
                       ? "text-[#818cf8] bg-indigo-500/10"
-                      : "text-[#94a3b8] hover:text-white hover:bg-white/5"
+                      : "text-[#cbd5e1] hover:text-white hover:bg-white/5"
                     }`}
                 >
                   {link.name}

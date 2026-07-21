@@ -28,13 +28,14 @@ export default function FaqPreview() {
                 <span className="text-[#6366f1] shrink-0">Q.</span>
                 {item.q}
               </h3>
-              <p className="text-[#94a3b8] text-[0.9rem] leading-relaxed pl-[22px]">{item.a}</p>
+              <p className="text-[#cbd5e1] text-[0.9rem] leading-relaxed pl-[22px]">{item.a}</p>
             </div>
           ))}
 
           <div className="text-center mt-8">
             <Link
               href="/faq"
+              aria-label="View All Frequently Asked Questions"
               className="inline-flex items-center gap-2 py-3 px-7 rounded-xl font-semibold text-[0.95rem] transition-all duration-250 cursor-pointer no-underline whitespace-nowrap bg-transparent text-[#f8fafc] border border-indigo-500/20 backdrop-blur-[10px] hover:bg-indigo-500/10 hover:border-[#6366f1] hover:-translate-y-0.5"
             >
               View All FAQs

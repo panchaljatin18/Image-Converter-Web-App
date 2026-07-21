@@ -18,7 +18,7 @@ export default function Button({
     secondary:
       "bg-transparent text-[#f8fafc] border border-indigo-500/20 backdrop-blur-[10px] hover:bg-indigo-500/10 hover:border-[#6366f1] hover:-translate-y-0.5",
     ghost:
-      "bg-transparent text-[#94a3b8] border-none hover:bg-white/5 hover:text-[#f8fafc]",
+      "bg-transparent text-[#cbd5e1] border-none hover:bg-white/5 hover:text-[#f8fafc]",
   };
 
   const sizeClasses = icon
