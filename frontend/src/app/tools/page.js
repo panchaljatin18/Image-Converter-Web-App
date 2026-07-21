@@ -1,6 +1,8 @@
+import dynamic from "next/dynamic";
 import ToolsHeader from "@/sections/ToolsPage/ToolsHeader";
-import MegaMenu from "@/components/MegaMenu";
 import { constructMetadata } from "@/lib/metadata";
+
+const MegaMenu = dynamic(() => import("@/components/MegaMenu"));
 
 export const metadata = constructMetadata({
   title: "All Free Image Tools",
