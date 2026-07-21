@@ -76,7 +76,8 @@ export const authOptions = {
     strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "converter-galaxy-jwt-secret-key-2026",
+  trustHost: true,
   pages: {
     signIn: "/login"
   }

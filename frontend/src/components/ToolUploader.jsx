@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Upload, RefreshCw, Image as FilePreviewIcon, X, AlertCircle, CheckCircle, Folder, Link2, FilePlus, ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
-import GoogleDrivePicker from "./GoogleDrivePicker";
 import googleDriveService from "../services/googleDriveService";
-import DropboxFilePicker from "./DropboxFilePicker";
 import dropboxService from "../services/dropboxService";
-import OneDrivePicker from "./OneDrivePicker";
 import onedriveService from "../services/onedriveService";
 import authService from "../services/authService";
 import Button from "./Button";
+
+const GoogleDrivePicker = dynamic(() => import("./GoogleDrivePicker"), { ssr: false });
+const DropboxFilePicker = dynamic(() => import("./DropboxFilePicker"), { ssr: false });
+const OneDrivePicker = dynamic(() => import("./OneDrivePicker"), { ssr: false });
 
 const googleDriveIcon = (
   <svg viewBox="0 0 24 24" width="19" height="19" className="mr-2.5 shrink-0">

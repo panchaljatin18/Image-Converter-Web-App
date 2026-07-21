@@ -1,4 +1,5 @@
 import "./globals.css"
+import { Inter, Outfit } from "next/font/google"
 import { AuthProvider } from "@/hooks/useAuth"
 import { ConversionLimitProvider } from "@/context/ConversionLimitContext"
 import NextAuthProvider from "@/components/NextAuthProvider"
@@ -7,7 +8,19 @@ import Footer from "@/components/Footer"
 import Script from "next/script"
 import { GLOBAL_SEO_DEFAULTS } from "@/lib/metadata"
 
-export const metadata = GLOBAL_SEO_DEFAULTS;
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+})
+
+export const metadata = GLOBAL_SEO_DEFAULTS
 
 export const viewport = {
   width: "device-width",
@@ -22,18 +35,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
         {/* Google AdSense Script Integration */}
@@ -41,7 +45,7 @@ export default function RootLayout({
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9811629021943003"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <NextAuthProvider>
           <AuthProvider>

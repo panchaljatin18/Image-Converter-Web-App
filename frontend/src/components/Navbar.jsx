@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -133,17 +134,25 @@ export default function Navbar() {
         <Container className="flex items-center justify-between gap-6">
           {/* Logo - Desktop */}
           <Link href="/" className="logo-nav-desktop no-underline">
-            <img
+            <Image
               src="/CG.png"
               alt="Converter Galaxy Logo"
+              width={200}
+              height={50}
+              priority
+              className="h-auto w-auto object-contain"
             />
           </Link>
 
           {/* Logo - Mobile */}
           <Link href="/" className="logo-nav-mobile no-underline">
-            <img
+            <Image
               src="/CG.png"
               alt="Converter Galaxy Logo"
+              width={160}
+              height={40}
+              priority
+              className="h-auto w-auto object-contain"
             />
           </Link>
 

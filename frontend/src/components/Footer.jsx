@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Image as ImageIcon,
@@ -120,9 +121,12 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1 md:-mt-2">
             <Link href="/" className="flex items-center shrink-0 no-underline mb-4">
-              <img
+              <Image
                 src="/CG.png"
                 alt="Converter Galaxy Logo"
+                width={180}
+                height={65}
+                loading="lazy"
                 className="h-[65px] md:h-[85px] w-auto object-contain"
               />
             </Link>

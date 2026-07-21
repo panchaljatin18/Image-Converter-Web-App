@@ -20,7 +20,17 @@ const localIps = getLocalIps();
 const nextConfig = {
   reactCompiler: true,
   allowedDevOrigins: localIps,
-  experimental: {},
+  compress: true,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
 
