@@ -39,11 +39,11 @@ export default function ToolPageLayout({
       )}
       {/* Header */}
       <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-12 relative overflow-hidden">
-        {/* BG Orb */}
+        {/* BG Glow */}
         <div
-          className="absolute -top-[100px] -right-[100px] w-[400px] h-[400px] rounded-full blur-[80px] pointer-events-none"
+          className="absolute -top-[100px] -right-[100px] w-[400px] h-[400px] rounded-full pointer-events-none"
           style={{
-            background: `${color}10`,
+            background: `radial-gradient(circle, ${color}18 0%, transparent 70%)`,
           }}
         />
  
