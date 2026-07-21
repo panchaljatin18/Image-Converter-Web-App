@@ -42,13 +42,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
-        {/* Google AdSense Script Integration */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9811629021943003"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
         <NextAuthProvider>
           <AuthProvider>
             <ConversionLimitProvider>

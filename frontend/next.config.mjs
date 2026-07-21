@@ -21,6 +21,7 @@ const nextConfig = {
   reactCompiler: true,
   allowedDevOrigins: localIps,
   compress: true,
+  poweredByHeader: false,
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
@@ -81,6 +82,15 @@ const nextConfig = {
       {
         source: "/(.*)",
         headers: securityHeaders,
+      },
+      {
+        source: "/CG.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
       },
     ];
   },

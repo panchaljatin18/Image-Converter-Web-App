@@ -30,9 +30,21 @@ export default function AdSenseUnit({
     const el = containerRef.current;
     if (!el) return;
 
-    const pushAd = () => {
+    const loadAdSenseScriptAndPush = () => {
       if (pushedRef.current) return;
       pushedRef.current = true;
+
+      let script = document.querySelector<HTMLScriptElement>(
+        'script[src*="pagead2.googlesyndication.com"]'
+      );
+      if (!script) {
+        script = document.createElement("script");
+        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9811629021943003";
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        document.head.appendChild(script);
+      }
+
       try {
         const adsbygoogle = (window as any).adsbygoogle || [];
         adsbygoogle.push({});
@@ -45,16 +57,16 @@ export default function AdSenseUnit({
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            pushAd();
+            loadAdSenseScriptAndPush();
             observer.disconnect();
           }
         },
-        { rootMargin: "200px" }
+        { rootMargin: "300px" }
       );
       observer.observe(el);
       return () => observer.disconnect();
     } else {
-      const timer = setTimeout(pushAd, 3000);
+      const timer = setTimeout(loadAdSenseScriptAndPush, 4000);
       return () => clearTimeout(timer);
     }
   }, []);

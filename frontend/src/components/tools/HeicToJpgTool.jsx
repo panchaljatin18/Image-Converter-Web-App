@@ -126,7 +126,7 @@ export default function HeicToJpgTool() {
                 {/* Quality Slider */}
                 <div className="mb-5">
                   <div className="flex justify-between mb-2.5">
-                    <label className="block text-[0.875rem] font-semibold text-[#94a3b8] tracking-wide">
+                    <label htmlFor="heic-quality-slider" className="block text-[0.875rem] font-semibold text-[#cbd5e1] tracking-wide">
                       JPG Output Quality
                     </label>
                     <span className="font-bold text-[#06b6d4] text-[0.9rem]">
@@ -134,15 +134,16 @@ export default function HeicToJpgTool() {
                     </span>
                   </div>
                   <input
+                    id="heic-quality-slider"
                     type="range"
                     min="10"
                     max="100"
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
                     className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#06b6d4]"
-                    aria-label="JPG quality slider"
+                    aria-label="JPG quality percentage slider"
                   />
-                  <div className="flex justify-between text-[0.75rem] text-[#64748b] mt-1">
+                  <div className="flex justify-between text-[0.75rem] text-[#a5b4fc] mt-1">
                     <span>Small file</span>
                     <span>Best quality</span>
                   </div>
@@ -150,20 +151,22 @@ export default function HeicToJpgTool() {
 
                 {/* Toggles */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/6">
-                  <label className="flex items-center gap-2.5 text-[0.875rem] text-[#94a3b8] cursor-pointer">
+                  <label className="flex items-center gap-2.5 text-[0.875rem] text-[#cbd5e1] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={keepMetadata}
+                      aria-label="Preserve EXIF Metadata (GPS, Camera)"
                       onChange={(e) => setKeepMetadata(e.target.checked)}
                       className="rounded bg-[#0f0f1a] border-white/20 text-[#06b6d4] focus:ring-[#06b6d4] h-4 w-4"
                     />
                     <span>Preserve EXIF Metadata (GPS, Camera)</span>
                   </label>
 
-                  <label className="flex items-center gap-2.5 text-[0.875rem] text-[#94a3b8] cursor-pointer">
+                  <label className="flex items-center gap-2.5 text-[0.875rem] text-[#cbd5e1] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={autoOrient}
+                      aria-label="Auto-Rotate Orientation"
                       onChange={(e) => setAutoOrient(e.target.checked)}
                       className="rounded bg-[#0f0f1a] border-white/20 text-[#06b6d4] focus:ring-[#06b6d4] h-4 w-4"
                     />
