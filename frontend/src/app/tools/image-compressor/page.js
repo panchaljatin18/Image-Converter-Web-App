@@ -21,10 +21,15 @@ export const metadata = constructMetadata({
 });
 
 const relatedTools = [
+  { name: "HEIC to JPG", href: "/tools/heic-to-jpg", icon: "📱" },
   { name: "Image Resizer", href: "/tools/image-resizer", icon: "📐" },
   { name: "WebP Converter", href: "/tools/webp-converter", icon: "⚡" },
+  { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },
   { name: "JPG to PNG", href: "/tools/jpg-to-png", icon: "🔄" },
+  { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
+  { name: "Crop Image", href: "/tools/crop-image", icon: "✂️" },
   { name: "Image to PDF", href: "/tools/image-to-pdf", icon: "📄" },
+  { name: "PDF to Image", href: "/tools/pdf-to-image", icon: "📑" },
 ];
 
 export default function ImageCompressorPage() {

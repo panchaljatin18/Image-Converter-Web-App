@@ -10,6 +10,15 @@ const categories = [
     description: "Convert between popular image formats",
     tools: [
       {
+        name: "HEIC to JPG",
+        href: "/tools/heic-to-jpg",
+        icon: "📱",
+        desc: "Convert Apple HEIC photos to high-quality JPG images",
+        color: "#06b6d4",
+        gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+        tag: "New",
+      },
+      {
         name: "JPG to PNG",
         href: "/tools/jpg-to-png",
         icon: "🔄",

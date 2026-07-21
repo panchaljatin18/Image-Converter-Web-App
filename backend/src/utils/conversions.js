@@ -10,6 +10,7 @@ const imageFormats = [
   "svg",
   "ico",
   "heic",
+  "heif",
   "3fr",
   "arw",
   "cr2",
@@ -46,6 +47,7 @@ const standardImageFormats = [
   "tif",
   "ico",
   "heic",
+  "heif",
   "svg",
 ];
 

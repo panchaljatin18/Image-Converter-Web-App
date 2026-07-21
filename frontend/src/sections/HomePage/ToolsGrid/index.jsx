@@ -4,6 +4,7 @@ import Container from "@/components/Container";
 import Card from "@/components/Card";
 
 const tools = [
+  { id: "heic-to-jpg", name: "HEIC to JPG", description: "Convert Apple HEIC & HEIF photos to high-quality JPG instantly", icon: "📱", href: "/tools/heic-to-jpg", color: "#06b6d4", gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)", tag: "New" },
   { id: "jpg-to-png", name: "JPG to PNG", description: "Convert JPEG images to transparent-friendly PNG format instantly", icon: "🔄", href: "/tools/jpg-to-png", color: "#6366f1", gradient: "linear-gradient(135deg, #6366f1, #818cf8)", tag: "Popular" },
   { id: "png-to-jpg", name: "PNG to JPG", description: "Convert PNG files to compressed JPEG for smaller file sizes", icon: "🖼️", href: "/tools/png-to-jpg", color: "#06b6d4", gradient: "linear-gradient(135deg, #06b6d4, #67e8f9)", tag: "Popular" },
   { id: "webp-converter", name: "WebP Converter", description: "Convert images to and from WebP for modern web performance", icon: "⚡", href: "/tools/webp-converter", color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b, #fbbf24)", tag: "New" },

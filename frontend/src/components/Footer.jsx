@@ -80,13 +80,10 @@ const TelegramIcon = ({ size = 16, className }) => (
 
 const footerTools = [
   { name: "JPG to PNG", href: "/tools/jpg-to-png" },
-  { name: "PNG to JPG", href: "/tools/png-to-jpg" },
-  { name: "WebP Converter", href: "/tools/webp-converter" },
+  { name: "WebP to JPG", href: "/tools/webp-to-jpg" },
   { name: "Image Compressor", href: "/tools/image-compressor" },
-  { name: "Image Resizer", href: "/tools/image-resizer" },
   { name: "Crop Image", href: "/tools/crop-image" },
   { name: "Image to PDF", href: "/tools/image-to-pdf" },
-  { name: "PDF to Image", href: "/tools/pdf-to-image" },
 ];
 
 const footerCompany = [
@@ -119,7 +116,7 @@ export default function Footer() {
     <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-8">
       <Container>
         {/* Top Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-6 pb-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-6 pb-6">
           {/* Brand Column */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1 md:-mt-2">
             <Link href="/" className="flex items-center shrink-0 no-underline mb-4">

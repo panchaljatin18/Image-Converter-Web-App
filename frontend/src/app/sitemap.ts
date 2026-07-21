@@ -67,6 +67,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Tools pages
     {
+      url: `${SITE_URL}/tools/heic-to-jpg`,
+      lastModified: currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/tools/crop-image`,
       lastModified: currentDate,
       changeFrequency: "weekly" as const,

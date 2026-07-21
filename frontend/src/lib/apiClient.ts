@@ -34,6 +34,8 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
       endpoint = `${API_URL}/api/convert/webp-to-jpg`;
     } else if ((sourceFormat === "jpg" || sourceFormat === "jpeg") && targetFormat === "webp") {
       endpoint = `${API_URL}/api/convert/jpg-to-webp`;
+    } else if ((sourceFormat === "heic" || sourceFormat === "heif") && (targetFormat === "jpg" || targetFormat === "jpeg")) {
+      endpoint = `${API_URL}/api/convert/heic-to-jpg`;
     }
   }
 

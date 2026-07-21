@@ -37,6 +37,11 @@ router.post("/jpg-to-webp",
   convertController.jpgToWebp
 );
 
+router.post("/heic-to-jpg",
+  uploadLimiter, upload.single("image"), validateUpload,
+  convertController.convertGeneric
+);
+
 router.post("/compress-image",
   uploadLimiter, upload.single("image"), validateUpload,
   convertController.compressImage
