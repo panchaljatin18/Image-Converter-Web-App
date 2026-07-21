@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* ─── Global Font Bindings ───────────────────────────────────── */
+body {
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 /* ─── Hide main page scrollbar only ─────────────────────────────── */
 html, body {
   scrollbar-width: none;        /* Firefox */
