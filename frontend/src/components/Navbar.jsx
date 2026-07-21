@@ -140,6 +140,7 @@ export default function Navbar() {
               width={200}
               height={50}
               priority
+              style={{ width: "auto", height: "auto" }}
               className="h-auto w-auto object-contain"
             />
           </Link>
@@ -152,6 +153,7 @@ export default function Navbar() {
               width={160}
               height={40}
               priority
+              style={{ width: "auto", height: "auto" }}
               className="h-auto w-auto object-contain"
             />
           </Link>
@@ -163,6 +165,8 @@ export default function Navbar() {
                 <div key={link.name} className="relative group">
                   <button
                     type="button"
+                    aria-haspopup="true"
+                    aria-label="Tools navigation menu"
                     className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#94a3b8]"
                       }`}
                   >
@@ -245,7 +249,8 @@ export default function Navbar() {
                 setMobileOpen((prev) => !prev);
               }}
               className="flex lg:hidden w-10 h-10 rounded-lg bg-white/7 border border-white/10 items-center justify-center cursor-pointer text-white z-[1001]"
-              aria-label="Toggle mobile menu"
+              aria-label="Toggle mobile navigation menu"
+              aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>

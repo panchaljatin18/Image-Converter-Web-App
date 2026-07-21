@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Shield, Zap, Star } from "lucide-react";
 import Container from "@/components/Container";
 import SEO from "@/components/SEO";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
@@ -48,7 +49,11 @@ export default function ToolPageLayout({
  
         <Container className="relative z-[1]">
           {/* Back Link */}
-          <Link href="/tools" className="inline-flex items-center gap-1.5 text-[#64748b] no-underline text-[0.875rem] mb-6 transition-colors duration-200 hover:text-[#818cf8]">
+          <Link
+            href="/tools"
+            aria-label="Back to all image tools"
+            className="inline-flex items-center gap-1.5 text-[#a5b4fc] no-underline text-[0.875rem] mb-6 transition-colors duration-200 hover:text-white"
+          >
             <ArrowLeft size={14} />
             All Tools
           </Link>
@@ -67,7 +72,7 @@ export default function ToolPageLayout({
               <h1 className="font-['Outfit'] font-extrabold text-2xl md:text-4xl text-[#f8fafc] tracking-tight leading-tight mb-2.5">
                 {title}
               </h1>
-              <p className="text-[#94a3b8] text-base leading-relaxed max-w-[560px] mb-5">
+              <p className="text-[#cbd5e1] text-base leading-relaxed max-w-[560px] mb-5">
                 {uiDescription || description}
               </p>
 
@@ -76,7 +81,7 @@ export default function ToolPageLayout({
                 {trustBadges.map((badge) => (
                   <div
                     key={badge.text}
-                    className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-[0.75rem] font-semibold bg-white/6 border border-white/10 text-[#94a3b8]"
+                    className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-[0.75rem] font-semibold bg-white/10 border border-white/15 text-[#cbd5e1]"
                   >
                     <span style={{ color }}>{badge.icon}</span>
                     {badge.text}
@@ -89,8 +94,10 @@ export default function ToolPageLayout({
       </div>
 
       {/* Tool Content */}
-      <Container className="pt-16 pb-12 md:pt-20">
+      <Container className="pt-16 pb-8 md:pt-20">
         {children}
+        {/* High Performance AdSense Unit */}
+        <AdSenseUnit adSlot="7641288079" className="mt-12 mb-4" />
       </Container>
 
       {/* Related Tools */}
@@ -105,7 +112,8 @@ export default function ToolPageLayout({
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="flex items-center gap-3 py-3.5 px-4 bg-[#1a1a2e] border border-white/8 rounded-xl no-underline text-[#94a3b8] text-[0.875rem] font-medium transition-all duration-200 hover:border-indigo-500 hover:text-[#f8fafc] hover:-translate-y-0.5"
+                  aria-label={`Open ${tool.name} tool`}
+                  className="flex items-center gap-3 py-3.5 px-4 bg-[#1a1a2e] border border-white/10 rounded-xl no-underline text-[#cbd5e1] text-[0.875rem] font-medium transition-all duration-200 hover:border-indigo-500 hover:text-[#f8fafc] hover:-translate-y-0.5"
                 >
                   <span className="text-[1.2rem]">{tool.icon}</span>
                   {tool.name}

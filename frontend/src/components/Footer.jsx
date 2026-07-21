@@ -127,10 +127,11 @@ export default function Footer() {
                 width={180}
                 height={65}
                 loading="lazy"
+                style={{ width: "auto", height: "auto" }}
                 className="h-[65px] md:h-[85px] w-auto object-contain"
               />
             </Link>
-            <p className="text-[#64748b] text-[0.9rem] leading-[1.7] mb-6 max-w-[280px]">
+            <p className="text-[#cbd5e1] text-[0.9rem] leading-[1.7] mb-6 max-w-[280px]">
               Free, fast, and secure online image tools. Convert, compress,
               resize, and transform your images — entirely in your browser with
               zero data uploads.
@@ -140,7 +141,8 @@ export default function Footer() {
             <div className="flex flex-col gap-2.5 mb-6">
               <a
                 href="mailto:hello@convertergalaxy.com"
-                className="flex items-center gap-2 text-[#64748b] no-underline text-[0.85rem] transition-colors duration-200 hover:text-[#818cf8]"
+                aria-label="Email support at hello@convertergalaxy.com"
+                className="flex items-center gap-2 text-[#cbd5e1] no-underline text-[0.85rem] transition-colors duration-200 hover:text-[#818cf8]"
               >
                 <Mail size={14} />
                 hello@convertergalaxy.com
@@ -150,10 +152,10 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-2.5">
               {[
-                { icon: <WhatsappIcon size={16} />, href: "https://whatsapp.com/channel/0029Vb64sAs7oQhlwy2vJ41z", label: "WhatsApp" },
-                { icon: <InstagramIcon size={16} />, href: "https://www.instagram.com/jobs_engineers/", label: "Instagram" },
-                { icon: <LinkedinIcon size={16} />, href: "https://www.linkedin.com/in/job-for-iti/", label: "LinkedIn" },
-                { icon: <TelegramIcon size={16} />, href: "https://t.me/jobforitiportalgroup", label: "Telegram" },
+                { icon: <WhatsappIcon size={16} />, href: "https://whatsapp.com/channel/0029Vb64sAs7oQhlwy2vJ41z", label: "Converter Galaxy on WhatsApp" },
+                { icon: <InstagramIcon size={16} />, href: "https://www.instagram.com/jobs_engineers/", label: "Converter Galaxy on Instagram" },
+                { icon: <LinkedinIcon size={16} />, href: "https://www.linkedin.com/in/job-for-iti/", label: "Converter Galaxy on LinkedIn" },
+                { icon: <TelegramIcon size={16} />, href: "https://t.me/jobforitiportalgroup", label: "Converter Galaxy on Telegram" },
               ].map((s) => (
                 <a
                   key={s.label}
@@ -161,7 +163,7 @@ export default function Footer() {
                   aria-label={s.label}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-[9px] bg-white/6 border border-white/8 flex items-center justify-center text-[#64748b] no-underline transition-all duration-200 hover:bg-indigo-500/20 hover:border-indigo-500/40 hover:text-[#818cf8]"
+                  className="w-9 h-9 rounded-[9px] bg-white/10 border border-white/15 flex items-center justify-center text-[#cbd5e1] no-underline transition-all duration-200 hover:bg-indigo-500/20 hover:border-indigo-500/40 hover:text-[#818cf8]"
                 >
                   {s.icon}
                 </a>
