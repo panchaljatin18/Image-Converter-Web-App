@@ -105,7 +105,14 @@ app.use("/api/onedrive",     generalLimiter);
 // Note: /api/convert uses uploadLimiter (per-route) defined in convertRoutes.js
 
 // ── Static file serving ───────────────────────────────────────────────────────
-app.use("/downloads", express.static(DOWNLOADS_DIR));
+app.use("/downloads", express.static(DOWNLOADS_DIR, {
+  setHeaders: (res) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Range, Content-Type");
+    res.set("Access-Control-Expose-Headers", "Content-Length, Content-Range");
+  }
+}));
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use("/api/convert",      convertRoutes);

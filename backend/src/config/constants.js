@@ -16,6 +16,10 @@ module.exports = {
   ALLOWED_IMAGE_EXTENSIONS: [
     ".jpg", ".jpeg", ".png", ".webp", ".avif",
     ".heic", ".heif", ".bmp", ".gif", ".tiff", ".tif", ".svg",
+    // RAW camera formats
+    ".3fr", ".arw", ".cr2", ".cr3", ".crw", ".dcr", ".dng", ".erf",
+    ".kdc", ".mdc", ".mef", ".mos", ".mrw", ".nef", ".nrw", ".orf",
+    ".pef", ".raf", ".raw", ".rw2", ".srf", ".x3f"
   ],
 
   ALLOWED_IMAGE_MIME_TYPES: [
@@ -29,9 +33,13 @@ module.exports = {
     "image/gif",
     "image/tiff",
     "image/svg+xml",
-    // Some clients send these for HEIC
     "image/x-heic",
     "image/x-heif",
+    "image/x-canon-cr2",
+    "image/x-nikon-nef",
+    "image/x-adobe-dng",
+    "application/octet-stream", // Fallback for browsers that don't recognize HEIC/RAW MIME types
+    "", // Allow empty MIME types
   ],
 
   // ── Supported output formats ──────────────────────────────────────────────

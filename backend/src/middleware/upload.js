@@ -43,7 +43,8 @@ const storage = multer.diskStorage({
 const fileFilter = (_req, file, cb) => {
   const ext      = path.extname(file.originalname).toLowerCase();
   const extValid = ALLOWED_IMAGE_EXTENSIONS.includes(ext);
-  const mimeValid = ALLOWED_IMAGE_MIME_TYPES.includes(file.mimetype);
+  const mimetype = file.mimetype ? file.mimetype.toLowerCase() : "";
+  const mimeValid = ALLOWED_IMAGE_MIME_TYPES.includes(mimetype) || mimetype === "application/octet-stream" || !mimetype;
 
   if (extValid && mimeValid) {
     return cb(null, true);
