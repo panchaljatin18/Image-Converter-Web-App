@@ -21,15 +21,15 @@ At no point are your images transmitted over the internet to our servers or any 
   },
   {
     title: "3. Cookies and Tracking",
-    content: `We use minimal cookies:
+    content: `We use cookies and similar technologies to improve your experience and deliver relevant advertising:
 
-<strong>Essential Cookies:</strong> Required for basic site functionality (e.g., remembering your preferences).
+<strong>Essential Cookies:</strong> Required for basic site functionality (e.g., remembering your preferences, options, and tool states).
 
-<strong>Analytics Cookies:</strong> Anonymous cookies that help us understand how users navigate our site. These do not identify you personally. We use privacy-focused analytics that do not share data with advertising networks.
+<strong>Analytics Cookies:</strong> Anonymous cookies that help us understand how users navigate our site. These do not identify you personally and help us measure site performance.
 
-<strong>No Advertising Cookies:</strong> We do not use cookies for advertising targeting or remarketing.
+<strong>Advertising Cookies (Google AdSense):</strong> We display advertisements through Google AdSense. Google uses cookies, such as the DoubleClick DART cookie, to serve ads to users based on their visits to ConvertGalaxy and other websites on the internet. You can opt out of personalized advertising by visiting the <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">Google Ad Settings</a> page or <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">aboutads.info</a>.
 
-You can control cookie preferences through your browser settings.`,
+You can configure your browser to block cookies or notify you when they are set, though some features of the site might require cookies to function correctly.`,
   },
   {
     title: "4. Third-Party Services",
@@ -39,9 +39,9 @@ You can control cookie preferences through your browser settings.`,
 
 <strong>CDN Services:</strong> Some JavaScript libraries (like PDF.js) may be loaded from content delivery networks. These CDNs may log request metadata.
 
-<strong>Google AdSense:</strong> We display advertisements through Google AdSense. Google may use cookies to serve personalized ads based on your browsing history. You can opt out via Google's ad settings.
+<strong>Google AdSense:</strong> We partner with Google AdSense to serve advertisements on our website. Google and its third-party advertising vendors use cookies to serve personalized ads based on your web browsing history. You can learn more about how Google manages data in its ad products by visiting Google's privacy policy and opt out via Google Ad Settings as detailed in Section 3.
 
-We do not sell or share your personal data with third parties for marketing purposes.`,
+We do not sell, rent, or lease your personal data to third parties for marketing purposes.`,
   },
   {
     title: "5. Data Retention",

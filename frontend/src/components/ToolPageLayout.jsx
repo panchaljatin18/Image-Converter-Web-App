@@ -1,14 +1,57 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Shield, Zap, Star } from "lucide-react";
+import { ArrowLeft, Shield, Zap, Star, ChevronDown, ChevronUp, Layers, FileImage, Sparkles, HelpCircle } from "lucide-react";
 import Container from "@/components/Container";
 import SEO from "@/components/SEO";
 import AdSenseUnit from "@/components/AdSenseUnit";
+import { toolContentMap } from "@/lib/toolContentData";
 
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
   { icon: <Zap size={14} />, text: "Browser-Based" },
   { icon: <Star size={14} />, text: "Free Forever" },
 ];
+
+function FaqAccordion({ faqs }) {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggle = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  return (
+    <div className="space-y-4">
+      {faqs.map((faq, index) => {
+        const isOpen = openIndex === index;
+        return (
+          <div
+            key={index}
+            className="border border-white/8 bg-[#1a1a2e] rounded-2xl overflow-hidden transition-all duration-200"
+          >
+            <button
+              onClick={() => toggle(index)}
+              className="w-full flex items-center justify-between py-4 px-6 text-left font-semibold text-[#f8fafc] hover:bg-white/[0.02] transition-colors duration-150"
+            >
+              <span>{faq.q}</span>
+              {isOpen ? (
+                <ChevronUp size={18} className="text-[#a5b4fc] shrink-0" />
+              ) : (
+                <ChevronDown size={18} className="text-[#a5b4fc] shrink-0" />
+              )}
+            </button>
+            {isOpen && (
+              <div className="py-4 px-6 border-t border-white/6 text-[#cbd5e1] text-[0.9rem] leading-relaxed bg-[#151528]">
+                {faq.a}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function ToolPageLayout({
   title,
@@ -23,6 +66,10 @@ export default function ToolPageLayout({
   toolFaqs,
   uiDescription,
 }) {
+  const toolKey = toolPath ? toolPath.replace("tools/", "") : null;
+  const richContent = toolKey ? toolContentMap[toolKey] : null;
+  const displayFaqs = toolFaqs || (richContent && richContent.faqs) || [];
+
   return (
     <div className="pt-20 min-h-screen">
       {toolPath && toolCategory && (
@@ -33,7 +80,7 @@ export default function ToolPageLayout({
             path: toolPath,
             description: description,
             category: toolCategory,
-            faqs: toolFaqs,
+            faqs: displayFaqs,
           }}
         />
       )}
@@ -72,7 +119,7 @@ export default function ToolPageLayout({
               <h1 className="font-['Outfit'] font-extrabold text-2xl md:text-4xl text-[#f8fafc] tracking-tight leading-tight mb-2.5">
                 {title}
               </h1>
-              <p className="text-[#cbd5e1] text-base leading-relaxed max-w-[560px] mb-5">
+              <p className="text-[#cbd5e1] text-[0.875rem] leading-relaxed max-w-[560px] mb-5">
                 {uiDescription || description}
               </p>
 
@@ -99,6 +146,132 @@ export default function ToolPageLayout({
         {/* High Performance AdSense Unit */}
         <AdSenseUnit adSlot="7641288079" className="mt-12 mb-4" />
       </Container>
+
+      {/* Rich Educational Content */}
+      {richContent && (
+        <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24">
+          <Container className="flex flex-col gap-16">
+            
+            {/* Step by Step Guide */}
+            {richContent.howToUseSteps && (
+              <div>
+                <h2 className="font-['Outfit'] font-extrabold text-2xl md:text-3xl text-[#f8fafc] tracking-tight mb-8 text-center">
+                  How to Use {title}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                  {richContent.howToUseSteps.map((step, idx) => (
+                    <div key={idx} className="relative p-6 bg-[#1a1a2e] border border-white/6 rounded-2xl flex flex-col gap-3">
+                      <div className="absolute top-4 right-6 text-4xl font-black text-white/5 font-sans pointer-events-none select-none">
+                        {String(idx + 1).padStart(2, '0')}
+                      </div>
+                      <h3 className="font-bold text-[1.1rem] text-[#f8fafc] pr-10">
+                        {step.title}
+                      </h3>
+                      <p className="text-[#cbd5e1] text-[0.875rem] leading-relaxed">
+                        {step.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Benefits Grid */}
+            {richContent.benefits && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {richContent.benefits.map((benefit, idx) => {
+                  let Icon = Shield;
+                  if (benefit.icon === "Shield") Icon = Shield;
+                  else if (benefit.icon === "Zap") Icon = Zap;
+                  else if (benefit.icon === "Sparkles") Icon = Sparkles;
+                  else if (benefit.icon === "Layers") Icon = Layers;
+                  else if (benefit.icon === "FileImage") Icon = FileImage;
+
+                  return (
+                    <div key={idx} className="p-6 bg-gradient-to-br from-[#1a1a2e] to-[#141426] border border-white/6 rounded-2xl flex gap-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                        style={{
+                          background: `radial-gradient(circle, ${color}22 0%, ${color}0c 100%)`,
+                          border: `1px solid ${color}33`,
+                          color: color
+                        }}
+                      >
+                        <Icon size={22} />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <h4 className="font-bold text-[1rem] text-[#f8fafc]">
+                          {benefit.title}
+                        </h4>
+                        <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
+                          {benefit.text}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Technical Comparison Table */}
+            {richContent.comparisonTable && (
+              <div className="max-w-[800px] mx-auto w-full">
+                <h3 className="font-['Outfit'] font-extrabold text-xl md:text-2xl text-[#f8fafc] mb-6 text-center">
+                  {richContent.comparisonTable.title}
+                </h3>
+                <div className="overflow-x-auto border border-white/8 rounded-2xl bg-[#141426]">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-white/8 bg-[#1a1a2e]">
+                        {richContent.comparisonTable.headers.map((header, i) => (
+                          <th key={i} className="py-4 px-6 text-[0.875rem] font-bold text-[#f8fafc] border-r border-white/6 last:border-r-0">
+                            {header}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {richContent.comparisonTable.rows.map((row, rowIdx) => (
+                        <tr key={rowIdx} className="border-b border-white/4 last:border-b-0 hover:bg-white/[0.01]">
+                          {row.map((cell, cellIdx) => (
+                            <td key={cellIdx} className="py-4 px-6 text-[0.875rem] text-[#cbd5e1] border-r border-white/6 last:border-r-0">
+                              {cellIdx === 0 ? <strong className="text-[#f8fafc]">{cell}</strong> : cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Technical details description */}
+            {richContent.technicalDescription && (
+              <div className="max-w-[800px] mx-auto w-full p-6 md:p-8 bg-[#1a1a2e]/50 border border-white/6 rounded-2xl">
+                <h3 className="font-['Outfit'] font-bold text-[1.2rem] text-[#f8fafc] mb-4">
+                  Technical Specifications & Insights
+                </h3>
+                <p className="text-[#cbd5e1] text-[0.925rem] leading-[1.8]">
+                  {richContent.technicalDescription}
+                </p>
+              </div>
+            )}
+
+            {/* FAQs Accordion */}
+            {displayFaqs && displayFaqs.length > 0 && (
+              <div className="max-w-[800px] mx-auto w-full">
+                <h2 className="font-['Outfit'] font-extrabold text-2xl md:text-3xl text-[#f8fafc] tracking-tight mb-8 text-center flex items-center justify-center gap-2">
+                  <HelpCircle className="text-[#a5b4fc]" size={24} />
+                  Frequently Asked Questions
+                </h2>
+                <FaqAccordion faqs={displayFaqs} />
+              </div>
+            )}
+
+          </Container>
+        </div>
+      )}
 
       {/* Related Tools */}
       {relatedTools.length > 0 && (
