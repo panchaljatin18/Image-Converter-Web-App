@@ -6,6 +6,7 @@ export const metadata = constructMetadata({
   title: "Image Resizer – Resize Images Online Free",
   description: "Resize images to exact pixel dimensions or aspect ratios. Presets for social media, HD, 4K, and more. Lock aspect ratio, choose output format. Free, browser-based.",
   canonicalPath: "/tools/image-resizer",
+  ogImage: "https://www.convertgalaxy.com/image-resizer.png",
   keywords: [
     "image resizer",
     "resize image",

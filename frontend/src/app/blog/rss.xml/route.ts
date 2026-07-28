@@ -8,28 +8,64 @@ export const revalidate = 86400;
 export async function GET() {
   const guides = [
     {
-      title: "JPG to PNG Converter Guide",
-      description: "Learn how to convert compressed JPG to lossless PNG with transparency and maximum detail preservation.",
-      url: `${SITE_URL}/tools/jpg-to-png`,
+      title: "How to Convert HEIC to JPG Online (iPhone Photos on PC)",
+      description: "Learn how to open and convert Apple's HEIC/HEIF photos to JPG format for universal compatibility without losing metadata.",
+      url: `${SITE_URL}/tools/heic-to-jpg`,
       date: new Date("2026-01-01").toUTCString(),
     },
     {
-      title: "PNG to JPG Converter Guide",
-      description: "Optimize web assets by converting heavy PNG drawings and graphics to lightweight JPG photos.",
-      url: `${SITE_URL}/tools/png-to-jpg`,
+      title: "Convert JPG to PNG: How to Keep Quality Lossless",
+      description: "Learn how to convert compressed JPG to lossless PNG with transparency and maximum detail preservation.",
+      url: `${SITE_URL}/tools/jpg-to-png`,
       date: new Date("2026-01-02").toUTCString(),
     },
     {
-      title: "WebP conversion and optimization benefits",
-      description: "Understand next-gen compression benefits. WebP delivers smaller image weights than typical PNG and JPG files.",
-      url: `${SITE_URL}/tools/webp-converter`,
+      title: "PNG to JPG Converter: Reduce Image File Sizes",
+      description: "Optimize web assets by converting heavy PNG drawings and graphics to lightweight JPG photos.",
+      url: `${SITE_URL}/tools/png-to-jpg`,
       date: new Date("2026-01-03").toUTCString(),
     },
     {
-      title: "How to compress images locally in your browser",
-      description: "Compress images using browser processing engines for guaranteed client-side data security.",
-      url: `${SITE_URL}/tools/image-compressor`,
+      title: "WebP Conversion and Next-Gen Image Optimization Benefits",
+      description: "Understand next-gen compression benefits. Convert JPG, PNG, or GIF to WebP for faster load speeds.",
+      url: `${SITE_URL}/tools/webp-converter`,
       date: new Date("2026-01-04").toUTCString(),
+    },
+    {
+      title: "WebP to JPG Converter: Save Web Images to Universal Format",
+      description: "Convert WebP images to standard JPG format easily. Maintain compatibility with legacy software and devices.",
+      url: `${SITE_URL}/tools/webp-to-jpg`,
+      date: new Date("2026-01-05").toUTCString(),
+    },
+    {
+      title: "How to Compress Images Locally in Your Browser",
+      description: "Compress images using browser processing engines for guaranteed client-side data security without visual degradation.",
+      url: `${SITE_URL}/tools/image-compressor`,
+      date: new Date("2026-01-06").toUTCString(),
+    },
+    {
+      title: "Resize Images Online: Maintain Aspect Ratio & Quality",
+      description: "Scale your photos to exact pixel resolutions or percentage sizes. Perfect for social media and web page layout demands.",
+      url: `${SITE_URL}/tools/image-resizer`,
+      date: new Date("2026-01-07").toUTCString(),
+    },
+    {
+      title: "Crop Images Online: Trim Borders & Target Focal Areas",
+      description: "Easily crop specific sections of your photos with drag-and-drop handles. Choose standard ratios like 1:1, 16:9, or custom.",
+      url: `${SITE_URL}/tools/crop-image`,
+      date: new Date("2026-01-08").toUTCString(),
+    },
+    {
+      title: "Image to PDF: Merge Multiple JPG/PNG Photos into One File",
+      description: "Combine scattered images, scans, and screenshots into a single, clean PDF document. Arrange pages manually.",
+      url: `${SITE_URL}/tools/image-to-pdf`,
+      date: new Date("2026-01-09").toUTCString(),
+    },
+    {
+      title: "PDF to Image: Extract PDF Pages to JPG/PNG Easily",
+      description: "Deconstruct multi-page PDFs to save every page as a high-quality standalone image. Runs completely in your browser.",
+      url: `${SITE_URL}/tools/pdf-to-image`,
+      date: new Date("2026-01-10").toUTCString(),
     },
   ];
 

@@ -248,27 +248,21 @@ export default function BlogGrid() {
               key={tool.name}
               className="bg-[#131325]/80 border border-white/8 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col hover:border-indigo-500/50 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(99,102,241,0.12)] group"
             >
-              {/* Header Visual with Icon and Gradient */}
-              <div
-                className="w-full h-[150px] flex items-center justify-center text-[4rem] relative select-none"
-                style={{ background: `linear-gradient(135deg, ${tool.color}15, ${tool.color}03)` }}
-              >
-                <div
-                  className="w-18 h-18 rounded-2xl flex items-center justify-center text-3xl shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
-                  style={{
-                    background: tool.gradient,
-                    boxShadow: `0 8px 24px ${tool.color}35`,
-                  }}
-                >
-                  {tool.icon}
-                </div>
+              {/* Header Visual with Custom Cover Image */}
+              <div className="w-full h-[180px] relative overflow-hidden select-none border-b border-white/6 bg-[#090915]">
+                <img
+                  src={`${tool.href.replace("/tools", "")}.png`}
+                  alt={tool.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103"
+                  loading="lazy"
+                />
                 {tool.badge && (
                   <span
-                    className="absolute top-4 right-4 py-1 px-3 rounded-full text-[0.7rem] font-bold uppercase tracking-wider border"
+                    className="absolute top-4 right-4 py-1 px-3 rounded-full text-[0.7rem] font-bold uppercase tracking-wider border backdrop-blur-md"
                     style={{
-                      backgroundColor: `${tool.color}12`,
+                      backgroundColor: `${tool.color}20`,
                       color: tool.color,
-                      borderColor: `${tool.color}25`,
+                      borderColor: `${tool.color}40`,
                     }}
                   >
                     {tool.badge}

@@ -7,6 +7,7 @@ export const metadata = constructMetadata({
   description:
     "Convert Apple HEIC photos to JPG format instantly. Free, browser-based converter. No registration required — preserve EXIF metadata & quality.",
   canonicalPath: "/tools/heic-to-jpg",
+  ogImage: "https://www.convertgalaxy.com/heic-to-jpg.png",
   keywords: [
     "heic to jpg",
     "convert heic to jpg",

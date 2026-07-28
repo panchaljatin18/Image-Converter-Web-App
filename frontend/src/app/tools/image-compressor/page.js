@@ -6,6 +6,7 @@ export const metadata = constructMetadata({
   title: "Image Compressor – Reduce Image File Size Free Online",
   description: "Compress JPG, PNG, WebP images without visible quality loss. Reduce file size by up to 90% using advanced browser-based compression. 100% free, private, no upload.",
   canonicalPath: "/tools/image-compressor",
+  ogImage: "https://www.convertgalaxy.com/image-compressor.png",
   keywords: [
     "compress image",
     "image compressor",

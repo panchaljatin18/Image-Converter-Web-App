@@ -9,6 +9,7 @@ import {
   getBlogSchema,
   getBlogPostingSchema,
   FAQItem,
+  StepItem,
 } from "@/lib/schema";
 
 interface SEOProps {
@@ -19,6 +20,8 @@ interface SEOProps {
     description: string;
     category: string;
     faqs?: FAQItem[];
+    steps?: StepItem[];
+    image?: string;
   };
   faqs?: FAQItem[];
   posts?: Array<{ title: string; desc: string; url: string; date: string }>;

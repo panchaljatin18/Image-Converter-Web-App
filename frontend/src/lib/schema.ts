@@ -180,6 +180,37 @@ export function getHomepageSchema() {
   ];
 }
 
+export interface StepItem {
+  title: string;
+  text: string;
+}
+
+/**
+ * HowTo Schema
+ */
+export function getHowToSchema(tool: {
+  name: string;
+  url: string;
+  description: string;
+  steps: StepItem[];
+  image?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": `How to Use ${tool.name}`,
+    "description": tool.description,
+    "image": tool.image || `${SITE_URL}/og-image.png`,
+    "step": tool.steps.map((step, index) => ({
+      "@type": "HowToStep",
+      "position": index + 1,
+      "name": step.title,
+      "text": step.text,
+      "url": `${tool.url}#step-${index + 1}`
+    }))
+  };
+}
+
 /**
  * Dynamic Tool/WebApplication Schema
  */
@@ -189,6 +220,8 @@ export function getWebApplicationSchema(tool: {
   description: string;
   category: string;
   faqs?: FAQItem[];
+  steps?: StepItem[];
+  image?: string;
 }) {
   const toolUrl = `${SITE_URL}/${tool.path}`;
   const schemas: any[] = [
@@ -220,6 +253,18 @@ export function getWebApplicationSchema(tool: {
 
   if (tool.faqs && tool.faqs.length > 0) {
     schemas.push(getFAQSchema(tool.faqs));
+  }
+
+  if (tool.steps && tool.steps.length > 0) {
+    schemas.push(
+      getHowToSchema({
+        name: tool.name,
+        url: toolUrl,
+        description: tool.description,
+        steps: tool.steps,
+        image: tool.image,
+      })
+    );
   }
 
   return schemas;

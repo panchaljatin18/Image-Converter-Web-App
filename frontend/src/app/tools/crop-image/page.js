@@ -6,6 +6,7 @@ export const metadata = constructMetadata({
   title: "Crop Image – Free Online Image Cropper",
   description: "Crop images to any size or aspect ratio online. Draw a crop selection, use aspect ratio presets (1:1, 16:9, 4:3). Free, instant, browser-based image cropper.",
   canonicalPath: "/tools/crop-image",
+  ogImage: "https://www.convertgalaxy.com/crop-image.png",
   keywords: [
     "crop image",
     "image cropper",

@@ -81,6 +81,8 @@ export default function ToolPageLayout({
             description: description,
             category: toolCategory,
             faqs: displayFaqs,
+            steps: richContent?.howToUseSteps,
+            image: toolKey ? `https://www.convertgalaxy.com/${toolKey}.png` : undefined,
           }}
         />
       )}

@@ -6,6 +6,7 @@ export const metadata = constructMetadata({
   title: "JPG to PNG Converter – Free Online Tool",
   description: "Convert JPG/JPEG images to PNG format instantly. Free, lossless, browser-based converter. No upload required — your files stay private.",
   canonicalPath: "/tools/jpg-to-png",
+  ogImage: "https://www.convertgalaxy.com/jpg-to-png.png",
   keywords: [
     "jpg to png",
     "convert jpg to png",

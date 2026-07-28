@@ -6,6 +6,7 @@ export const metadata = constructMetadata({
   title: "Image to PDF Converter – Combine Images into PDF Free",
   description: "Convert JPG, PNG, WebP images to a PDF file. Combine multiple images into one PDF with page size, orientation, and margin settings. Free, browser-based, no upload.",
   canonicalPath: "/tools/image-to-pdf",
+  ogImage: "https://www.convertgalaxy.com/image-to-pdf.png",
   keywords: [
     "image to pdf",
     "convert image to pdf",
