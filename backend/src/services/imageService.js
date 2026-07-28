@@ -83,11 +83,34 @@ const imageService = {
   },
 
   /**
-   * Resize image maintaining aspect ratio.
-   * @param {string} targetFormat - Optional output format override (e.g., "jpeg", "png", "webp")
+   * Resize image to exact or proportional dimensions using 3 modes:
+   *  - "stretch": Forces exact WxH, stretching image if aspect ratio differs.
+   *  - "crop":    Scales image to fill WxH and center-crops outer edges without distortion.
+   *  - "fit":     Scales image to fit inside WxH, padding background to fill exact canvas size.
+   *
+   * @param {string} inputPath
+   * @param {string} originalName
+   * @param {string} mimetype
+   * @param {number} width
+   * @param {number} height
+   * @param {string|null} targetFormat
+   * @param {number} quality
+   * @param {string} resizeMode - "stretch" | "crop" | "fit" (default: "stretch")
+   * @param {string} bgColor - Background color for fit mode padding (default: "#ffffff")
+   * @param {number|null} targetSizeKB - Optional target file size cap in KB
    */
-  async resizeImage(inputPath, originalName, mimetype, width, height, targetFormat = null, quality = 85) {
-    // Determine output extension: prefer targetFormat if provided, else keep input ext
+  async resizeImage(
+    inputPath,
+    originalName,
+    mimetype,
+    width,
+    height,
+    targetFormat = null,
+    quality = 85,
+    resizeMode = "stretch",
+    bgColor = "#ffffff",
+    targetSizeKB = null
+  ) {
     let ext = targetFormat
       ? targetFormat.toLowerCase()
       : (path.extname(originalName).replace(".", "").toLowerCase() || "jpeg");
@@ -97,27 +120,59 @@ const imageService = {
     const q = Math.min(Math.max(Math.round(quality), 1), 100);
     const t0 = Date.now();
 
-    let resizeString = "";
-    if (width && height) {
-      resizeString = `${width}x${height}`;
-    } else if (width) {
-      resizeString = String(width);
-    } else if (height) {
-      resizeString = `x${height}`;
-    } else {
-      resizeString = "100%"; // No-op resize if neither parameter is passed
+    const args = [inputPath];
+
+    const w = parseInt(width, 10) || null;
+    const h = parseInt(height, 10) || null;
+    const mode = (resizeMode || "stretch").toLowerCase();
+
+    if (w && h) {
+      if (mode === "crop") {
+        // Scale to fill WxH and center crop overflow without distortion
+        args.push("-resize", `${w}x${h}^`, "-gravity", "Center", "-crop", `${w}x${h}+0+0`, "+repage");
+      } else if (mode === "fit") {
+        // Fit inside WxH with optional background padding to maintain exact canvas size
+        if (bgColor && bgColor !== "none" && bgColor !== "transparent") {
+          args.push("-resize", `${w}x${h}`, "-background", bgColor, "-gravity", "Center", "-extent", `${w}x${h}`);
+        } else {
+          args.push("-resize", `${w}x${h}`);
+        }
+      } else {
+        // "stretch" — default exact pixel dimensions
+        args.push("-resize", `${w}x${h}!`);
+      }
+    } else if (w) {
+      args.push("-resize", `${w}`);
+    } else if (h) {
+      args.push("-resize", `x${h}`);
     }
 
-    const args = [inputPath, "-resize", resizeString, "-quality", String(q), fullPath];
+    // Apply target file size cap if requested (e.g. 100 KB) for JPEG output
+    const maxKB = parseInt(targetSizeKB, 10);
+    if (!isNaN(maxKB) && maxKB > 0 && (ext === "jpeg" || ext === "jpg")) {
+      args.push("-define", `jpeg:extent=${maxKB}KB`);
+    } else {
+      args.push("-quality", String(q));
+    }
+
+    args.push(fullPath);
     await executeCommand(TOOLS.IMAGEMAGICK, args);
 
     if (!fs.existsSync(fullPath)) {
       throw new ToolError("imagemagick", `Failed to resize image`);
     }
 
-    logger.tool("imagemagick", `resized ${originalName} → ${filename}`, { ms: Date.now() - t0, width, height, quality: q });
+    logger.tool("imagemagick", `resized ${originalName} → ${filename}`, {
+      ms: Date.now() - t0,
+      width: w,
+      height: h,
+      mode,
+      quality: q,
+      targetSizeKB: maxKB || null,
+    });
     return { filename, fullPath };
   },
+
 
   /**
    * Crop image using coordinates.

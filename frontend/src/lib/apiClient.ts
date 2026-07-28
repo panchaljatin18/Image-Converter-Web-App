@@ -69,6 +69,15 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
       const quality = Math.round(config.options.quality * 100);
       formData.append("quality", quality.toString());
     }
+    if (config.options?.resizeMode) {
+      formData.append("resizeMode", config.options.resizeMode);
+    }
+    if (config.options?.bgColor) {
+      formData.append("bgColor", config.options.bgColor);
+    }
+    if (config.options?.targetSizeKB) {
+      formData.append("targetSizeKB", Math.round(config.options.targetSizeKB).toString());
+    }
     // Forward target format so backend can save in the right file format
     if (targetFormat) {
       formData.append("targetFormat", targetFormat);
@@ -149,13 +158,21 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
             resolve();
           } else {
             const err = new Error(response.message || "Failed to process image file");
-            if (config.onError) config.onError(err);
-            reject(err);
+            if (config.onError) {
+              config.onError(err);
+              resolve();
+            } else {
+              reject(err);
+            }
           }
         } catch (e: any) {
           const err = new Error("Failed to parse response: " + e.message);
-          if (config.onError) config.onError(err);
-          reject(err);
+          if (config.onError) {
+            config.onError(err);
+            resolve();
+          } else {
+            reject(err);
+          }
         }
       } else {
         let errorMsg = `Upload failed with status: ${xhr.status}`;
@@ -166,16 +183,25 @@ export async function processFileWithBackend(file: File, config: UploadOptions):
           }
         } catch (e) {}
         const err = new Error(errorMsg);
-        if (config.onError) config.onError(err);
-        reject(err);
+        if (config.onError) {
+          config.onError(err);
+          resolve();
+        } else {
+          reject(err);
+        }
       }
     };
 
     xhr.onerror = () => {
       const err = new Error("Network error occurred during file upload.");
-      if (config.onError) config.onError(err);
-      reject(err);
+      if (config.onError) {
+        config.onError(err);
+        resolve();
+      } else {
+        reject(err);
+      }
     };
+
 
     xhr.send(formData);
   });

@@ -62,7 +62,8 @@ const convertController = {
 
   // POST /api/convert/png-to-jpg
   pngToJpg: withCleanup(async (req, res) => {
-    const quality = parseInt(req.body.quality, 10) || 90;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 90 : Math.min(100, Math.max(10, rawQ));
     const bgColor = req.body.bgColor || "#ffffff";
     const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg", quality, bgColor);
     return res.status(200).json({
@@ -74,7 +75,8 @@ const convertController = {
 
   // POST /api/convert/webp-to-jpg
   webpToJpg: withCleanup(async (req, res) => {
-    const quality = parseInt(req.body.quality, 10) || 90;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 90 : Math.min(100, Math.max(10, rawQ));
     const bgColor = req.body.bgColor || "#ffffff";
     const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "jpeg", quality, bgColor);
     return res.status(200).json({
@@ -86,7 +88,8 @@ const convertController = {
 
   // POST /api/convert/jpg-to-webp
   jpgToWebp: withCleanup(async (req, res) => {
-    const quality = parseInt(req.body.quality, 10) || 90;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 90 : Math.min(100, Math.max(10, rawQ));
     const { filename } = await imageService.convertFormat(req.file.path, req.file.originalname, "webp", quality);
     return res.status(200).json({
       success: true,
@@ -97,8 +100,12 @@ const convertController = {
 
   // POST /api/convert/compress-image
   compressImage: withCleanup(async (req, res) => {
-    const quality = parseInt(req.body.quality, 10) || 75;
-    const maxDim = parseInt(req.body.maxWidthOrHeight, 10) || null;
+    // Clamp quality between 10 and 100. parseInt returns NaN for missing/invalid → default 75.
+    const rawQuality = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQuality) ? 75 : Math.min(100, Math.max(10, rawQuality));
+    // maxWidthOrHeight: 0 or negative means no dimension cap
+    const rawDim = parseInt(req.body.maxWidthOrHeight, 10);
+    const maxDim = !isNaN(rawDim) && rawDim > 0 ? rawDim : null;
     const { filename } = await imageService.compressImage(
       req.file.path,
       req.file.originalname,
@@ -115,10 +122,14 @@ const convertController = {
 
   // POST /api/convert/resize-image
   resizeImage: withCleanup(async (req, res) => {
-    const { width, height } = req.body;
-    const quality = parseInt(req.body.quality, 10) || 85;
-    // Allow frontend to specify output format (e.g., jpeg, png, webp)
+    const { width, height, bgColor } = req.body;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 85 : Math.min(100, Math.max(10, rawQ));
     const targetFormat = (req.body.targetFormat || "").toLowerCase().trim() || null;
+    const resizeMode = (req.body.resizeMode || "stretch").toLowerCase().trim();
+    const rawTargetKB = parseInt(req.body.targetSizeKB, 10);
+    const targetSizeKB = !isNaN(rawTargetKB) && rawTargetKB > 0 ? rawTargetKB : null;
+
     const { filename } = await imageService.resizeImage(
       req.file.path,
       req.file.originalname,
@@ -126,7 +137,10 @@ const convertController = {
       width,
       height,
       targetFormat,
-      quality
+      quality,
+      resizeMode,
+      bgColor || "#ffffff",
+      targetSizeKB
     );
     return res.status(200).json({
       success: true,
@@ -135,10 +149,12 @@ const convertController = {
     });
   }),
 
+
   // POST /api/convert/crop-image
   cropImage: withCleanup(async (req, res) => {
     const { width, height, left, top } = req.body;
-    const quality = parseInt(req.body.quality, 10) || 90;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 90 : Math.min(100, Math.max(10, rawQ));
     // Allow frontend to specify output format (e.g., jpeg, png, webp)
     const targetFormat = (req.body.targetFormat || "").toLowerCase().trim() || null;
     const { filename } = await imageService.cropImage(
@@ -160,7 +176,10 @@ const convertController = {
 
   // POST /api/convert/rotate-image
   rotateImage: withCleanup(async (req, res) => {
-    const angle      = parseInt(req.body.angle, 10) || 90;
+    // Accept any multiple of 90: 90, 180, 270, -90, -180 etc.
+    // Fall back to 90 if missing or non-numeric.
+    const rawAngle = parseInt(req.body.angle, 10);
+    const angle = isNaN(rawAngle) ? 90 : rawAngle % 360;
     const background = req.body.background || "#ffffff";
     const { filename } = await imageService.rotateImage(
       req.file.path,
@@ -213,7 +232,8 @@ const convertController = {
       });
     }
 
-    const quality = parseInt(req.body.quality, 10) || 85;
+    const rawQ = parseInt(req.body.quality, 10);
+    const quality = isNaN(rawQ) ? 85 : Math.min(100, Math.max(10, rawQ));
     const bgColor = req.body.bgColor || "#ffffff";
     const { filename } = await convertWithFallback(
       req.file.path,

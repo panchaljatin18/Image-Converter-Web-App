@@ -55,7 +55,7 @@ module.exports = {
    *      We separately cap MP at 100 to stay memory-safe.
    * Recommended: 100 MP. HTTP 422 if exceeded.
    */
-  MAX_MEGAPIXELS: Number(process.env.MAX_MEGAPIXELS) || 100,
+  MAX_MEGAPIXELS: Number(process.env.MAX_MEGAPIXELS) || 400,
 
   /**
    * Maximum allowed resize target dimensions.

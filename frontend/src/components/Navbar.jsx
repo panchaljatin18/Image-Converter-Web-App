@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -84,6 +84,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const desktopDropdownRef = useRef(null);
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isAuthRoute = authRoutes.has(pathname);
@@ -98,9 +100,26 @@ export default function Navbar() {
     const closeMenus = setTimeout(() => {
       setMobileOpen(false);
       setMobileToolsOpen(false);
+      setDropdownOpen(false);
     }, 0);
     return () => clearTimeout(closeMenus);
   }, [pathname]);
+
+  // Close desktop dropdown on click outside
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handleOutsideClick = (e) => {
+      if (desktopDropdownRef.current && !desktopDropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [dropdownOpen]);
 
   useEffect(() => {
     if (!mobileOpen) {
@@ -162,27 +181,44 @@ export default function Navbar() {
           <nav className="hidden lg:flex items-center gap-2 flex-1 justify-center">
             {navLinks.map((link) =>
               link.hasDropdown ? (
-                <div key={link.name} className="relative group">
+                <div
+                  key={link.name}
+                  ref={desktopDropdownRef}
+                  className="relative"
+                  onMouseEnter={() => setDropdownOpen(true)}
+                  onMouseLeave={() => setDropdownOpen(false)}
+                >
                   <button
                     type="button"
                     aria-haspopup="true"
                     aria-label="Tools navigation menu"
-                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${pathname.startsWith("/tools") ? "text-[#818cf8]" : "text-[#cbd5e1]"
-                      }`}
+                    onClick={() => setDropdownOpen((prev) => !prev)}
+                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${
+                      pathname.startsWith("/tools") || dropdownOpen ? "text-[#818cf8]" : "text-[#cbd5e1]"
+                    }`}
                   >
                     {link.name}
                     <ChevronDown
                       size={14}
-                      className="transition-transform duration-200 group-hover:rotate-180"
+                      className={`transition-transform duration-200 ${
+                        dropdownOpen ? "rotate-180" : "rotate-0"
+                      }`}
                     />
                   </button>
 
                   {/* Dropdown */}
-                  <div className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] opacity-0 invisible translate-y-2 scale-95 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 origin-top">
+                  <div
+                    className={`absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] transition-all duration-200 origin-top ${
+                      dropdownOpen
+                        ? "opacity-100 visible translate-y-0 scale-100 pointer-events-auto"
+                        : "opacity-0 invisible translate-y-2 scale-95 pointer-events-none"
+                    }`}
+                  >
                     {tools.map((tool) => (
                       <Link
                         key={tool.href}
                         href={tool.href}
+                        onClick={() => setDropdownOpen(false)}
                         aria-label={`Open ${tool.name}`}
                         className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#cbd5e1] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
                       >

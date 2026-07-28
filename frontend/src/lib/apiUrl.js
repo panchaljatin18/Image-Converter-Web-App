@@ -1,11 +1,12 @@
 export const getApiUrl = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  if (!apiUrl) {
-    throw new Error(
-      "NEXT_PUBLIC_API_URL is not defined. Please configure it in Vercel Environment Variables."
-    );
+  // Automatically connect to local backend when developing on localhost/127.0.0.1
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      return "http://localhost:5000";
+    }
   }
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   return apiUrl.replace(/\/$/, "");
 };
