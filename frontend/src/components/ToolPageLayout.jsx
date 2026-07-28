@@ -154,6 +154,18 @@ export default function ToolPageLayout({
         <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24">
           <Container className="flex flex-col gap-16">
             
+            {/* Premium Discover Featured Image in Post Guide */}
+            {toolKey && (
+              <div className="max-w-[800px] mx-auto w-full border border-white/8 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                <img
+                  src={`/${toolKey}.png`}
+                  alt={`How to use ${title} tool guide`}
+                  className="w-full h-auto object-cover aspect-[16/9]"
+                  loading="eager"
+                />
+              </div>
+            )}
+
             {/* Step by Step Guide */}
             {richContent.howToUseSteps && (
               <div>

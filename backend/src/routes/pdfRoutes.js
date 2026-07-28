@@ -10,10 +10,11 @@
 const express  = require("express");
 const router   = express.Router();
 
-const uploadDocument    = require("../middleware/uploadDocument");
-const { validateUpload } = require("../middleware/validateUpload");
-const { uploadLimiter }  = require("../middleware/uploadLimiter");
-const pdfController      = require("../controllers/pdfController");
+const uploadDocument           = require("../middleware/uploadDocument");
+const { validateUpload }       = require("../middleware/validateUpload");
+const { uploadLimiter }        = require("../middleware/uploadLimiter");
+const pdfController            = require("../controllers/pdfController");
+const { validatePdfMiddleware } = require("../middleware/validatePdf");
 
 /**
  * POST /api/pdf/compress
@@ -22,6 +23,7 @@ const pdfController      = require("../controllers/pdfController");
  */
 router.post("/compress",
   uploadLimiter, uploadDocument.single("file"), validateUpload,
+  validatePdfMiddleware,
   pdfController.compressPdf
 );
 
@@ -32,6 +34,7 @@ router.post("/compress",
  */
 router.post("/optimize",
   uploadLimiter, uploadDocument.single("file"), validateUpload,
+  validatePdfMiddleware,
   pdfController.optimizePdf
 );
 
@@ -42,6 +45,7 @@ router.post("/optimize",
  */
 router.post("/reduce-size",
   uploadLimiter, uploadDocument.single("file"), validateUpload,
+  validatePdfMiddleware,
   pdfController.reduceSize
 );
 
@@ -52,6 +56,7 @@ router.post("/reduce-size",
  */
 router.post("/to-pdf-a",
   uploadLimiter, uploadDocument.single("file"), validateUpload,
+  validatePdfMiddleware,
   pdfController.convertToPdfA
 );
 

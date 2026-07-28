@@ -13,65 +13,79 @@ const upload            = require("../middleware/upload");
 const { validateUpload }  = require("../middleware/validateUpload");
 const { uploadLimiter }   = require("../middleware/uploadLimiter");
 const convertController   = require("../controllers/convertController");
-const { validateResize, validateCrop } = require("../middleware/validation");
+const {
+  validateImageMiddleware,
+  validateQualityMiddleware,
+  validateResizeMiddleware,
+  validateCropMiddleware,
+} = require("../middleware/validateImage");
 
-// ── Existing endpoints (API unchanged) ────────────────────────────────────────
+// ── Conversion endpoints (API paths unchanged) ───────────────────────────────
 
 router.post("/jpg-to-png",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.jpgToPng
 );
 
 router.post("/png-to-jpg",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.pngToJpg
 );
 
 router.post("/webp-to-jpg",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.webpToJpg
 );
 
 router.post("/jpg-to-webp",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.jpgToWebp
 );
 
 router.post("/heic-to-jpg",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware,
   convertController.convertGeneric
 );
 
 router.post("/compress-image",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.compressImage
 );
 
 router.post("/resize-image",
-  uploadLimiter, upload.single("image"), validateUpload, validateResize,
+  uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateResizeMiddleware, validateQualityMiddleware,
   convertController.resizeImage
 );
 
 router.post("/crop-image",
-  uploadLimiter, upload.single("image"), validateUpload, validateCrop,
+  uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateCropMiddleware, validateQualityMiddleware,
   convertController.cropImage
 );
 
-// Rotate image
 router.post("/rotate-image",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware,
   convertController.rotateImage
 );
 
-// Add text watermark
 router.post("/watermark",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware,
   convertController.addWatermark
 );
 
 // POST /api/convert/convert   body: { targetFormat, quality? }
 router.post("/convert",
   uploadLimiter, upload.single("image"), validateUpload,
+  validateImageMiddleware, validateQualityMiddleware,
   convertController.convertGeneric
 );
 
