@@ -128,7 +128,7 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
     ...GLOBAL_SEO_DEFAULTS,
     title: title ? title : GLOBAL_SEO_DEFAULTS.title.default,
     description: description || GLOBAL_SEO_DEFAULTS.description,
-    keywords: [...GLOBAL_SEO_DEFAULTS.keywords, ...keywords],
+    keywords: keywords.length > 0 ? keywords : GLOBAL_SEO_DEFAULTS.keywords,
     robots: robotsConfig,
     alternates: {
       canonical: canonicalUrl,

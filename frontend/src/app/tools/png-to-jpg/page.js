@@ -3,18 +3,15 @@ import PngToJpgTool from "@/components/tools/PngToJpgTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "PNG to JPG Converter – Free Online Tool",
-  description: "Convert PNG images to compressed JPG format. Adjust quality, set background color for transparent areas. Free, fast, no upload needed.",
+  title: "PNG to JPG Converter – Free, Fast & Compressed Output",
+  description: "Turn PNG images into small, web-ready JPG files instantly. Free browser-based converter — no account, no watermark, no server upload.",
   canonicalPath: "/tools/png-to-jpg",
   ogImage: "https://www.convertgalaxy.com/png-to-jpg.png",
   keywords: [
-    "png to jpg",
-    "convert png to jpg",
     "png to jpg converter",
-    "png to jpeg",
-    "change png to jpg",
-    "convert png to jpg online free",
-    "png to jpg transparent background"
+    "convert png to jpg free",
+    "png to jpg without background",
+    "reduce png file size to jpg",
   ]
 });
 
@@ -33,7 +30,7 @@ const relatedTools = [
 export default function PngToJpgPage() {
   return (
     <ToolPageLayout
-      title="PNG to JPG Converter"
+      title="Convert PNG to JPG Online Free"
       description="Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
       uiDescription={
         <span>

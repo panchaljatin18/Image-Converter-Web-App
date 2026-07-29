@@ -3,18 +3,15 @@ import CropImageTool from "@/components/tools/CropImageTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Crop Image – Free Online Image Cropper",
-  description: "Crop images to any size or aspect ratio online. Draw a crop selection, use aspect ratio presets (1:1, 16:9, 4:3). Free, instant, browser-based image cropper.",
+  title: "Crop Image Online Free – Custom or Preset Aspect Ratios",
+  description: "Crop any photo online free with custom size or preset ratios (square, 16:9, passport). No signup, no upload — 100% browser-based editing.",
   canonicalPath: "/tools/crop-image",
   ogImage: "https://www.convertgalaxy.com/crop-image.png",
   keywords: [
-    "crop image",
-    "image cropper",
     "crop image online",
-    "crop jpeg",
-    "crop png",
-    "free image cropper online",
-    "crop photo online"
+    "free image cropper no watermark",
+    "crop photo to square online",
+    "crop image for instagram post",
   ]
 });
 
@@ -33,7 +30,7 @@ const relatedTools = [
 export default function CropImagePage() {
   return (
     <ToolPageLayout
-      title="Crop Image"
+      title="Crop Your Image Online Free"
       description="Drag to select a crop area on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP."
       uiDescription={
         <span>

@@ -212,6 +212,36 @@ export function getHowToSchema(tool: {
 }
 
 /**
+ * SoftwareApplication Schema (for individual tool pages)
+ */
+export function getSoftwareApplicationSchema(tool: {
+  name: string;
+  path: string;
+  description: string;
+}) {
+  const toolUrl = `${SITE_URL}/${tool.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${toolUrl}/#softwareapplication`,
+    "name": tool.name,
+    "url": toolUrl,
+    "description": tool.description,
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires HTML5 browser.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@id": `${SITE_URL}/#organization`
+    }
+  };
+}
+
+/**
  * Dynamic Tool/WebApplication Schema
  */
 export function getWebApplicationSchema(tool: {
@@ -244,6 +274,7 @@ export function getWebApplicationSchema(tool: {
         "@id": `${SITE_URL}/#organization`
       }
     },
+    getSoftwareApplicationSchema(tool),
     getBreadcrumbSchema([
       { name: "Home", item: SITE_URL },
       { name: "Tools", item: `${SITE_URL}/tools` },
@@ -269,6 +300,7 @@ export function getWebApplicationSchema(tool: {
 
   return schemas;
 }
+
 
 /**
  * FAQ Schema

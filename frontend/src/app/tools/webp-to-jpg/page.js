@@ -3,18 +3,15 @@ import WebPToJpgTool from "@/components/tools/WebPToJpgTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "WebP to JPG Converter – Free Online Tool",
-  description: "Convert WebP images to compressed JPG format. Adjust quality, set background color for transparent areas. Free, fast, no upload needed.",
+  title: "WebP to JPG Converter Free – Fast, No Signup Needed",
+  description: "Convert WebP images to JPG format free, right in your browser. No account, no watermark, instant download — 100% private processing.",
   canonicalPath: "/tools/webp-to-jpg",
   ogImage: "https://www.convertgalaxy.com/webp-to-jpg.png",
   keywords: [
-    "webp to jpg",
-    "convert webp to jpg",
-    "webp to jpg online",
-    "webp to jpeg",
-    "convert webp to jpg free",
-    "webp to jpg converter free",
-    "change webp to jpg"
+    "webp to jpg converter",
+    "convert webp to jpg online free",
+    "webp image to jpg converter",
+    "save webp as jpg online",
   ]
 });
 
@@ -33,7 +30,7 @@ const relatedTools = [
 export default function WebPToJpgPage() {
   return (
     <ToolPageLayout
-      title="WebP to JPG Converter"
+      title="Convert WebP to JPG Online Free"
       description="Convert WebP images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
       uiDescription={
         <span>

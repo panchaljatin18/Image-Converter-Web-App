@@ -3,21 +3,15 @@ import ImageCompressorTool from "@/components/tools/ImageCompressorTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image Compressor – Reduce Image File Size Free Online",
-  description: "Compress JPG, PNG, WebP images without visible quality loss. Reduce file size by up to 90% using advanced browser-based compression. 100% free, private, no upload.",
+  title: "Image Compressor Online – Reduce Size Without Losing Quality",
+  description: "Compress JPG, PNG & WebP images free without visible quality loss. Reduce photo file size in seconds, right in your browser — no upload needed.",
   canonicalPath: "/tools/image-compressor",
   ogImage: "https://www.convertgalaxy.com/image-compressor.png",
   keywords: [
-    "compress image",
-    "image compressor",
-    "compress jpeg",
-    "png compressor",
-    "compress webp",
-    "reduce image size online",
-    "compress photo free",
-    "kb image compressor",
-    "compress image to 100kb",
-    "best online image compressor"
+    "image compressor online",
+    "compress image without losing quality",
+    "reduce photo size online free",
+    "compress jpeg online free",
   ]
 });
 
@@ -36,7 +30,7 @@ const relatedTools = [
 export default function ImageCompressorPage() {
   return (
     <ToolPageLayout
-      title="Image Compressor"
+      title="Compress Images Online Free — No Quality Loss"
       description="Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web optimization, email attachments, and faster page loads. All processing happens in your browser."
       uiDescription={
         <span>

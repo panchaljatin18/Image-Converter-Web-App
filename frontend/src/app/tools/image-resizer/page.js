@@ -3,19 +3,15 @@ import ImageResizerTool from "@/components/tools/ImageResizerTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image Resizer – Resize Images Online Free",
-  description: "Resize images to exact pixel dimensions or aspect ratios. Presets for social media, HD, 4K, and more. Lock aspect ratio, choose output format. Free, browser-based.",
+  title: "Image Resizer Online Free – Resize Photos in Pixels or %",
+  description: "Resize any image online free by pixels, percentage, or preset sizes (Instagram, passport, thumbnail). Fast, private, browser-based tool.",
   canonicalPath: "/tools/image-resizer",
   ogImage: "https://www.convertgalaxy.com/image-resizer.png",
   keywords: [
-    "image resizer",
-    "resize image",
-    "resize image online",
-    "resize image pixels",
-    "change image resolution",
-    "resize jpeg",
-    "resize png",
-    "free image resizer"
+    "image resizer online",
+    "resize image in pixels online",
+    "photo resizer free no watermark",
+    "resize image for instagram",
   ]
 });
 
@@ -34,7 +30,7 @@ const relatedTools = [
 export default function ImageResizerPage() {
   return (
     <ToolPageLayout
-      title="Image Resizer"
+      title="Resize Images Online Free"
       description="Resize your images to exact pixel dimensions. Lock aspect ratio to prevent distortion, use social media presets, or enter custom dimensions. Supports JPG, PNG, and WebP output."
       icon="📐"
       color="#8b5cf6"

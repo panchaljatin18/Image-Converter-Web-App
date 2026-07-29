@@ -4,9 +4,10 @@ import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Contact Us",
-  description: "Get in touch with the ConvertGalaxy team. Report a bug, request a feature, or ask a question. We respond within 24 hours.",
+  title: "Contact ConvertGalaxy – Get Support or Send Feedback",
+  description: "Have a question, bug report, or feature request? Contact the ConvertGalaxy team — we reply fast.",
   canonicalPath: "/contact",
+  keywords: ["contact convertgalaxy"],
 });
 
 export default function ContactPage() {

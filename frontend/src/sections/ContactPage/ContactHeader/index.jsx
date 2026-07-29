@@ -8,7 +8,7 @@ export default function ContactHeader() {
       <Container className="relative z-[1]">
         <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 bg-indigo-500/15 border border-indigo-500/30 rounded-full text-[#818cf8] font-semibold text-[0.78rem] tracking-wider uppercase mb-5">📬 Contact</span>
         <h1 className="text-3xl md:text-5xl font-bold leading-tight font-['Outfit'] tracking-tight mb-4 text-[#f8fafc]">
-          Get in <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Touch</span>
+          Contact <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Us</span>
         </h1>
         <p className="text-[#94a3b8] text-[1.1rem] max-w-[480px] mx-auto">
           Have a question, found a bug, or want to request a feature? We&apos;d love to hear from you.

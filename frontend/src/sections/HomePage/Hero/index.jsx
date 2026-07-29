@@ -1202,7 +1202,7 @@ export default function Hero() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold lg:whitespace-nowrap whitespace-normal mb-4 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
               Convert Any Image
               <br />
-              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Without the clutter</span>
+              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Without the Clutter</span>
             </h1>
 
             <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">

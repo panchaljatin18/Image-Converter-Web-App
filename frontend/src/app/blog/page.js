@@ -5,9 +5,10 @@ import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Tools Directory & Guides",
-  description: "Explore detailed information, features, and best practices for converting, resizing, cropping, and optimizing your images using our free online tools.",
+  title: "Image Editing Tips & Guides – ConvertGalaxy Blog",
+  description: "Learn image formats, compression tips, and step-by-step guides for JPG, PNG, WebP & PDF conversion — written for beginners.",
   canonicalPath: "/blog",
+  keywords: ["image conversion guides"],
 });
 
 const posts = [

@@ -5,9 +5,10 @@ import { constructMetadata } from "@/lib/metadata";
 const MegaMenu = dynamic(() => import("@/components/MegaMenu"));
 
 export const metadata = constructMetadata({
-  title: "All Free Image Tools",
-  description: "Browse all free online image tools: JPG to PNG, PNG to JPG, WebP converter, image compressor, resizer, crop, image to PDF, PDF to image — all free and browser-based.",
+  title: "All Image Tools – Convert, Compress, Resize & Edit Free",
+  description: "Browse all free image tools in one place — converters, compressor, resizer, cropper & PDF tools. No signup, fully browser-based.",
   canonicalPath: "/tools",
+  keywords: ["free image tools online"],
 });
 
 export default function ToolsPage() {

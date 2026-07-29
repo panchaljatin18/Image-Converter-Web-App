@@ -3,19 +3,15 @@ import WebPConverterTool from "@/components/tools/WebPConverterTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "WebP Converter – Convert Images To & From WebP Free",
-  description: "Convert JPG, PNG, GIF to WebP or WebP to JPG/PNG. WebP images are 26% smaller than PNG. Free browser-based converter with quality control.",
+  title: "WebP Converter Online – Convert Images to WebP Free",
+  description: "Convert JPG, PNG or any image to WebP format free. Smaller file size, faster websites, zero quality compromise — all in your browser.",
   canonicalPath: "/tools/webp-converter",
   ogImage: "https://www.convertgalaxy.com/webp-converter.png",
   keywords: [
     "webp converter",
-    "convert to webp",
-    "webp to png",
-    "png to webp",
-    "jpg to webp",
-    "convert webp to png online",
-    "webp image converter",
-    "convert image to webp"
+    "convert image to webp online",
+    "jpg to webp converter free",
+    "png to webp for website speed",
   ]
 });
 
@@ -34,7 +30,7 @@ const relatedTools = [
 export default function WebPConverterPage() {
   return (
     <ToolPageLayout
-      title="WebP Converter"
+      title="Convert Any Image to WebP Online"
       description="Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality."
       uiDescription={
         <span>

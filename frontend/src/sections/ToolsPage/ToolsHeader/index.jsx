@@ -12,7 +12,7 @@ export default function ToolsHeader() {
           8 Free Tools
         </span>
         <h1 className="text-3xl md:text-5xl font-bold leading-tight font-['Outfit'] tracking-tight mb-4 text-[#f8fafc]">
-          All Image <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Processing Tools</span>
+          All Image Tools <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">in One Place</span>
         </h1>
         <p className="text-[#94a3b8] text-[1.1rem] max-w-[520px] mx-auto">
           Every tool is 100% free, browser-based, and processes your images locally — no uploads, no registration.

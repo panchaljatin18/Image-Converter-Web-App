@@ -3,18 +3,15 @@ import ImageToPdfTool from "@/components/tools/ImageToPdfTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image to PDF Converter – Combine Images into PDF Free",
-  description: "Convert JPG, PNG, WebP images to a PDF file. Combine multiple images into one PDF with page size, orientation, and margin settings. Free, browser-based, no upload.",
+  title: "Image to PDF Converter Free – JPG/PNG to PDF in Seconds",
+  description: "Convert one or multiple JPG/PNG images into a single PDF file free. No email signup, no watermark — works instantly in your browser.",
   canonicalPath: "/tools/image-to-pdf",
   ogImage: "https://www.convertgalaxy.com/image-to-pdf.png",
   keywords: [
-    "image to pdf",
-    "convert image to pdf",
-    "jpg to pdf",
-    "png to pdf",
-    "combine images to pdf",
-    "image to pdf converter free",
-    "convert multiple images to pdf"
+    "image to pdf converter",
+    "convert jpg to pdf free",
+    "multiple images to one pdf online",
+    "png to pdf converter free",
   ]
 });
 
@@ -33,7 +30,7 @@ const relatedTools = [
 export default function ImageToPdfPage() {
   return (
     <ToolPageLayout
-      title="Image to PDF"
+      title="Convert Images to PDF Online Free"
       description="Combine one or more images into a PDF document. Control page size (A4, A3, Letter), orientation, margins, and image fit. Reorder pages before converting."
       icon="📄"
       color="#f97316"
