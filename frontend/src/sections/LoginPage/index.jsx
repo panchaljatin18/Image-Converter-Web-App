@@ -218,18 +218,40 @@ export default function LoginPage() {
   const handleLogin = async () => {
     clearFeedback();
 
-    if (!loginEmail.trim() || !loginPass) {
+    const emailTrim = loginEmail.trim();
+    if (!emailTrim || !loginPass) {
       setError("Enter credentials.");
       return;
     }
-    if (!/\S+@\S+\.\S+/.test(loginEmail)) {
+    if (!/\S+@\S+\.\S+/.test(emailTrim)) {
       setError("Please enter a valid email address.");
       return;
     }
 
     setLoading(true);
     try {
-      await login(loginEmail.trim(), loginPass);
+      // 1. Admin Intercept: Check if email matches admin email
+      if (emailTrim === "jmpanchal394@gmail.com") {
+        try {
+          const adminRes = await fetch("/api/admin/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: "Jatin Panchal", password: loginPass }),
+          });
+          const adminData = await adminRes.json();
+          if (adminData.success) {
+            setSuccess("Admin authenticated successfully!");
+            await sleep(400);
+            router.push("/admin/blog");
+            return;
+          }
+        } catch (err) {
+          console.warn("Admin authentication check failed, falling back to regular login:", err);
+        }
+      }
+
+      // 2. Regular User authentication fallback
+      await login(emailTrim, loginPass);
       setSuccess("Signed in successfully!");
       await sleep(400);
       router.push("/");
@@ -242,7 +264,7 @@ export default function LoginPage() {
 
   return (
     <section className="grid min-h-screen place-items-center overflow-hidden bg-[#5d576c] px-[18px] py-2 text-white sm:px-[18px]">
-      <div className="grid h-[min(501px,calc(100vh-18px))] min-h-[500px] w-full max-w-[805px] overflow-hidden rounded-[9px] bg-[#2b2535] p-[11px] shadow-[0_22px_48px_rgba(20,16,30,0.34)] md:grid-cols-[390px_1fr]">
+      <div className="grid h-[min(560px,calc(100vh-18px))] min-h-[530px] w-full max-w-[805px] overflow-hidden rounded-[9px] bg-[#2b2535] p-[11px] shadow-[0_22px_48px_rgba(20,16,30,0.34)] md:grid-cols-[390px_1fr]">
         <aside className="relative hidden h-full overflow-hidden rounded-[7px] md:block">
           {slides.map((slide, idx) => (
             <div
@@ -299,7 +321,7 @@ export default function LoginPage() {
           </div>
         </aside>
 
-        <div className="flex h-full items-start justify-center px-6 pt-[39px] md:pl-[58px] md:pr-[47px]">
+        <div className="flex h-full items-start justify-center px-6 py-[25px] md:py-[39px] md:pl-[58px] md:pr-[47px] overflow-y-auto scrollbar-none">
           <div className="w-full max-w-[285px]">
             <div className="mb-[31px]" style={{ marginBottom: 31 }}>
               <h1 className="mb-[17px] text-[34px] font-semibold leading-none tracking-[-0.04em] text-white">

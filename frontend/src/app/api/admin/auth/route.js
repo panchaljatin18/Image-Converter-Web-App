@@ -1,15 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
 export async function POST(req) {
   try {
-    const { username, password } = await req.json();
+    const { username, password } = await req.json()
 
     // Secure credentials verification
-    const expectedUsername = "jmpanchal394@gmail.com";
-    const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$";
+    const expectedUsername = "Jatin Panchal"
+    const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$"
 
     if (username === expectedUsername && password === expectedPassword) {
-      const response = NextResponse.json({ success: true, message: "Authentication successful." });
+      const response = NextResponse.json({
+        success: true,
+        message: "Authentication successful.",
+      })
 
       // Save authorization cookie for 7 days
       response.cookies.set("cg_admin_session", "authorized", {
@@ -18,14 +21,20 @@ export async function POST(req) {
         httpOnly: false, // readable by client components
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-      });
+      })
 
-      return response;
+      return response
     }
 
-    return NextResponse.json({ success: false, error: "Incorrect admin password." }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Incorrect admin password." },
+      { status: 401 },
+    )
   } catch (error) {
-    console.error("Error in auth API:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("Error in auth API:", error)
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    )
   }
 }
