@@ -35,28 +35,32 @@ export function markdownToHtml(md) {
     // Headings
     if (block.startsWith("### ")) {
       if (insideList) {
-        processedBlocks.push("</ul>");
+        processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
       processedBlocks.push(`<h3 class="font-['Outfit'] font-bold text-xl text-[#f8fafc] mt-8 mb-4">${block.slice(4)}</h3>`);
     } else if (block.startsWith("## ")) {
       if (insideList) {
-        processedBlocks.push("</ul>");
+        processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
       processedBlocks.push(`<h2 class="font-['Outfit'] font-extrabold text-2xl text-[#f8fafc] mt-10 mb-5 border-b border-white/6 pb-2">${block.slice(3)}</h2>`);
     } else if (block.startsWith("# ")) {
       if (insideList) {
-        processedBlocks.push("</ul>");
+        processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
       processedBlocks.push(`<h1 class="font-['Outfit'] font-black text-3xl md:text-4xl text-[#f8fafc] mt-12 mb-6">${block.slice(2)}</h1>`);
     }
     // Lists (bullet points starting with - )
     else if (block.startsWith("- ")) {
+      if (insideList && insideList !== "ul") {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
       if (!insideList) {
         processedBlocks.push('<ul class="list-disc pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">');
-        insideList = true;
+        insideList = "ul";
       }
       const listItems = block.split(/\n- /);
       listItems.forEach(item => {
@@ -69,10 +73,39 @@ export function markdownToHtml(md) {
         }
       });
     }
+    // Lists (numbered list starting with digits like 1. )
+    else if (/^\d+\.\s/.test(block)) {
+      if (insideList && insideList !== "ol") {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      if (!insideList) {
+        processedBlocks.push('<ol class="list-decimal pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">');
+        insideList = "ol";
+      }
+      const listItems = block.split(/\n\d+\.\s/);
+      listItems.forEach(item => {
+        let cleanItem = item.trim();
+        if (/^\d+\.\s/.test(cleanItem)) {
+          cleanItem = cleanItem.replace(/^\d+\.\s/, "");
+        }
+        if (cleanItem) {
+          processedBlocks.push(`<li>${cleanItem}</li>`);
+        }
+      });
+    }
+    // Horizontal divider
+    else if (block === "---") {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      processedBlocks.push('<hr class="border-t border-white/10 my-8" />');
+    }
     // Standard paragraphs
     else {
       if (insideList) {
-        processedBlocks.push("</ul>");
+        processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
       processedBlocks.push(`<p class="text-[#cbd5e1] text-[1.025rem] leading-[1.8] mb-6">${block.replace(/\n/g, "<br />")}</p>`);
@@ -80,7 +113,7 @@ export function markdownToHtml(md) {
   }
 
   if (insideList) {
-    processedBlocks.push("</ul>");
+    processedBlocks.push(`</${insideList}>`);
   }
 
   return processedBlocks.join("\n");
@@ -122,81 +155,195 @@ export function parseMarkdownFile(fileContent) {
   return { frontmatter, content };
 }
 
+import dbConnect from "@/lib/db";
+import { BlogPost, SeededLock } from "@/models/BlogPost";
+
 /**
- * Helper to ensure the blog directory exists.
+ * Automatically seeds markdown posts from src/content/blog to MongoDB if database is empty.
  */
-function ensureBlogDirectory() {
-  if (!fs.existsSync(BLOG_DIR)) {
-    fs.mkdirSync(BLOG_DIR, { recursive: true });
+async function seedMarkdownToDB() {
+  try {
+    // Check if we have already executed the initial migration before
+    const hasSeeded = await SeededLock.findOne();
+    if (hasSeeded) return; // Exit immediately, database migration already executed once
+
+    if (!fs.existsSync(BLOG_DIR)) return;
+
+    const files = fs.readdirSync(BLOG_DIR);
+    console.log(`Seeding ${files.length} markdown posts to MongoDB...`);
+    for (const file of files) {
+      if (!file.endsWith(".md")) continue;
+      const filePath = path.join(BLOG_DIR, file);
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const { frontmatter, content } = parseMarkdownFile(fileContent);
+      const slug = file.replace(".md", "");
+      const htmlContent = markdownToHtml(content);
+
+      await BlogPost.create({
+        slug,
+        title: frontmatter.title || "Untitled Post",
+        description: frontmatter.description || "",
+        date: frontmatter.date || new Date().toISOString().split("T")[0],
+        focusKeyword: frontmatter.focusKeyword || "",
+        relatedToolSlug: frontmatter.relatedToolSlug || "",
+        image: frontmatter.image || "",
+        imageAlt: frontmatter.imageAlt || "",
+        author: frontmatter.author || "Convert Galaxy Team",
+        status: frontmatter.status || "Draft",
+        content,
+        htmlContent,
+      });
+    }
+
+    // Set lock flag so we never re-seed
+    await SeededLock.create({ seeded: true });
+    console.log("Seeding complete!");
+  } catch (err) {
+    console.error("Seeding markdown posts failed:", err);
   }
 }
 
 /**
- * Reads and returns all blog posts sorted by date.
+ * Reads and returns all blog posts sorted by date from MongoDB.
  */
-export function getBlogPosts() {
-  ensureBlogDirectory();
+export async function getBlogPosts(includeDrafts = false) {
   try {
-    const files = fs.readdirSync(BLOG_DIR);
-    const posts = files
-      .filter(file => file.endsWith(".md"))
-      .map(file => {
-        const filePath = path.join(BLOG_DIR, file);
-        const fileContent = fs.readFileSync(filePath, "utf-8");
-        const { frontmatter, content } = parseMarkdownFile(fileContent);
-        const slug = file.replace(".md", "");
+    await dbConnect();
+    await seedMarkdownToDB();
 
-        return {
-          slug,
-          frontmatter,
-          content
-        };
-      })
-      .filter(post => post.frontmatter.title) // Ensure valid post
-      .sort((a, b) => {
-        const dateA = new Date(a.frontmatter.date || "");
-        const dateB = new Date(b.frontmatter.date || "");
-        return dateB - dateA; // Newest first
-      });
+    const query = includeDrafts ? {} : { status: { $ne: "Draft" } };
+    const posts = await BlogPost.find(query).sort({ date: -1 });
 
-    return posts;
+    return posts.map(post => ({
+      slug: post.slug,
+      frontmatter: {
+        title: post.title,
+        description: post.description,
+        date: post.date,
+        focusKeyword: post.focusKeyword || "",
+        relatedToolSlug: post.relatedToolSlug || "",
+        image: post.image || "",
+        imageAlt: post.imageAlt || "",
+        author: post.author || "Convert Galaxy Team",
+        status: post.status || "Draft",
+      },
+      content: post.content,
+      htmlContent: post.htmlContent || "",
+    }));
   } catch (e) {
-    console.error("Error loading blog posts:", e);
+    console.error("Error loading blog posts from DB:", e);
     return [];
   }
 }
 
 /**
- * Reads a single post by slug, parses it, and renders its body to HTML.
+ * Reads a single post by slug from MongoDB.
  */
-export function getBlogPostBySlug(slug) {
-  ensureBlogDirectory();
+export async function getBlogPostBySlug(slug) {
   try {
-    const filePath = path.join(BLOG_DIR, `${slug}.md`);
-    if (!fs.existsSync(filePath)) {
-      return null;
-    }
+    await dbConnect();
+    await seedMarkdownToDB();
 
-    const fileContent = fs.readFileSync(filePath, "utf-8");
-    const { frontmatter, content } = parseMarkdownFile(fileContent);
-    const htmlContent = markdownToHtml(content);
+    const post = await BlogPost.findOne({ slug });
+    if (!post) return null;
+
+    const htmlContent = post.htmlContent || markdownToHtml(post.content);
 
     return {
-      slug,
-      frontmatter,
+      slug: post.slug,
+      frontmatter: {
+        title: post.title,
+        description: post.description,
+        date: post.date,
+        focusKeyword: post.focusKeyword || "",
+        relatedToolSlug: post.relatedToolSlug || "",
+        image: post.image || "",
+        imageAlt: post.imageAlt || "",
+        author: post.author || "Convert Galaxy Team",
+        status: post.status || "Draft",
+      },
+      content: post.content,
       htmlContent,
-      content
     };
   } catch (e) {
-    console.error(`Error loading blog post by slug (${slug}):`, e);
+    console.error(`Error loading blog post by slug (${slug}) from DB:`, e);
     return null;
   }
 }
 
 /**
- * Fetches blog posts that target a specific tool (used for internal linking on tool pages).
+ * Fetches blog posts that target a specific tool from MongoDB.
  */
-export function getRelatedBlogPosts(toolKey) {
-  const posts = getBlogPosts();
-  return posts.filter(post => post.frontmatter.relatedToolSlug === toolKey);
+export async function getRelatedBlogPosts(toolKey) {
+  try {
+    await dbConnect();
+    await seedMarkdownToDB();
+
+    const posts = await BlogPost.find({ status: { $ne: "Draft" }, relatedToolSlug: toolKey }).sort({ date: -1 });
+    return posts.map(post => ({
+      slug: post.slug,
+      frontmatter: {
+        title: post.title,
+        description: post.description,
+        date: post.date,
+        focusKeyword: post.focusKeyword || "",
+        relatedToolSlug: post.relatedToolSlug || "",
+        image: post.image || "",
+        imageAlt: post.imageAlt || "",
+        author: post.author || "Convert Galaxy Team",
+        status: post.status || "Draft",
+      },
+      content: post.content,
+      htmlContent: post.htmlContent || "",
+    }));
+  } catch (e) {
+    console.error("Error fetching related posts from DB:", e);
+    return [];
+  }
+}
+
+/**
+ * Saves or updates blog post data to MongoDB.
+ */
+export async function saveBlogPost(slug, { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content }) {
+  try {
+    await dbConnect();
+    const htmlContent = markdownToHtml(content);
+
+    await BlogPost.findOneAndUpdate(
+      { slug },
+      {
+        title,
+        description,
+        date,
+        focusKeyword,
+        relatedToolSlug,
+        image,
+        imageAlt,
+        imageTitle,
+        author,
+        status,
+        content,
+        htmlContent,
+      },
+      { upsert: true, new: true }
+    );
+  } catch (e) {
+    console.error("Error saving blog post to DB:", e);
+    throw e;
+  }
+}
+
+/**
+ * Deletes the blog post from MongoDB.
+ */
+export async function deleteBlogPost(slug) {
+  try {
+    await dbConnect();
+    const result = await BlogPost.deleteOne({ slug });
+    return result.deletedCount > 0;
+  } catch (e) {
+    console.error("Error deleting blog post from DB:", e);
+    return false;
+  }
 }

@@ -112,7 +112,7 @@ export default function BlogGrid({ initialPosts = [] }) {
                 {post.frontmatter.image && (
                   <Image
                     src={post.frontmatter.image}
-                    alt={post.frontmatter.title}
+                    alt={post.frontmatter.imageAlt || post.frontmatter.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-103"
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"

@@ -55,7 +55,7 @@ body::-webkit-scrollbar {
 }
 
 .logo-nav-mobile img {
-  height: 50px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
@@ -76,7 +76,7 @@ body::-webkit-scrollbar {
   }
 
   .logo-nav-desktop img {
-    height: 60px;
+    height: 48px;
     width: auto;
     object-fit: contain;
   }
@@ -92,5 +92,27 @@ body::-webkit-scrollbar {
   .logo-footer-mobile {
     display: none !important;
   }
+}
+
+/* Custom Scrollbar Styles for Premium Dark Aesthetic */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f1a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a38;
+  border-radius: 4px;
+  border: 1px solid #1c1c28;
+  transition: background 0.15s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #443c68;
 }
 

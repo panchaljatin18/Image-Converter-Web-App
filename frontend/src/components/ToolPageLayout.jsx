@@ -14,7 +14,7 @@ const trustBadges = [
   { icon: <Star size={14} />, text: "Free Forever" },
 ];
 
-export default function ToolPageLayout({
+export default async function ToolPageLayout({
   title,
   description,
   icon,
@@ -30,7 +30,7 @@ export default function ToolPageLayout({
   const toolKey = toolPath ? toolPath.replace("tools/", "") : null;
   const richContent = toolKey ? toolContentMap[toolKey] : null;
   const displayFaqs = toolFaqs || (richContent && richContent.faqs) || [];
-  const relatedPosts = toolKey ? getRelatedBlogPosts(toolKey) : [];
+  const relatedPosts = toolKey ? await getRelatedBlogPosts(toolKey) : [];
 
   return (
     <div className="pt-20 min-h-screen">

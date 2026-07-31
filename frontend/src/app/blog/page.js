@@ -12,8 +12,8 @@ export const metadata = constructMetadata({
   keywords: ["image conversion guides"],
 });
 
-export default function BlogPage() {
-  const posts = getBlogPosts();
+export default async function BlogPage() {
+  const posts = await getBlogPosts();
 
   const seoPosts = posts.map(p => ({
     title: p.frontmatter.title,
@@ -23,7 +23,7 @@ export default function BlogPage() {
   }));
 
   return (
-    <div style={{ paddingTop: "80px" }}>
+    <div style={{ paddingTop: "72px" }}>
       <SEO type="blog" posts={seoPosts} />
       <BlogHeader />
       <Suspense fallback={<div className="py-16 text-center text-[#cbd5e1]">Loading search...</div>}>

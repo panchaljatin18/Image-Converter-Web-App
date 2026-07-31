@@ -9,7 +9,7 @@ import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 
 // Static params generation for SSG
 export async function generateStaticParams() {
-  const posts = getBlogPosts();
+  const posts = await getBlogPosts();
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -18,8 +18,8 @@ export async function generateStaticParams() {
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug);
-  if (!post) return {};
+  const post = await getBlogPostBySlug(resolvedParams.slug);
+  if (!post || post.frontmatter.status === "Draft") return {};
 
   return constructMetadata({
     title: `${post.frontmatter.title} | ConvertGalaxy Blog`,
@@ -49,9 +49,9 @@ const getToolName = (slug) => {
 
 export default async function BlogPostPage({ params }) {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug);
+  const post = await getBlogPostBySlug(resolvedParams.slug);
 
-  if (!post) {
+  if (!post || post.frontmatter.status === "Draft") {
     notFound();
   }
 
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }) {
           <div className="max-w-[850px] mx-auto mb-12 rounded-[28px] overflow-hidden border border-white/8 bg-black/40 shadow-2xl relative aspect-[16/9]">
             <Image
               src={post.frontmatter.image}
-              alt={post.frontmatter.title}
+              alt={post.frontmatter.imageAlt || post.frontmatter.title}
               fill
               className="object-cover"
               sizes="(max-width: 850px) 100vw, 850px"

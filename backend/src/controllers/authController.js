@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const mailService = require("../services/mailService");
+const bcrypt = require("bcryptjs");
 
 // Helper to sign JWT token
 const generateToken = (id) => {
@@ -29,6 +30,18 @@ const authController = {
           success: false,
           message: "Email already registered."
         });
+      }
+
+      // Check if any existing user uses the same password
+      const users = await User.find({});
+      for (const u of users) {
+        const isMatch = await bcrypt.compare(password, u.password);
+        if (isMatch) {
+          return res.status(400).json({
+            success: false,
+            message: "This password has already been chosen by another user. Please choose a different password."
+          });
+        }
       }
 
       // Create new user
