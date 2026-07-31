@@ -55,15 +55,7 @@ export default function HeicToJpgPage() {
       uiDescription={
         <span>
           Convert Apple HEIC photos to universal JPG format instantly with
-          custom quality & EXIF metadata controls. 100% free —{" "}
-          <a
-            href="https://jobforiti.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#06b6d4] hover:underline cursor-pointer">
-            secure browser & server processing
-          </a>
-          .
+          custom quality & EXIF metadata controls. 100% free — secure browser & server processing.
         </span>
       }
       icon="📱"

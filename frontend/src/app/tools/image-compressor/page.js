@@ -34,11 +34,7 @@ export default function ImageCompressorPage() {
       description="Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web optimization, email attachments, and faster page loads. All processing happens in your browser."
       uiDescription={
         <span>
-          Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web{" "}
-          <a href="https://jobforiti.com/walk-in-interview-at-ste-ahmedabad-2026" target="_blank" rel="noopener noreferrer" title="Walk-in Interview at STE Ahmedabad 2026 on JobForITI" className="text-[#10b981] hover:text-[#34d399] underline decoration-[#10b981]/45">
-            optimization
-          </a>
-          , email attachments, and faster page loads. All processing happens in your browser.
+          Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web optimization, email attachments, and faster page loads. All processing happens in your browser.
         </span>
       }
       icon="🗜️"

@@ -61,7 +61,7 @@ Anonymous analytics data is retained in aggregate form for up to 24 months.`,
 • Object to processing of your data
 • Data portability
 
-To exercise these rights, contact us at hello@convertgalaxy.pro. We will respond within 30 days.`,
+To exercise these rights, contact us at hello@convertgalaxy.com. We will respond within 30 days.`,
   },
   {
     title: "7. Children's Privacy",
@@ -73,7 +73,7 @@ To exercise these rights, contact us at hello@convertgalaxy.pro. We will respond
   },
   {
     title: "9. Contact Us",
-    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: hello@convertgalaxy.pro\n\nWe are committed to resolving any privacy concerns promptly.`,
+    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: hello@convertgalaxy.com\n\nWe are committed to resolving any privacy concerns promptly.`,
   },
 ];
 

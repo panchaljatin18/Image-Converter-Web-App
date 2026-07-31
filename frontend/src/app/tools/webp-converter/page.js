@@ -34,11 +34,7 @@ export default function WebPConverterPage() {
       description="Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality."
       uiDescription={
         <span>
-          Convert any image to WebP for maximum web{" "}
-          <a href="https://jobforiti.com/maruti-suzuki-campus-placement-2026" target="_blank" rel="noopener noreferrer" title="Maruti Suzuki Campus Placement 2026 on JobForITI" className="text-[#f59e0b] hover:text-[#fbbf24] underline decoration-[#f59e0b]/45">
-            performance
-          </a>
-          , or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality.
+          Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality.
         </span>
       }
       icon="⚡"

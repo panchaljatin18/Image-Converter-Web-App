@@ -34,11 +34,7 @@ export default function JpgToPngPage() {
       description="Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded."
       uiDescription={
         <span>
-          Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based —{" "}
-          <a href="https://jobforiti.com/revoltech-auto-engineering-campus-drive-2026" target="_blank" rel="noopener noreferrer" title="Revoltech Auto Engineering Campus Drive 2026 on JobForITI" className="text-[#818cf8] hover:text-[#a5b4fc] underline decoration-[#818cf8]/45">
-            zero data
-          </a>{" "}
-          uploaded.
+          Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded.
         </span>
       }
       icon="🔄"

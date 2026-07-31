@@ -226,35 +226,80 @@ const PREVIEW_DETAILS = {
   }
 };
 
+function getToolRoute(from, to) {
+  const f = from.toUpperCase();
+  const t = to.toUpperCase();
+  
+  if (f === "HEIC" && t === "JPG") return "/tools/heic-to-jpg";
+  if (f === "JPG" && t === "PNG") return "/tools/jpg-to-png";
+  if (f === "PNG" && t === "JPG") return "/tools/png-to-jpg";
+  if (f === "WEBP" && t === "JPG") return "/tools/webp-to-jpg";
+  
+  const imageFormats = ["PNG", "JPG", "JPEG", "WEBP", "BMP", "AVIF", "HEIC", "RAW", "TIFF", "GIF"];
+  if (imageFormats.includes(f) && t === "PDF") return "/tools/image-to-pdf";
+  if (f === "PDF" && (t === "JPG" || t === "PNG")) return "/tools/pdf-to-image";
+  
+  if (imageFormats.includes(f) && t === "WEBP") {
+    if (f !== "WEBP") return "/tools/webp-converter";
+  }
+  if (f === "WEBP" && ["PNG", "AVIF", "GIF", "BMP"].includes(t)) return "/tools/webp-converter";
+  
+  return null;
+}
+
 export default function MegaMenu() {
   const router = useRouter();
-  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0].id);
+
+  const activeCategories = useMemo(() => {
+    return CATEGORIES.map(cat => {
+      const formats = cat.formats.filter(fmt => {
+        const targets = FORMAT_CONVERSIONS[fmt] || [];
+        return targets.some(target => getToolRoute(fmt, target) !== null);
+      });
+      return {
+        ...cat,
+        activeFormats: formats,
+        activeCount: formats.reduce((acc, fmt) => {
+          const targets = FORMAT_CONVERSIONS[fmt] || [];
+          return acc + targets.filter(target => getToolRoute(fmt, target) !== null).length;
+        }, 0)
+      };
+    }).filter(cat => cat.activeFormats.length > 0);
+  }, []);
+
+  const [activeCategory, setActiveCategory] = useState(activeCategories[0]?.id || "");
   const [hoverCategory, setHoverCategory] = useState(null);
   
   const currentCategory = useMemo(() => {
-    return CATEGORIES.find(c => c.id === (hoverCategory || activeCategory)) || CATEGORIES[0];
-  }, [hoverCategory, activeCategory]);
+    return activeCategories.find(c => c.id === (hoverCategory || activeCategory)) || activeCategories[0];
+  }, [hoverCategory, activeCategory, activeCategories]);
 
-  const [activeFormat, setActiveFormat] = useState(currentCategory.formats[0]);
+  const [activeFormat, setActiveFormat] = useState(currentCategory?.activeFormats[0] || "");
   const [hoverFormat, setHoverFormat] = useState(null);
 
   const currentFormat = useMemo(() => {
-    return hoverFormat || activeFormat || currentCategory.formats[0];
+    return hoverFormat || activeFormat || currentCategory?.activeFormats[0] || "";
   }, [hoverFormat, activeFormat, currentCategory]);
 
   // Sync active format when active category changes
   useEffect(() => {
-    if (currentCategory.formats.length > 0) {
-      setActiveFormat(currentCategory.formats[0]);
+    if (currentCategory?.activeFormats.length > 0) {
+      setActiveFormat(currentCategory.activeFormats[0]);
     }
   }, [currentCategory]);
 
   const conversions = useMemo(() => {
+    if (!currentFormat) return [];
     const list = FORMAT_CONVERSIONS[currentFormat] || [];
-    return list.map(target => ({
-      from: currentFormat,
-      to: target
-    }));
+    return list.map(target => {
+      const route = getToolRoute(currentFormat, target);
+      if (!route) return null;
+      return {
+        from: currentFormat,
+        to: target,
+        route
+      };
+    }).filter(Boolean);
   }, [currentFormat]);
 
   const [activeConversion, setActiveConversion] = useState(conversions[0] || null);
@@ -279,10 +324,12 @@ export default function MegaMenu() {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase().trim();
     
-    // Find matching conversions
     const matches = [];
     Object.entries(FORMAT_CONVERSIONS).forEach(([from, targets]) => {
       targets.forEach(to => {
+        const route = getToolRoute(from, to);
+        if (!route) return;
+
         const routeName = `${from.toLowerCase()}-to-${to.toLowerCase()}`;
         if (
           from.toLowerCase().includes(query) ||
@@ -290,11 +337,11 @@ export default function MegaMenu() {
           routeName.includes(query) ||
           `${from} to ${to}`.toLowerCase().includes(query)
         ) {
-          matches.push({ from, to });
+          matches.push({ from, to, route });
         }
       });
     });
-    return matches.slice(0, 30); // Limit search results to 30 items
+    return matches.slice(0, 30);
   }, [searchQuery]);
 
   // Keyboard navigation refs
@@ -323,17 +370,15 @@ export default function MegaMenu() {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         if (searchQuery.trim()) {
-          // Navigate search results
           setKbFocusedIndex(prev => Math.min(prev + 1, filteredSearchConversions.length - 1));
         } else {
           if (kbFocusedColumn === 1) {
-            setKbFocusedIndex(prev => Math.min(prev + 1, CATEGORIES.length - 1));
+            setKbFocusedIndex(prev => Math.min(prev + 1, activeCategories.length - 1));
           } else if (kbFocusedColumn === 2) {
-            setKbFocusedIndex(prev => Math.min(prev + 1, currentCategory.formats.length - 1));
+            setKbFocusedIndex(prev => Math.min(prev + 1, (currentCategory?.activeFormats.length || 1) - 1));
           } else if (kbFocusedColumn === 3) {
             setKbFocusedIndex(prev => Math.min(prev + 1, conversions.length - 1));
           } else {
-            // Jump to categories if no column focused
             setKbFocusedColumn(1);
             setKbFocusedIndex(0);
           }
@@ -372,18 +417,17 @@ export default function MegaMenu() {
         if (searchQuery.trim() && kbFocusedIndex >= 0) {
           const match = filteredSearchConversions[kbFocusedIndex];
           if (match) {
-            router.push(`/tools/${match.from.toLowerCase()}-to-${match.to.toLowerCase()}`);
+            router.push(match.route);
           }
         } else if (kbFocusedColumn === 3 && kbFocusedIndex >= 0) {
           const conv = conversions[kbFocusedIndex];
           if (conv) {
-            router.push(`/tools/${conv.from.toLowerCase()}-to-${conv.to.toLowerCase()}`);
+            router.push(conv.route);
           }
         }
       }
     };
 
-    // Apply side effect updates to state on Keyboard moves
     if (kbFocusedIndex >= 0) {
       if (searchQuery.trim()) {
         const item = filteredSearchConversions[kbFocusedIndex];
@@ -392,10 +436,10 @@ export default function MegaMenu() {
         }
       } else {
         if (kbFocusedColumn === 1) {
-          const cat = CATEGORIES[kbFocusedIndex];
+          const cat = activeCategories[kbFocusedIndex];
           if (cat) setActiveCategory(cat.id);
         } else if (kbFocusedColumn === 2) {
-          const fmt = currentCategory.formats[kbFocusedIndex];
+          const fmt = currentCategory?.activeFormats[kbFocusedIndex];
           if (fmt) setActiveFormat(fmt);
         } else if (kbFocusedColumn === 3) {
           const conv = conversions[kbFocusedIndex];
@@ -406,7 +450,7 @@ export default function MegaMenu() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [kbFocusedColumn, kbFocusedIndex, currentCategory, conversions, searchQuery, filteredSearchConversions, router]);
+  }, [kbFocusedColumn, kbFocusedIndex, activeCategories, currentCategory, conversions, searchQuery, filteredSearchConversions, router]);
 
   // Preview properties
   const preview = useMemo(() => {
@@ -482,7 +526,7 @@ export default function MegaMenu() {
 
                     return (
                       <Link
-                        href={`/tools/${conv.from.toLowerCase()}-to-${conv.to.toLowerCase()}`}
+                        href={conv.route}
                         key={`${conv.from}-${conv.to}`}
                         onMouseEnter={() => setHoverConversion(conv)}
                         className="no-underline block"
@@ -533,7 +577,7 @@ export default function MegaMenu() {
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Supported Features</span>
                       <ul className="space-y-2 list-none p-0 m-0">
                         {preview.features.map((feat, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-[11px] text-slate-300 font-medium font-['Outfit']">
+                           <li key={idx} className="flex items-center gap-2 text-[11px] text-slate-300 font-medium font-['Outfit']">
                             <span className="text-[10px] text-indigo-400">⚡</span>
                             {feat}
                           </li>
@@ -541,7 +585,7 @@ export default function MegaMenu() {
                       </ul>
                     </div>
                   </div>
-                  <Link href={`/tools/${currentConversion.from.toLowerCase()}-to-${currentConversion.to.toLowerCase()}`} className="no-underline block w-full mt-4">
+                  <Link href={currentConversion.route} className="no-underline block w-full mt-4">
                     <button className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 border-none cursor-pointer transition-all duration-150">
                       Convert File Now
                       <ArrowRight size={14} />
@@ -569,13 +613,13 @@ export default function MegaMenu() {
             <div className="hidden md:block w-1/4 min-w-[200px] border-r border-white/5 flex flex-col h-full overflow-hidden bg-[#0a0a13]/65">
               <div className="px-5 py-3 border-b border-white/5 bg-white/2 flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-['Inter']">Category</span>
-                <span className="text-[10px] text-indigo-400 font-bold bg-indigo-500/10 px-2 py-0.5 rounded-full">{CATEGORIES.length} Suites</span>
+                <span className="text-[10px] text-indigo-400 font-bold bg-indigo-500/10 px-2 py-0.5 rounded-full">{activeCategories.length} Suites</span>
               </div>
               <div
                 className="flex-1 overflow-y-auto p-2.5 space-y-1.25 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
                 onMouseLeave={() => setHoverCategory(null)}
               >
-                {CATEGORIES.map((cat, idx) => {
+                {activeCategories.map((cat, idx) => {
                   const Icon = cat.icon;
                   const isSelected = activeCategory === cat.id;
                   const isHovered = hoverCategory === cat.id;
@@ -613,7 +657,7 @@ export default function MegaMenu() {
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-[10px] text-slate-600 font-bold font-['Outfit'] group-hover:text-indigo-400/70 transition-colors">
-                          {cat.count}
+                          {cat.activeCount}
                         </span>
                         <ArrowRight
                           size={10}
@@ -637,7 +681,7 @@ export default function MegaMenu() {
                 className="flex-1 overflow-y-auto p-2.5 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
                 onMouseLeave={() => setHoverFormat(null)}
               >
-                {currentCategory.formats.map((fmt, idx) => {
+                {currentCategory?.activeFormats.map((fmt, idx) => {
                   const isSelected = activeFormat === fmt;
                   const isHovered = hoverFormat === fmt;
                   const isActive = isHovered || isSelected;
@@ -689,7 +733,7 @@ export default function MegaMenu() {
 
                     return (
                       <Link
-                        href={`/tools/${conv.from.toLowerCase()}-to-${conv.to.toLowerCase()}`}
+                        href={conv.route}
                         key={`${conv.from}-${conv.to}`}
                         onMouseEnter={() => {
                           setHoverConversion(conv);
@@ -755,7 +799,7 @@ export default function MegaMenu() {
                       </ul>
                     </div>
                   </div>
-                  <Link href={`/tools/${currentConversion.from.toLowerCase()}-to-${currentConversion.to.toLowerCase()}`} className="no-underline block w-full mt-4">
+                  <Link href={currentConversion.route} className="no-underline block w-full mt-4">
                     <button className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 border-none cursor-pointer transition-all duration-150">
                       Convert File Now
                       <ArrowRight size={14} />
@@ -778,19 +822,19 @@ export default function MegaMenu() {
                   <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-['Inter']">Category</span>
                 </div>
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                  {CATEGORIES.map(cat => (
+                  {activeCategories.map(cat => (
                     <button
                       key={cat.id}
                       onClick={() => {
                         setActiveCategory(cat.id);
-                        if (cat.formats.length > 0) setActiveFormat(cat.formats[0]);
+                        if (cat.activeFormats.length > 0) setActiveFormat(cat.activeFormats[0]);
                       }}
                       className={`w-full flex items-center justify-between p-3 rounded-xl border text-left cursor-pointer ${
                         activeCategory === cat.id ? "bg-indigo-500/10 border-indigo-500/20" : "bg-transparent border-transparent"
                       }`}
                     >
                       <span className="text-xs font-semibold text-white">{cat.title}</span>
-                      <span className="text-[10px] text-slate-500 font-bold">{cat.count} files</span>
+                      <span className="text-[10px] text-slate-500 font-bold">{cat.activeCount} files</span>
                     </button>
                   ))}
                 </div>
@@ -803,7 +847,7 @@ export default function MegaMenu() {
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   <div className="flex flex-wrap gap-1.5 mb-4">
-                    {currentCategory.formats.map(fmt => (
+                    {currentCategory?.activeFormats.map(fmt => (
                       <button
                         key={fmt}
                         onClick={() => setActiveFormat(fmt)}
@@ -818,7 +862,7 @@ export default function MegaMenu() {
                   <div className="space-y-2">
                     {conversions.map(conv => (
                       <Link
-                        href={`/tools/${conv.from.toLowerCase()}-to-${conv.to.toLowerCase()}`}
+                        href={conv.route}
                         key={`${conv.from}-${conv.to}`}
                         className="no-underline block"
                       >
@@ -835,7 +879,7 @@ export default function MegaMenu() {
 
             {/* MOBILE SHEET ACCORDION VIEW */}
             <div className="block sm:hidden w-full h-[550px] overflow-y-auto p-4 space-y-4">
-              {CATEGORIES.map(cat => {
+              {activeCategories.map(cat => {
                 const isSelected = activeCategory === cat.id;
                 const Icon = cat.icon;
                 
@@ -851,13 +895,13 @@ export default function MegaMenu() {
                         </span>
                         <span className="text-sm font-semibold text-white">{cat.title}</span>
                       </div>
-                      <span className="text-xs text-slate-500">{cat.count} converters</span>
+                      <span className="text-xs text-slate-500">{cat.activeCount} converters</span>
                     </button>
 
                     {isSelected && (
                       <div className="border-t border-white/5 bg-black/20 p-4 space-y-4">
                         <div className="flex flex-wrap gap-1.5">
-                          {cat.formats.map(fmt => (
+                          {cat.activeFormats.map(fmt => (
                             <button
                               key={fmt}
                               onClick={() => {
@@ -874,7 +918,7 @@ export default function MegaMenu() {
                         <div className="space-y-2">
                           {conversions.map(conv => (
                             <Link
-                              href={`/tools/${conv.from.toLowerCase()}-to-${conv.to.toLowerCase()}`}
+                              href={conv.route}
                               key={`${conv.from}-${conv.to}`}
                               className="no-underline block"
                             >

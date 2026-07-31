@@ -140,12 +140,12 @@ export default function Footer() {
             {/* Contact Info */}
             <div className="flex flex-col gap-2.5 mb-6">
               <a
-                href="mailto:hello@convertergalaxy.com"
-                aria-label="Email support at hello@convertergalaxy.com"
+                href="mailto:hello@convertgalaxy.com"
+                aria-label="Email support at hello@convertgalaxy.com"
                 className="flex items-center gap-2 text-[#cbd5e1] no-underline text-[0.85rem] transition-colors duration-200 hover:text-[#818cf8]"
               >
                 <Mail size={14} />
-                hello@convertergalaxy.com
+                hello@convertgalaxy.com
               </a>
             </div>
 

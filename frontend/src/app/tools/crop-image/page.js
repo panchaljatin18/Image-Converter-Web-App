@@ -34,7 +34,7 @@ export default function CropImagePage() {
       description="Drag to select a crop area on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP."
       uiDescription={
         <span>
-          Drag to select a <a href="https://jobforiti.com/devops-engineer-fresher-jobs-in-bangalore-2026-direct-interview" target="_blank" rel="noopener noreferrer" className="text-[#818cf8] hover:text-[#c7d2fe] underline transition-colors">crop area</a> on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP.
+          Drag to select a crop area on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP.
         </span>
       }
       icon="✂️"

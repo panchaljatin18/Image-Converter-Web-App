@@ -1,57 +1,18 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Shield, Zap, Star, ChevronDown, ChevronUp, Layers, FileImage, Sparkles, HelpCircle } from "lucide-react";
+import { ArrowLeft, Shield, Zap, Star, Layers, FileImage, Sparkles, HelpCircle } from "lucide-react";
 import Container from "@/components/Container";
 import SEO from "@/components/SEO";
 import AdSenseUnit from "@/components/AdSenseUnit";
 import { toolContentMap } from "@/lib/toolContentData";
+import FaqAccordion from "@/components/FaqAccordion";
+import { getRelatedBlogPosts } from "@/lib/blog";
+import Image from "next/image";
 
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
   { icon: <Zap size={14} />, text: "Browser-Based" },
   { icon: <Star size={14} />, text: "Free Forever" },
 ];
-
-function FaqAccordion({ faqs }) {
-  const [openIndex, setOpenIndex] = useState(null);
-
-  const toggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  return (
-    <div className="space-y-4">
-      {faqs.map((faq, index) => {
-        const isOpen = openIndex === index;
-        return (
-          <div
-            key={index}
-            className="border border-white/8 bg-[#1a1a2e] rounded-2xl overflow-hidden transition-all duration-200"
-          >
-            <button
-              onClick={() => toggle(index)}
-              className="w-full flex items-center justify-between py-4 px-6 text-left font-semibold text-[#f8fafc] hover:bg-white/[0.02] transition-colors duration-150"
-            >
-              <span>{faq.q}</span>
-              {isOpen ? (
-                <ChevronUp size={18} className="text-[#a5b4fc] shrink-0" />
-              ) : (
-                <ChevronDown size={18} className="text-[#a5b4fc] shrink-0" />
-              )}
-            </button>
-            {isOpen && (
-              <div className="py-4 px-6 border-t border-white/6 text-[#cbd5e1] text-[0.9rem] leading-relaxed bg-[#151528]">
-                {faq.a}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 export default function ToolPageLayout({
   title,
@@ -69,6 +30,7 @@ export default function ToolPageLayout({
   const toolKey = toolPath ? toolPath.replace("tools/", "") : null;
   const richContent = toolKey ? toolContentMap[toolKey] : null;
   const displayFaqs = toolFaqs || (richContent && richContent.faqs) || [];
+  const relatedPosts = toolKey ? getRelatedBlogPosts(toolKey) : [];
 
   return (
     <div className="pt-20 min-h-screen">
@@ -283,6 +245,50 @@ export default function ToolPageLayout({
               </div>
             )}
 
+          </Container>
+        </div>
+      )}
+
+      {/* Related Guides Section */}
+      {relatedPosts && relatedPosts.length > 0 && (
+        <div className="bg-[#0f0f1a] border-t border-white/8 py-12">
+          <Container>
+            <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
+              Related Guides & Tips
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {relatedPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="bg-[#1a1a2e] border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500 transition-all flex flex-col group no-underline text-left"
+                >
+                  {post.frontmatter.image && (
+                    <div className="relative h-44 w-full overflow-hidden bg-black">
+                      <Image
+                        src={post.frontmatter.image}
+                        alt={post.frontmatter.title}
+                        fill
+                        className="object-cover group-hover:scale-103 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col flex-1">
+                    <span className="text-xs text-indigo-400 font-semibold mb-2 block">{post.frontmatter.date}</span>
+                    <h3 className="font-bold text-base text-[#f8fafc] group-hover:text-indigo-400 transition-colors mb-2 line-clamp-2">
+                      {post.frontmatter.title}
+                    </h3>
+                    <p className="text-xs text-[#cbd5e1] line-clamp-3 leading-relaxed mb-4">
+                      {post.frontmatter.description}
+                    </p>
+                    <span className="text-xs text-indigo-400 font-semibold mt-auto flex items-center gap-1">
+                      Read Guide →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </Container>
         </div>
       )}

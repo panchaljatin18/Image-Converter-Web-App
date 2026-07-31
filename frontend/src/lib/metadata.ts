@@ -71,7 +71,6 @@ export const GLOBAL_SEO_DEFAULTS = {
   },
   verification: {
     google: "s0ab_86u6FyoQmZRSv69y4Ji4Q5IuJqM8lds-lyZ5HM",
-    yandex: "yandex-verification-placeholder",
   },
   other: {
     "apple-mobile-web-app-capable": "yes",
@@ -128,7 +127,6 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
     ...GLOBAL_SEO_DEFAULTS,
     title: title ? title : GLOBAL_SEO_DEFAULTS.title.default,
     description: description || GLOBAL_SEO_DEFAULTS.description,
-    keywords: keywords.length > 0 ? keywords : GLOBAL_SEO_DEFAULTS.keywords,
     robots: robotsConfig,
     alternates: {
       canonical: canonicalUrl,

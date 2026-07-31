@@ -34,11 +34,7 @@ export default function PngToJpgPage() {
       description="Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
       uiDescription={
         <span>
-          Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your{" "}
-          <a href="https://jobforiti.com/sfc-solution-company-recruitment-2026" target="_blank" rel="noopener noreferrer" title="SFC Solution Company Recruitment 2026 on JobForITI" className="text-[#06b6d4] hover:text-[#67e8f9] underline decoration-[#06b6d4]/45">
-            browser
-          </a>
-          .
+          Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser.
         </span>
       }
       icon="🖼️"
