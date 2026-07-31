@@ -33,14 +33,16 @@ const authController = {
       }
 
       // Check if any existing user uses the same password
-      const users = await User.find({});
+      const users = await User.find({}).select("+password");
       for (const u of users) {
-        const isMatch = await bcrypt.compare(password, u.password);
-        if (isMatch) {
-          return res.status(400).json({
-            success: false,
-            message: "This password has already been chosen by another user. Please choose a different password."
-          });
+        if (u.password) {
+          const isMatch = await bcrypt.compare(password, u.password);
+          if (isMatch) {
+            return res.status(400).json({
+              success: false,
+              message: "This password has already been chosen by another user. Please choose a different password."
+            });
+          }
         }
       }
 
