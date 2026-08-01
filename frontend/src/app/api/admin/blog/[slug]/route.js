@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { getBlogPostBySlug, saveBlogPost, deleteBlogPost } from "@/lib/blog";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
 export async function GET(req, { params }) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const { slug } = await params;
     const post = await getBlogPostBySlug(slug);
@@ -18,6 +22,9 @@ export async function GET(req, { params }) {
 }
 
 export async function PUT(req, { params }) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const { slug } = await params;
     const data = await req.json();
@@ -49,6 +56,9 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const { slug } = await params;
     const deleted = await deleteBlogPost(slug);

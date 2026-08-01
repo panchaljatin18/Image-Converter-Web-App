@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { getBlogPosts, saveBlogPost } from "@/lib/blog";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
-export async function GET() {
+export async function GET(req) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const posts = await getBlogPosts(true); // include drafts in admin panel
     return NextResponse.json({ success: true, posts });
@@ -12,6 +16,9 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const data = await req.json();
     const { slug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content } = data;

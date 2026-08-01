@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { BlogImage } from "@/models/BlogImage";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
 export async function POST(req) {
+  const authError = verifyAdminAuth(req);
+  if (authError) return authError;
+
   try {
     const formData = await req.formData();
     const file = formData.get("file");

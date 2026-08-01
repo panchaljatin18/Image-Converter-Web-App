@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
 
@@ -26,19 +26,17 @@ export default function AdminLayout({ children }) {
       // Enforce tab-based session authorization for every admin link access
       const sessionAuth = typeof window !== "undefined" && sessionStorage.getItem("cg_admin_session") === "authorized";
 
-      if (sessionAuth) {
+      if (sessionAuth && user) {
         setIsAuthorized(true);
-        if (setUser) {
-          setUser({ name: "Jatin Panchal", email: "jmpanchal394@gmail.com", role: "admin" });
-        }
       } else {
         document.cookie = "cg_admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; sameSite=strict;";
+        sessionStorage.removeItem("cg_admin_session");
         setIsAuthorized(false);
       }
       setChecking(false);
     };
     checkSession();
-  }, [pathname, setUser]);
+  }, [pathname, user, setUser]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -94,8 +92,8 @@ export default function AdminLayout({ children }) {
 
           {/* Logo Brand */}
           <div className="flex flex-col items-center text-center space-y-3">
-            <span className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center font-bold text-white text-lg shadow-[0_4px_20px_rgba(139,92,246,0.25)]">
-              CG
+            <span className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(139,92,246,0.25)]">
+              <ShieldCheck size={26} className="text-white" />
             </span>
             <div>
               <h2 className="font-['Outfit'] font-black text-2xl text-white tracking-tight">ConvertGalaxy Admin</h2>

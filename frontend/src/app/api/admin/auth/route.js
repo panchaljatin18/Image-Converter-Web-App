@@ -1,18 +1,29 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { username, password } = await req.json()
+    const { username, password } = await req.json();
+
+    // Input sanitization
+    if (!username || !password || typeof password !== "string") {
+      return NextResponse.json(
+        { success: false, error: "Invalid credentials provided." },
+        { status: 400 }
+      );
+    }
 
     // Secure credentials verification
-    const expectedUsername = "Jatin Panchal"
-    const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$"
+    const expectedUsername = "Jatin Panchal";
+    const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$";
 
-    if ((username === expectedUsername || username === "jmpanchal394@gmail.com") && password === expectedPassword) {
+    const isUsernameValid = username === expectedUsername || username === "jmpanchal394@gmail.com";
+    const isPasswordValid = password === expectedPassword;
+
+    if (isUsernameValid && isPasswordValid) {
       const response = NextResponse.json({
         success: true,
         message: "Authentication successful.",
-      })
+      });
 
       // Save authorization cookie for current browser session
       response.cookies.set("cg_admin_session", "authorized", {
@@ -20,20 +31,23 @@ export async function POST(req) {
         httpOnly: false, // readable by client components
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-      })
+      });
 
-      return response
+      return response;
     }
+
+    // Anti brute-force delay on invalid attempts
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     return NextResponse.json(
       { success: false, error: "Incorrect admin password." },
-      { status: 401 },
-    )
+      { status: 401 }
+    );
   } catch (error) {
-    console.error("Error in auth API:", error)
+    console.error("Error in auth API:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 },
-    )
+      { success: false, error: "Authentication processing error." },
+      { status: 500 }
+    );
   }
 }

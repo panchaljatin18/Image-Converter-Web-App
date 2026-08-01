@@ -117,10 +117,14 @@ export function AuthProvider({ children }) {
   };
 
   // Logout handler
-  const logout = () => {
+  const logout = useCallback(() => {
     authService.logout();
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("cg_admin_session");
+      document.cookie = "cg_admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; sameSite=strict;";
+    }
     setUser(null);
-  };
+  }, []);
 
   const value = {
     user,
