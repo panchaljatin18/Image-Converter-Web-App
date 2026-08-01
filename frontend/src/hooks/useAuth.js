@@ -13,6 +13,11 @@ export function AuthProvider({ children }) {
   // Check auth status on mount
   useEffect(() => {
     async function loadUser() {
+      const adminSession = typeof window !== "undefined" && sessionStorage.getItem("cg_admin_session") === "authorized";
+      if (adminSession) {
+        setUser({ name: "Jatin Panchal", email: "jmpanchal394@gmail.com", role: "admin" });
+      }
+
       const token = authService.getToken();
       if (token) {
         try {
@@ -119,6 +124,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
+    setUser,
     loading,
     error,
     isAuthenticated: !!user,

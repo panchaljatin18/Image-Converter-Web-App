@@ -240,6 +240,7 @@ export default function LoginPage() {
           });
           const adminData = await adminRes.json();
           if (adminData.success) {
+            sessionStorage.setItem("cg_admin_session", "authorized");
             setSuccess("Admin authenticated successfully!");
             await sleep(400);
             router.push("/admin/blog");

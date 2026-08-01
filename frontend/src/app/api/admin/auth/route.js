@@ -8,16 +8,15 @@ export async function POST(req) {
     const expectedUsername = "Jatin Panchal"
     const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$"
 
-    if (username === expectedUsername && password === expectedPassword) {
+    if ((username === expectedUsername || username === "jmpanchal394@gmail.com") && password === expectedPassword) {
       const response = NextResponse.json({
         success: true,
         message: "Authentication successful.",
       })
 
-      // Save authorization cookie for 7 days
+      // Save authorization cookie for current browser session
       response.cookies.set("cg_admin_session", "authorized", {
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
         httpOnly: false, // readable by client components
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
