@@ -7,6 +7,9 @@ import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 
+export const dynamicParams = true;
+export const revalidate = 0;
+
 // Static params generation for SSG
 export async function generateStaticParams() {
   const posts = await getBlogPosts();

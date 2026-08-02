@@ -1,16 +1,19 @@
 import { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/metadata";
+import { getBlogPosts } from "@/lib/blog";
 import fs from "fs";
 import path from "path";
 
+export const revalidate = 0; // Dynamic sitemap revalidation
+
 /**
  * Generates the XML sitemap dynamically using Next.js Metadata Route API.
- * Scans tools and blog posts directories at build time.
+ * Includes published blog posts dynamically from DB & content folder.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
-  const routes = [
+  const routes: MetadataRoute.Sitemap = [
     // Core pages
     {
       url: `${SITE_URL}`,
@@ -93,27 +96,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     console.error("Error reading tools directory for sitemap:", e);
   }
 
-  // Dynamic blog posts (scan src/content/blog directory)
+  // Dynamic published blog posts from DB & markdown storage
   try {
-    const blogDir = path.join(process.cwd(), "src/content/blog");
-    if (fs.existsSync(blogDir)) {
-      const items = fs.readdirSync(blogDir);
-      items.forEach((item) => {
-        if (item.endsWith(".md")) {
-          const slug = item.replace(".md", "");
-          const filePath = path.join(blogDir, item);
-          const stat = fs.statSync(filePath);
-          routes.push({
-            url: `${SITE_URL}/blog/${slug}`,
-            lastModified: stat.mtime || currentDate,
-            changeFrequency: "weekly" as const,
-            priority: 0.8,
-          });
-        }
+    const posts = await getBlogPosts(false); // only published posts
+    posts.forEach((post) => {
+      routes.push({
+        url: `${SITE_URL}/blog/${post.slug}`,
+        lastModified: post.frontmatter.date ? new Date(post.frontmatter.date) : currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
       });
-    }
+    });
   } catch (e) {
-    console.error("Error reading blog directory for sitemap:", e);
+    console.error("Error fetching published blog posts for sitemap:", e);
   }
 
   return routes;

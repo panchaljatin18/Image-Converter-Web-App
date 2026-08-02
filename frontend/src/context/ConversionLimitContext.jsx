@@ -1,77 +1,145 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { X, Shield, Zap, History, Cloud, Sparkles } from "lucide-react";
+import { X, Shield, Zap, History, Cloud, Sparkles, Clock } from "lucide-react";
 
 const ConversionLimitContext = createContext(null);
+
+const MAX_GUEST_CONVERSIONS_PER_24H = 6;
+const WINDOW_24H_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const STORAGE_KEY = "guest_conversion_timestamps_v2";
 
 export function ConversionLimitProvider({ children }) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
-  const [guestCount, setGuestCount] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [conversionTimestamps, setConversionTimestamps] = useState([]);
 
-  // Initialize and load count from localStorage on mount
-  useEffect(() => {
-    const savedCount = localStorage.getItem("guest_conversion_count");
-    if (savedCount) {
-      setGuestCount(parseInt(savedCount, 10));
+  // Read valid timestamps (newer than 24 hours) from localStorage
+  const getActiveTimestamps = useCallback(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      // Clean legacy storage key if present
+      localStorage.removeItem("guest_conversion_count");
+
+      const rawData = localStorage.getItem(STORAGE_KEY);
+      if (!rawData) return [];
+      const parsed = JSON.parse(rawData);
+      if (!Array.isArray(parsed)) return [];
+      const now = Date.now();
+      // Keep only timestamps from the last 24 hours
+      return parsed.filter((t) => typeof t === "number" && now - t < WINDOW_24H_MS);
+    } catch (err) {
+      console.error("Error reading guest conversion timestamps:", err);
+      return [];
     }
   }, []);
 
-  // Reset guest count automatically when a user logs in
+  // Sync state on mount and when localStorage changes across browser tabs
   useEffect(() => {
     if (isAuthenticated) {
-      localStorage.removeItem("guest_conversion_count");
-      setGuestCount(0);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem("guest_conversion_count");
+      } catch {}
+      setConversionTimestamps([]);
+      return;
     }
-  }, [isAuthenticated]);
 
-  const checkConversionLimit = () => {
-    if (isAuthenticated) return true;
+    const syncTimestamps = () => {
+      const active = getActiveTimestamps();
+      setConversionTimestamps(active);
+    };
 
-    if (guestCount >= 3) {
-      setShowAuthModal(true);
-      return false;
-    }
-    return true;
-  };
+    syncTimestamps();
 
-  const incrementConversionCount = () => {
-    if (isAuthenticated) return;
+    // Multi-tab synchronization listener
+    const handleStorageChange = (e) => {
+      if (e.key === STORAGE_KEY || e.key === "guest_conversion_count") {
+        syncTimestamps();
+      }
+    };
 
-    const newCount = guestCount + 1;
-    setGuestCount(newCount);
-    localStorage.setItem("guest_conversion_count", newCount.toString());
-    console.log(`[CONVERSION LIMIT]: Guest conversion incremented. Current count: ${newCount}/3`);
-    
-    if (newCount >= 3) {
-      // Auto open modal after completing the 3rd conversion
-      setShowAuthModal(true);
-    }
-  };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [isAuthenticated, getActiveTimestamps]);
+
+  // Check if guest user can perform conversion
+  const checkConversionLimit = useCallback(
+    (requiredSlots = 1) => {
+      // Logged-in users get UNLIMITED conversions across all tabs!
+      if (isAuthenticated) return true;
+
+      const active = getActiveTimestamps();
+      if (active.length + requiredSlots > MAX_GUEST_CONVERSIONS_PER_24H) {
+        setShowAuthModal(true);
+        return false;
+      }
+      return true;
+    },
+    [isAuthenticated, getActiveTimestamps]
+  );
+
+  // Increment conversion count by adding current timestamp(s)
+  const incrementConversionCount = useCallback(
+    (count = 1) => {
+      // Logged-in users are not restricted
+      if (isAuthenticated) return;
+
+      const active = getActiveTimestamps();
+      const now = Date.now();
+      const newTimestamps = [...active];
+      for (let i = 0; i < count; i++) {
+        newTimestamps.push(now);
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newTimestamps));
+      } catch (e) {
+        console.error("Failed to save guest conversion timestamps:", e);
+      }
+
+      setConversionTimestamps(newTimestamps);
+      console.log(
+        `[CONVERSION LIMIT]: Guest conversion recorded (+${count}). Active 24h count: ${newTimestamps.length}/${MAX_GUEST_CONVERSIONS_PER_24H}`
+      );
+
+      if (newTimestamps.length >= MAX_GUEST_CONVERSIONS_PER_24H) {
+        setShowAuthModal(true);
+      }
+    },
+    [isAuthenticated, getActiveTimestamps]
+  );
 
   const handleAction = (tab) => {
     setShowAuthModal(false);
-    // Redirect to login page with pre-selected tab
     router.push(`/login?tab=${tab}`);
   };
 
   return (
-    <ConversionLimitContext.Provider value={{ checkConversionLimit, incrementConversionCount, showAuthModal, setShowAuthModal }}>
+    <ConversionLimitContext.Provider
+      value={{
+        checkConversionLimit,
+        incrementConversionCount,
+        showAuthModal,
+        setShowAuthModal,
+        activeGuestConversions: conversionTimestamps.length,
+        maxGuestConversions: MAX_GUEST_CONVERSIONS_PER_24H,
+      }}
+    >
       {children}
-      
+
       {/* Premium Authentication Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-[#06060c]/80 backdrop-blur-md transition-opacity duration-300"
             onClick={() => setShowAuthModal(false)}
           />
-          
+
           {/* Modal Container */}
           <div className="relative w-full max-w-[480px] overflow-hidden rounded-[20px] border border-[#3e344e] bg-[#1a1424] p-6 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 md:p-8 animate-in fade-in zoom-in-95 duration-200">
             {/* Background Glow */}
@@ -95,12 +163,12 @@ export function ConversionLimitProvider({ children }) {
 
               {/* Title */}
               <h2 className="font-outfit text-xl font-bold tracking-tight text-white sm:text-2xl">
-                🚀 Continue Converting for Free
+                🚀 Free 24-Hour Limit Reached
               </h2>
 
               {/* Description */}
               <p className="mt-3 text-[13px] leading-relaxed text-[#94a3b8]">
-                You've used all <span className="font-semibold text-white">3 free guest conversions</span>. Create a free account or sign in to continue converting files and unlock additional features.
+                You've used all <span className="font-semibold text-white">6 free guest conversions</span> for the last 24 hours. Create a free account or sign in to enjoy <span className="font-semibold text-white">unlimited conversions</span> across all your tabs!
               </p>
 
               {/* Divider */}
@@ -112,31 +180,41 @@ export function ConversionLimitProvider({ children }) {
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
                     <Zap size={12} />
                   </div>
-                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">Unlimited file conversions</span>
+                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                    Unlimited image, PDF & file conversions
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
+                    <Clock size={12} />
+                  </div>
+                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                    No 24-hour conversion limits after login
+                  </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
                     <History size={12} />
                   </div>
-                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">Conversion history</span>
+                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                    Conversion history tracking
+                  </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
                     <Cloud size={12} />
                   </div>
-                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">Cloud storage integration</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
-                    <Sparkles size={12} />
-                  </div>
-                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">Faster processing</span>
+                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                    Cloud storage integration (Drive/Dropbox/OneDrive)
+                  </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-[#818cf8]">
                     <Shield size={12} />
                   </div>
-                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">Secure file management</span>
+                  <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                    Multi-tab support & fast processing
+                  </span>
                 </div>
               </div>
 

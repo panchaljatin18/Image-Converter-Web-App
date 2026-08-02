@@ -14,11 +14,28 @@ export function markdownToHtml(md) {
   // Normalize newlines
   let html = md.replace(/\r\n/g, "\n");
 
+  // Fenced Code Blocks ```code```
+  html = html.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, code) => {
+    const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return `<pre class="bg-[#090915] p-4 rounded-xl text-indigo-300 font-mono text-xs overflow-x-auto my-6 border border-white/10 shadow-inner"><code>${escapedCode}</code></pre>`;
+  });
+
+  // Images: ![alt](url)
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+    return `<figure class="my-8 text-center"><img src="${url}" alt="${alt}" class="w-full max-h-[500px] object-cover rounded-2xl border border-white/10 shadow-2xl mx-auto" />${alt ? `<figcaption class="text-center text-xs text-[#9494a3] mt-2 font-mono">${alt}</figcaption>` : ''}</figure>`;
+  });
+
   // Bold text
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
+  // Strikethrough
+  html = html.replace(/~~(.*?)~~/g, "<del class=\"line-through text-gray-400\">$1</del>");
+
+  // Highlight
+  html = html.replace(/==(.*?)==/g, "<mark class=\"bg-yellow-400/20 text-yellow-300 px-1.5 py-0.5 rounded font-medium border border-yellow-500/30\">$1</mark>");
+
   // Inline code / monospace text
-  html = html.replace(/`(.*?)`/g, "<code className=\"bg-white/5 px-1.5 py-0.5 rounded text-indigo-300 text-xs font-mono\">$1</code>");
+  html = html.replace(/`(.*?)`/g, "<code class=\"bg-white/5 px-1.5 py-0.5 rounded text-indigo-300 text-xs font-mono border border-white/10\">$1</code>");
 
   // Links
   html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-400 hover:text-indigo-300 underline font-semibold transition-colors">$1</a>');
@@ -32,8 +49,55 @@ export function markdownToHtml(md) {
     block = block.trim();
     if (!block) continue;
 
+    // Already processed code blocks or figures
+    if (block.startsWith("<pre") || block.startsWith("<figure")) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      processedBlocks.push(block);
+      continue;
+    }
+
+    // Callout Box (> 💡 or > [!NOTE])
+    if (block.startsWith("> 💡") || block.startsWith("> [!NOTE]") || block.startsWith("> [!TIP]") || block.startsWith("> 📌")) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      const cleanContent = block.replace(/^>\s*(\[!(NOTE|TIP|IMPORTANT)\]|💡|📌)?\s*/g, "");
+      processedBlocks.push(`
+        <div class="my-6 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 flex items-start gap-3 shadow-md">
+          <span class="text-xl shrink-0 mt-0.5">💡</span>
+          <div class="text-sm leading-relaxed">${cleanContent.replace(/\n/g, "<br />")}</div>
+        </div>
+      `);
+      continue;
+    }
+
+    // Standard Blockquotes (> text)
+    if (block.startsWith("> ")) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      const quoteText = block.replace(/^>\s*/gm, "");
+      processedBlocks.push(`
+        <blockquote class="my-6 border-l-4 border-indigo-500 pl-5 py-3 bg-white/[0.02] rounded-r-xl italic text-[#e2e8f0] text-base leading-relaxed">
+          "${quoteText.replace(/\n/g, "<br />")}"
+        </blockquote>
+      `);
+      continue;
+    }
+
     // Headings
-    if (block.startsWith("### ")) {
+    if (block.startsWith("#### ")) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      processedBlocks.push(`<h4 class="font-['Outfit'] font-bold text-lg text-[#f8fafc] mt-6 mb-3">${block.slice(5)}</h4>`);
+    } else if (block.startsWith("### ")) {
       if (insideList) {
         processedBlocks.push(`</${insideList}>`);
         insideList = false;
@@ -52,47 +116,45 @@ export function markdownToHtml(md) {
       }
       processedBlocks.push(`<h1 class="font-['Outfit'] font-black text-3xl md:text-4xl text-[#f8fafc] mt-12 mb-6">${block.slice(2)}</h1>`);
     }
-    // Lists (bullet points starting with - )
-    else if (block.startsWith("- ")) {
-      if (insideList && insideList !== "ul") {
+    // Lists (bullet points starting with - or * )
+    else if (block.startsWith("- ") || block.startsWith("* ")) {
+      if (insideList) {
         processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
-      if (!insideList) {
-        processedBlocks.push('<ul class="list-disc pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">');
-        insideList = "ul";
-      }
-      const listItems = block.split(/\n- /);
-      listItems.forEach(item => {
-        let cleanItem = item.trim();
-        if (cleanItem.startsWith("- ")) {
-          cleanItem = cleanItem.slice(2);
-        }
-        if (cleanItem) {
-          processedBlocks.push(`<li>${cleanItem}</li>`);
+      const listLines = block.split("\n");
+      const liElements = [];
+      listLines.forEach(line => {
+        const cleanLine = line.trim();
+        if (cleanLine.startsWith("- ") || cleanLine.startsWith("* ")) {
+          const itemText = cleanLine.substring(2).trim();
+          if (itemText) liElements.push(`<li>${itemText}</li>`);
+        } else if (cleanLine) {
+          liElements.push(`<li>${cleanLine}</li>`);
         }
       });
+      processedBlocks.push(`<ul class="list-disc pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">\n${liElements.join("\n")}\n</ul>`);
+      continue;
     }
     // Lists (numbered list starting with digits like 1. )
     else if (/^\d+\.\s/.test(block)) {
-      if (insideList && insideList !== "ol") {
+      if (insideList) {
         processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
-      if (!insideList) {
-        processedBlocks.push('<ol class="list-decimal pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">');
-        insideList = "ol";
-      }
-      const listItems = block.split(/\n\d+\.\s/);
-      listItems.forEach(item => {
-        let cleanItem = item.trim();
-        if (/^\d+\.\s/.test(cleanItem)) {
-          cleanItem = cleanItem.replace(/^\d+\.\s/, "");
-        }
-        if (cleanItem) {
-          processedBlocks.push(`<li>${cleanItem}</li>`);
+      const listLines = block.split("\n");
+      const liElements = [];
+      listLines.forEach(line => {
+        const cleanLine = line.trim();
+        if (/^\d+\.\s/.test(cleanLine)) {
+          const itemText = cleanLine.replace(/^\d+\.\s/, "").trim();
+          if (itemText) liElements.push(`<li>${itemText}</li>`);
+        } else if (cleanLine) {
+          liElements.push(`<li>${cleanLine}</li>`);
         }
       });
+      processedBlocks.push(`<ol class="list-decimal pl-6 space-y-2 mb-6 text-[#cbd5e1] leading-relaxed">\n${liElements.join("\n")}\n</ol>`);
+      continue;
     }
     // Horizontal divider
     else if (block === "---") {
@@ -207,14 +269,15 @@ async function seedMarkdownToDB() {
  * Reads and returns all blog posts sorted by date from MongoDB.
  */
 export async function getBlogPosts(includeDrafts = false) {
+  let posts = [];
   try {
     await dbConnect();
     await seedMarkdownToDB();
 
     const query = includeDrafts ? {} : { status: { $ne: "Draft" } };
-    const posts = await BlogPost.find(query).sort({ date: -1 });
+    const dbPosts = await BlogPost.find(query).sort({ date: -1 });
 
-    return posts.map(post => ({
+    posts = dbPosts.map(post => ({
       slug: post.slug,
       frontmatter: {
         title: post.title,
@@ -231,13 +294,49 @@ export async function getBlogPosts(includeDrafts = false) {
       htmlContent: post.htmlContent || "",
     }));
   } catch (e) {
-    console.error("Error loading blog posts from DB:", e);
-    return [];
+    console.error("Error loading blog posts from DB, using disk fallback:", e);
   }
+
+  // Fallback to reading markdown files on disk if DB returned nothing or failed
+  if (posts.length === 0 && fs.existsSync(BLOG_DIR)) {
+    try {
+      const files = fs.readdirSync(BLOG_DIR);
+      for (const file of files) {
+        if (!file.endsWith(".md")) continue;
+        const filePath = path.join(BLOG_DIR, file);
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+        const { frontmatter, content } = parseMarkdownFile(fileContent);
+        const slug = file.replace(".md", "");
+
+        if (!includeDrafts && frontmatter.status === "Draft") continue;
+
+        posts.push({
+          slug,
+          frontmatter: {
+            title: frontmatter.title || "Untitled Post",
+            description: frontmatter.description || "",
+            date: frontmatter.date || new Date().toISOString().split("T")[0],
+            focusKeyword: frontmatter.focusKeyword || "",
+            relatedToolSlug: frontmatter.relatedToolSlug || "",
+            image: frontmatter.image || "",
+            imageAlt: frontmatter.imageAlt || "",
+            author: frontmatter.author || "Convert Galaxy Team",
+            status: frontmatter.status || "Draft",
+          },
+          content,
+          htmlContent: markdownToHtml(content),
+        });
+      }
+    } catch (fsErr) {
+      console.error("Disk reading fallback failed:", fsErr);
+    }
+  }
+
+  return posts;
 }
 
 /**
- * Reads a single post by slug from MongoDB.
+ * Reads a single post by slug from MongoDB (with disk fallback).
  */
 export async function getBlogPostBySlug(slug) {
   try {
@@ -245,30 +344,57 @@ export async function getBlogPostBySlug(slug) {
     await seedMarkdownToDB();
 
     const post = await BlogPost.findOne({ slug });
-    if (!post) return null;
-
-    const htmlContent = post.htmlContent || markdownToHtml(post.content);
-
-    return {
-      slug: post.slug,
-      frontmatter: {
-        title: post.title,
-        description: post.description,
-        date: post.date,
-        focusKeyword: post.focusKeyword || "",
-        relatedToolSlug: post.relatedToolSlug || "",
-        image: post.image || "",
-        imageAlt: post.imageAlt || "",
-        author: post.author || "Convert Galaxy Team",
-        status: post.status || "Draft",
-      },
-      content: post.content,
-      htmlContent,
-    };
+    if (post) {
+      const htmlContent = post.htmlContent || markdownToHtml(post.content);
+      return {
+        slug: post.slug,
+        frontmatter: {
+          title: post.title,
+          description: post.description,
+          date: post.date,
+          focusKeyword: post.focusKeyword || "",
+          relatedToolSlug: post.relatedToolSlug || "",
+          image: post.image || "",
+          imageAlt: post.imageAlt || "",
+          author: post.author || "Convert Galaxy Team",
+          status: post.status || "Draft",
+        },
+        content: post.content,
+        htmlContent,
+      };
+    }
   } catch (e) {
     console.error(`Error loading blog post by slug (${slug}) from DB:`, e);
-    return null;
   }
+
+  // Disk fallback for single post
+  try {
+    const filePath = path.join(BLOG_DIR, `${slug}.md`);
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const { frontmatter, content } = parseMarkdownFile(fileContent);
+      return {
+        slug,
+        frontmatter: {
+          title: frontmatter.title || "Untitled Post",
+          description: frontmatter.description || "",
+          date: frontmatter.date || new Date().toISOString().split("T")[0],
+          focusKeyword: frontmatter.focusKeyword || "",
+          relatedToolSlug: frontmatter.relatedToolSlug || "",
+          image: frontmatter.image || "",
+          imageAlt: frontmatter.imageAlt || "",
+          author: frontmatter.author || "Convert Galaxy Team",
+          status: frontmatter.status || "Draft",
+        },
+        content,
+        htmlContent: markdownToHtml(content),
+      };
+    }
+  } catch (fsErr) {
+    console.error(`Disk fallback for ${slug} failed:`, fsErr);
+  }
+
+  return null;
 }
 
 /**
@@ -302,14 +428,42 @@ export async function getRelatedBlogPosts(toolKey) {
   }
 }
 
+import { revalidatePath } from "next/cache";
+
 /**
- * Saves or updates blog post data to MongoDB.
+ * Saves or updates blog post data to MongoDB and local disk storage.
  */
 export async function saveBlogPost(slug, { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content }) {
+  const htmlContent = markdownToHtml(content);
+
+  // 1. Save to local markdown file in src/content/blog
+  try {
+    if (!fs.existsSync(BLOG_DIR)) {
+      fs.mkdirSync(BLOG_DIR, { recursive: true });
+    }
+    const mdFileContent = `---
+title: "${(title || "").replace(/"/g, '\\"')}"
+description: "${(description || "").replace(/"/g, '\\"')}"
+date: "${date || new Date().toISOString().split("T")[0]}"
+focusKeyword: "${focusKeyword || ""}"
+relatedToolSlug: "${relatedToolSlug || ""}"
+image: "${image || ""}"
+imageAlt: "${imageAlt || ""}"
+imageTitle: "${imageTitle || ""}"
+author: "${author || "Convert Galaxy Team"}"
+status: "${status || "Draft"}"
+---
+
+${content || ""}`;
+
+    fs.writeFileSync(path.join(BLOG_DIR, `${slug}.md`), mdFileContent, "utf-8");
+  } catch (fsErr) {
+    console.error("Warning: Failed writing markdown file to disk:", fsErr);
+  }
+
+  // 2. Save/update in MongoDB
   try {
     await dbConnect();
-    const htmlContent = markdownToHtml(content);
-
     await BlogPost.findOneAndUpdate(
       { slug },
       {
@@ -329,21 +483,54 @@ export async function saveBlogPost(slug, { title, description, date, focusKeywor
       { upsert: true, new: true }
     );
   } catch (e) {
-    console.error("Error saving blog post to DB:", e);
-    throw e;
+    console.error("Warning: Error saving blog post to DB:", e);
+  }
+
+  // 3. Revalidate Next.js static & server caches
+  try {
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/sitemap.xml");
+  } catch (rErr) {
+    // Ignore revalidation error outside request context
   }
 }
 
 /**
- * Deletes the blog post from MongoDB.
+ * Deletes the blog post from MongoDB and local markdown storage.
  */
 export async function deleteBlogPost(slug) {
+  let deletedFromDisk = false;
+  let deletedFromDb = false;
+
+  // 1. Delete local file from src/content/blog
+  try {
+    const filePath = path.join(BLOG_DIR, `${slug}.md`);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      deletedFromDisk = true;
+    }
+  } catch (fsErr) {
+    console.error("Error deleting markdown file from disk:", fsErr);
+  }
+
+  // 2. Delete from MongoDB
   try {
     await dbConnect();
     const result = await BlogPost.deleteOne({ slug });
-    return result.deletedCount > 0;
+    deletedFromDb = result.deletedCount > 0;
   } catch (e) {
     console.error("Error deleting blog post from DB:", e);
-    return false;
   }
+
+  // 3. Revalidate Next.js cache
+  try {
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/sitemap.xml");
+  } catch (rErr) {
+    // Ignore revalidation error
+  }
+
+  return deletedFromDisk || deletedFromDb;
 }

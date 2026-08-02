@@ -26,15 +26,22 @@ export async function PUT(req, { params }) {
   if (authError) return authError;
 
   try {
-    const { slug } = await params;
+    const { slug: oldSlug } = await params;
     const data = await req.json();
-    const { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content } = data;
+    const { slug: newSlug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content } = data;
+
+    const targetSlug = (newSlug && newSlug.trim()) ? newSlug.trim() : oldSlug;
 
     if (!title) {
       return NextResponse.json({ success: false, error: "Title is required." }, { status: 400 });
     }
 
-    await saveBlogPost(slug, {
+    // If slug URL was changed by user during edit, delete old post entry & file
+    if (oldSlug && targetSlug && oldSlug !== targetSlug) {
+      await deleteBlogPost(oldSlug);
+    }
+
+    await saveBlogPost(targetSlug, {
       title,
       description: description || "",
       date: date || new Date().toISOString().split("T")[0],
@@ -48,7 +55,7 @@ export async function PUT(req, { params }) {
       content: content || "",
     });
 
-    return NextResponse.json({ success: true, message: "Blog post updated successfully." });
+    return NextResponse.json({ success: true, message: "Blog post updated successfully.", slug: targetSlug });
   } catch (error) {
     console.error(`Error in PUT /api/admin/blog/[slug]:`, error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

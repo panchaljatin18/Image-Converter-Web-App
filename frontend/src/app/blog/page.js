@@ -5,6 +5,9 @@ import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 import { getBlogPosts } from "@/lib/blog";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = constructMetadata({
   title: "Image Editing Tips & Guides – ConvertGalaxy Blog",
   description: "Learn image formats, compression tips, and step-by-step guides for JPG, PNG, WebP & PDF conversion — written for beginners.",
