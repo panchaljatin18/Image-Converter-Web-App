@@ -55,7 +55,7 @@ body::-webkit-scrollbar {
 }
 
 .logo-nav-mobile img {
-  height: 40px;
+  height: 34px;
   width: auto;
   object-fit: contain;
 }
@@ -76,7 +76,7 @@ body::-webkit-scrollbar {
   }
 
   .logo-nav-desktop img {
-    height: 48px;
+    height: 38px;
     width: auto;
     object-fit: contain;
   }

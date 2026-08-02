@@ -35,7 +35,8 @@ import {
   RotateCcw,
   Clock,
   CheckCircle2,
-  Trash2
+  Trash2,
+  FileCode
 } from "lucide-react";
 import Link from "next/link";
 
@@ -44,6 +45,21 @@ function htmlToMarkdown(html) {
   if (!html) return "";
   let md = html;
   
+  // Protect raw script tags and custom HTML blocks from markdown conversion
+  const protectedRawBlocks = [];
+  md = md.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (m) => {
+    protectedRawBlocks.push(m);
+    return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
+  });
+  md = md.replace(/<div class="(?:wp-custom-html-card|custom-html-block|wp-block-html|faq-container)"[^>]*>([\s\S]*?)<\/div>/gi, (m) => {
+    protectedRawBlocks.push(m);
+    return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
+  });
+  md = md.replace(/<details[^>]*>[\s\S]*?<\/details>/gi, (m) => {
+    protectedRawBlocks.push(m);
+    return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
+  });
+
   // Replace inline body images / figures
   md = md.replace(/<figure[^>]*>\s*<img[^>]*src="(.*?)"[^>]*alt="(.*?)"[^>]*>\s*(?:<figcaption[^>]*>(.*?)<\/figcaption>)?\s*<\/figure>/gi, (m, src, alt, cap) => {
     return `\n\n![${cap || alt || "Image"}](${src})\n\n`;
@@ -128,6 +144,12 @@ function htmlToMarkdown(html) {
   
   // Clean up multiple newlines
   md = md.replace(/\n\n+/g, "\n\n");
+
+  // Restore protected raw blocks
+  md = md.replace(/___PROTECTED_RAW_(\d+)___/g, (match, p1) => {
+    const idx = parseInt(p1, 10);
+    return `\n\n${protectedRawBlocks[idx]}\n\n`;
+  });
   
   return md.trim();
 }
@@ -136,6 +158,27 @@ function htmlToMarkdown(html) {
 function markdownToHtml(md) {
   if (!md) return "";
   let html = md.replace(/\r\n/g, "\n");
+
+  // Extract and protect raw HTML & Script blocks (e.g. JSON-LD FAQ Schema, custom HTML blocks, details)
+  const rawHtmlBlocks = [];
+
+  // 1. Script tags (including <script type="application/ld+json">)
+  html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
+  // 2. Custom HTML wrapper divs
+  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
+  // 3. HTML details / accordions
+  html = html.replace(/<details[^>]*>[\s\S]*?<\/details>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
 
   // Fenced Code blocks
   html = html.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, code) => {
@@ -168,6 +211,31 @@ function markdownToHtml(md) {
   for (let block of lines) {
     block = block.trim();
     if (!block) continue;
+
+    // Check for protected raw HTML block placeholder
+    if (/^___RAW_HTML_BLOCK_\d+___$/.test(block)) {
+      if (insideList) { processed.push(`</${insideList}>`); insideList = false; }
+      const idx = parseInt(block.replace("___RAW_HTML_BLOCK_", "").replace("___", ""), 10);
+      if (!isNaN(idx) && rawHtmlBlocks[idx] !== undefined) {
+        processed.push(rawHtmlBlocks[idx]);
+      }
+      continue;
+    }
+
+    // Pass through un-wrapped raw HTML / script blocks if block starts with tag
+    if (
+      block.startsWith("<script") ||
+      block.startsWith("<iframe") ||
+      block.startsWith("<style") ||
+      block.startsWith("<details") ||
+      block.startsWith("<div") ||
+      block.startsWith("<table") ||
+      block.startsWith("<!--")
+    ) {
+      if (insideList) { processed.push(`</${insideList}>`); insideList = false; }
+      processed.push(block);
+      continue;
+    }
 
     if (block.startsWith("<pre") || block.startsWith("<img")) {
       if (insideList) { processed.push(`</${insideList}>`); insideList = false; }
@@ -426,6 +494,35 @@ export default function BlogEditor({ initialSlug = null }) {
   const [tableRows, setTableRows] = useState(3);
   const [tableCols, setTableCols] = useState(3);
   const [tableHasHeader, setTableHasHeader] = useState(true);
+
+  // WordPress Custom HTML & FAQ Schema Builder Modal States
+  const [showCustomHtmlModal, setShowCustomHtmlModal] = useState(false);
+  const [customHtmlCode, setCustomHtmlCode] = useState("");
+  const [customHtmlTab, setCustomHtmlTab] = useState("faq-json");
+  const [customHtmlPreview, setCustomHtmlPreview] = useState(false);
+
+  const handleInsertCustomHtml = () => {
+    if (!customHtmlCode.trim()) return;
+    editorRef.current?.focus();
+    const isScript = customHtmlCode.includes('type="application/ld+json"');
+    const escapedCode = customHtmlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const blockHtml = `<div class="wp-custom-html-card" data-custom-html="true"><div class="wp-custom-html-header"><span>${isScript ? '⚡ FAQ Schema (JSON-LD)' : '&lt;/&gt; Custom HTML Block'}</span></div><pre class="wp-custom-html-code"><code>${escapedCode}</code></pre></div><p><br></p>`;
+    
+    document.execCommand("insertHTML", false, blockHtml);
+    setShowCustomHtmlModal(false);
+    setCustomHtmlCode("");
+    handleEditorInput();
+  };
+
+  const handlePrefillFaqJson = () => {
+    setCustomHtmlTab("faq-json");
+    setCustomHtmlCode(`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "What is Converter Galaxy?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Converter Galaxy is a free online platform providing tools to convert, compress, and resize images locally in your browser."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "Is my data private and secure?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Yes, 100% of processing occurs locally on your machine. No files are uploaded to remote servers."\n      }\n    }\n  ]\n}\n</script>`);
+  };
+
+  const handlePrefillFaqAccordion = () => {
+    setCustomHtmlTab("custom-html");
+    setCustomHtmlCode(`<div class="faq-container my-8 space-y-4">\n  <details class="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 cursor-pointer text-indigo-200">\n    <summary class="font-bold text-white text-base font-['Outfit']">What image formats are supported?</summary>\n    <p class="mt-2 text-sm text-[#cbd5e1] leading-relaxed">We support JPG, PNG, WebP, GIF, SVG, AVIF, TIFF, and PDF.</p>\n  </details>\n  <details class="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 cursor-pointer text-indigo-200">\n    <summary class="font-bold text-white text-base font-['Outfit']">Are there any file size limits?</summary>\n    <p class="mt-2 text-sm text-[#cbd5e1] leading-relaxed">No strict server limits because processing happens in your browser!</p>\n  </details>\n</div>`);
+  };
   
   // Editor mode: "visual" or "code" (markdown)
   const [editorMode, setEditorMode] = useState("visual");
@@ -1010,6 +1107,10 @@ export default function BlogEditor({ initialSlug = null }) {
         break;
       case "code":
         insertCodeBlock();
+        break;
+      case "html":
+      case "faq-schema":
+        setShowCustomHtmlModal(true);
         break;
       case "table":
         insertTable();
@@ -1700,6 +1801,9 @@ export default function BlogEditor({ initialSlug = null }) {
                     </button>
                     <button type="button" onClick={() => insertBlock("code")} className="block-chip">
                       <Code size={12} className="text-amber-400" /> Code Snippet
+                    </button>
+                    <button type="button" onClick={() => insertBlock("faq-schema")} className="block-chip border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20">
+                      <FileCode size={12} className="text-amber-400" /> HTML / FAQ Schema
                     </button>
                     <button type="button" onClick={() => insertBlock("divider")} className="block-chip">
                       <Minus size={12} className="text-gray-400" /> Divider
@@ -2644,6 +2748,128 @@ export default function BlogEditor({ initialSlug = null }) {
                 className="admin-btn admin-btn-primary py-1.5 px-4 text-xs"
               >
                 Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WORDPRESS CUSTOM HTML & FAQ SCHEMA (JSON-LD) MODAL */}
+      {showCustomHtmlModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#161622] border border-indigo-500/30 rounded-3xl p-6 max-w-2xl w-full text-left space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="font-['Outfit'] font-extrabold text-xl text-white flex items-center gap-2">
+                <FileCode className="text-amber-400" size={22} />
+                WordPress Custom HTML / FAQ Schema (JSON-LD)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCustomHtmlModal(false)}
+                className="text-[#9494a3] hover:text-white transition-colors cursor-pointer text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Quick Templates & Mode Switcher */}
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-[#0d0d18] p-2.5 rounded-xl border border-white/5">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrefillFaqJson}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    customHtmlTab === "faq-json"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "bg-white/5 text-[#cbd5e1] hover:bg-white/10"
+                  }`}
+                >
+                  ⚡ FAQ Schema (JSON-LD)
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrefillFaqAccordion}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    customHtmlTab === "custom-html"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "bg-white/5 text-[#cbd5e1] hover:bg-white/10"
+                  }`}
+                >
+                  📋 HTML Accordion FAQ
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCustomHtmlPreview(false)}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                    !customHtmlPreview ? "bg-white/15 text-white" : "text-[#9494a3] hover:text-white"
+                  }`}
+                >
+                  HTML Code
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomHtmlPreview(true)}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                    customHtmlPreview ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "text-[#9494a3] hover:text-white"
+                  }`}
+                >
+                  👁️ Live Preview
+                </button>
+              </div>
+            </div>
+
+            {/* Content Editor / Live Preview Box */}
+            {!customHtmlPreview ? (
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#9494a3] flex items-center justify-between">
+                  <span>Enter Raw HTML or JSON-LD Script tag:</span>
+                  <span className="text-[11px] text-amber-400">Allowed: &lt;script type="application/ld+json"&gt;, &lt;details&gt;, &lt;div&gt;, &lt;iframe&gt;</span>
+                </label>
+                <textarea
+                  rows={10}
+                  value={customHtmlCode}
+                  onChange={(e) => setCustomHtmlCode(e.target.value)}
+                  placeholder="Paste or write your HTML code or JSON-LD FAQ schema script here..."
+                  className="w-full bg-[#090912] border border-indigo-500/20 rounded-xl p-4 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed shadow-inner"
+                />
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="text-xs font-semibold text-emerald-400 block">Live Preview Output:</span>
+                <div className="bg-[#090912] border border-white/10 rounded-xl p-4 max-h-60 overflow-y-auto">
+                  {customHtmlCode.includes('type="application/ld+json"') ? (
+                    <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-indigo-300 text-xs font-mono">
+                      <span className="font-bold text-white block mb-1">⚡ Valid JSON-LD FAQ Schema Tag Detected</span>
+                      <span>Googlebot will execute this structured data tag automatically for search result FAQ snippets.</span>
+                    </div>
+                  ) : (
+                    <div
+                      className="text-left text-white text-sm"
+                      dangerouslySetInnerHTML={{ __html: customHtmlCode }}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#2a2a38]">
+              <button
+                type="button"
+                onClick={() => setShowCustomHtmlModal(false)}
+                className="admin-btn admin-btn-secondary py-1.5 px-4 text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleInsertCustomHtml}
+                disabled={!customHtmlCode.trim()}
+                className="admin-btn admin-btn-primary py-1.5 px-4 text-xs cursor-pointer disabled:opacity-50"
+              >
+                Insert Block into Post
               </button>
             </div>
           </div>

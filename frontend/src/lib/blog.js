@@ -40,6 +40,27 @@ export function markdownToHtml(md) {
   // Links
   html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-400 hover:text-indigo-300 underline font-semibold transition-colors">$1</a>');
 
+  // Extract and protect raw HTML & Script blocks (e.g. JSON-LD FAQ Schema, custom HTML blocks, details)
+  const rawHtmlBlocks = [];
+
+  // 1. Script tags (including <script type="application/ld+json">)
+  html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
+  // 2. Custom HTML wrapper divs
+  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
+  // 3. HTML details / accordions
+  html = html.replace(/<details[^>]*>[\s\S]*?<\/details>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
   // Split content into blocks by double newline
   const lines = html.split(/\n\n+/);
   let insideList = false;
@@ -48,6 +69,37 @@ export function markdownToHtml(md) {
   for (let block of lines) {
     block = block.trim();
     if (!block) continue;
+
+    // Check for protected raw HTML block placeholder
+    if (/^___RAW_HTML_BLOCK_\d+___$/.test(block)) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      const idx = parseInt(block.replace("___RAW_HTML_BLOCK_", "").replace("___", ""), 10);
+      if (!isNaN(idx) && rawHtmlBlocks[idx] !== undefined) {
+        processedBlocks.push(rawHtmlBlocks[idx]);
+      }
+      continue;
+    }
+
+    // Pass through un-wrapped raw HTML / script blocks if block starts with tag
+    if (
+      block.startsWith("<script") ||
+      block.startsWith("<iframe") ||
+      block.startsWith("<style") ||
+      block.startsWith("<details") ||
+      block.startsWith("<div") ||
+      block.startsWith("<table") ||
+      block.startsWith("<!--")
+    ) {
+      if (insideList) {
+        processedBlocks.push(`</${insideList}>`);
+        insideList = false;
+      }
+      processedBlocks.push(block);
+      continue;
+    }
 
     // Already processed code blocks or figures
     if (block.startsWith("<pre") || block.startsWith("<figure")) {

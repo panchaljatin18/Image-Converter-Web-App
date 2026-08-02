@@ -147,8 +147,8 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-[1000] backdrop-blur-[20px] transition-all duration-300 ${scrolled
-            ? "py-3 bg-[#0f0f1a]/95 border-b border-indigo-500/15"
-            : "py-4.5 bg-[#0f0f1a]/70 border-b border-white/5"
+            ? "py-1.5 bg-[#0f0f1a]/95 border-b border-indigo-500/15"
+            : "py-2.5 bg-[#0f0f1a]/70 border-b border-white/5"
           }`}
       >
         <Container className="flex items-center justify-between gap-6">
@@ -194,7 +194,7 @@ export default function Navbar() {
                     aria-haspopup="true"
                     aria-label="Tools navigation menu"
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    className={`flex items-center gap-1 py-2 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${
+                    className={`flex items-center gap-1 py-1.5 px-3.5 bg-transparent border-none font-medium text-[0.9rem] cursor-pointer rounded-lg font-['Inter'] transition-all duration-200 hover:text-white hover:bg-white/5 no-underline outline-none ${
                       pathname.startsWith("/tools") || dropdownOpen ? "text-[#818cf8]" : "text-[#cbd5e1]"
                     }`}
                   >
@@ -242,7 +242,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`py-2 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${pathname === link.href
+                  className={`py-1.5 px-3.5 rounded-lg no-underline font-medium text-[0.9rem] transition-all duration-200 ${pathname === link.href
                       ? "text-[#818cf8] bg-indigo-500/10"
                       : "text-[#cbd5e1] hover:text-white hover:bg-white/5"
                     }`}
@@ -256,7 +256,7 @@ export default function Navbar() {
           {/* CTA + Mobile Toggle */}
           <div className="flex items-center gap-3 shrink-0">
             <Link href="/tools" className="no-underline hidden lg:inline-block">
-              <Button variant="primary" size="sm" className="flex items-center gap-1.5 py-2 px-4.5 text-[0.85rem]">
+              <Button variant="primary" size="sm" className="flex items-center gap-1.5 py-1.5 px-3.5 text-[0.85rem]">
                 <Zap size={14} />
                 All Tools
               </Button>
@@ -267,13 +267,13 @@ export default function Navbar() {
                 variant="secondary"
                 size="sm"
                 onClick={logout}
-                className="py-2 px-4.5 text-[0.85rem] border border-red-500/30 bg-red-500/15 rounded-[10px] text-white cursor-pointer hover:bg-red-500/25 hidden lg:inline-block"
+                className="py-1.5 px-3.5 text-[0.85rem] border border-red-500/30 bg-red-500/15 rounded-[10px] text-white cursor-pointer hover:bg-red-500/25 hidden lg:inline-block"
               >
                 Sign Out
               </Button>
             ) : (
               <Link href="/login" className="no-underline hidden lg:inline-block">
-                <Button variant="secondary" size="sm" className="py-2 px-4.5 text-[0.85rem] border border-white/15 bg-white/5 rounded-[10px] text-[#94a3b8]">
+                <Button variant="secondary" size="sm" className="py-1.5 px-3.5 text-[0.85rem] border border-white/15 bg-white/5 rounded-[10px] text-[#94a3b8]">
                   Sign In
                 </Button>
               </Link>
