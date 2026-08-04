@@ -50,7 +50,7 @@ export function markdownToHtml(md) {
   });
 
   // 2. Custom HTML wrapper divs
-  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
+  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container|faq-schema-block)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
     rawHtmlBlocks.push(match);
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });

@@ -3,15 +3,19 @@ import CropImageTool from "@/components/tools/CropImageTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Crop Image Online Free – Custom or Preset Aspect Ratios",
-  description: "Crop any photo online free with custom size or preset ratios (square, 16:9, passport). No signup, no upload — 100% browser-based editing.",
+  title: "Crop Image Online Free – Custom Size, Aspect Ratio & Preset Shapes",
+  description: "Crop any photo online free with custom size, preset aspect ratios (square, 16:9, passport) or freeform selection. No signup, no watermark — 100% browser-based.",
   canonicalPath: "/tools/crop-image",
   ogImage: "https://www.convertgalaxy.com/crop-image.png",
   keywords: [
-    "crop image online",
+    "crop image online free",
     "free image cropper no watermark",
-    "crop photo to square online",
-    "crop image for instagram post",
+    "crop photo to square online free",
+    "crop image for instagram free",
+    "crop image no signup",
+    "online image cropper",
+    "crop photo online free",
+    "best image cropper online",
   ]
 });
 

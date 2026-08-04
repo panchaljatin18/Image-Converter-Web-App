@@ -627,3 +627,54 @@
   overflow-x: auto;
   background-color: #080811;
 }
+
+/* Inline WordPress Custom HTML / Code Block Card */
+.wp-block-custom-html {
+  background-color: #0d0d18 !important;
+  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+  border-radius: 14px !important;
+  margin: 24px 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  user-select: text;
+}
+
+.wp-block-custom-html .wp-block-header {
+  background-color: #141424 !important;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.25) !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.wp-block-custom-html .wp-block-tab-btn {
+  padding: 4px 12px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 150ms ease !important;
+}
+
+.wp-block-custom-html .wp-block-tab-btn.active {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4) !important;
+}
+
+.wp-block-custom-html .wp-block-textarea {
+  width: 100% !important;
+  background-color: #080811 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  color: #38bdf8 !important;
+  font-family: 'JetBrains Mono', monospace, Consolas, monospace !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  outline: none !important;
+  resize: vertical !important;
+}
+

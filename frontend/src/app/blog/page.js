@@ -9,10 +9,10 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = constructMetadata({
-  title: "Image Editing Tips & Guides – ConvertGalaxy Blog",
-  description: "Learn image formats, compression tips, and step-by-step guides for JPG, PNG, WebP & PDF conversion — written for beginners.",
+  title: "Image Conversion Blog – Free Guides, Tips & Tutorials for JPG, PNG, WebP & PDF",
+  description: "Expert guides on JPG to PNG, PNG to JPG, HEIC to JPG, WebP conversion, image compression & PDF tools. Step-by-step tutorials for beginners — completely free.",
   canonicalPath: "/blog",
-  keywords: ["image conversion guides"],
+  keywords: ["image conversion guides", "jpg to png tutorial", "heic to jpg guide", "compress image tutorial", "webp converter guide", "image to pdf guide", "free image tools blog"],
 });
 
 export default async function BlogPage() {

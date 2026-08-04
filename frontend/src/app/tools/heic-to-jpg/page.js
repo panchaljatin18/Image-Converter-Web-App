@@ -3,16 +3,20 @@ import HeicToJpgTool from "@/components/tools/HeicToJpgTool"
 import { constructMetadata } from "@/lib/metadata"
 
 export const metadata = constructMetadata({
-  title: "HEIC to JPG Converter Free – iPhone Photos to JPG Online",
+  title: "HEIC to JPG Converter Free – Convert iPhone Photos to JPG Online",
   description:
-    "Convert iPhone HEIC photos to JPG free, instantly. No app install, no upload to server — fully private, browser-based conversion.",
+    "Convert iPhone HEIC & HEIF photos to JPG online free instantly. No app install, no signup, no watermark — 100% browser-based, private & secure conversion.",
   canonicalPath: "/tools/heic-to-jpg",
   ogImage: "https://www.convertgalaxy.com/heic-to-jpg.png",
   keywords: [
-    "heic to jpg converter",
+    "heic to jpg converter free",
     "convert heic to jpg online free",
-    "iphone photo to jpg converter",
-    "heic to jpg without losing quality",
+    "iphone photo to jpg free",
+    "heic to jpg no signup",
+    "heic to jpg no watermark",
+    "heif to jpg converter",
+    "convert apple photos to jpg",
+    "best heic to jpg converter online",
   ],
 })
 

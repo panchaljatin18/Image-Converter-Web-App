@@ -3,15 +3,19 @@ import PdfToImageTool from "@/components/tools/PdfToImageTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "PDF to Image Converter – Free PDF to JPG/PNG Online",
-  description: "Convert PDF pages into high-quality JPG or PNG images free. No signup, no watermark, fast browser-based conversion for every page.",
+  title: "PDF to Image Converter Free – Convert PDF to JPG or PNG Online",
+  description: "Convert PDF pages to high-quality JPG or PNG images free online. No signup, no watermark, fast browser-based conversion. Extract every page from any PDF instantly.",
   canonicalPath: "/tools/pdf-to-image",
   ogImage: "https://www.convertgalaxy.com/pdf-to-image.png",
   keywords: [
-    "pdf to image converter",
+    "pdf to image converter free",
     "convert pdf to jpg free online",
-    "pdf to png converter no signup",
-    "extract images from pdf online",
+    "pdf to png converter free",
+    "pdf to jpg no signup",
+    "extract images from pdf free",
+    "pdf to image no watermark",
+    "best pdf to image converter",
+    "pdf page to jpg online",
   ]
 });
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "next-dev": "next dev --hostname 0.0.0.0",
+    "next-dev": "next dev --hostname 127.0.0.1",
     "dev": "node start-dev.js",
     "build": "next build",
     "start": "next start",

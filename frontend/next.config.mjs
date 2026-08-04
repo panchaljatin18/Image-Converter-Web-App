@@ -18,7 +18,7 @@ const localIps = getLocalIps();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: true,
+  reactCompiler: process.env.NODE_ENV === "production",
   allowedDevOrigins: localIps,
   compress: true,
   poweredByHeader: false,

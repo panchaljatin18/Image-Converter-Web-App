@@ -9,10 +9,26 @@ const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
 const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
 export const metadata = constructMetadata({
-  title: "Free Online Image Converter, Compressor & Editor Tools",
-  description: "Convert, compress, resize & crop images free — JPG, PNG, WebP, PDF & more. 100% browser-based, no upload, no signup required.",
+  title: "Free Online Image Converter – Convert JPG, PNG, WebP, HEIC & PDF Instantly",
+  description: "Convert JPG to PNG, PNG to JPG, HEIC to JPG, WebP converter, compress images, resize, crop & image to PDF — 100% free, no signup, no upload, works in your browser.",
   canonicalPath: "",
-  keywords: ["free online image converter"],
+  keywords: [
+    "free image converter",
+    "free online image converter",
+    "jpg to png converter free",
+    "png to jpg free",
+    "heic to jpg converter",
+    "webp converter free",
+    "compress image online free",
+    "resize image online free",
+    "image to pdf free",
+    "pdf to image converter",
+    "crop image online free",
+    "convert image free no signup",
+    "image compressor no watermark",
+    "best free image converter",
+    "online image tools",
+  ],
 });
 
 export default function HomePage() {

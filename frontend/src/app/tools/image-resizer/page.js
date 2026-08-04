@@ -3,15 +3,19 @@ import ImageResizerTool from "@/components/tools/ImageResizerTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image Resizer Online Free – Resize Photos in Pixels or %",
-  description: "Resize any image online free by pixels, percentage, or preset sizes (Instagram, passport, thumbnail). Fast, private, browser-based tool.",
+  title: "Image Resizer Online Free – Resize Photos by Pixels, % or Preset Sizes",
+  description: "Resize any photo online free by exact pixels, percentage, or preset sizes (Instagram, passport, thumbnail, 4K). No signup, no watermark — instant browser-based resizing.",
   canonicalPath: "/tools/image-resizer",
   ogImage: "https://www.convertgalaxy.com/image-resizer.png",
   keywords: [
-    "image resizer online",
-    "resize image in pixels online",
+    "image resizer online free",
+    "resize image in pixels online free",
     "photo resizer free no watermark",
-    "resize image for instagram",
+    "resize image for instagram free",
+    "resize image online no signup",
+    "bulk image resizer online",
+    "reduce image dimensions online",
+    "best image resizer online",
   ]
 });
 

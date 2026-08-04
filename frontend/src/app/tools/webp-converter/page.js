@@ -3,15 +3,19 @@ import WebPConverterTool from "@/components/tools/WebPConverterTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "WebP Converter Online – Convert Images to WebP Free",
-  description: "Convert JPG, PNG or any image to WebP format free. Smaller file size, faster websites, zero quality compromise — all in your browser.",
+  title: "WebP Converter Free – Convert JPG/PNG to WebP Online, Faster Websites",
+  description: "Convert JPG, PNG or any image to WebP format free online. Smaller files = faster websites. No signup, no watermark — 100% browser-based, instant WebP conversion.",
   canonicalPath: "/tools/webp-converter",
   ogImage: "https://www.convertgalaxy.com/webp-converter.png",
   keywords: [
-    "webp converter",
-    "convert image to webp online",
+    "webp converter free",
+    "convert image to webp online free",
     "jpg to webp converter free",
-    "png to webp for website speed",
+    "png to webp free",
+    "webp converter no watermark",
+    "best webp converter online",
+    "convert jpeg to webp online",
+    "webp image converter no signup",
   ]
 });
 

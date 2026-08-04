@@ -5,10 +5,10 @@ import { constructMetadata } from "@/lib/metadata";
 import { ALL_FAQS } from "@/lib/schema";
 
 export const metadata = constructMetadata({
-  title: "FAQ – Common Questions About ConvertGalaxy Tools",
-  description: "Answers to common questions about file size limits, supported formats, privacy, and how ConvertGalaxy's browser-based tools work.",
+  title: "FAQ – Free Image Converter Questions Answered | Convert Galaxy",
+  description: "Find answers to common questions about file size limits, supported formats (JPG, PNG, WebP, HEIC, PDF), privacy policy, and how Convert Galaxy's browser-based tools work.",
   canonicalPath: "/faq",
-  keywords: ["convertgalaxy faq"],
+  keywords: ["convertgalaxy faq", "image converter faq", "free converter questions", "heic to jpg faq", "compress image faq", "image converter privacy"],
 });
 
 export default function FaqPage() {

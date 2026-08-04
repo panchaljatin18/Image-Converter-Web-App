@@ -3,15 +3,19 @@ import ImageToPdfTool from "@/components/tools/ImageToPdfTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image to PDF Converter Free – JPG/PNG to PDF in Seconds",
-  description: "Convert one or multiple JPG/PNG images into a single PDF file free. No email signup, no watermark — works instantly in your browser.",
+  title: "Image to PDF Converter Free – Convert JPG, PNG to PDF Online",
+  description: "Convert JPG, PNG or multiple images into a single high-quality PDF free. No email signup, no watermark — instant, private browser-based PDF creation.",
   canonicalPath: "/tools/image-to-pdf",
   ogImage: "https://www.convertgalaxy.com/image-to-pdf.png",
   keywords: [
-    "image to pdf converter",
-    "convert jpg to pdf free",
-    "multiple images to one pdf online",
+    "image to pdf converter free",
+    "jpg to pdf free online",
+    "convert jpg to pdf no signup",
+    "multiple images to pdf online free",
     "png to pdf converter free",
+    "image to pdf no watermark",
+    "best image to pdf converter",
+    "merge images to pdf free",
   ]
 });
 

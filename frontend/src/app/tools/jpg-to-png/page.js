@@ -3,15 +3,19 @@ import JpgToPngTool from "@/components/tools/JpgToPngTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "JPG to PNG Converter Free – No Quality Loss, No Signup",
-  description: "Convert JPG to PNG online free in seconds. Lossless quality, transparent background support, works fully in your browser — no upload, no signup.",
+  title: "JPG to PNG Converter – Free, No Signup, Lossless Quality",
+  description: "Convert JPG to PNG online for free in seconds. Lossless quality, transparent background support, no watermark, no signup — 100% browser-based, instant results.",
   canonicalPath: "/tools/jpg-to-png",
   ogImage: "https://www.convertgalaxy.com/jpg-to-png.png",
   keywords: [
-    "jpg to png converter",
+    "jpg to png converter free",
     "convert jpg to png online free",
+    "jpeg to png converter",
+    "jpg to png no watermark",
     "jpg to png transparent background",
-    "jpeg to png converter no watermark",
+    "free jpg to png",
+    "online jpg to png no signup",
+    "best jpg to png converter",
   ]
 });
 

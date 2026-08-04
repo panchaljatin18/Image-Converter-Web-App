@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Bold, 
@@ -47,11 +47,16 @@ function htmlToMarkdown(html) {
   
   // Protect raw script tags and custom HTML blocks from markdown conversion
   const protectedRawBlocks = [];
+  md = md.replace(/<div[^>]*class="[^"]*wp-block-custom-html[^"]*"[^>]*>[\s\S]*?<textarea[^>]*>([\s\S]*?)<\/textarea>[\s\S]*?<\/div>/gi, (m, code) => {
+    const unescapedCode = code.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
+    protectedRawBlocks.push(unescapedCode);
+    return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
+  });
   md = md.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (m) => {
     protectedRawBlocks.push(m);
     return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
   });
-  md = md.replace(/<div class="(?:wp-custom-html-card|custom-html-block|wp-block-html|faq-container)"[^>]*>([\s\S]*?)<\/div>/gi, (m) => {
+  md = md.replace(/<div class="(?:wp-custom-html-card|custom-html-block|wp-block-html|faq-container|faq-schema-block)"[^>]*>([\s\S]*?)<\/div>/gi, (m) => {
     protectedRawBlocks.push(m);
     return `___PROTECTED_RAW_${protectedRawBlocks.length - 1}___`;
   });
@@ -162,21 +167,43 @@ function markdownToHtml(md) {
   // Extract and protect raw HTML & Script blocks (e.g. JSON-LD FAQ Schema, custom HTML blocks, details)
   const rawHtmlBlocks = [];
 
+  const createWpBlockCard = (codeText) => {
+    const escapedText = codeText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const blockId = "wp_html_" + Math.random().toString(36).substring(2, 9);
+    return `<div id="${blockId}" class="wp-block-custom-html my-6 rounded-2xl border border-indigo-500/30 bg-[#0d0d18] overflow-hidden shadow-2xl" contenteditable="false" data-wp-block="true">
+  <div class="wp-block-header flex items-center justify-between px-4 py-2.5 bg-[#141424] border-b border-indigo-500/20 font-['Outfit'] select-none">
+    <div class="flex items-center gap-2 text-xs font-bold text-indigo-300">
+      <span>&lt;/&gt; Custom HTML / FAQ Schema Block</span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-[#090912] p-1 rounded-lg border border-white/5">
+      <button type="button" data-tab-btn="html" class="wp-block-tab-btn active px-3 py-1 text-xs font-bold rounded-md bg-indigo-600 text-white shadow-sm transition-all cursor-pointer">HTML</button>
+      <button type="button" data-tab-btn="preview" class="wp-block-tab-btn px-3 py-1 text-xs font-bold rounded-md text-[#9494a3] hover:text-white transition-all cursor-pointer">Preview</button>
+    </div>
+  </div>
+  <div class="wp-block-editor-pane p-4">
+    <textarea class="wp-block-textarea w-full bg-[#090912] border border-white/10 rounded-xl p-3 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed" rows="7" placeholder="Paste or write HTML code or FAQ schema here...">${escapedText}</textarea>
+  </div>
+  <div class="wp-block-preview-pane p-4 hidden">
+    <div class="wp-block-preview-content text-left text-white text-sm"></div>
+  </div>
+</div>`;
+  };
+
   // 1. Script tags (including <script type="application/ld+json">)
   html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (match) => {
-    rawHtmlBlocks.push(match);
+    rawHtmlBlocks.push(createWpBlockCard(match));
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });
 
   // 2. Custom HTML wrapper divs
   html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
-    rawHtmlBlocks.push(match);
+    rawHtmlBlocks.push(createWpBlockCard(match));
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });
 
   // 3. HTML details / accordions
   html = html.replace(/<details[^>]*>[\s\S]*?<\/details>/gi, (match) => {
-    rawHtmlBlocks.push(match);
+    rawHtmlBlocks.push(createWpBlockCard(match));
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });
 
@@ -416,7 +443,120 @@ export default function BlogEditor({ initialSlug = null }) {
   const [linkPopoverPos, setLinkPopoverPos] = useState({ top: 0, left: 0 });
   const [isEditingLinkPopover, setIsEditingLinkPopover] = useState(false);
 
+  const handleInlineImageFileChange = async (fileInput) => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    const blockCard = fileInput.closest(".wp-block-image-card");
+    if (!blockCard) return;
+
+    blockCard.innerHTML = `<div class="p-8 text-center text-indigo-300 font-bold text-xs font-['Outfit'] flex items-center justify-center gap-3 bg-[#090912] rounded-2xl border border-indigo-500/30">
+      <span class="animate-spin text-lg">⏳</span>
+      <span>Uploading image file directly into article flow...</span>
+    </div>`;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        const altText = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
+        const figureHtml = `<figure class="wp-inline-image-figure my-6 text-center font-['Outfit']" contenteditable="false"><div class="wp-image-wrapper relative inline-block rounded-2xl overflow-hidden border border-white/10 shadow-2xl"><img src="${data.url}" alt="${altText}" class="max-w-full h-auto rounded-2xl block mx-auto" /></div><figcaption contenteditable="true" class="text-xs text-gray-400 mt-2 italic outline-none">${altText}</figcaption></figure><p><br></p>`;
+        blockCard.outerHTML = figureHtml;
+        handleEditorInput();
+      } else {
+        alert(data.error || "Image upload failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error uploading image");
+    }
+  };
+
+  const handleInlineImageUrlSubmit = (urlInput) => {
+    const url = urlInput.value.trim();
+    if (!url) return;
+
+    const blockCard = urlInput.closest(".wp-block-image-card");
+    if (!blockCard) return;
+
+    const figureHtml = `<figure class="wp-inline-image-figure my-6 text-center font-['Outfit']" contenteditable="false"><div class="wp-image-wrapper relative inline-block rounded-2xl overflow-hidden border border-white/10 shadow-2xl"><img src="${url}" alt="Article Image" class="max-w-full h-auto rounded-2xl block mx-auto" /></div><figcaption contenteditable="true" class="text-xs text-gray-400 mt-2 italic outline-none">Add image caption...</figcaption></figure><p><br></p>`;
+    blockCard.outerHTML = figureHtml;
+    handleEditorInput();
+  };
+
   const handleEditorClick = (e) => {
+    // Handle inline image file selection
+    const fileInput = e.target.closest("input[data-wp-image-input='file']");
+    if (fileInput) {
+      fileInput.onchange = () => handleInlineImageFileChange(fileInput);
+    }
+
+    // Handle inline image URL keydown
+    const urlInput = e.target.closest("input[data-wp-image-input='url']");
+    if (urlInput) {
+      urlInput.onkeydown = (ev) => {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          handleInlineImageUrlSubmit(urlInput);
+        }
+      };
+    }
+
+    // Handle WordPress Custom HTML block tab switching (HTML vs Preview)
+    const tabBtn = e.target.closest("button[data-tab-btn]");
+    if (tabBtn && editorRef.current?.contains(tabBtn)) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const blockCard = tabBtn.closest(".wp-block-custom-html");
+      if (blockCard) {
+        const tabType = tabBtn.getAttribute("data-tab-btn");
+        const allTabBtns = blockCard.querySelectorAll("button[data-tab-btn]");
+        const editorPane = blockCard.querySelector(".wp-block-editor-pane");
+        const previewPane = blockCard.querySelector(".wp-block-preview-pane");
+        const previewContent = blockCard.querySelector(".wp-block-preview-content");
+        const textarea = blockCard.querySelector("textarea.wp-block-textarea");
+
+        allTabBtns.forEach(btn => {
+          if (btn === tabBtn) {
+            btn.classList.add("active", "bg-indigo-600", "text-white", "shadow-sm");
+            btn.classList.remove("text-[#9494a3]");
+          } else {
+            btn.classList.remove("active", "bg-indigo-600", "text-white", "shadow-sm");
+            btn.classList.add("text-[#9494a3]");
+          }
+        });
+
+        if (tabType === "html") {
+          editorPane?.classList.remove("hidden");
+          previewPane?.classList.add("hidden");
+        } else if (tabType === "preview") {
+          const rawCode = textarea?.value || "";
+          if (previewContent) {
+            if (rawCode.includes('type="application/ld+json"')) {
+              previewContent.innerHTML = `
+                <div style="padding:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;color:#fcd34d;font-family:monospace;font-size:0.75rem;">
+                  <strong style="color:#ffffff;display:block;margin-bottom:4px;">⚡ Valid JSON-LD FAQ Schema Tag Active</strong>
+                  <span>Google Search engines will process this structured data automatically for search FAQ snippets.</span>
+                </div>
+              `;
+            } else {
+              previewContent.innerHTML = rawCode;
+            }
+          }
+          editorPane?.classList.add("hidden");
+          previewPane?.classList.remove("hidden");
+        }
+      }
+      return;
+    }
+
     const targetLink = e.target.closest("a");
     if (targetLink && editorRef.current?.contains(targetLink)) {
       e.preventDefault();
@@ -501,13 +641,75 @@ export default function BlogEditor({ initialSlug = null }) {
   const [customHtmlTab, setCustomHtmlTab] = useState("faq-json");
   const [customHtmlPreview, setCustomHtmlPreview] = useState(false);
 
+  // WordPress "/" Slash Command Inserter States
+  const [showSlashMenu, setShowSlashMenu] = useState(false);
+  const [slashQuery, setSlashQuery] = useState("");
+  const [slashMenuPos, setSlashMenuPos] = useState({ top: 0, left: 0 });
+  const [slashSelectedIndex, setSlashSelectedIndex] = useState(0);
+
+  const allSlashCommands = [
+    { id: "html", label: "Custom HTML / FAQ Schema", desc: "Embed raw HTML or Google FAQ Schema JSON-LD", icon: "</>", type: "html", keywords: ["html", "faq", "schema", "code", "accordion"] },
+    { id: "table", label: "Table", desc: "Create structured grid table", icon: "📊", type: "table", keywords: ["table", "grid", "data", "rows"] },
+    { id: "callout", label: "Pro Tip / Callout Box", desc: "Highlighted tip card with icon", icon: "💡", type: "callout", keywords: ["callout", "tip", "box", "note", "alert", "pro"] },
+    { id: "code", label: "Code Snippet", desc: "Display formatted code snippet", icon: "💻", type: "code", keywords: ["code", "snippet", "js", "python", "pre"] },
+    { id: "image", label: "Image / Media", desc: "Upload or select images", icon: "🖼️", type: "image", keywords: ["image", "media", "photo", "pic", "upload"] },
+    { id: "h2", label: "Heading 2", desc: "Section heading level 2", icon: "H2", type: "heading", keywords: ["h2", "heading", "title", "h"] },
+    { id: "h3", label: "Heading 3", desc: "Subheading level 3", icon: "H3", type: "subheading", keywords: ["h3", "subheading", "subtitle"] },
+    { id: "quote", label: "Blockquote", desc: "Quote callout text", icon: "💬", type: "quote", keywords: ["quote", "blockquote", "cite"] },
+    { id: "divider", label: "Divider Line", desc: "Horizontal separator rule", icon: "➖", type: "divider", keywords: ["divider", "hr", "line", "rule", "separator"] },
+    { id: "ul", label: "Bullet List", desc: "Unordered list of items", icon: "•", type: "list-ul", keywords: ["list", "bullet", "ul"] },
+    { id: "ol", label: "Numbered List", desc: "Ordered numbered list", icon: "1.", type: "list-ol", keywords: ["numbered", "ol", "number"] },
+  ];
+
+  const filteredSlashCommands = useMemo(() => {
+    if (!slashQuery) return allSlashCommands;
+    const q = slashQuery.toLowerCase();
+    return allSlashCommands.filter(
+      (cmd) => cmd.id.includes(q) || cmd.label.toLowerCase().includes(q) || cmd.keywords.some((k) => k.includes(q))
+    );
+  }, [slashQuery]);
+
   const handleInsertCustomHtml = () => {
     if (!customHtmlCode.trim()) return;
     editorRef.current?.focus();
     const isScript = customHtmlCode.includes('type="application/ld+json"');
-    const escapedCode = customHtmlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const blockHtml = `<div class="wp-custom-html-card" data-custom-html="true"><div class="wp-custom-html-header"><span>${isScript ? '⚡ FAQ Schema (JSON-LD)' : '&lt;/&gt; Custom HTML Block'}</span></div><pre class="wp-custom-html-code"><code>${escapedCode}</code></pre></div><p><br></p>`;
-    
+
+    let blockHtml = "";
+
+    if (isScript) {
+      let faqItems = [];
+      try {
+        const jsonMatch = customHtmlCode.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+        const jsonText = jsonMatch ? jsonMatch[1] : customHtmlCode;
+        const parsed = JSON.parse(jsonText.trim());
+        if (parsed.mainEntity && Array.isArray(parsed.mainEntity)) {
+          faqItems = parsed.mainEntity.map((item) => ({
+            q: item.name || item.question || "",
+            a: item.acceptedAnswer?.text || item.answer || ""
+          }));
+        }
+      } catch (e) {
+        console.warn("Could not parse FAQ JSON preview:", e);
+      }
+
+      const previewList = faqItems.length > 0
+        ? faqItems.map((item) => `<div style="margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);"><strong style="color:#fbbf24;">Q: ${item.q}</strong><br/><span style="color:#cbd5e1;font-size:0.85rem;">A: ${item.a}</span></div>`).join("")
+        : `<div style="font-size:0.85rem;color:#cbd5e1;">Structured FAQ Schema JSON-LD script active for Google Search engines.</div>`;
+
+      blockHtml = `<div class="faq-schema-block" style="background:#0d0d18;border:1px solid rgba(245,158,11,0.4);border-radius:14px;padding:16px;margin:24px 0;box-shadow:0 8px 24px rgba(0,0,0,0.4);" data-raw-schema="true">
+  <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(245,158,11,0.25);padding-bottom:8px;margin-bottom:12px;color:#fbbf24;font-weight:700;font-size:0.85rem;font-family:'Outfit',sans-serif;">
+    <span>⚡ FAQ Schema (JSON-LD) - Active for Google Search</span>
+    <span style="font-size:0.7rem;background:rgba(245,158,11,0.2);padding:2px 8px;border-radius:20px;color:#fbbf24;">SEO Schema</span>
+  </div>
+  <div style="font-size:0.85rem;color:#e2e8f0;font-family:'Outfit',sans-serif;">
+    ${previewList}
+  </div>
+  ${customHtmlCode.trim()}
+</div><p><br></p>`;
+    } else {
+      blockHtml = `${customHtmlCode.trim()}<p><br></p>`;
+    }
+
     document.execCommand("insertHTML", false, blockHtml);
     setShowCustomHtmlModal(false);
     setCustomHtmlCode("");
@@ -522,6 +724,11 @@ export default function BlogEditor({ initialSlug = null }) {
   const handlePrefillFaqAccordion = () => {
     setCustomHtmlTab("custom-html");
     setCustomHtmlCode(`<div class="faq-container my-8 space-y-4">\n  <details class="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 cursor-pointer text-indigo-200">\n    <summary class="font-bold text-white text-base font-['Outfit']">What image formats are supported?</summary>\n    <p class="mt-2 text-sm text-[#cbd5e1] leading-relaxed">We support JPG, PNG, WebP, GIF, SVG, AVIF, TIFF, and PDF.</p>\n  </details>\n  <details class="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 cursor-pointer text-indigo-200">\n    <summary class="font-bold text-white text-base font-['Outfit']">Are there any file size limits?</summary>\n    <p class="mt-2 text-sm text-[#cbd5e1] leading-relaxed">No strict server limits because processing happens in your browser!</p>\n  </details>\n</div>`);
+  };
+
+  const handlePrefillCodeSnippet = () => {
+    setCustomHtmlTab("code-snippet");
+    setCustomHtmlCode(`<pre><code class="language-javascript">// Paste or write your code snippet here\nfunction example() {\n  console.log("Hello from ConvertGalaxy!");\n}</code></pre>`);
   };
   
   // Editor mode: "visual" or "code" (markdown)
@@ -671,6 +878,41 @@ export default function BlogEditor({ initialSlug = null }) {
       const parsedMd = htmlToMarkdown(currentHtml);
       setMarkdownContent(parsedMd);
       saveDraftToLocalStorage({ htmlContent: currentHtml, markdownContent: parsedMd });
+
+      // Check for WordPress "/" Slash Command trigger
+      if (editorMode === "visual" && typeof window !== "undefined") {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0 && selection.anchorNode && editorRef.current?.contains(selection.anchorNode)) {
+          const range = selection.getRangeAt(0);
+          const node = selection.anchorNode;
+          const offset = selection.anchorOffset;
+          if (node) {
+            const textContent = node.nodeValue || node.textContent || "";
+            const textBeforeCaret = textContent.substring(0, offset);
+            const match = textBeforeCaret.match(/\/([a-zA-Z0-9-]*)$/);
+
+            if (match) {
+              const query = match[1].toLowerCase();
+              setSlashQuery(query);
+              setSlashSelectedIndex(0);
+
+              const rect = range.getBoundingClientRect();
+              const editorRect = editorRef.current.getBoundingClientRect();
+              if (rect && editorRect) {
+                setSlashMenuPos({
+                  top: Math.max(10, rect.bottom - editorRect.top + 6),
+                  left: Math.max(10, Math.min(rect.left - editorRect.left, editorRect.width - 290)),
+                });
+                setShowSlashMenu(true);
+              }
+            } else {
+              setShowSlashMenu(false);
+            }
+          }
+        } else {
+          setShowSlashMenu(false);
+        }
+      }
     }
   };
 
@@ -964,10 +1206,107 @@ export default function BlogEditor({ initialSlug = null }) {
 
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
 
+  const executeSlashCommand = (cmd) => {
+    setShowSlashMenu(false);
+    if (!cmd) return;
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && selection.anchorNode) {
+      const node = selection.anchorNode;
+      const offset = selection.anchorOffset;
+      if (node) {
+        const textContent = node.nodeValue || node.textContent || "";
+        const match = textContent.substring(0, offset).match(/\/([a-zA-Z0-9-]*)$/);
+
+        if (match) {
+          const slashStart = offset - match[0].length;
+          if (node.nodeType === 3) {
+            node.nodeValue = textContent.substring(0, slashStart) + textContent.substring(offset);
+          }
+        }
+      }
+    }
+
+    if (cmd.type === "html") {
+      insertCustomHtmlBlock();
+    } else if (cmd.type === "code") {
+      insertCustomHtmlBlock(`<pre><code class="language-javascript">// Write your code snippet here\nfunction example() {\n  console.log("Hello from ConvertGalaxy!");\n}</code></pre>`);
+    } else if (cmd.type === "table") {
+      setShowTableModal(true);
+    } else if (cmd.type === "callout") {
+      insertCalloutBox();
+    } else if (cmd.type === "image") {
+      insertInlineImageBlock();
+    } else if (cmd.type === "heading") {
+      handleFormat("formatBlock", "<h2>");
+    } else if (cmd.type === "subheading") {
+      handleFormat("formatBlock", "<h3>");
+    } else if (cmd.type === "quote") {
+      handleFormat("formatBlock", "<blockquote>");
+    } else if (cmd.type === "divider") {
+      document.execCommand("insertHorizontalRule", false, null);
+    } else if (cmd.type === "list-ul") {
+      handleFormat("insertUnorderedList");
+    } else if (cmd.type === "list-ol") {
+      handleFormat("insertOrderedList");
+    }
+    handleEditorInput();
+  };
+
   // WordPress Keyboard Shortcuts Listener
   const handleKeyDown = (e) => {
     const isMac = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const modKey = isMac ? e.metaKey : e.ctrlKey;
+
+    // Alt + Shift + Z or Cmd + Alt + Z: Remove Current Block (WordPress Shortcut)
+    if ((e.altKey && e.shiftKey && (e.key === "z" || e.key === "Z")) || (modKey && e.altKey && (e.key === "z" || e.key === "Z"))) {
+      e.preventDefault();
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        let node = range.commonAncestorContainer;
+        if (node.nodeType === 3) node = node.parentNode;
+
+        const targetBlock = node.closest
+          ? node.closest(".wp-block-custom-html, table, .callout-box, blockquote, figure, .wp-custom-html-card, h1, h2, h3, h4, ul, ol, p, hr")
+          : null;
+
+        if (targetBlock && editorRef.current && editorRef.current.contains(targetBlock)) {
+          if (targetBlock.tagName === "P" && editorRef.current.children.length <= 1) {
+            targetBlock.innerHTML = "<br>";
+          } else {
+            targetBlock.remove();
+          }
+          handleEditorInput();
+        }
+      }
+      return;
+    }
+
+    // Slash menu navigation when open
+    if (showSlashMenu) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSlashSelectedIndex((prev) => (filteredSlashCommands.length ? (prev + 1) % filteredSlashCommands.length : 0));
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSlashSelectedIndex((prev) => (filteredSlashCommands.length ? (prev - 1 + filteredSlashCommands.length) % filteredSlashCommands.length : 0));
+        return;
+      }
+      if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        if (filteredSlashCommands[slashSelectedIndex]) {
+          executeSlashCommand(filteredSlashCommands[slashSelectedIndex]);
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setShowSlashMenu(false);
+        return;
+      }
+    }
 
     // Ctrl + S / Cmd + S: Save Article
     if (modKey && (e.key === "s" || e.key === "S")) {
@@ -1021,7 +1360,61 @@ export default function BlogEditor({ initialSlug = null }) {
       return;
     }
 
-    // Alt + Shift + 1/2/3/4 or Ctrl + Shift + 1/2/3/4: Headings & Lists
+    // Auto-Formatting Markdown Shortcuts on Space (# , ## , ### , > , - , 1. )
+    if (e.key === " " && editorMode === "visual") {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0 && selection.anchorNode && editorRef.current?.contains(selection.anchorNode)) {
+        const node = selection.anchorNode;
+        const offset = selection.anchorOffset;
+        const textContent = node.nodeValue || node.textContent || "";
+        const textBeforeCaret = textContent.substring(0, offset);
+
+        if (textBeforeCaret === "#") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("formatBlock", "<h1>");
+          return;
+        }
+        if (textBeforeCaret === "##") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("formatBlock", "<h2>");
+          return;
+        }
+        if (textBeforeCaret === "###") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("formatBlock", "<h3>");
+          return;
+        }
+        if (textBeforeCaret === "####") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("formatBlock", "<h4>");
+          return;
+        }
+        if (textBeforeCaret === ">") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("formatBlock", "<blockquote>");
+          return;
+        }
+        if (textBeforeCaret === "-" || textBeforeCaret === "*") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("insertUnorderedList");
+          return;
+        }
+        if (textBeforeCaret === "1.") {
+          e.preventDefault();
+          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          handleFormat("insertOrderedList");
+          return;
+        }
+      }
+    }
+
+    // Alt + Shift + 1/2/3/4/P/Q/C/T/M or Ctrl + Shift + 1/2/3/4: Headings, Blocks & Lists
     if ((modKey || e.altKey) && e.shiftKey) {
       if (e.key === "1") {
         e.preventDefault();
@@ -1056,6 +1449,31 @@ export default function BlogEditor({ initialSlug = null }) {
       if (e.key === "q" || e.key === "Q") {
         e.preventDefault();
         handleFormat("formatBlock", "<blockquote>");
+        return;
+      }
+      if (e.key === "p" || e.key === "P") {
+        e.preventDefault();
+        handleFormat("formatBlock", "<p>");
+        return;
+      }
+      if (e.key === "c" || e.key === "C") {
+        e.preventDefault();
+        insertCustomHtmlBlock(`<pre><code class="language-javascript">// Write your code snippet here\nfunction example() {\n  console.log("Hello from ConvertGalaxy!");\n}</code></pre>`);
+        return;
+      }
+      if (e.key === "t" || e.key === "T") {
+        e.preventDefault();
+        setShowTableModal(true);
+        return;
+      }
+      if (e.key === "m" || e.key === "M") {
+        e.preventDefault();
+        insertInlineImageBlock();
+        return;
+      }
+      if (e.key === "h" || e.key === "H") {
+        e.preventDefault();
+        setShowShortcutsModal(true);
         return;
       }
     }
@@ -1106,11 +1524,11 @@ export default function BlogEditor({ initialSlug = null }) {
         insertCalloutBox();
         break;
       case "code":
-        insertCodeBlock();
+        insertCustomHtmlBlock(`<pre><code class="language-javascript">// Paste or write your code snippet here\nfunction example() {\n  console.log("Hello from ConvertGalaxy!");\n}</code></pre>`);
         break;
       case "html":
       case "faq-schema":
-        setShowCustomHtmlModal(true);
+        insertCustomHtmlBlock();
         break;
       case "table":
         insertTable();
@@ -1119,11 +1537,36 @@ export default function BlogEditor({ initialSlug = null }) {
         document.execCommand("insertHorizontalRule", false, null);
         break;
       case "image":
-        setShowMediaModal(true);
+        insertInlineImageBlock();
         break;
       default:
         break;
     }
+    handleEditorInput();
+  };
+
+  const insertInlineImageBlock = () => {
+    if (editorMode !== "visual") return;
+    editorRef.current?.focus();
+
+    const blockId = "wp_img_" + Date.now();
+    const blockHtml = `<div id="${blockId}" class="wp-block-image-card my-6 rounded-2xl border border-indigo-500/30 bg-[#0d0d18] p-5 shadow-2xl overflow-hidden select-none" contenteditable="false" data-wp-block="true">
+  <div class="flex flex-col items-center justify-center border-2 border-dashed border-indigo-500/30 rounded-xl p-6 bg-[#090912] hover:border-indigo-500/60 transition-all text-center">
+    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 font-bold text-xl">🖼️</div>
+    <h4 class="font-['Outfit'] font-bold text-sm text-white mb-1">WordPress Inline Image Block</h4>
+    <p class="text-xs text-gray-400 mb-4">Upload an image file or paste an image URL directly into your article flow</p>
+    <div class="flex flex-wrap items-center justify-center gap-3 w-full max-w-md">
+      <label class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl cursor-pointer transition-all shadow-lg flex items-center gap-2">
+        ☁️ Choose Image File
+        <input type="file" accept="image/*" class="hidden" data-wp-image-input="file" />
+      </label>
+      <span class="text-xs text-gray-500 font-semibold">OR</span>
+      <input type="text" data-wp-image-input="url" placeholder="Paste Image URL & Press Enter..." class="flex-1 bg-[#141424] border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-indigo-500" />
+    </div>
+  </div>
+</div><p><br></p>`;
+
+    document.execCommand("insertHTML", false, blockHtml);
     handleEditorInput();
   };
 
@@ -1132,9 +1575,33 @@ export default function BlogEditor({ initialSlug = null }) {
     document.execCommand("insertHTML", false, calloutHtml);
   };
 
-  const insertCodeBlock = () => {
-    const codeHtml = `<pre><code>// Write your code snippet here</code></pre><p><br></p>`;
-    document.execCommand("insertHTML", false, codeHtml);
+  const insertCustomHtmlBlock = (defaultCode = "") => {
+    if (editorMode !== "visual") return;
+    editorRef.current?.focus();
+
+    const placeholderCode = defaultCode || "";
+
+    const blockId = "wp_html_" + Date.now();
+    const blockHtml = `<div id="${blockId}" class="wp-block-custom-html my-6 rounded-2xl border border-indigo-500/30 bg-[#0d0d18] overflow-hidden shadow-2xl" contenteditable="false" data-wp-block="true">
+  <div class="wp-block-header flex items-center justify-between px-4 py-2.5 bg-[#141424] border-b border-indigo-500/20 font-['Outfit'] select-none">
+    <div class="flex items-center gap-2 text-xs font-bold text-indigo-300">
+      <span>&lt;/&gt; Custom HTML / FAQ Schema Block</span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-[#090912] p-1 rounded-lg border border-white/5">
+      <button type="button" data-tab-btn="html" class="wp-block-tab-btn active px-3 py-1 text-xs font-bold rounded-md bg-indigo-600 text-white shadow-sm transition-all cursor-pointer">HTML</button>
+      <button type="button" data-tab-btn="preview" class="wp-block-tab-btn px-3 py-1 text-xs font-bold rounded-md text-[#9494a3] hover:text-white transition-all cursor-pointer">Preview</button>
+    </div>
+  </div>
+  <div class="wp-block-editor-pane p-4">
+    <textarea class="wp-block-textarea w-full bg-[#090912] border border-white/10 rounded-xl p-3 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed" rows="7" placeholder="Paste or write HTML code or FAQ schema here...">${placeholderCode}</textarea>
+  </div>
+  <div class="wp-block-preview-pane p-4 hidden">
+    <div class="wp-block-preview-content text-left text-white text-sm"></div>
+  </div>
+</div><p><br></p>`;
+
+    document.execCommand("insertHTML", false, blockHtml);
+    handleEditorInput();
   };
 
   const insertTable = () => {
@@ -2014,6 +2481,48 @@ export default function BlogEditor({ initialSlug = null }) {
                         )}
                       </div>
                     )}
+
+                    {/* Floating WordPress Slash Command Inserter Menu */}
+                    {showSlashMenu && (
+                      <div
+                        className="absolute z-50 bg-[#12121e] border border-indigo-500/40 rounded-2xl p-2 shadow-2xl w-72 text-white backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+                        style={{ top: `${slashMenuPos.top}px`, left: `${slashMenuPos.left}px` }}
+                      >
+                        <div className="px-3 py-1.5 border-b border-white/10 mb-1 flex items-center justify-between text-[11px] font-bold text-indigo-300 font-['Outfit'] uppercase tracking-wider">
+                          <span>WordPress Blocks ({filteredSlashCommands.length})</span>
+                          <span className="text-gray-400 font-mono font-normal text-[10px]">/ to filter</span>
+                        </div>
+                        <div className="max-h-60 overflow-y-auto space-y-1">
+                          {filteredSlashCommands.length > 0 ? (
+                            filteredSlashCommands.map((cmd, idx) => (
+                              <button
+                                key={cmd.id}
+                                type="button"
+                                onClick={() => executeSlashCommand(cmd)}
+                                onMouseEnter={() => setSlashSelectedIndex(idx)}
+                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                                  idx === slashSelectedIndex
+                                    ? "bg-indigo-600/90 text-white shadow-md border border-indigo-400/30"
+                                    : "hover:bg-white/5 text-[#cbd5e1]"
+                                }`}
+                              >
+                                <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center font-bold text-xs shrink-0 font-mono text-amber-300">
+                                  {cmd.icon}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-bold text-xs font-['Outfit'] text-white truncate">{cmd.label}</div>
+                                  <div className="text-[10px] text-gray-400 truncate">{cmd.desc}</div>
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="p-3 text-xs text-gray-400 text-center italic">
+                              No matching blocks for "{slashQuery}"
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Word Count & Reading Stats Bar */}
@@ -2738,6 +3247,19 @@ export default function BlogEditor({ initialSlug = null }) {
                 <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Bullet List</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+U</kbd></div>
                 <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Numbered List</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+O</kbd></div>
                 <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Quote Block</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+Q</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Code Block</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+C</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Table Builder</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+T</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Insert Media</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+M</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Remove Block</span> <kbd className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-mono text-[10px]">Alt+Shift+Z</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Block Inserter</span> <kbd className="bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded font-mono text-[10px]">Type /</kbd></div>
+              </div>
+
+              <h4 className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider pt-2">Markdown Auto-Formatting (Type & Space)</h4>
+              <div className="grid grid-cols-2 gap-2 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">H1 / H2 / H3</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]"># / ## / ### + Space</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Blockquote</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">&gt; + Space</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Bullet List</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">- or * + Space</kbd></div>
+                <div className="flex justify-between items-center text-white"><span className="text-[#9494a3]">Numbered List</span> <kbd className="bg-white/10 px-2 py-0.5 rounded font-mono text-[10px]">1. + Space</kbd></div>
               </div>
             </div>
 
@@ -2797,23 +3319,34 @@ export default function BlogEditor({ initialSlug = null }) {
                 >
                   📋 HTML Accordion FAQ
                 </button>
+                <button
+                  type="button"
+                  onClick={handlePrefillCodeSnippet}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    customHtmlTab === "code-snippet"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "bg-white/5 text-[#cbd5e1] hover:bg-white/10"
+                  }`}
+                >
+                  💻 Code Snippet
+                </button>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setCustomHtmlPreview(false)}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
-                    !customHtmlPreview ? "bg-white/15 text-white" : "text-[#9494a3] hover:text-white"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    !customHtmlPreview ? "bg-indigo-500/30 text-indigo-300 border border-indigo-500/40" : "text-[#9494a3] hover:text-white"
                   }`}
                 >
-                  HTML Code
+                  HTML / Code
                 </button>
                 <button
                   type="button"
                   onClick={() => setCustomHtmlPreview(true)}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
-                    customHtmlPreview ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "text-[#9494a3] hover:text-white"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    customHtmlPreview ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "text-[#9494a3] hover:text-white"
                   }`}
                 >
                   👁️ Live Preview

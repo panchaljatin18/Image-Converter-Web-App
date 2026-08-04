@@ -3,15 +3,19 @@ import ImageCompressorTool from "@/components/tools/ImageCompressorTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "Image Compressor Online – Reduce Size Without Losing Quality",
-  description: "Compress JPG, PNG & WebP images free without visible quality loss. Reduce photo file size in seconds, right in your browser — no upload needed.",
+  title: "Image Compressor Online Free – Compress JPG, PNG, WebP Without Quality Loss",
+  description: "Compress JPG, PNG & WebP images online free without losing visible quality. Reduce photo size by up to 80% in seconds — no signup, no watermark, 100% browser-based.",
   canonicalPath: "/tools/image-compressor",
   ogImage: "https://www.convertgalaxy.com/image-compressor.png",
   keywords: [
-    "image compressor online",
+    "image compressor online free",
     "compress image without losing quality",
     "reduce photo size online free",
     "compress jpeg online free",
+    "compress png online free",
+    "image compressor no watermark",
+    "reduce image file size free",
+    "best image compressor online",
   ]
 });
 

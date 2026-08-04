@@ -3,15 +3,19 @@ import PngToJpgTool from "@/components/tools/PngToJpgTool";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
-  title: "PNG to JPG Converter – Free, Fast & Compressed Output",
-  description: "Turn PNG images into small, web-ready JPG files instantly. Free browser-based converter — no account, no watermark, no server upload.",
+  title: "PNG to JPG Converter – Free, Fast, No Watermark",
+  description: "Convert PNG to JPG online free instantly. Reduce file size, handle transparent backgrounds with custom fill color. No signup, no watermark, 100% browser-based.",
   canonicalPath: "/tools/png-to-jpg",
   ogImage: "https://www.convertgalaxy.com/png-to-jpg.png",
   keywords: [
-    "png to jpg converter",
-    "convert png to jpg free",
-    "png to jpg without background",
-    "reduce png file size to jpg",
+    "png to jpg converter free",
+    "convert png to jpg online free",
+    "png to jpeg free",
+    "png to jpg no watermark",
+    "png to jpg no signup",
+    "compress png to jpg free",
+    "png to jpg transparent background",
+    "best png to jpg converter",
   ]
 });
 
