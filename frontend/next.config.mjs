@@ -32,6 +32,11 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  turbopack: {
+    // Fixes "Next.js inferred your workspace root" warning caused by
+    // multiple package-lock.json files at C:\Users\Jmpan\ and this project.
+    root: 'C:/Users/Jmpan/OneDrive/Desktop/Image Converter/frontend',
+  },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
 

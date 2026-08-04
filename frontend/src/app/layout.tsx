@@ -14,14 +14,14 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  preload: true,
+  preload: false,
 })
 
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
   display: "swap",
-  preload: true,
+  preload: false,
 })
 
 export const metadata = GLOBAL_SEO_DEFAULTS
