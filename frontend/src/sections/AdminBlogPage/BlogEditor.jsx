@@ -648,25 +648,52 @@ export default function BlogEditor({ initialSlug = null }) {
   const [slashSelectedIndex, setSlashSelectedIndex] = useState(0);
 
   const allSlashCommands = [
+    { id: "ul", label: "Bullet List", desc: "Unordered list of items", icon: "•", type: "list-ul", keywords: ["l", "list", "bullet", "ul"] },
+    { id: "ol", label: "Numbered List", desc: "Ordered numbered list", icon: "1.", type: "list-ol", keywords: ["l", "list", "numbered", "ol", "number"] },
+    { id: "h1", label: "Heading 1", desc: "Main heading level 1", icon: "H1", type: "heading1", keywords: ["h1", "heading1", "title", "heading", "h"] },
+    { id: "h2", label: "Heading 2", desc: "Section heading level 2", icon: "H2", type: "heading2", keywords: ["h2", "heading2", "title", "heading", "h"] },
+    { id: "h3", label: "Heading 3", desc: "Subheading level 3", icon: "H3", type: "heading3", keywords: ["h3", "subheading", "subtitle", "heading", "h"] },
+    { id: "h4", label: "Heading 4", desc: "Minor heading level 4", icon: "H4", type: "heading4", keywords: ["h4", "subheading", "heading", "h"] },
     { id: "html", label: "Custom HTML / FAQ Schema", desc: "Embed raw HTML or Google FAQ Schema JSON-LD", icon: "</>", type: "html", keywords: ["html", "faq", "schema", "code", "accordion"] },
     { id: "table", label: "Table", desc: "Create structured grid table", icon: "📊", type: "table", keywords: ["table", "grid", "data", "rows"] },
     { id: "callout", label: "Pro Tip / Callout Box", desc: "Highlighted tip card with icon", icon: "💡", type: "callout", keywords: ["callout", "tip", "box", "note", "alert", "pro"] },
     { id: "code", label: "Code Snippet", desc: "Display formatted code snippet", icon: "💻", type: "code", keywords: ["code", "snippet", "js", "python", "pre"] },
     { id: "image", label: "Image / Media", desc: "Upload or select images", icon: "🖼️", type: "image", keywords: ["image", "media", "photo", "pic", "upload"] },
-    { id: "h2", label: "Heading 2", desc: "Section heading level 2", icon: "H2", type: "heading", keywords: ["h2", "heading", "title", "h"] },
-    { id: "h3", label: "Heading 3", desc: "Subheading level 3", icon: "H3", type: "subheading", keywords: ["h3", "subheading", "subtitle"] },
     { id: "quote", label: "Blockquote", desc: "Quote callout text", icon: "💬", type: "quote", keywords: ["quote", "blockquote", "cite"] },
     { id: "divider", label: "Divider Line", desc: "Horizontal separator rule", icon: "➖", type: "divider", keywords: ["divider", "hr", "line", "rule", "separator"] },
-    { id: "ul", label: "Bullet List", desc: "Unordered list of items", icon: "•", type: "list-ul", keywords: ["list", "bullet", "ul"] },
-    { id: "ol", label: "Numbered List", desc: "Ordered numbered list", icon: "1.", type: "list-ol", keywords: ["numbered", "ol", "number"] },
   ];
 
   const filteredSlashCommands = useMemo(() => {
     if (!slashQuery) return allSlashCommands;
-    const q = slashQuery.toLowerCase();
-    return allSlashCommands.filter(
-      (cmd) => cmd.id.includes(q) || cmd.label.toLowerCase().includes(q) || cmd.keywords.some((k) => k.includes(q))
-    );
+    const q = slashQuery.toLowerCase().trim();
+
+    return [...allSlashCommands]
+      .map((cmd) => {
+        let score = 0;
+
+        // Exact match on id or keyword (e.g. "l" matches "l" keyword in Bullet List & Numbered List)
+        if (cmd.id === q || cmd.keywords.includes(q)) {
+          score += 1000;
+        }
+
+        // Prefix match on ID, label, label words or keywords
+        if (cmd.id.startsWith(q)) score += 500;
+        if (cmd.label.toLowerCase().startsWith(q)) score += 400;
+
+        const labelWords = cmd.label.toLowerCase().split(/\s+/);
+        if (labelWords.some((w) => w.startsWith(q))) score += 300;
+
+        if (cmd.keywords.some((k) => k.startsWith(q))) score += 200;
+
+        // Substring match on label or keywords
+        if (cmd.label.toLowerCase().includes(q)) score += 50;
+        if (cmd.keywords.some((k) => k.includes(q))) score += 20;
+
+        return { cmd, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.cmd);
   }, [slashQuery]);
 
   const handleInsertCustomHtml = () => {
@@ -1236,10 +1263,14 @@ export default function BlogEditor({ initialSlug = null }) {
       insertCalloutBox();
     } else if (cmd.type === "image") {
       insertInlineImageBlock();
-    } else if (cmd.type === "heading") {
+    } else if (cmd.type === "heading1") {
+      handleFormat("formatBlock", "<h1>");
+    } else if (cmd.type === "heading" || cmd.type === "heading2") {
       handleFormat("formatBlock", "<h2>");
-    } else if (cmd.type === "subheading") {
+    } else if (cmd.type === "subheading" || cmd.type === "heading3") {
       handleFormat("formatBlock", "<h3>");
+    } else if (cmd.type === "heading4") {
+      handleFormat("formatBlock", "<h4>");
     } else if (cmd.type === "quote") {
       handleFormat("formatBlock", "<blockquote>");
     } else if (cmd.type === "divider") {
@@ -1258,7 +1289,10 @@ export default function BlogEditor({ initialSlug = null }) {
     const modKey = isMac ? e.metaKey : e.ctrlKey;
 
     // Alt + Shift + Z or Cmd + Alt + Z: Remove Current Block (WordPress Shortcut)
-    if ((e.altKey && e.shiftKey && (e.key === "z" || e.key === "Z")) || (modKey && e.altKey && (e.key === "z" || e.key === "Z"))) {
+    if (
+      (e.altKey && e.shiftKey && (e.key === "z" || e.key === "Z" || e.code === "KeyZ")) ||
+      (modKey && e.altKey && (e.key === "z" || e.key === "Z" || e.code === "KeyZ"))
+    ) {
       e.preventDefault();
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
@@ -1309,14 +1343,14 @@ export default function BlogEditor({ initialSlug = null }) {
     }
 
     // Ctrl + S / Cmd + S: Save Article
-    if (modKey && (e.key === "s" || e.key === "S")) {
+    if (modKey && (e.key === "s" || e.key === "S" || e.code === "KeyS")) {
       e.preventDefault();
       handleSave(e);
       return;
     }
 
     // Ctrl + K / Cmd + K: Link Insertion
-    if (modKey && (e.key === "k" || e.key === "K")) {
+    if (modKey && (e.key === "k" || e.key === "K" || e.code === "KeyK")) {
       e.preventDefault();
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed && editorRef.current && editorRef.current.contains(selection.getRangeAt(0).commonAncestorContainer)) {
@@ -1333,145 +1367,162 @@ export default function BlogEditor({ initialSlug = null }) {
     if (editorMode !== "visual") return;
 
     // Ctrl + B / Cmd + B: Bold
-    if (modKey && !e.shiftKey && (e.key === "b" || e.key === "B")) {
+    if (modKey && !e.shiftKey && !e.altKey && (e.key === "b" || e.key === "B" || e.code === "KeyB")) {
       e.preventDefault();
       handleFormat("bold");
       return;
     }
 
     // Ctrl + I / Cmd + I: Italic
-    if (modKey && !e.shiftKey && (e.key === "i" || e.key === "I")) {
+    if (modKey && !e.shiftKey && !e.altKey && (e.key === "i" || e.key === "I" || e.code === "KeyI")) {
       e.preventDefault();
       handleFormat("italic");
       return;
     }
 
     // Ctrl + U / Cmd + U: Underline
-    if (modKey && !e.shiftKey && (e.key === "u" || e.key === "U")) {
+    if (modKey && !e.shiftKey && !e.altKey && (e.key === "u" || e.key === "U" || e.code === "KeyU")) {
       e.preventDefault();
       handleFormat("underline");
       return;
     }
 
     // Ctrl + Shift + X or Alt + Shift + D: Strikethrough
-    if ((modKey && e.shiftKey && (e.key === "x" || e.key === "X")) || (e.altKey && e.shiftKey && (e.key === "d" || e.key === "D"))) {
+    if (
+      (modKey && e.shiftKey && (e.key === "x" || e.key === "X" || e.code === "KeyX")) ||
+      (e.altKey && e.shiftKey && (e.key === "d" || e.key === "D" || e.code === "KeyD" || e.key === "x" || e.key === "X" || e.code === "KeyX"))
+    ) {
       e.preventDefault();
       handleFormat("strikeThrough");
       return;
     }
 
-    // Auto-Formatting Markdown Shortcuts on Space (# , ## , ### , > , - , 1. )
+    // Auto-Formatting Markdown Shortcuts on Space (# , ## , ### , #### , > , - , 1. )
     if (e.key === " " && editorMode === "visual") {
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0 && selection.anchorNode && editorRef.current?.contains(selection.anchorNode)) {
+        const range = selection.getRangeAt(0);
         const node = selection.anchorNode;
         const offset = selection.anchorOffset;
         const textContent = node.nodeValue || node.textContent || "";
-        const textBeforeCaret = textContent.substring(0, offset);
+        const textBeforeCaret = textContent.substring(0, offset).replace(/\u00a0/g, " ").trim();
+
+        const removeTriggerText = () => {
+          try {
+            if (node.nodeType === 3) {
+              const r = document.createRange();
+              r.setStart(node, 0);
+              r.setEnd(node, offset);
+              r.deleteContents();
+            }
+          } catch (err) {
+            console.warn("Could not delete trigger text:", err);
+          }
+        };
 
         if (textBeforeCaret === "#") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("formatBlock", "<h1>");
           return;
         }
         if (textBeforeCaret === "##") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("formatBlock", "<h2>");
           return;
         }
         if (textBeforeCaret === "###") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("formatBlock", "<h3>");
           return;
         }
         if (textBeforeCaret === "####") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("formatBlock", "<h4>");
           return;
         }
         if (textBeforeCaret === ">") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("formatBlock", "<blockquote>");
           return;
         }
         if (textBeforeCaret === "-" || textBeforeCaret === "*") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("insertUnorderedList");
           return;
         }
         if (textBeforeCaret === "1.") {
           e.preventDefault();
-          if (node.nodeType === 3) node.nodeValue = textContent.substring(offset);
+          removeTriggerText();
           handleFormat("insertOrderedList");
           return;
         }
       }
     }
 
-    // Alt + Shift + 1/2/3/4/P/Q/C/T/M or Ctrl + Shift + 1/2/3/4: Headings, Blocks & Lists
+    // Alt + Shift + 1/2/3/4/U/O/Q/P/C/T/M/L or Ctrl + Shift + 1/2/3/4/U/O/Q/P/C/T/M/L: Headings, Blocks & Lists
     if ((modKey || e.altKey) && e.shiftKey) {
-      if (e.key === "1") {
+      if (e.code === "Digit1" || e.key === "1" || e.key === "!") {
         e.preventDefault();
         handleFormat("formatBlock", "<h1>");
         return;
       }
-      if (e.key === "2") {
+      if (e.code === "Digit2" || e.key === "2" || e.key === "@") {
         e.preventDefault();
         handleFormat("formatBlock", "<h2>");
         return;
       }
-      if (e.key === "3") {
+      if (e.code === "Digit3" || e.key === "3" || e.key === "#") {
         e.preventDefault();
         handleFormat("formatBlock", "<h3>");
         return;
       }
-      if (e.key === "4") {
+      if (e.code === "Digit4" || e.key === "4" || e.key === "$") {
         e.preventDefault();
         handleFormat("formatBlock", "<h4>");
         return;
       }
-      if (e.key === "7" || e.key === "o" || e.key === "O") {
+      if (e.code === "Digit7" || e.code === "KeyO" || e.key === "7" || e.key === "o" || e.key === "O") {
         e.preventDefault();
         handleFormat("insertOrderedList");
         return;
       }
-      if (e.key === "8" || e.key === "u" || e.key === "U") {
+      if (e.code === "Digit8" || e.code === "KeyU" || e.code === "KeyL" || e.key === "8" || e.key === "u" || e.key === "U" || e.key === "l" || e.key === "L") {
         e.preventDefault();
         handleFormat("insertUnorderedList");
         return;
       }
-      if (e.key === "q" || e.key === "Q") {
+      if (e.code === "KeyQ" || e.key === "q" || e.key === "Q") {
         e.preventDefault();
-        handleFormat("formatBlock", "<blockquote>");
+        handleFormat("formatBlock", "blockquote");
         return;
       }
-      if (e.key === "p" || e.key === "P") {
+      if (e.code === "KeyP" || e.key === "p" || e.key === "P") {
         e.preventDefault();
-        handleFormat("formatBlock", "<p>");
+        handleFormat("formatBlock", "p");
         return;
       }
-      if (e.key === "c" || e.key === "C") {
+      if (e.code === "KeyC" || e.key === "c" || e.key === "C") {
         e.preventDefault();
         insertCustomHtmlBlock(`<pre><code class="language-javascript">// Write your code snippet here\nfunction example() {\n  console.log("Hello from ConvertGalaxy!");\n}</code></pre>`);
         return;
       }
-      if (e.key === "t" || e.key === "T") {
+      if (e.code === "KeyT" || e.key === "t" || e.key === "T") {
         e.preventDefault();
         setShowTableModal(true);
         return;
       }
-      if (e.key === "m" || e.key === "M") {
+      if (e.code === "KeyM" || e.key === "m" || e.key === "M") {
         e.preventDefault();
         insertInlineImageBlock();
         return;
       }
-      if (e.key === "h" || e.key === "H") {
+      if (e.code === "KeyH" || e.key === "h" || e.key === "H") {
         e.preventDefault();
         setShowShortcutsModal(true);
         return;
@@ -1483,7 +1534,16 @@ export default function BlogEditor({ initialSlug = null }) {
   const handleFormat = (command, value = null) => {
     if (editorMode !== "visual") return;
     editorRef.current?.focus();
-    document.execCommand(command, false, value);
+    if (command === "formatBlock") {
+      const cleanTag = (value || "p").replace(/[<>]/g, "").toLowerCase();
+      try {
+        document.execCommand("formatBlock", false, `<${cleanTag}>`);
+      } catch (err) {
+        document.execCommand("formatBlock", false, cleanTag);
+      }
+    } else {
+      document.execCommand(command, false, value);
+    }
     handleEditorInput();
   };
 
@@ -2109,26 +2169,7 @@ export default function BlogEditor({ initialSlug = null }) {
                   <div className="editor-toolbar">
                     {!showLinkInput ? (
                       <>
-                        {/* Group 1: Block Type Selector Dropdown */}
-                        <div className="editor-toolbar-group">
-                          <select 
-                            className="editor-select"
-                            defaultValue=""
-                            onChange={handleBlockTypeChange}
-                            title="Choose text formatting block"
-                          >
-                            <option value="" disabled>Block Style...</option>
-                            <option value="p">Paragraph</option>
-                            <option value="h2">Heading 2 (H2)</option>
-                            <option value="h3">Heading 3 (H3)</option>
-                            <option value="h4">Heading 4 (H4)</option>
-                            <option value="blockquote">Quote Block</option>
-                            <option value="callout">💡 Callout Tip Box</option>
-                            <option value="codeblock">💻 Code Snippet</option>
-                          </select>
-                        </div>
 
-                        <div className="editor-toolbar-divider" />
 
                         {/* Group 2: Text Styling */}
                         <div className="editor-toolbar-group">
