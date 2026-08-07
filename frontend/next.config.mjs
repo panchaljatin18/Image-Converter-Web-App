@@ -1,5 +1,4 @@
 import os from 'os';
-import path from 'path';
 
 const getLocalIps = () => {
   const interfaces = os.networkInterfaces();
@@ -32,10 +31,6 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-  },
-  outputFileTracingRoot: path.resolve(process.cwd()),
-  turbopack: {
-    root: path.resolve(process.cwd()),
   },
 
   async headers() {
