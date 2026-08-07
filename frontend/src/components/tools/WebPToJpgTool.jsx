@@ -258,7 +258,7 @@ export default function WebPToJpgTool() {
         </div>
 
         <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-5 text-[#f8fafc] flex items-center gap-2">
-          <Sparkles size={18} className="text-[#ea580c]" />
+          <Zap size={18} className="text-[#ea580c]" />
           Key Features
         </h3>
         

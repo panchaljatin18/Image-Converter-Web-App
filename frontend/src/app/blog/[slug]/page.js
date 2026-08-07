@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, User, Zap, ArrowRight, BookOpen, Tag, Globe, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Calendar, User, Zap, ArrowRight, BookOpen, Tag, Globe, CheckCircle2 } from "lucide-react";
 import Container from "@/components/Container";
 import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 
 export const dynamicParams = true;
-export const revalidate = 0;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -204,7 +204,7 @@ export default async function BlogPostPage({ params }) {
               <div className="relative z-10 text-left flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 font-['Outfit'] flex items-center gap-1.5">
-                    <Sparkles size={13} className="text-indigo-400" /> Written by
+                    Written by
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
                     <CheckCircle2 size={11} /> Verified Creator

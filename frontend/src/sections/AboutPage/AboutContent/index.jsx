@@ -65,7 +65,7 @@ export default function AboutContent() {
 
             <div className="p-5 bg-white/3 border border-white/6 rounded-2xl">
               <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-[#f43f5e] mb-4">
-                <Sparkles size={20} />
+                <Zap size={20} />
               </div>
               <h3 className="font-['Outfit'] font-bold text-[1.1rem] text-[#f8fafc] mb-2">
                 No Limits, Free Forever

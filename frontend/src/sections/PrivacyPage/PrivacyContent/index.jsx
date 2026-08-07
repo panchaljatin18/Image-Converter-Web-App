@@ -27,7 +27,7 @@ At no point are your images transmitted over the internet to our servers or any 
 
 <strong>Analytics Cookies:</strong> Anonymous cookies that help us understand how users navigate our site. These do not identify you personally and help us measure site performance.
 
-<strong>Advertising Cookies (Google AdSense):</strong> We display advertisements through Google AdSense. Google uses cookies, such as the DoubleClick DART cookie, to serve ads to users based on their visits to ConvertGalaxy and other websites on the internet. You can opt out of personalized advertising through your Google Account Ad Settings.
+<strong>Advertising Cookies (Google AdSense):</strong> We display advertisements through Google AdSense. Google uses cookies, such as the DoubleClick DART cookie, to serve ads to users based on their visits to ConvertGalaxy and other websites on the internet. You can opt out of personalized advertising by visiting the <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">Google Ad Settings</a> page or <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">aboutads.info</a>.
 
 You can configure your browser to block cookies or notify you when they are set, though some features of the site might require cookies to function correctly.`,
   },

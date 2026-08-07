@@ -267,7 +267,7 @@ export default function HeicToJpgTool() {
         </div>
 
         <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-5 text-[#f8fafc] flex items-center gap-2">
-          <Sparkles size={18} className="text-[#06b6d4]" />
+          <Zap size={18} className="text-[#06b6d4]" />
           Key Features
         </h3>
 

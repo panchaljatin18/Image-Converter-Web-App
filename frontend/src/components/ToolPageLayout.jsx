@@ -159,7 +159,7 @@ export default async function ToolPageLayout({
                   let Icon = Shield;
                   if (benefit.icon === "Shield") Icon = Shield;
                   else if (benefit.icon === "Zap") Icon = Zap;
-                  else if (benefit.icon === "Sparkles") Icon = Sparkles;
+                  else if (benefit.icon === "Sparkles") Icon = Star;
                   else if (benefit.icon === "Layers") Icon = Layers;
                   else if (benefit.icon === "FileImage") Icon = FileImage;
 

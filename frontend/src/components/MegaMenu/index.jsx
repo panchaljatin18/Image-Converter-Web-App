@@ -201,7 +201,7 @@ const PREVIEW_DETAILS = {
     title: "ConvertGalaxy Converter",
     desc: "Lightning fast file conversions directly in your browser. Complete privacy with zero server uploads for image operations.",
     features: ["🔒 100% Secure & Private", "⚡ Instant Client-side Rendering", "🛠️ Customizable Settings", "📦 Batch Downloads"],
-    icon: Sparkles,
+    icon: Zap,
     gradient: "from-indigo-600 via-purple-600 to-pink-600"
   },
   "PNG": {
@@ -594,7 +594,7 @@ export default function MegaMenu() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center text-slate-600 space-y-3">
-                  <Sparkles size={36} className="text-slate-800 animate-spin-slow" />
+                  <Zap size={36} className="text-slate-800 animate-spin-slow" />
                   <p className="text-xs font-semibold uppercase tracking-wider font-['Outfit']">Select conversion path to preview</p>
                 </div>
               )}
@@ -808,7 +808,7 @@ export default function MegaMenu() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center text-slate-600 space-y-3">
-                  <Sparkles size={36} className="text-slate-800 animate-spin-slow" />
+                  <Zap size={36} className="text-slate-800 animate-spin-slow" />
                   <p className="text-xs font-semibold uppercase tracking-wider font-['Outfit']">Hover operations to preview info</p>
                 </div>
               )}

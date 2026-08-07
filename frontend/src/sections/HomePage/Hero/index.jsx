@@ -1194,7 +1194,7 @@ export default function Hero() {
           <div className="w-full md:flex-[1_1_50%] max-w-full md:max-w-[448px] lg:max-w-[512px] xl:max-w-[576px] 2xl:max-w-[640px]">
             <div className="mb-6">
               <span className="inline-flex items-center gap-2 py-2 px-4 bg-indigo-500/8 border border-indigo-500/20 rounded-full text-[#818cf8] font-semibold font-['Outfit'] tracking-wide text-[0.78rem]">
-                <Sparkles size={12} />
+                <Zap size={12} />
                 Convert directly in your browser
               </span>
             </div>

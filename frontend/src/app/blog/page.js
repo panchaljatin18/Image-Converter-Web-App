@@ -5,8 +5,7 @@ import SEO from "@/components/SEO";
 import { constructMetadata } from "@/lib/metadata";
 import { getBlogPosts } from "@/lib/blog";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata = constructMetadata({
   title: "Image Conversion Blog – Free Guides, Tips & Tutorials for JPG, PNG, WebP & PDF",
