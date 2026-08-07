@@ -1,5 +1,4 @@
 import os from 'os';
-import path from 'path';
 
 const getLocalIps = () => {
   const interfaces = os.networkInterfaces();
@@ -33,9 +32,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
-  turbopack: {
-    root: path.resolve(process.cwd()),
-  },
+
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
 
