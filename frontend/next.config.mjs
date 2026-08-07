@@ -1,4 +1,5 @@
 import os from 'os';
+import path from 'path';
 
 const getLocalIps = () => {
   const interfaces = os.networkInterfaces();
@@ -33,9 +34,7 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   turbopack: {
-    // Fixes "Next.js inferred your workspace root" warning caused by
-    // multiple package-lock.json files at C:\Users\Jmpan\ and this project.
-    root: 'C:/Users/Jmpan/OneDrive/Desktop/Image Converter/frontend',
+    root: path.resolve(process.cwd()),
   },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
