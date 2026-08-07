@@ -11,8 +11,6 @@ import googleDriveService from "../../../services/googleDriveService";
 import dropboxService from "../../../services/dropboxService";
 import onedriveService from "../../../services/onedriveService";
 import authService from "../../../services/authService";
-import imageCompression from "browser-image-compression";
-import { PDFDocument } from "pdf-lib";
 
 const GoogleDrivePicker = dynamic(() => import("../../../components/GoogleDrivePicker"), { ssr: false });
 const DropboxFilePicker = dynamic(() => import("../../../components/DropboxFilePicker"), { ssr: false });

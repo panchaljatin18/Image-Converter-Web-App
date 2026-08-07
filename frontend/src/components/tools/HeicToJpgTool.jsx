@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Sliders, Info, Shield, Sparkles, Layers, FileImage } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Sliders, Info, Shield, Zap, Layers, FileImage } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
