@@ -371,6 +371,7 @@ export default function BlogEditor({ initialSlug = null }) {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [focusKeyword, setFocusKeyword] = useState("");
+  const [tags, setTags] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [imageAlt, setImageAlt] = useState("");
   const [date, setDate] = useState("");
@@ -807,6 +808,7 @@ export default function BlogEditor({ initialSlug = null }) {
         slug: overrideData.slug !== undefined ? overrideData.slug : slug,
         description: overrideData.description !== undefined ? overrideData.description : description,
         focusKeyword: overrideData.focusKeyword !== undefined ? overrideData.focusKeyword : focusKeyword,
+        tags: overrideData.tags !== undefined ? overrideData.tags : tags,
         coverImage: overrideData.coverImage !== undefined ? overrideData.coverImage : coverImage,
         imageAlt: overrideData.imageAlt !== undefined ? overrideData.imageAlt : imageAlt,
         imageTitle: overrideData.imageTitle !== undefined ? overrideData.imageTitle : imageTitle,
@@ -834,6 +836,7 @@ export default function BlogEditor({ initialSlug = null }) {
     if (!initialSlug && targetDraft.slug !== undefined) setSlug(targetDraft.slug);
     if (targetDraft.description !== undefined) setDescription(targetDraft.description);
     if (targetDraft.focusKeyword !== undefined) setFocusKeyword(targetDraft.focusKeyword);
+    if (targetDraft.tags !== undefined) setTags(targetDraft.tags);
     if (targetDraft.coverImage !== undefined) {
       setCoverImage(targetDraft.coverImage);
       setUploadedImageSrc(targetDraft.coverImage);
@@ -883,6 +886,7 @@ export default function BlogEditor({ initialSlug = null }) {
       setSlug("");
       setDescription("");
       setFocusKeyword("");
+      setTags("");
       setCoverImage("");
       setUploadedImageSrc("");
       setImageAlt("");
@@ -1141,6 +1145,7 @@ export default function BlogEditor({ initialSlug = null }) {
               setSlug(initialSlug);
               setDescription(savedDraft.description !== undefined ? savedDraft.description : (frontmatter.description || ""));
               setFocusKeyword(savedDraft.focusKeyword !== undefined ? savedDraft.focusKeyword : (frontmatter.focusKeyword || ""));
+              setTags(savedDraft.tags !== undefined ? savedDraft.tags : (frontmatter.tags || ""));
               setCoverImage(savedDraft.coverImage !== undefined ? savedDraft.coverImage : (frontmatter.image || ""));
               setUploadedImageSrc(savedDraft.coverImage !== undefined ? savedDraft.coverImage : (frontmatter.image || ""));
               setImageAlt(savedDraft.imageAlt !== undefined ? savedDraft.imageAlt : (frontmatter.imageAlt || ""));
@@ -1162,6 +1167,7 @@ export default function BlogEditor({ initialSlug = null }) {
               setSlug(initialSlug);
               setDescription(frontmatter.description || "");
               setFocusKeyword(frontmatter.focusKeyword || "");
+              setTags(frontmatter.tags || "");
               setCoverImage(frontmatter.image || "");
               setUploadedImageSrc(frontmatter.image || "");
               setImageAlt(frontmatter.imageAlt || "");
@@ -1814,6 +1820,7 @@ export default function BlogEditor({ initialSlug = null }) {
       description: description || "",
       date: date || new Date().toISOString().split("T")[0],
       focusKeyword: focusKeyword || "",
+      tags: tags || "",
       relatedToolSlug: focusKeyword ? focusKeyword.toLowerCase().replace(/\s+/g, "-") : "",
       image: coverImage || "",
       imageAlt: imageAlt || "",
@@ -2848,6 +2855,43 @@ export default function BlogEditor({ initialSlug = null }) {
                 }}
                 className="admin-input"
               />
+            </div>
+
+            {/* Article Tags Input & Tag Pills Box */}
+            <div>
+              <label htmlFor="tags" className="admin-label">Article Tags / Keywords</label>
+              <input
+                id="tags"
+                type="text"
+                placeholder="e.g. PNG, JPG, Image Converter, Compression"
+                value={tags || ""}
+                onChange={(e) => {
+                  setTags(e.target.value);
+                  saveDraftToLocalStorage({ tags: e.target.value });
+                }}
+                className="admin-input"
+              />
+              <span className="text-[10px] text-[#6b6b7a] block mt-1">
+                Separate tags with commas. Helps organize blog posts and search topics.
+              </span>
+              
+              {/* Interactive Tag Pills Badge Display */}
+              {tags.trim() && (
+                <div className="flex flex-wrap gap-1.5 mt-2.5 p-2.5 bg-[#090912] border border-white/5 rounded-xl">
+                  {tags.split(",").map((tag, idx) => {
+                    const cleanTag = tag.trim();
+                    if (!cleanTag) return null;
+                    return (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 shadow-sm"
+                      >
+                        #{cleanTag}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Yoast/RankMath-like SEO content score analysis */}
