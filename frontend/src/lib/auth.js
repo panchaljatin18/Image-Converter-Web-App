@@ -7,7 +7,9 @@ if (typeof window === "undefined") {
     if (process.env.VERCEL_URL) {
       process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
     } else {
-      process.env.NEXTAUTH_URL = "http://localhost:3000";
+      // Use PORT env var if set (works when Next.js picks a different port like 3001)
+      const port = process.env.PORT || 3000;
+      process.env.NEXTAUTH_URL = `http://localhost:${port}`;
     }
   }
 }

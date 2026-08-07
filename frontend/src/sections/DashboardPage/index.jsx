@@ -190,7 +190,7 @@ export default function DashboardContent() {
                         {/* RESPONSIVE SCALING ADDED */}
                         <h4 className="font-bold text-slate-800 2xl:text-lg xl:text-base lg:text-sm md:text-xs sm:text-xs text-[11px]">{user?.name || "User"}</h4>
                         {/* RESPONSIVE SCALING ADDED */}
-                        <p className="text-slate-500 2xl:text-sm xl:text-sm lg:text-xs md:text-xs sm:text-[11px] text-[10px]">{user?.email || "user@example.com"}</p>
+                        <p className="text-slate-500 2xl:text-sm xl:text-sm lg:text-xs md:text-xs sm:text-[11px] text-[10px]">{user?.email || "jmpanchal394@gmail.com"}</p>
                       </div>
                       {/* RESPONSIVE SCALING ADDED */}
                       <div className="inline-flex items-center 2xl:gap-2 xl:gap-[7px] lg:gap-[6px] md:gap-[5px] sm:gap-[5px] gap-1 bg-indigo-100/40 text-indigo-700 2xl:px-3 xl:px-[11px] lg:px-[10px] md:px-[8px] sm:px-[7px] px-1.5 2xl:py-1 xl:py-[3.5px] lg:py-[3px] md:py-[2.5px] sm:py-[2px] py-[2px] rounded-full 2xl:text-xs xl:text-xs lg:text-xs md:text-[11px] sm:text-[10px] text-[9px] font-semibold">

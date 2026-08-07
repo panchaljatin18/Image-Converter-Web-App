@@ -27,7 +27,7 @@ At no point are your images transmitted over the internet to our servers or any 
 
 <strong>Analytics Cookies:</strong> Anonymous cookies that help us understand how users navigate our site. These do not identify you personally and help us measure site performance.
 
-<strong>Advertising Cookies (Google AdSense):</strong> We display advertisements through Google AdSense. Google uses cookies, such as the DoubleClick DART cookie, to serve ads to users based on their visits to ConvertGalaxy and other websites on the internet. You can opt out of personalized advertising by visiting the <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">Google Ad Settings</a> page or <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" style="color: #818cf8; text-decoration: underline;">aboutads.info</a>.
+<strong>Advertising Cookies (Google AdSense):</strong> We display advertisements through Google AdSense. Google uses cookies, such as the DoubleClick DART cookie, to serve ads to users based on their visits to ConvertGalaxy and other websites on the internet. You can opt out of personalized advertising through your Google Account Ad Settings.
 
 You can configure your browser to block cookies or notify you when they are set, though some features of the site might require cookies to function correctly.`,
   },
@@ -61,7 +61,7 @@ Anonymous analytics data is retained in aggregate form for up to 24 months.`,
 • Object to processing of your data
 • Data portability
 
-To exercise these rights, contact us at hello@convertgalaxy.com. We will respond within 30 days.`,
+To exercise these rights, contact us at jmpanchal394@gmail.com. We will respond within 30 days.`,
   },
   {
     title: "7. Children's Privacy",
@@ -73,7 +73,7 @@ To exercise these rights, contact us at hello@convertgalaxy.com. We will respond
   },
   {
     title: "9. Contact Us",
-    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: hello@convertgalaxy.com\n\nWe are committed to resolving any privacy concerns promptly.`,
+    content: `If you have questions about this Privacy Policy or your privacy rights, please contact us:\n\nEmail: jmpanchal394@gmail.com\n\nWe are committed to resolving any privacy concerns promptly.`,
   },
 ];
 

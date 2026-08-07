@@ -33,7 +33,7 @@ export function getOrganizationSchema() {
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer support",
-      "email": "support@convertgalaxy.com",
+      "email": "jmpanchal394@gmail.com",
       "url": `${SITE_URL}/contact`
     }
   };

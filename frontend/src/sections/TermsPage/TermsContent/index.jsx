@@ -71,7 +71,7 @@ Continued use of the service after changes constitutes acceptance of the updated
   },
   {
     title: "10. Contact",
-    content: `For questions about these Terms, please contact us at:\n\nEmail: hello@convertgalaxy.com`,
+    content: `For questions about these Terms, please contact us at:\n\nEmail: jmpanchal394@gmail.com`,
   },
 ];
 
