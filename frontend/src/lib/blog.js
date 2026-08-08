@@ -230,7 +230,36 @@ export function markdownToHtml(md) {
     processedBlocks.push(`</${insideList}>`);
   }
 
-  return processedBlocks.join("\n");
+  const rawHtml = processedBlocks.join("\n");
+  return sanitizeAndBalanceDivs(rawHtml);
+}
+
+/**
+ * Ensures HTML <div> tags within content are balanced and strips orphan closing </div> tags
+ * that would otherwise break parent React layout containers.
+ */
+export function sanitizeAndBalanceDivs(html) {
+  if (!html) return "";
+  let cleaned = html.replace(/<div>\s*(<br\s*\/?>)?\s*<\/div>/gi, "");
+  let depth = 0;
+  const sanitized = cleaned.replace(/(<div[^>]*>)|(<\/div>)/gi, (match, open, close) => {
+    if (open) {
+      depth++;
+      return match;
+    } else if (close) {
+      if (depth > 0) {
+        depth--;
+        return match;
+      } else {
+        return "";
+      }
+    }
+    return match;
+  });
+  if (depth > 0) {
+    return sanitized + "</div>".repeat(depth);
+  }
+  return sanitized;
 }
 
 /**
@@ -486,7 +515,8 @@ import { revalidatePath } from "next/cache";
  * Saves or updates blog post data to MongoDB and local disk storage.
  */
 export async function saveBlogPost(slug, { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content }) {
-  const htmlContent = markdownToHtml(content);
+  const cleanContent = sanitizeAndBalanceDivs(content || "");
+  const htmlContent = markdownToHtml(cleanContent);
 
   // 1. Save to local markdown file in src/content/blog
   try {

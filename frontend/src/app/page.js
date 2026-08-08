@@ -9,12 +9,15 @@ const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
 const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
 export const metadata = constructMetadata({
-  title: "Free Online Image Converter – Convert JPG, PNG, WebP, HEIC & PDF Instantly",
-  description: "Convert JPG to PNG, PNG to JPG, HEIC to JPG, WebP converter, compress images, resize, crop & image to PDF — 100% free, no signup, no upload, works in your browser.",
+  title: "Free Online Image Converter & Compressor – Convert Without Losing Quality",
+  description: "Free online image converter and batch image compressor. Compress and convert images (JPG, PNG, WebP, HEIC, PDF) without losing quality. 100% private, no signup.",
   canonicalPath: "",
   keywords: [
     "free image converter",
     "free online image converter",
+    "image converter without losing quality",
+    "batch image converter",
+    "compress and convert image",
     "jpg to png converter free",
     "png to jpg free",
     "heic to jpg converter",

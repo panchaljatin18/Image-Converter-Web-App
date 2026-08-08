@@ -193,6 +193,7 @@ export default async function BlogPostPage({ params }) {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
+                  <span className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 group-hover:ring-indigo-500/30 transition-all duration-300" />
                 </div>
                 {/* Online status indicator dot */}
                 <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#121226] shadow-sm flex items-center justify-center">

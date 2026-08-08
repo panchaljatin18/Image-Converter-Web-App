@@ -5,16 +5,19 @@ export const SITE_URL = "https://www.convertgalaxy.com";
 export const GLOBAL_SEO_DEFAULTS = {
   applicationName: "Convert Galaxy",
   title: {
-    default: "Convert Galaxy – #1 Free Image Converter, Compressor & Editor Online",
+    default: "Convert Galaxy – #1 Free Online Image Converter & Compressor (No Quality Loss)",
     template: "%s | Convert Galaxy – Free Image Tools",
   },
   description:
-    "Convert JPG to PNG, PNG to JPG, HEIC to JPG, compress images, resize, crop, WebP converter & image to PDF — all 100% free, no signup, no watermark, works in your browser.",
+    "Free online image converter and compressor to convert JPG, PNG, WebP, HEIC & PDF without losing quality. Fast batch image converter — 100% private, no signup, no watermark.",
   keywords: [
-    "Convert Galaxy",
-    "convertgalaxy",
     "free image converter",
     "free online image converter",
+    "image converter without losing quality",
+    "batch image converter",
+    "compress and convert image",
+    "Convert Galaxy",
+    "convertgalaxy",
     "image converter",
     "JPG to PNG",
     "JPG to PNG converter free",
@@ -27,6 +30,7 @@ export const GLOBAL_SEO_DEFAULTS = {
     "image compressor",
     "compress image online free",
     "image compressor no watermark",
+    "batch image converter online",
     "image resizer",
     "resize image online free",
     "crop image online free",
@@ -64,23 +68,23 @@ export const GLOBAL_SEO_DEFAULTS = {
     locale: "en_US",
     url: SITE_URL,
     siteName: "Convert Galaxy",
-    title: "Convert Galaxy – #1 Free Image Converter, Compressor & Editor Online",
+    title: "Convert Galaxy – #1 Free Online Image Converter & Compressor (No Quality Loss)",
     description:
-      "Convert JPG to PNG, PNG to JPG, HEIC to JPG, compress images, resize, crop, WebP converter & image to PDF — 100% free, no signup, no watermark, instant browser-based processing.",
+      "Free online image converter and batch image compressor. Convert JPG, PNG, WebP, HEIC & PDF without losing quality. 100% private, browser-based, no watermark.",
     images: [
       {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "Convert Galaxy – Free Online Image Converter & Editor",
+        alt: "Convert Galaxy – Free Online Image Converter & Batch Compressor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Convert Galaxy – Free Image Converter, Compressor & PDF Tools",
+    title: "Convert Galaxy – Free Online Image Converter & Batch Compressor",
     description:
-      "Convert, compress, resize, crop & convert images to PDF instantly in your browser. 100% free, no signup, no watermark, no upload to servers.",
+      "Compress and convert images without losing quality. Free batch image converter for JPG, PNG, WebP, HEIC & PDF in your browser.",
     images: [`${SITE_URL}/og-image.png`],
     creator: "@ConvertGalaxy",
     site: "@ConvertGalaxy",

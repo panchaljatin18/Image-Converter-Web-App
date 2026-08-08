@@ -168,8 +168,8 @@ export default function AdminLayout({ children }) {
 
   // RENDER MAIN PANEL LAYOUT
   return (
-    <div className="admin-body min-h-screen flex flex-col md:flex-row" style={{ paddingTop: "95px" }}>
-      <aside className="admin-sidebar w-full md:w-64 shrink-0 flex flex-col justify-between py-6 px-4 md:h-[calc(100vh-76px)] sticky top-[76px] z-20">
+    <div className="admin-body min-h-screen flex flex-col md:flex-row pt-20 md:pt-24">
+      <aside className="admin-sidebar w-full md:w-64 shrink-0 flex flex-col justify-between py-6 px-4 md:h-[calc(100vh-96px)] sticky top-20 md:top-24 z-20">
         <div className="space-y-8">
           {/* Sidebar Header */}
           <div className="px-3 flex items-center gap-3">
