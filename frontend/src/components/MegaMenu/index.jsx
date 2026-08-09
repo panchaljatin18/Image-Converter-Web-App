@@ -233,6 +233,7 @@ function getToolRoute(from, to) {
   if (f === "HEIC" && t === "JPG") return "/tools/heic-to-jpg";
   if (f === "JPG" && t === "PNG") return "/tools/jpg-to-png";
   if (f === "PNG" && t === "JPG") return "/tools/png-to-jpg";
+  if (f === "PNG" && t === "WEBP") return "/tools/png-to-webp";
   if (f === "WEBP" && t === "JPG") return "/tools/webp-to-jpg";
   
   const imageFormats = ["PNG", "JPG", "JPEG", "WEBP", "BMP", "AVIF", "HEIC", "RAW", "TIFF", "GIF"];

@@ -15,7 +15,7 @@ export default function AuthLayout({ children }) {
         {/* ── Left column: Image Panel ── */}
         <div
           className="hidden md:flex relative overflow-hidden bg-cover bg-center min-h-[520px] flex-col justify-between p-8 rounded-l-2xl"
-          style={{ backgroundImage: "url('/auth-bg.png')" }}
+          style={{ backgroundImage: "url('/auth-bg.webp')" }}
         >
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/30 pointer-events-none rounded-l-2xl" />

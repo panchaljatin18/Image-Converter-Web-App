@@ -115,7 +115,7 @@ export default function LoginPage() {
 
   const slides = [
     {
-      image: "/auth-bg-1.png",
+      image: "/auth-bg-1.webp",
       title: (
         <>
           Capturing Moments,<br />
@@ -124,7 +124,7 @@ export default function LoginPage() {
       ),
     },
     {
-      image: "/auth-bg-2.png",
+      image: "/auth-bg-2.webp",
       title: (
         <>
           Convert Any Format,<br />
@@ -133,7 +133,7 @@ export default function LoginPage() {
       ),
     },
     {
-      image: "/auth-bg-3.png",
+      image: "/auth-bg-3.webp",
       title: (
         <>
           Local Browser Power,<br />

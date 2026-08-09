@@ -155,7 +155,7 @@ export default function Navbar() {
           {/* Logo - Desktop */}
           <Link href="/" className="logo-nav-desktop no-underline">
             <Image
-              src="/CG.png"
+              src="/CG.webp"
               alt="Converter Galaxy Logo"
               width={200}
               height={50}
@@ -168,7 +168,7 @@ export default function Navbar() {
           {/* Logo - Mobile */}
           <Link href="/" className="logo-nav-mobile no-underline">
             <Image
-              src="/CG.png"
+              src="/CG.webp"
               alt="Converter Galaxy Logo"
               width={160}
               height={40}
@@ -370,6 +370,7 @@ export default function Navbar() {
                 All Tools
               </Button>
             </Link>
+
 
             {user ? (
               <button

@@ -9,45 +9,49 @@ export async function GET() {
     {
       page: "",
       images: [
-        { loc: "/C.png", title: "Convert Galaxy Logo Icon", caption: "Convert Galaxy Brand Logo Icon" },
-        { loc: "/og-image.png", title: "Convert Galaxy Tools Suite Banner", caption: "Convert Galaxy open graph social share banner" }
+        { loc: "/C.webp", title: "Convert Galaxy Logo Icon", caption: "Convert Galaxy Brand Logo Icon" },
+        { loc: "/og-image.webp", title: "Convert Galaxy Tools Suite Banner", caption: "Convert Galaxy open graph social share banner" }
       ]
     },
     {
       page: "/tools/jpg-to-png",
-      images: [{ loc: "/C.png", title: "JPG to PNG Conversion Tool - Convert Galaxy", caption: "Convert JPG to PNG lossless files" }]
+      images: [{ loc: "/C.webp", title: "JPG to PNG Conversion Tool - Convert Galaxy", caption: "Convert JPG to PNG lossless files" }]
     },
     {
       page: "/tools/png-to-jpg",
-      images: [{ loc: "/C.png", title: "PNG to JPG Conversion Tool - Convert Galaxy", caption: "Convert PNG to JPG compressed files" }]
+      images: [{ loc: "/C.webp", title: "PNG to JPG Conversion Tool - Convert Galaxy", caption: "Convert PNG to JPG compressed files" }]
+    },
+    {
+      page: "/tools/png-to-webp",
+      images: [{ loc: "/C.webp", title: "PNG to WebP Conversion Tool - Convert Galaxy", caption: "Convert PNG to WebP transparent files" }]
     },
     {
       page: "/tools/webp-converter",
-      images: [{ loc: "/C.png", title: "WebP Conversion Tool - Convert Galaxy", caption: "Convert WebP next-gen format files" }]
+      images: [{ loc: "/C.webp", title: "WebP Conversion Tool - Convert Galaxy", caption: "Convert WebP next-gen format files" }]
     },
     {
       page: "/tools/image-compressor",
-      images: [{ loc: "/C.png", title: "Image Compressor Tool - Convert Galaxy", caption: "Compress images online browser-based" }]
+      images: [{ loc: "/C.webp", title: "Image Compressor Tool - Convert Galaxy", caption: "Compress images online browser-based" }]
     },
     {
       page: "/tools/image-resizer",
-      images: [{ loc: "/C.png", title: "Image Resizer Tool - Convert Galaxy", caption: "Resize images to custom width and height" }]
+      images: [{ loc: "/C.webp", title: "Image Resizer Tool - Convert Galaxy", caption: "Resize images to custom width and height" }]
     },
     {
       page: "/tools/crop-image",
-      images: [{ loc: "/C.png", title: "Crop Image Tool - Convert Galaxy", caption: "Crop images online interactively" }]
+      images: [{ loc: "/C.webp", title: "Crop Image Tool - Convert Galaxy", caption: "Crop images online interactively" }]
     },
     {
       page: "/tools/image-to-pdf",
-      images: [{ loc: "/C.png", title: "Image to PDF Converter - Convert Galaxy", caption: "Convert and merge images into PDF documents" }]
+      images: [{ loc: "/C.webp", title: "Image to PDF Converter - Convert Galaxy", caption: "Convert and merge images into PDF documents" }]
     },
     {
       page: "/tools/pdf-to-image",
-      images: [{ loc: "/C.png", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF as images" }]
+      images: [{ loc: "/C.webp", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF as images" }]
     },
     {
       page: "/tools/webp-to-jpg",
-      images: [{ loc: "/C.png", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files" }]
+      images: [{ loc: "/C.webp", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files" }]
     }
   ];
 

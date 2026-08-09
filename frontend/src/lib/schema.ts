@@ -22,7 +22,7 @@ export function getOrganizationSchema() {
     "url": SITE_URL,
     "logo": {
       "@type": "ImageObject",
-      "url": `${SITE_URL}/C.png`,
+      "url": `${SITE_URL}/C.webp`,
       "width": "512",
       "height": "512"
     },
@@ -200,7 +200,7 @@ export function getHowToSchema(tool: {
     "@type": "HowTo",
     "name": `How to Use ${tool.name}`,
     "description": tool.description,
-    "image": tool.image || `${SITE_URL}/og-image.png`,
+    "image": tool.image || `${SITE_URL}/og-image.webp`,
     "step": tool.steps.map((step, index) => ({
       "@type": "HowToStep",
       "position": index + 1,
@@ -383,7 +383,7 @@ export function getBlogPostingSchema(post: {
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.description,
-      "image": post.image || `${SITE_URL}/og-image.png`,
+      "image": post.image || `${SITE_URL}/og-image.webp`,
       "datePublished": post.datePublished,
       "dateModified": post.dateModified || post.datePublished,
       "url": post.url,

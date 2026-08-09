@@ -159,6 +159,77 @@ function htmlToMarkdown(html) {
   return md.trim();
 }
 
+// Real-time client-side HTML and JSON-LD syntax validator & linter for Blog Editor
+function validateHtmlSnippet(html) {
+  if (!html || !html.trim()) {
+    return { isValid: true, errors: [], warnings: [] };
+  }
+
+  const errors = [];
+  const warnings = [];
+
+  const VOID_TAGS = new Set([
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+    "meta", "param", "source", "track", "wbr"
+  ]);
+
+  // 1. Validate JSON-LD script syntax
+  const scriptRegex = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+  while ((scriptMatch = scriptRegex.exec(html)) !== null) {
+    const attrs = scriptMatch[1];
+    const content = scriptMatch[2];
+    if (attrs.includes('type="application/ld+json"') || attrs.includes("application/ld+json")) {
+      try {
+        JSON.parse(content.trim());
+      } catch (err) {
+        errors.push(`JSON-LD Schema Error: Invalid JSON syntax inside <script> tag (${err.message})`);
+      }
+    }
+  }
+
+  // 2. Check for tag stack balancing (unclosed or mismatched tags)
+  const tagRegex = /<!--[\s\S]*?-->|<(\/)?([a-zA-Z0-9-]+)([^>]*)>/gi;
+  const stack = [];
+  let match;
+
+  while ((match = tagRegex.exec(html)) !== null) {
+    const fullMatch = match[0];
+    const isClosing = Boolean(match[1]);
+    const tagName = match[2] ? match[2].toLowerCase() : "";
+    const isSelfClosing = fullMatch.endsWith("/>") || VOID_TAGS.has(tagName);
+
+    if (fullMatch.startsWith("<!--") || !tagName) continue;
+    if (VOID_TAGS.has(tagName) || isSelfClosing) continue;
+
+    if (!isClosing) {
+      stack.push({ name: tagName, raw: fullMatch });
+    } else {
+      const stackIndex = stack.map((item) => item.name).lastIndexOf(tagName);
+      if (stackIndex !== -1) {
+        if (stackIndex !== stack.length - 1) {
+          const unclosedNames = stack.slice(stackIndex + 1).map((item) => `<${item.name}>`).join(", ");
+          warnings.push(`Tag Mismatch: </${tagName}> closed while ${unclosedNames} were still open.`);
+        }
+        stack.length = stackIndex;
+      } else {
+        errors.push(`Orphan Closing Tag: </${tagName}> has no matching opening <${tagName}>.`);
+      }
+    }
+  }
+
+  if (stack.length > 0) {
+    const openTagsList = stack.map((item) => `<${item.name}>`).join(", ");
+    errors.push(`Unclosed HTML Tag(s): ${openTagsList} missing matching closing tag.`);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+  };
+}
+
 // Custom client-side Markdown-to-HTML parser for loading into Visual Editor
 function markdownToHtml(md) {
   if (!md) return "";
@@ -170,6 +241,11 @@ function markdownToHtml(md) {
   const createWpBlockCard = (codeText) => {
     const escapedText = codeText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const blockId = "wp_html_" + Math.random().toString(36).substring(2, 9);
+    const valResult = validateHtmlSnippet(codeText);
+    const initialStatusHtml = valResult.isValid
+      ? `<div class="wp-block-validation-status mt-2 p-2 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2"><span>✅ HTML Syntax Valid</span></div>`
+      : `<div class="wp-block-validation-status mt-2 p-2.5 px-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-start gap-2"><span class="text-rose-400 shrink-0 font-bold">⚠️ HTML Mistake:</span><span>${valResult.errors.join("; ")}</span></div>`;
+
     return `<div id="${blockId}" class="wp-block-custom-html my-6 rounded-2xl border border-indigo-500/30 bg-[#0d0d18] overflow-hidden shadow-2xl" contenteditable="false" data-wp-block="true">
   <div class="wp-block-header flex items-center justify-between px-4 py-2.5 bg-[#141424] border-b border-indigo-500/20 font-['Outfit'] select-none">
     <div class="flex items-center gap-2 text-xs font-bold text-indigo-300">
@@ -182,6 +258,7 @@ function markdownToHtml(md) {
   </div>
   <div class="wp-block-editor-pane p-4">
     <textarea class="wp-block-textarea w-full bg-[#090912] border border-white/10 rounded-xl p-3 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed" rows="7" placeholder="Paste or write HTML code or FAQ schema here...">${escapedText}</textarea>
+    ${initialStatusHtml}
   </div>
   <div class="wp-block-preview-pane p-4 hidden">
     <div class="wp-block-preview-content text-left text-white text-sm"></div>
@@ -539,16 +616,23 @@ export default function BlogEditor({ initialSlug = null }) {
           previewPane?.classList.add("hidden");
         } else if (tabType === "preview") {
           const rawCode = textarea?.value || "";
+          const valResult = validateHtmlSnippet(rawCode);
+          const errorNotice = valResult.isValid ? "" : `
+            <div style="padding:10px 12px;margin-bottom:12px;background:rgba(244,63,94,0.15);border:1px solid rgba(244,63,94,0.4);border-radius:10px;color:#fda4af;font-family:sans-serif;font-size:0.75rem;">
+              <strong style="color:#ffffff;display:block;margin-bottom:2px;">⚠️ HTML Code Mistake Detected:</strong>
+              <span>${valResult.errors.join("; ")}</span>
+            </div>`;
+
           if (previewContent) {
             if (rawCode.includes('type="application/ld+json"')) {
-              previewContent.innerHTML = `
+              previewContent.innerHTML = errorNotice + `
                 <div style="padding:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;color:#fcd34d;font-family:monospace;font-size:0.75rem;">
                   <strong style="color:#ffffff;display:block;margin-bottom:4px;">⚡ Valid JSON-LD FAQ Schema Tag Active</strong>
                   <span>Google Search engines will process this structured data automatically for search FAQ snippets.</span>
                 </div>
               `;
             } else {
-              previewContent.innerHTML = rawCode;
+              previewContent.innerHTML = errorNotice + rawCode;
             }
           }
           editorPane?.classList.add("hidden");
@@ -765,6 +849,16 @@ export default function BlogEditor({ initialSlug = null }) {
   const [htmlContent, setHtmlContent] = useState("");
   const [initialHtmlContent, setInitialHtmlContent] = useState("");
 
+  // Live HTML & Schema Validation States
+  const customHtmlModalValidation = useMemo(() => {
+    return validateHtmlSnippet(customHtmlCode);
+  }, [customHtmlCode]);
+
+  const articleHtmlValidation = useMemo(() => {
+    const codeToValidate = editorMode === "visual" ? htmlContent : markdownContent;
+    return validateHtmlSnippet(codeToValidate);
+  }, [htmlContent, markdownContent, editorMode]);
+
   // Live Stats State
   const [stats, setStats] = useState({ words: 0, chars: 0, readTime: 1 });
 
@@ -909,6 +1003,27 @@ export default function BlogEditor({ initialSlug = null }) {
       const parsedMd = htmlToMarkdown(currentHtml);
       setMarkdownContent(parsedMd);
       saveDraftToLocalStorage({ htmlContent: currentHtml, markdownContent: parsedMd });
+
+      // Real-time syntax validation for any Custom HTML textareas inside editor
+      const blockTextareas = editorRef.current.querySelectorAll("textarea.wp-block-textarea");
+      blockTextareas.forEach((ta) => {
+        const blockCard = ta.closest(".wp-block-custom-html");
+        if (blockCard) {
+          let statusDiv = blockCard.querySelector(".wp-block-validation-status");
+          if (!statusDiv) {
+            statusDiv = document.createElement("div");
+            blockCard.querySelector(".wp-block-editor-pane")?.appendChild(statusDiv);
+          }
+          const valResult = validateHtmlSnippet(ta.value);
+          if (valResult.isValid) {
+            statusDiv.className = "wp-block-validation-status mt-2 p-2 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2";
+            statusDiv.innerHTML = `<span>✅ HTML Syntax Valid</span>`;
+          } else {
+            statusDiv.className = "wp-block-validation-status mt-2 p-2.5 px-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-start gap-2";
+            statusDiv.innerHTML = `<span class="text-rose-400 shrink-0 font-bold">⚠️ HTML Mistake:</span><span>${valResult.errors.join("; ")}</span>`;
+          }
+        }
+      });
 
       // Check for WordPress "/" Slash Command trigger
       if (editorMode === "visual" && typeof window !== "undefined") {
@@ -2020,6 +2135,21 @@ export default function BlogEditor({ initialSlug = null }) {
 
         {/* Quick Action Header Buttons */}
         <div className="flex items-center gap-2 flex-wrap shrink-0">
+          {articleHtmlValidation.errors.length > 0 ? (
+            <span
+              className="px-3 py-2 bg-rose-500/15 border border-rose-500/40 text-rose-300 rounded-xl text-xs font-bold flex items-center gap-1.5 animate-pulse"
+              title={`HTML Code Mistake: ${articleHtmlValidation.errors.join("; ")}`}
+            >
+              <AlertTriangle size={14} className="text-rose-400" />
+              {articleHtmlValidation.errors.length} HTML Mistake{articleHtmlValidation.errors.length > 1 ? "s" : ""}
+            </span>
+          ) : (
+            <span className="px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+              <CheckCircle2 size={14} className="text-emerald-400" />
+              HTML Valid
+            </span>
+          )}
+
           <button
             type="button"
             onClick={handleManualSaveDraft}
@@ -2585,6 +2715,19 @@ export default function BlogEditor({ initialSlug = null }) {
                 </div>
               ) : (
                 <div>
+                  {!articleHtmlValidation.isValid && (
+                    <div className="mb-4 p-3.5 bg-rose-500/15 border border-rose-500/40 rounded-xl text-rose-200 text-xs font-mono flex items-start gap-2.5 shadow-md">
+                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <strong className="font-bold text-white block mb-1">⚠️ HTML Code Mistake Detected in Article:</strong>
+                        <ul className="list-disc pl-4 space-y-1 text-rose-300">
+                          {articleHtmlValidation.errors.map((err, i) => (
+                            <li key={i}>{err}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                   <textarea
                     className="editor-content-area font-mono text-sm leading-relaxed"
                     style={{ minHeight: "420px" }}
@@ -3441,7 +3584,7 @@ export default function BlogEditor({ initialSlug = null }) {
 
             {/* Content Editor / Live Preview Box */}
             {!customHtmlPreview ? (
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <label className="text-xs font-semibold text-[#9494a3] flex items-center justify-between">
                   <span>Enter Raw HTML or JSON-LD Script tag:</span>
                   <span className="text-[11px] text-amber-400">Allowed: &lt;script type="application/ld+json"&gt;, &lt;details&gt;, &lt;div&gt;, &lt;iframe&gt;</span>
@@ -3450,9 +3593,29 @@ export default function BlogEditor({ initialSlug = null }) {
                   rows={10}
                   value={customHtmlCode}
                   onChange={(e) => setCustomHtmlCode(e.target.value)}
-                  placeholder="Paste or write your HTML code or JSON-LD FAQ schema script here..."
+                  placeholder="Paste or write your HTML code or FAQ schema script here..."
                   className="w-full bg-[#090912] border border-indigo-500/20 rounded-xl p-4 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed shadow-inner"
                 />
+
+                {/* Live Real-time Validation Feedback in Modal */}
+                {customHtmlCode.trim() && !customHtmlModalValidation.isValid && (
+                  <div className="p-3 bg-rose-500/15 border border-rose-500/40 rounded-xl text-rose-300 text-xs font-mono flex items-start gap-2 shadow-inner">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <strong className="font-bold text-rose-200 block">⚠️ HTML Mistake Detected:</strong>
+                      {customHtmlModalValidation.errors.map((err, i) => (
+                        <div key={i}>• {err}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {customHtmlCode.trim() && customHtmlModalValidation.isValid && (
+                  <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-mono flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>HTML / Schema Code Syntax is Valid & Ready</span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-1.5">

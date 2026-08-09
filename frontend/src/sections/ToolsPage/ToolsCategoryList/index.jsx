@@ -54,6 +54,15 @@ const categories = [
         gradient: "linear-gradient(135deg, #ea580c, #f97316)",
         tag: "New",
       },
+      {
+        name: "PNG to WebP",
+        href: "/tools/png-to-webp",
+        icon: "🖼️",
+        desc: "Convert PNG to WebP with full alpha transparency support",
+        color: "#06b6d4",
+        gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+        tag: "New",
+      },
     ],
   },
   {

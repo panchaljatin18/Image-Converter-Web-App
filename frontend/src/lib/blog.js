@@ -235,31 +235,94 @@ export function markdownToHtml(md) {
 }
 
 /**
- * Ensures HTML <div> tags within content are balanced and strips orphan closing </div> tags
- * that would otherwise break parent React layout containers.
+ * Void/Self-closing HTML tags that do not require a closing tag.
  */
-export function sanitizeAndBalanceDivs(html) {
+const VOID_TAGS = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+  "meta", "param", "source", "track", "wbr"
+]);
+
+/**
+ * Ensures all HTML tags within content are perfectly balanced, repairs missing closing tags,
+ * eliminates orphan closing tags, and safely validates JSON-LD script blocks.
+ * Guarantees that invalid HTML snippets cannot break public website page layouts.
+ */
+export function balanceAndRepairHtml(html) {
   if (!html) return "";
   let cleaned = html.replace(/<div>\s*(<br\s*\/?>)?\s*<\/div>/gi, "");
-  let depth = 0;
-  const sanitized = cleaned.replace(/(<div[^>]*>)|(<\/div>)/gi, (match, open, close) => {
-    if (open) {
-      depth++;
-      return match;
-    } else if (close) {
-      if (depth > 0) {
-        depth--;
+
+  // 1. Repair and validate JSON-LD script blocks
+  cleaned = cleaned.replace(/<script([^>]*)>([\s\S]*?)<\/script>/gi, (match, attrs, content) => {
+    if (attrs.includes('type="application/ld+json"') || attrs.includes("application/ld+json")) {
+      try {
+        JSON.parse(content.trim());
         return match;
-      } else {
-        return "";
+      } catch (e) {
+        return `<script${attrs}>/* Invalid JSON-LD schema ignored */</script>`;
       }
     }
     return match;
   });
-  if (depth > 0) {
-    return sanitized + "</div>".repeat(depth);
+
+  // 2. Stack-based tag balancing algorithm
+  const tagRegex = /<!--[\s\S]*?-->|<(\/)?([a-zA-Z0-9-]+)([^>]*)>/gi;
+  const stack = [];
+  let result = "";
+  let lastIndex = 0;
+  let match;
+
+  while ((match = tagRegex.exec(cleaned)) !== null) {
+    const fullMatch = match[0];
+    const isClosing = Boolean(match[1]);
+    const tagName = match[2] ? match[2].toLowerCase() : "";
+    const isSelfClosing = fullMatch.endsWith("/>") || VOID_TAGS.has(tagName);
+
+    result += cleaned.slice(lastIndex, match.index);
+    lastIndex = tagRegex.lastIndex;
+
+    if (fullMatch.startsWith("<!--") || !tagName) {
+      result += fullMatch;
+      continue;
+    }
+
+    if (VOID_TAGS.has(tagName) || isSelfClosing) {
+      result += fullMatch;
+      continue;
+    }
+
+    if (!isClosing) {
+      stack.push(tagName);
+      result += fullMatch;
+    } else {
+      const stackIndex = stack.lastIndexOf(tagName);
+      if (stackIndex !== -1) {
+        while (stack.length > stackIndex + 1) {
+          const unclosedTag = stack.pop();
+          result += `</${unclosedTag}>`;
+        }
+        stack.pop();
+        result += fullMatch;
+      } else {
+        // Skip orphan closing tag to prevent breaking parent container
+      }
+    }
   }
-  return sanitized;
+
+  result += cleaned.slice(lastIndex);
+
+  while (stack.length > 0) {
+    const unclosedTag = stack.pop();
+    result += `</${unclosedTag}>`;
+  }
+
+  return result;
+}
+
+/**
+ * Ensures HTML tags within content are balanced and strips orphan closing tags.
+ */
+export function sanitizeAndBalanceDivs(html) {
+  return balanceAndRepairHtml(html);
 }
 
 /**

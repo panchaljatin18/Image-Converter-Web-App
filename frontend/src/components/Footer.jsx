@@ -81,6 +81,7 @@ const GitHubIcon = ({ size = 16, className }) => (
 
 const footerTools = [
   { name: "JPG to PNG", href: "/tools/jpg-to-png" },
+  { name: "PNG to WebP", href: "/tools/png-to-webp" },
   { name: "WebP to JPG", href: "/tools/webp-to-jpg" },
   { name: "Image Compressor", href: "/tools/image-compressor" },
   { name: "Crop Image", href: "/tools/crop-image" },
@@ -122,7 +123,7 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-1 md:-mt-2">
             <Link href="/" className="flex items-center shrink-0 no-underline mb-4">
               <Image
-                src="/CG.png"
+                src="/CG.webp"
                 alt="Converter Galaxy Logo"
                 width={180}
                 height={65}

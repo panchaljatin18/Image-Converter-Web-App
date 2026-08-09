@@ -125,6 +125,39 @@ export const toolContentMap: Record<string, ToolContent> = {
     technicalDescription: "PNG (Portable Network Graphics) preserves all pixel coordinates and color values perfectly using the DEFLATE algorithm, which is highly efficient for flat graphics but yields large file sizes for photos. When converting a PNG to JPG, the converter strips the alpha transparency channel (filling transparent layers with a selected background color) and applies the JPEG compression codec. This converts the pixel values using Discrete Cosine Transform (DCT) blocks, compressing the file and decreasing download latency, which is essential for SEO and page performance."
   },
 
+  "png-to-webp": {
+    howToUseSteps: [
+      { title: "Select PNG Image", text: "Drag and drop your .png file into the converter upload area or click to select a file from your device." },
+      { title: "Adjust WebP Quality", text: "Use the quality slider to set your desired compression level (default is 80%). You can also fine-tune output file size." },
+      { title: "Convert PNG to WebP", text: "Click the 'Convert to WebP' button to encode your PNG image into a lightweight WebP format while preserving full alpha transparency." },
+      { title: "Download WebP File", text: "Compare the original vs converted file sizes, see instant size savings, and click 'Download WebP' to save your file." }
+    ],
+    faqs: [
+      { q: "Will converting PNG to WebP preserve background transparency?", a: "Yes, 100%! Unlike JPG, the WebP format natively supports an alpha channel (transparency). Our converter preserves transparent backgrounds perfectly without adding any solid background color fill." },
+      { q: "How much smaller will my PNG file become when converted to WebP?", a: "WebP files are typically 25% to 35% smaller than PNG files at equivalent visual quality. For high-resolution graphics and screenshots, savings can exceed 70%." },
+      { q: "Is WebP supported by all modern browsers?", a: "Yes, WebP is universally supported in all modern web browsers, including Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, and Apple Safari (iOS 14+ / macOS Big Sur+)." },
+      { q: "Are my uploaded PNG images safe and private?", a: "100% private. All conversions take place locally inside your own browser context using the HTML5 Canvas API. Your photos never leave your device and are never uploaded to remote servers." }
+    ],
+    benefits: [
+      { title: "Custom Quality Slider", text: "Adjust output quality from 10% to 100% to find the perfect balance between crisp visual detail and reduced file size.", icon: "Sparkles" },
+      { title: "Alpha Transparency Preserved", text: "Full support for transparent backgrounds, making it perfect for website logos, icons, and UI overlays.", icon: "Layers" },
+      { title: "100% Browser Privacy", text: "Client-side processing ensures complete security with zero server uploads or external data leaks.", icon: "Shield" },
+      { title: "Instant Size Comparison", text: "View real-time KB/MB file size statistics and percentage savings immediately after conversion.", icon: "Zap" }
+    ],
+    comparisonTable: {
+      title: "PNG vs. WebP Technical Comparison",
+      headers: ["Feature", "PNG Format", "WebP Format (Google)"],
+      rows: [
+        ["Compression Method", "Lossless (DEFLATE algorithm)", "Lossy & Lossless (VP8 / VP8L predictive coding)"],
+        ["File Size", "Large to Very Large", "Extremely Small (~30% smaller than PNG)"],
+        ["Transparency (Alpha)", "Supported (8-bit alpha layer)", "Supported (8-bit alpha layer with lossy/lossless compression)"],
+        ["Web Load Performance", "Heavy payload (slower load speed)", "Optimized next-gen format (faster page loads)"],
+        ["Browser Compatibility", "Universal (all systems & legacy browsers)", "Universal in modern browsers (Chrome, Firefox, Edge, Safari 14+)"]
+      ]
+    },
+    technicalDescription: "PNG (Portable Network Graphics) uses lossless DEFLATE compression, preserving every single pixel, which makes it popular for logos and screenshots but leads to large file sizes. WebP, created by Google, uses advanced predictive coding (derived from the VP8/VP8L video codecs) to compress spatial image data much more efficiently. When converting PNG to WebP, the encoder analyzes neighboring block pixels to compress the visual channels while preserving full 8-bit alpha transparency. This reduces total payload size by up to 35% or more, dramatically speeding up website loading times and improving Google Core Web Vitals performance."
+  },
+
   "webp-converter": {
     howToUseSteps: [
       { title: "Upload Source Image", text: "Add images in standard formats like JPG, PNG, GIF, or WebP to the converter." },

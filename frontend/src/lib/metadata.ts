@@ -73,7 +73,7 @@ export const GLOBAL_SEO_DEFAULTS = {
       "Free online image converter and batch image compressor. Convert JPG, PNG, WebP, HEIC & PDF without losing quality. 100% private, browser-based, no watermark.",
     images: [
       {
-        url: `${SITE_URL}/og-image.png`,
+        url: `${SITE_URL}/og-image.webp`,
         width: 1200,
         height: 630,
         alt: "Convert Galaxy – Free Online Image Converter & Batch Compressor",
@@ -85,7 +85,7 @@ export const GLOBAL_SEO_DEFAULTS = {
     title: "Convert Galaxy – Free Online Image Converter & Batch Compressor",
     description:
       "Compress and convert images without losing quality. Free batch image converter for JPG, PNG, WebP, HEIC & PDF in your browser.",
-    images: [`${SITE_URL}/og-image.png`],
+    images: [`${SITE_URL}/og-image.webp`],
     creator: "@ConvertGalaxy",
     site: "@ConvertGalaxy",
   },
@@ -121,7 +121,7 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
     title,
     description,
     canonicalPath = "",
-    ogImage = `${SITE_URL}/og-image.png`,
+    ogImage = `${SITE_URL}/og-image.webp`,
     ogType = "website",
     keywords = [],
     noIndex = false,

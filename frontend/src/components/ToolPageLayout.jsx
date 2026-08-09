@@ -44,7 +44,7 @@ export default async function ToolPageLayout({
             category: toolCategory,
             faqs: displayFaqs,
             steps: richContent?.howToUseSteps,
-            image: toolKey ? `https://www.convertgalaxy.com/${toolKey}.png` : undefined,
+            image: toolKey ? `https://www.convertgalaxy.com/${toolKey}.webp` : undefined,
           }}
         />
       )}
@@ -120,7 +120,7 @@ export default async function ToolPageLayout({
             {toolKey && (
               <div className="max-w-[800px] mx-auto w-full border border-white/8 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                 <img
-                  src={`/${toolKey}.png`}
+                  src={`/${toolKey}.webp`}
                   alt={`How to use ${title} tool guide`}
                   className="w-full h-auto object-cover aspect-[16/9]"
                   loading="eager"
