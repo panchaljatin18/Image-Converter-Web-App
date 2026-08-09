@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Sliders, Info, Shield, Zap, Sparkles } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Sliders, Sparkles } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -238,84 +238,6 @@ export default function WebPToJpgTool() {
           </div>
         </div>
       )}
-
-      {/* Info Section */}
-      <div className="mt-16 border-t border-white/6 pt-12">
-        <h2 className="font-['Outfit'] font-bold text-[1.4rem] mb-6 text-[#f8fafc] flex items-center gap-2">
-          <Info size={20} className="text-[#ea580c]" />
-          About WebP to JPG Conversion
-        </h2>
-        
-        <div className="text-[#94a3b8] text-[0.92rem] leading-[1.8] flex flex-col gap-6">
-          <p>
-            <strong className="text-[#f8fafc]">Why convert WebP to JPG?</strong>{" "}
-            While WebP offers advanced compression and smaller file sizes for modern web browsers, it has limited compatibility with offline software, legacy image editors, email clients, and older operating systems. Converting WebP to JPG ensures your files can be viewed and opened universally on any device or platform without installing additional codecs.
-          </p>
-          <p>
-            <strong className="text-[#f8fafc]">Transparent backgrounds:</strong>{" "}
-            The WebP format supports transparency (an alpha channel), whereas JPG does not. When you convert transparent WebP files, the transparent areas must be filled with a solid color. Our tool provides a solid color background picker (defaulting to white) so you can choose exactly what color replaces transparent pixels during conversion.
-          </p>
-        </div>
-
-        <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-5 text-[#f8fafc] flex items-center gap-2">
-          <Zap size={18} className="text-[#ea580c]" />
-          Key Features
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Custom JPG Quality</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Fine-tune the compression of your output image. Slide to reduce quality for a smaller file size, or raise it to 100% to maximize visual fidelity.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">100% Browser-First Security</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Your images are processed locally within your browser context or via local network hooks. We do not store or keep copies of your personal photos.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Solid Color Backdrop Fill</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Define custom background colors using the visual color picker to smoothly blend alpha transparency channels into solid pixels.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Intelligent Size Savings</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              The converter calculates precise optimization savings, indicating how much storage is reduced compared to the original file formats.
-            </p>
-          </div>
-        </div>
-
-        {/* FAQs */}
-        <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-6 text-[#f8fafc] flex items-center gap-2">
-          <Shield size={18} className="text-[#ea580c]" />
-          Frequently Asked Questions
-        </h3>
-
-        <div className="space-y-4">
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">How do I convert a WebP file to JPG?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              Simply drop your WebP image onto the uploader panel or browse from your filesystem. Adjust the JPG quality slider to your liking, select a custom background color if your image has transparency, and click "Convert to JPG". Once completed, click "Download" to save the image.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Will I lose image quality during the conversion?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              WebP uses highly advanced compression. Converting it to JPG (which is a lossy format) may introduce minor compression artifacts. However, by setting the quality slider to 90% or higher, the differences are virtually indistinguishable to the human eye.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">How does the transparency backup color picker work?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              JPG files do not support transparency. If a WebP image with transparent sections is converted directly, those sections would typically turn black. To prevent this, our backdrop tool lets you specify a background fill color (white is the industry default) to ensure a clean visual output.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

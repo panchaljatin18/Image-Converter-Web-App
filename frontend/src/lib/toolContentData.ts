@@ -28,7 +28,7 @@ export interface ToolContent {
   technicalDescription: string;
 }
 
-export const toolContentMap: Record<string, ToolContent> = {
+export const toolContentMap: Record<string, ToolContent> = Object.freeze({
   "heic-to-jpg": {
     howToUseSteps: [
       { title: "Select HEIC Photo", text: "Click the upload panel or drag and drop your Apple .heic or .heif files into the browser converter." },
@@ -127,35 +127,38 @@ export const toolContentMap: Record<string, ToolContent> = {
 
   "png-to-webp": {
     howToUseSteps: [
-      { title: "Select PNG Image", text: "Drag and drop your .png file into the converter upload area or click to select a file from your device." },
-      { title: "Adjust WebP Quality", text: "Use the quality slider to set your desired compression level (default is 80%). You can also fine-tune output file size." },
-      { title: "Convert PNG to WebP", text: "Click the 'Convert to WebP' button to encode your PNG image into a lightweight WebP format while preserving full alpha transparency." },
-      { title: "Download WebP File", text: "Compare the original vs converted file sizes, see instant size savings, and click 'Download WebP' to save your file." }
+      { title: "Select & Upload PNG Image", text: "Drag and drop your .png file into our free PNG to WebP converter upload box, or click to browse files from your computer or mobile device (up to 50MB per file)." },
+      { title: "Configure WebP Quality & Compression", text: "Use the WebP quality slider to select your ideal compression ratio (80% recommended for maximum file size reduction with zero visible loss)." },
+      { title: "Instant PNG to WebP Conversion", text: "Click 'Convert to WebP' to process your image locally in your browser context, preserving 100% of alpha background transparency without server uploads." },
+      { title: "Download WebP File Immediately", text: "View your real-time file size savings (KB/MB statistics) and click 'Download WebP' to get your lightweight, web-optimized image free without watermarks." }
     ],
     faqs: [
-      { q: "Will converting PNG to WebP preserve background transparency?", a: "Yes, 100%! Unlike JPG, the WebP format natively supports an alpha channel (transparency). Our converter preserves transparent backgrounds perfectly without adding any solid background color fill." },
-      { q: "How much smaller will my PNG file become when converted to WebP?", a: "WebP files are typically 25% to 35% smaller than PNG files at equivalent visual quality. For high-resolution graphics and screenshots, savings can exceed 70%." },
-      { q: "Is WebP supported by all modern browsers?", a: "Yes, WebP is universally supported in all modern web browsers, including Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, and Apple Safari (iOS 14+ / macOS Big Sur+)." },
-      { q: "Are my uploaded PNG images safe and private?", a: "100% private. All conversions take place locally inside your own browser context using the HTML5 Canvas API. Your photos never leave your device and are never uploaded to remote servers." }
+      { q: "How do I convert PNG to WebP online for free?", a: "To convert PNG to WebP online for free, simply drag and drop your PNG image into our converter, choose your preferred WebP encoding quality (10% to 100%), and click 'Convert PNG to WebP'. Once processing completes, click 'Download WebP' to save your compressed image instantly without any registration, email, or watermark." },
+      { q: "Will converting PNG to WebP preserve background transparency (alpha channel)?", a: "Yes, 100%! Unlike standard JPEG format converters that replace transparent backgrounds with solid white fills, the Google WebP format natively supports full 8-bit alpha channel transparency. Our converter keeps transparent PNG backgrounds completely clear, making it ideal for website logos, app icons, digital badges, and UI overlays." },
+      { q: "How much file size reduction can I expect when converting PNG to WebP?", a: "Converting PNG to WebP typically reduces image file sizes by 25% to 35% compared to PNG files at equivalent visual quality. For high-resolution screenshot PNGs and digital artwork, file size reductions often exceed 70%, dramatically reducing page payload and boosting your website's Google Core Web Vitals score." },
+      { q: "Is WebP supported across all web browsers and devices?", a: "Yes! WebP is fully supported by all modern web browsers, including Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, and Apple Safari (iOS 14+ / macOS Big Sur+). WebP is recommended by Google as a next-generation image format for web publishing." },
+      { q: "Are my personal photos and graphics safe on ConvertGalaxy?", a: "Your privacy is 100% guaranteed. All PNG to WebP conversions execute locally inside your own web browser using modern HTML5 Canvas APIs. Your images are never uploaded, stored, or processed on remote cloud servers, ensuring complete document privacy and security." },
+      { q: "What is the difference between lossy and lossless PNG to WebP conversion?", a: "Lossy WebP compression discards microscopic pixel variations that are imperceptible to the human eye, yielding maximum file size savings. Lossless WebP compression reorganizes pixel data to reduce file size while maintaining 100% bit-for-bit mathematical visual accuracy. Our converter allows you to set custom WebP encoding quality from 10% to 100% to suit your specific project needs." }
     ],
     benefits: [
-      { title: "Custom Quality Slider", text: "Adjust output quality from 10% to 100% to find the perfect balance between crisp visual detail and reduced file size.", icon: "Sparkles" },
-      { title: "Alpha Transparency Preserved", text: "Full support for transparent backgrounds, making it perfect for website logos, icons, and UI overlays.", icon: "Layers" },
-      { title: "100% Browser Privacy", text: "Client-side processing ensures complete security with zero server uploads or external data leaks.", icon: "Shield" },
-      { title: "Instant Size Comparison", text: "View real-time KB/MB file size statistics and percentage savings immediately after conversion.", icon: "Zap" }
+      { title: "Alpha Transparency Preserved", text: "100% support for transparent PNG backgrounds without adding solid white or color background fills.", icon: "Layers" },
+      { title: "Custom WebP Quality Control", text: "Fine-tune output compression slider from 10% to 100% for the exact balance between file size and sharpness.", icon: "Sparkles" },
+      { title: "100% Private Browser Encoding", text: "Client-side processing executes in your browser sandbox with zero server uploads or external data leaks.", icon: "Shield" },
+      { title: "Core Web Vitals SEO Boost", text: "Shrink heavy PNG image payloads up to 70% to speed up website load times and improve Google search rankings.", icon: "Zap" }
     ],
     comparisonTable: {
-      title: "PNG vs. WebP Technical Comparison",
-      headers: ["Feature", "PNG Format", "WebP Format (Google)"],
+      title: "PNG vs. WebP Technical Comparison for Web Optimization",
+      headers: ["Key Performance Metric", "Standard PNG Format", "Google WebP Next-Gen Format"],
       rows: [
-        ["Compression Method", "Lossless (DEFLATE algorithm)", "Lossy & Lossless (VP8 / VP8L predictive coding)"],
-        ["File Size", "Large to Very Large", "Extremely Small (~30% smaller than PNG)"],
-        ["Transparency (Alpha)", "Supported (8-bit alpha layer)", "Supported (8-bit alpha layer with lossy/lossless compression)"],
-        ["Web Load Performance", "Heavy payload (slower load speed)", "Optimized next-gen format (faster page loads)"],
+        ["Compression Technology", "Lossless (DEFLATE / Zip algorithm)", "Lossy & Lossless (VP8 / VP8L predictive block coding)"],
+        ["Average File Size", "Large to Very Large (Heavy web payload)", "Up to 35% smaller than PNG at same visual quality"],
+        ["Alpha Channel Transparency", "Supported (8-bit alpha channel)", "Supported (8-bit alpha channel with lossy/lossless compression)"],
+        ["Page Load Speed Impact", "Slower page render times & higher bandwidth cost", "Faster page loading speed & lower bandwidth consumption"],
+        ["Google Core Web Vitals Impact", "Higher LCP (Largest Contentful Paint) score", "Optimized LCP & improved Google search engine rankings"],
         ["Browser Compatibility", "Universal (all systems & legacy browsers)", "Universal in modern browsers (Chrome, Firefox, Edge, Safari 14+)"]
       ]
     },
-    technicalDescription: "PNG (Portable Network Graphics) uses lossless DEFLATE compression, preserving every single pixel, which makes it popular for logos and screenshots but leads to large file sizes. WebP, created by Google, uses advanced predictive coding (derived from the VP8/VP8L video codecs) to compress spatial image data much more efficiently. When converting PNG to WebP, the encoder analyzes neighboring block pixels to compress the visual channels while preserving full 8-bit alpha transparency. This reduces total payload size by up to 35% or more, dramatically speeding up website loading times and improving Google Core Web Vitals performance."
+    technicalDescription: "PNG (Portable Network Graphics) relies on lossless DEFLATE compression to maintain exact pixel fidelity. While PNG is ideal for graphic design master copies, its uncompressed pixel structures generate large file sizes that degrade mobile page load speeds and increase server bandwidth. Developed by Google, WebP leverages advanced predictive coding derived from the VP8 and VP8L keyframe codecs. By predicting pixel color values based on adjacent pixel blocks, WebP compresses spatial image channels while retaining full 8-bit alpha transparency. Converting PNG to WebP using our free online converter reduces total file size by up to 35% to 70% without sacrificing visual quality, giving your website faster page speeds, lower bounce rates, and better Google Core Web Vitals SEO performance."
   },
 
   "webp-converter": {
@@ -376,4 +379,4 @@ export const toolContentMap: Record<string, ToolContent> = {
     },
     technicalDescription: "Converting PDF to images involves rasterizing vector and layout instructions into pixel values. The converter decodes page layouts, processes vector objects and text overlays, and renders the result onto a rasterized grid. It then encodes this grid into JPG or PNG formats. This allows users to view, share, or edit PDF pages without requiring a PDF reader."
   }
-};
+})

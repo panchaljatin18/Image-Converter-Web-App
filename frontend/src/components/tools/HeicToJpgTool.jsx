@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Sliders, Info, Shield, Zap, Layers, FileImage } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Sliders } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -247,84 +247,6 @@ export default function HeicToJpgTool() {
           </div>
         </div>
       )}
-
-      {/* Info Section */}
-      <div className="mt-16 border-t border-white/6 pt-12">
-        <h2 className="font-['Outfit'] font-bold text-[1.4rem] mb-6 text-[#f8fafc] flex items-center gap-2">
-          <Info size={20} className="text-[#06b6d4]" />
-          About HEIC to JPG Conversion
-        </h2>
-
-        <div className="text-[#94a3b8] text-[0.92rem] leading-[1.8] flex flex-col gap-6">
-          <p>
-            <strong className="text-[#f8fafc]">Why convert Apple HEIC to JPG?</strong>{" "}
-            HEIC (High Efficiency Image Container) is the default image format used by iPhone and iPad camera sensors. While HEIC saves internal storage on iOS devices, Windows 10/11 PCs, Android devices, email clients, and website upload forms often cannot open .heic files without error popups. Converting HEIC photos to standard JPG format makes them universally viewable across all screens, software, and platforms.
-          </p>
-          <p>
-            <strong className="text-[#f8fafc]">EXIF Metadata & Orientation:</strong>{" "}
-            Apple HEIC photos contain embedded camera metadata (GPS coordinates, capture timestamps, shutter speed) and orientation flags. Our tool allows you to preserve EXIF data for archival purposes or strip it for complete online privacy.
-          </p>
-        </div>
-
-        <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-5 text-[#f8fafc] flex items-center gap-2">
-          <Zap size={18} className="text-[#06b6d4]" />
-          Key Features
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Custom JPG Quality</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Fine-tune the output compression quality. Keep it at 90%+ for crisp photo quality or lower it to reduce file size.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">100% Privacy Protection</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Files are transferred via encrypted connections and deleted immediately after processing. No personal images are saved.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Automatic Orientation Fix</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Automatically reads EXIF rotation tags so sideways iPhone photos display correctly in an upright position.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Cross-Platform Support</h4>
-            <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
-              Works seamlessly across Windows, macOS, Android, iOS, and Linux without downloading or installing extra software.
-            </p>
-          </div>
-        </div>
-
-        {/* FAQs */}
-        <h3 className="font-['Outfit'] font-bold text-[1.2rem] mt-10 mb-6 text-[#f8fafc] flex items-center gap-2">
-          <Shield size={18} className="text-[#06b6d4]" />
-          Frequently Asked Questions
-        </h3>
-
-        <div className="space-y-4">
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">How do I convert HEIC photos to JPG?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              Simply drop your HEIC photo onto the uploader panel or browse from your device. Adjust the quality slider or EXIF settings if needed, click "Convert to JPG", and click "Download JPG" to save the file.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Why won't my Windows PC open HEIC files?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              Windows does not include native HEVC/HEIC decoding codecs by default. Converting your HEIC images to standard JPG format solves this issue immediately.
-            </p>
-          </div>
-          <div className="p-5 bg-white/[0.02] border border-white/6 rounded-2xl">
-            <h4 className="font-bold text-[#f8fafc] mb-2 text-[0.95rem]">Will I lose image quality during conversion?</h4>
-            <p className="text-[#94a3b8] text-[0.875rem] leading-relaxed">
-              Our converter uses advanced image processing algorithms. Keeping quality at 85%-95% preserves photo details, sharpness, and colors so the JPG looks identical to the original HEIC.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

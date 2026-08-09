@@ -81,6 +81,26 @@ export default function ToolUploader({
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Automatic memory cleanup for preview object URLs to prevent browser memory leaks
+  const activeUrlsRef = useRef([]);
+  useEffect(() => {
+    const currentUrls = previews.map((p) => p.url).filter(Boolean);
+    activeUrlsRef.current.forEach((url) => {
+      if (!currentUrls.includes(url)) {
+        URL.revokeObjectURL(url);
+      }
+    });
+    activeUrlsRef.current = currentUrls;
+  }, [previews]);
+
+  useEffect(() => {
+    return () => {
+      activeUrlsRef.current.forEach((url) => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
+
   useEffect(() => {
     if (!isDropdownOpen) return;
 

@@ -146,31 +146,6 @@ export default function JpgToPngTool() {
           </div>
         </div>
       )}
-
-      {/* Info Section */}
-      <div className="mt-12">
-        <h2 className="font-['Outfit'] font-bold text-[1.25rem] mb-4 text-[#f8fafc]">
-          About JPG to PNG Conversion
-        </h2>
-        <div className="text-[#94a3b8] text-[0.9rem] leading-[1.8] flex flex-col gap-3">
-          <p>
-            <strong className="text-[#f8fafc]">Why convert JPG to PNG?</strong>{" "}
-            PNG (Portable Network Graphics) is a lossless format that supports transparency (alpha
-            channel), making it ideal for logos, icons, and graphics that need to be placed on
-            different colored backgrounds.
-          </p>
-          <p>
-            <strong className="text-[#f8fafc]">Is this conversion free?</strong>{" "}
-            Yes, completely free. All processing happens in your browser — your images are never
-            uploaded to any server.
-          </p>
-          <p>
-            <strong className="text-[#f8fafc]">Will quality be affected?</strong>{" "}
-            PNG is lossless, so the converted image will maintain the same visual quality as your
-            original JPG, but may result in a larger file size.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

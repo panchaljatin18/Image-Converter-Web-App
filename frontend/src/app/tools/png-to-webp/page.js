@@ -16,6 +16,11 @@ export const metadata = constructMetadata({
     "best png to webp converter",
     "png image to webp online free",
     "browser based png to webp",
+    "compress png to webp",
+    "lossless png to webp",
+    "convert transparent png to webp",
+    "google webp image optimizer",
+    "png to webp converter with quality control"
   ]
 });
 

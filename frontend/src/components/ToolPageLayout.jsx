@@ -8,6 +8,15 @@ import FaqAccordion from "@/components/FaqAccordion";
 import { getRelatedBlogPosts } from "@/lib/blog";
 import Image from "next/image";
 
+const ICON_MAP = {
+  Shield,
+  Zap,
+  Sparkles: Star,
+  Star,
+  Layers,
+  FileImage,
+};
+
 const trustBadges = [
   { icon: <Shield size={14} />, text: "100% Private" },
   { icon: <Zap size={14} />, text: "Browser-Based" },
@@ -156,12 +165,7 @@ export default async function ToolPageLayout({
             {richContent.benefits && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {richContent.benefits.map((benefit, idx) => {
-                  let Icon = Shield;
-                  if (benefit.icon === "Shield") Icon = Shield;
-                  else if (benefit.icon === "Zap") Icon = Zap;
-                  else if (benefit.icon === "Sparkles") Icon = Star;
-                  else if (benefit.icon === "Layers") Icon = Layers;
-                  else if (benefit.icon === "FileImage") Icon = FileImage;
+                  const Icon = ICON_MAP[benefit.icon] || Shield;
 
                   return (
                     <div key={idx} className="p-6 bg-gradient-to-br from-[#1a1a2e] to-[#141426] border border-white/6 rounded-2xl flex gap-4">
