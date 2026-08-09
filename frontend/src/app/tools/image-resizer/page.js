@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "Image Resizer Online Free – Resize Photos by Pixels, % or Preset Sizes",
   description: "Resize any photo online free by exact pixels, percentage, or preset sizes (Instagram, passport, thumbnail, 4K). No signup, no watermark — instant browser-based resizing.",
   canonicalPath: "/tools/image-resizer",
-  ogImage: "https://www.convertgalaxy.com/image-resizer.png",
+  ogImage: "https://www.convertgalaxy.com/image-resizer.webp",
   keywords: [
     "image resizer online free",
     "resize image in pixels online free",

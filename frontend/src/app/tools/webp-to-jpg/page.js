@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "WebP to JPG Converter Free – Convert WebP Images to JPEG Online",
   description: "Convert WebP images to JPG/JPEG format online for free. No account, no watermark — instant download, 100% private browser-based processing. Works on all devices.",
   canonicalPath: "/tools/webp-to-jpg",
-  ogImage: "https://www.convertgalaxy.com/webp-to-jpg.png",
+  ogImage: "https://www.convertgalaxy.com/webp-to-jpg.webp",
   keywords: [
     "webp to jpg converter free",
     "convert webp to jpg online free",

@@ -7,7 +7,7 @@ export const metadata = constructMetadata({
   description:
     "Convert iPhone HEIC & HEIF photos to JPG online free instantly. No app install, no signup, no watermark — 100% browser-based, private & secure conversion.",
   canonicalPath: "/tools/heic-to-jpg",
-  ogImage: "https://www.convertgalaxy.com/heic-to-jpg.png",
+  ogImage: "https://www.convertgalaxy.com/heic-to-jpg.webp",
   keywords: [
     "heic to jpg converter free",
     "convert heic to jpg online free",

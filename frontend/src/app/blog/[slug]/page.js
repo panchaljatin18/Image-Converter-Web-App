@@ -23,7 +23,7 @@ export async function generateMetadata({ params }) {
     title: `${post.frontmatter.title} | ConvertGalaxy Blog`,
     description: post.frontmatter.description,
     canonicalPath: `/blog/${resolvedParams.slug}`,
-    ogImage: `https://www.convertgalaxy.com${post.frontmatter.image || "/og-image.png"}`,
+    ogImage: `https://www.convertgalaxy.com${post.frontmatter.image || "/og-image.webp"}`,
     ogType: "article",
     keywords: post.frontmatter.focusKeyword ? [post.frontmatter.focusKeyword] : ["image guide"],
   });
@@ -185,7 +185,7 @@ export default async function BlogPostPage({ params }) {
                 <div className="p-[2px] rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_20px_rgba(99,102,241,0.25)] group-hover:shadow-[0_0_25px_rgba(99,102,241,0.4)] transition-all duration-300">
                   <div className="w-20 h-20 rounded-[14px] overflow-hidden bg-[#0d0d1a] relative">
                     <Image
-                      src="/author.png"
+                      src="/author.webp"
                       alt="Jatin Panchal - Author & Founder"
                       width={240}
                       height={240}

@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "PNG to JPG Converter – Free, Fast, No Watermark",
   description: "Convert PNG to JPG online free instantly. Reduce file size, handle transparent backgrounds with custom fill color. No signup, no watermark, 100% browser-based.",
   canonicalPath: "/tools/png-to-jpg",
-  ogImage: "https://www.convertgalaxy.com/png-to-jpg.png",
+  ogImage: "https://www.convertgalaxy.com/png-to-jpg.webp",
   keywords: [
     "png to jpg converter free",
     "convert png to jpg online free",

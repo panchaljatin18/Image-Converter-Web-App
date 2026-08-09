@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "PDF to Image Converter Free – Convert PDF to JPG or PNG Online",
   description: "Convert PDF pages to high-quality JPG or PNG images free online. No signup, no watermark, fast browser-based conversion. Extract every page from any PDF instantly.",
   canonicalPath: "/tools/pdf-to-image",
-  ogImage: "https://www.convertgalaxy.com/pdf-to-image.png",
+  ogImage: "https://www.convertgalaxy.com/pdf-to-image.webp",
   keywords: [
     "pdf to image converter free",
     "convert pdf to jpg free online",

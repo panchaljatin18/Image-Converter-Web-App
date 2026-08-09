@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "PNG to WebP Converter Free – Convert PNG to WebP Online",
   description: "Convert PNG images to WebP online for free. No account, no watermark — instant download, 100% private browser-based processing with transparency support.",
   canonicalPath: "/tools/png-to-webp",
-  ogImage: "https://www.convertgalaxy.com/png-to-webp.png",
+  ogImage: "https://www.convertgalaxy.com/png-to-webp.webp",
   keywords: [
     "png to webp converter free",
     "convert png to webp online",

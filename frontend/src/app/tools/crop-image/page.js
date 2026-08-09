@@ -6,7 +6,7 @@ export const metadata = constructMetadata({
   title: "Crop Image Online Free – Custom Size, Aspect Ratio & Preset Shapes",
   description: "Crop any photo online free with custom size, preset aspect ratios (square, 16:9, passport) or freeform selection. No signup, no watermark — 100% browser-based.",
   canonicalPath: "/tools/crop-image",
-  ogImage: "https://www.convertgalaxy.com/crop-image.png",
+  ogImage: "https://www.convertgalaxy.com/crop-image.webp",
   keywords: [
     "crop image online free",
     "free image cropper no watermark",
