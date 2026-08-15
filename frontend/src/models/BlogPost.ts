@@ -14,6 +14,8 @@ export interface IBlogPost extends Document {
   date: string;
   content: string;
   htmlContent?: string;
+  editorHtml?: string;
+  content_blocks?: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +39,8 @@ const BlogPostSchema: Schema = new Schema(
     date: { type: String, required: true },
     content: { type: String, required: true },
     htmlContent: { type: String },
+    editorHtml: { type: String },
+    content_blocks: { type: Schema.Types.Mixed },
   },
   { timestamps: true }
 );

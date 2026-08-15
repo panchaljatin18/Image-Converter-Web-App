@@ -73,7 +73,7 @@ export default function BlogAdminDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-['Outfit'] font-black text-2xl md:text-3xl text-white">
-            Blog Articles Manager
+            Admin Dashboard
           </h1>
           <p className="text-sm text-[#9494a3] mt-1 font-['Outfit']">
             Draft, edit, and organize local markdown guides and SEO content assets.

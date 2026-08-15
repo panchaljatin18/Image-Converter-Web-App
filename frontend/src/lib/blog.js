@@ -40,8 +40,16 @@ export function markdownToHtml(md) {
   // Links
   html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-400 hover:text-indigo-300 underline font-semibold transition-colors">$1</a>');
 
-  // Extract and protect raw HTML & Script blocks (e.g. JSON-LD FAQ Schema, custom HTML blocks, details)
+  // Extract and protect raw HTML, Style & Script blocks (e.g. JSON-LD FAQ Schema, custom HTML blocks, details)
   const rawHtmlBlocks = [];
+
+  // Clean up any corrupted <p class="text-[#cbd5e1]"> wrapping CSS rules or HTML code
+  html = html.replace(/<p[^>]*class="[^"]*text-\[#cbd5e1\][^"]*"[^>]*>([\s\S]*?)<\/p>/gi, (m, content) => {
+    if (content.includes("summary") || content.includes("faq") || content.includes("{") || content.includes("padding") || content.includes("font-size")) {
+      return content.replace(/<br\s*\/?>/gi, "\n").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    }
+    return m;
+  });
 
   // 1. Script tags (including <script type="application/ld+json">)
   html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, (match) => {
@@ -49,13 +57,19 @@ export function markdownToHtml(md) {
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });
 
-  // 2. Custom HTML wrapper divs
-  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|faq-container|faq-schema-block)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
+  // 2. Style tags (CRITICAL: Protect <style> CSS blocks from paragraph wrapping)
+  html = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, (match) => {
     rawHtmlBlocks.push(match);
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
   });
 
-  // 3. HTML details / accordions
+  // 3. Custom HTML wrapper divs
+  html = html.replace(/<div class="(?:custom-html-block|wp-custom-html-card|wp-block-html|wp-block-custom-html|faq-container|faq-schema-block)[^>]*">[\s\S]*?<\/div>/gi, (match) => {
+    rawHtmlBlocks.push(match);
+    return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
+  });
+
+  // 4. HTML details / accordions
   html = html.replace(/<details[^>]*>[\s\S]*?<\/details>/gi, (match) => {
     rawHtmlBlocks.push(match);
     return `\n\n___RAW_HTML_BLOCK_${rawHtmlBlocks.length - 1}___\n\n`;
@@ -487,13 +501,34 @@ export async function getBlogPostBySlug(slug) {
     await dbConnect();
     await seedMarkdownToDB();
 
+    const filePath = path.join(BLOG_DIR, `${slug}.md`);
+    let diskContent = null;
+    let diskFrontmatter = null;
+    if (fs.existsSync(filePath)) {
+      try {
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+        const parsed = parseMarkdownFile(fileContent);
+        diskFrontmatter = parsed.frontmatter;
+        diskContent = parsed.content;
+      } catch (fsErr) {}
+    }
+
     const post = await BlogPost.findOne({ slug });
     if (post) {
-      const htmlContent = post.htmlContent || markdownToHtml(post.content);
+      // Check if DB content has leftover preview pane markers or corrupted code
+      const isDbCorrupted = post.content.includes("wp-block-preview-pane") || post.content.includes("___PROTECTED_RAW");
+      const activeContent = (isDbCorrupted && diskContent) ? diskContent : post.content;
+      const htmlContent = markdownToHtml(activeContent);
+
+      if (isDbCorrupted && diskContent) {
+        // Update DB with clean disk content
+        BlogPost.findOneAndUpdate({ slug }, { content: diskContent, htmlContent }).catch(() => {});
+      }
+
       return {
         slug: post.slug,
         frontmatter: {
-          title: post.title,
+          title: (isDbCorrupted && diskFrontmatter?.title) ? diskFrontmatter.title : post.title,
           description: post.description,
           date: post.date,
           focusKeyword: post.focusKeyword || "",
@@ -503,8 +538,9 @@ export async function getBlogPostBySlug(slug) {
           author: post.author || "Convert Galaxy Team",
           status: post.status || "Draft",
         },
-        content: post.content,
+        content: activeContent,
         htmlContent,
+        content_blocks: post.content_blocks || null,
       };
     }
   } catch (e) {
@@ -577,7 +613,7 @@ import { revalidatePath } from "next/cache";
 /**
  * Saves or updates blog post data to MongoDB and local disk storage.
  */
-export async function saveBlogPost(slug, { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content }) {
+export async function saveBlogPost(slug, { title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content, editorHtml, content_blocks }) {
   const cleanContent = sanitizeAndBalanceDivs(content || "");
   const htmlContent = markdownToHtml(cleanContent);
 
@@ -624,6 +660,8 @@ ${content || ""}`;
         status,
         content,
         htmlContent,
+        editorHtml: editorHtml || "",
+        content_blocks: content_blocks || null,
       },
       { upsert: true, new: true }
     );

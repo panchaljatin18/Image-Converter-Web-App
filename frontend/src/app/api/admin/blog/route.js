@@ -21,7 +21,7 @@ export async function POST(req) {
 
   try {
     const data = await req.json();
-    const { slug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content } = data;
+    const { slug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content, editorHtml, content_blocks } = data;
 
     if (!slug || !title) {
       return NextResponse.json({ success: false, error: "Slug and Title are required." }, { status: 400 });
@@ -40,6 +40,8 @@ export async function POST(req) {
       author: author || "Convert Galaxy Team",
       status: status || "Draft",
       content: content || "",
+      editorHtml: editorHtml || "",
+      content_blocks: content_blocks || null,
     });
 
     return NextResponse.json({ success: true, message: "Blog post created successfully." });

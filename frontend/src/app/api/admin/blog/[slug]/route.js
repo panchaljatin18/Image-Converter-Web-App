@@ -28,7 +28,7 @@ export async function PUT(req, { params }) {
   try {
     const { slug: oldSlug } = await params;
     const data = await req.json();
-    const { slug: newSlug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content } = data;
+    const { slug: newSlug, title, description, date, focusKeyword, relatedToolSlug, image, imageAlt, imageTitle, author, status, content, editorHtml, content_blocks } = data;
 
     const targetSlug = (newSlug && newSlug.trim()) ? newSlug.trim() : oldSlug;
 
@@ -53,6 +53,8 @@ export async function PUT(req, { params }) {
       author: author || "Convert Galaxy Team",
       status: status || "Draft",
       content: content || "",
+      editorHtml: editorHtml || "",
+      content_blocks: content_blocks || null,
     });
 
     return NextResponse.json({ success: true, message: "Blog post updated successfully.", slug: targetSlug });

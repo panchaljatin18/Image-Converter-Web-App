@@ -88,16 +88,16 @@ export default async function BlogPostPage({ params }) {
         </Link>
 
         {/* Article Header */}
-        <header className="max-w-[800px] mx-auto text-left mb-10">
-          <span className="inline-block py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-4">
+        <header className="max-w-[820px] mx-auto text-left mb-6 sm:mb-10">
+          <span className="inline-block py-1 px-3 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3 sm:mb-4">
             Guide
           </span>
-          <h1 className="font-['Outfit'] font-black text-3xl md:text-5xl text-[#f8fafc] leading-tight tracking-tight mb-6">
+          <h1 className="font-['Outfit'] font-black text-[clamp(1.65rem,4.2vw,3rem)] leading-[1.2] tracking-tight text-[#f8fafc] mb-4 sm:mb-6">
             {post.frontmatter.title}
           </h1>
-          <div className="flex items-center gap-5 text-sm text-[#cbd5e1] border-y border-white/6 py-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-xs sm:text-sm text-[#cbd5e1] border-y border-white/6 py-3 sm:py-4">
             <div className="flex items-center gap-1.5">
-              <Calendar size={15} className="text-indigo-400" />
+              <Calendar size={14} className="text-indigo-400 shrink-0" />
               {post.frontmatter.date}
             </div>
             <a
@@ -105,7 +105,7 @@ export default async function BlogPostPage({ params }) {
               className="flex items-center gap-1.5 text-[#cbd5e1] hover:text-indigo-300 transition-colors duration-200 no-underline cursor-pointer group"
               title="Jump to Author Bio"
             >
-              <User size={15} className="text-indigo-400 group-hover:scale-110 transition-transform" />
+              <User size={14} className="text-indigo-400 group-hover:scale-110 transition-transform shrink-0" />
               <span className="hover:underline underline-offset-4 decoration-indigo-400 font-medium">
                 {post.frontmatter.author || "ConvertGalaxy Team"}
               </span>
@@ -115,7 +115,7 @@ export default async function BlogPostPage({ params }) {
 
         {/* Featured Image */}
         {post.frontmatter.image && (
-          <div className="max-w-[850px] mx-auto mb-12 rounded-[28px] overflow-hidden border border-white/8 bg-black/40 shadow-2xl relative aspect-[16/9]">
+          <div className="max-w-[850px] mx-auto mb-8 sm:mb-12 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/8 bg-black/40 shadow-2xl relative aspect-[16/9] w-full">
             <Image
               src={post.frontmatter.image}
               alt={post.frontmatter.imageAlt || post.frontmatter.title}
@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params }) {
         )}
 
         {/* Main Article Body */}
-        <article className="max-w-[760px] mx-auto text-left">
+        <article className="max-w-[780px] mx-auto text-left px-1 sm:px-0">
           <div
             className="prose prose-invert prose-indigo max-w-none text-left"
             dangerouslySetInnerHTML={{ __html: post.htmlContent }}

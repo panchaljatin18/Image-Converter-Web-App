@@ -169,16 +169,18 @@ body::-webkit-scrollbar {
   line-height: 1.6 !important;
 }
 
-/* ─── Blog Article Content (.prose & .prose-invert) Dark Typography ─── */
+/* ─── Blog Article Content (.prose & .prose-invert) Dark Typography & Fluid Scaler ─── */
 .prose {
   color: #cbd5e1;
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   line-height: 1.8;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .prose h1 {
   font-family: var(--font-outfit), sans-serif;
-  font-size: 2.25rem;
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
   font-weight: 900;
   color: #ffffff;
   margin-top: 2rem;
@@ -189,10 +191,10 @@ body::-webkit-scrollbar {
 
 .prose h2 {
   font-family: var(--font-outfit), sans-serif;
-  font-size: 1.75rem;
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
   font-weight: 800;
   color: #f8fafc;
-  margin-top: 2.5rem;
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
   margin-bottom: 1rem;
   line-height: 1.35;
   padding-bottom: 0.6rem;
@@ -202,17 +204,17 @@ body::-webkit-scrollbar {
 
 .prose h3 {
   font-family: var(--font-outfit), sans-serif;
-  font-size: 1.35rem;
+  font-size: clamp(1.15rem, 2.2vw, 1.35rem);
   font-weight: 700;
   color: #e2e8f0;
-  margin-top: 2rem;
+  margin-top: clamp(1.25rem, 2.5vw, 2rem);
   margin-bottom: 0.85rem;
   line-height: 1.4;
 }
 
 .prose h4 {
   font-family: var(--font-outfit), sans-serif;
-  font-size: 1.15rem;
+  font-size: clamp(1.02rem, 1.8vw, 1.15rem);
   font-weight: 700;
   color: #cbd5e1;
   margin-top: 1.5rem;
@@ -357,12 +359,19 @@ body::-webkit-scrollbar {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  margin: 2rem 0;
+  margin: 1.75rem 0;
   background-color: #12121e;
   border-radius: 0.875rem;
-  overflow: hidden;
+  overflow-x: auto;
+  display: block;
   border: 1px solid rgba(99, 102, 241, 0.25);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+  .prose table {
+    display: table;
+  }
 }
 
 .prose th {
