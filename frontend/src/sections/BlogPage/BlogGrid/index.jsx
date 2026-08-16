@@ -8,18 +8,50 @@ import { ArrowRight, Search, BookOpen } from "lucide-react";
 import Container from "@/components/Container";
 import Button from "@/components/Button";
 
-const getPostCategory = (relatedToolSlug) => {
-  const convTools = ["heic-to-jpg", "jpg-to-png", "png-to-jpg", "webp-to-jpg", "webp-converter", "image-to-pdf", "pdf-to-image"];
-  const optTools = ["image-compressor"];
-  const cropTools = ["crop-image", "image-resizer"];
-  
-  if (convTools.includes(relatedToolSlug)) return "Image Conversion";
-  if (optTools.includes(relatedToolSlug)) return "Image Optimization";
-  if (cropTools.includes(relatedToolSlug)) return "Crop & Resize";
-  return "General";
-};
+const getPostCategory = (post) => {
+  const toolSlug = (post?.frontmatter?.relatedToolSlug || "").toLowerCase();
+  const slug = (post?.slug || "").toLowerCase();
+  const title = (post?.frontmatter?.title || "").toLowerCase();
+  const tags = (post?.frontmatter?.tags || "").toLowerCase();
+  const focusKeyword = (post?.frontmatter?.focusKeyword || "").toLowerCase();
 
-const categories = ["All Guides", "Image Conversion", "Image Optimization", "Crop & Resize"];
+  const combined = `${toolSlug} ${slug} ${title} ${tags} ${focusKeyword}`;
+
+  if (
+    combined.includes("compress") ||
+    combined.includes("optimiz") ||
+    combined.includes("speed") ||
+    combined.includes("vitals") ||
+    combined.includes("quality")
+  ) {
+    return "Image Optimization";
+  }
+
+  if (
+    combined.includes("crop") ||
+    combined.includes("resize") ||
+    combined.includes("resizer") ||
+    combined.includes("dimension") ||
+    combined.includes("scale")
+  ) {
+    return "Crop & Resize";
+  }
+
+  if (
+    combined.includes("convert") ||
+    combined.includes("heic") ||
+    combined.includes("jpg") ||
+    combined.includes("png") ||
+    combined.includes("webp") ||
+    combined.includes("pdf") ||
+    combined.includes("avif") ||
+    combined.includes("format")
+  ) {
+    return "Image Conversion";
+  }
+
+  return "Image Conversion";
+};
 
 export default function BlogGrid({ initialPosts = [] }) {
   const searchParams = useSearchParams();
@@ -34,19 +66,35 @@ export default function BlogGrid({ initialPosts = [] }) {
   }, [query]);
 
   const postsList = useMemo(() => {
-    return (initialPosts || []).map(post => ({
+    return (initialPosts || []).map((post) => ({
       ...post,
-      category: getPostCategory(post.frontmatter.relatedToolSlug)
+      category: getPostCategory(post),
     }));
   }, [initialPosts]);
+
+  const categoriesList = useMemo(() => {
+    const defaultCats = ["All Guides", "Image Conversion", "Image Optimization", "Crop & Resize"];
+    const foundCats = new Set(defaultCats);
+    postsList.forEach((p) => {
+      if (p.category && p.category !== "General") foundCats.add(p.category);
+    });
+    return Array.from(foundCats);
+  }, [postsList]);
 
   const filteredPosts = useMemo(() => {
     return postsList.filter((post) => {
       const matchesCategory = selectedCategory === "All Guides" || post.category === selectedCategory;
+      const titleText = (post.frontmatter?.title || "").toLowerCase();
+      const descText = (post.frontmatter?.description || "").toLowerCase();
+      const contentText = (post.content || "").toLowerCase();
+      const queryText = searchQuery.toLowerCase().trim();
+
       const matchesSearch =
-        post.frontmatter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.frontmatter.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.content.toLowerCase().includes(searchQuery.toLowerCase());
+        !queryText ||
+        titleText.includes(queryText) ||
+        descText.includes(queryText) ||
+        contentText.includes(queryText);
+
       return matchesCategory && matchesSearch;
     });
   }, [postsList, selectedCategory, searchQuery]);
@@ -69,7 +117,7 @@ export default function BlogGrid({ initialPosts = [] }) {
           </div>
 
           <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((cat) => (
+            {categoriesList.map((cat) => (
               <button
                 key={cat}
                 type="button"

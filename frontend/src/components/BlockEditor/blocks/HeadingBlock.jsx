@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function HeadingBlock({ attributes, onChange, isSelected }) {
+function HeadingBlock({ attributes, onChange, isSelected }) {
   const { content = "", level = 2, align = "left", anchor = "", textColor = "#ffffff" } = attributes;
 
   const headingClasses = {
@@ -28,3 +28,5 @@ export default function HeadingBlock({ attributes, onChange, isSelected }) {
     </div>
   );
 }
+
+export default React.memo(HeadingBlock);

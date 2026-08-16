@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ParagraphBlock({ attributes, onChange, isSelected }) {
+function ParagraphBlock({ attributes, onChange, isSelected }) {
   const { content = "", fontSize = "normal", align = "left", textColor = "#ffffff" } = attributes;
 
   const fontSizes = {
@@ -24,3 +24,5 @@ export default function ParagraphBlock({ attributes, onChange, isSelected }) {
     </div>
   );
 }
+
+export default React.memo(ParagraphBlock);

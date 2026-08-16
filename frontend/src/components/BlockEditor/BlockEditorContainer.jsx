@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Plus,
   Layers,
@@ -77,6 +78,11 @@ export default function BlockEditorContainer({
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [deviceMode, setDeviceMode] = useState("desktop"); // desktop, tablet, mobile
   const [insertIndex, setInsertIndex] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Slash Command Menu
   const [showSlashMenu, setShowSlashMenu] = useState(false);
@@ -280,103 +286,127 @@ export default function BlockEditorContainer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [blocks, selectedBlockId, historyIndex, history, onSave, postStatus, showShortcutsModal, isInserterOpen, isOutlineOpen]);
 
-  // Update blocks with history tracking
-  const updateBlocks = (newBlocks) => {
+  // Update blocks with history tracking (limit history stack size to 50 for memory optimization)
+  const updateBlocks = React.useCallback((newBlocks) => {
     setBlocks(newBlocks);
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(newBlocks);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  };
+    setHistory((prevHistory) => {
+      const sliced = prevHistory.slice(0, historyIndex + 1);
+      if (sliced.length >= 50) sliced.shift();
+      return [...sliced, newBlocks];
+    });
+    setHistoryIndex((prevIndex) => Math.min(prevIndex + 1, 49));
+  }, [historyIndex]);
 
-  const handleUndo = () => {
+  const handleUndo = React.useCallback(() => {
     if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
+      setHistoryIndex((prev) => prev - 1);
       setBlocks(history[historyIndex - 1]);
     }
-  };
+  }, [history, historyIndex]);
 
-  const handleRedo = () => {
+  const handleRedo = React.useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
+      setHistoryIndex((prev) => prev + 1);
       setBlocks(history[historyIndex + 1]);
     }
-  };
+  }, [history, historyIndex]);
 
   // Add block at specific index or at the end
-  const handleAddBlock = (type, targetIdx = null) => {
+  const handleAddBlock = React.useCallback((type, targetIdx = null) => {
     const newBlock = createBlock(type);
-    const idx = targetIdx !== null ? targetIdx : blocks.length;
-    const updated = [...blocks];
-    updated.splice(idx, 0, newBlock);
-    updateBlocks(updated);
+    setBlocks((prevBlocks) => {
+      const idx = targetIdx !== null ? targetIdx : prevBlocks.length;
+      const updated = [...prevBlocks];
+      updated.splice(idx, 0, newBlock);
+      updateBlocks(updated);
+      return updated;
+    });
     setSelectedBlockId(newBlock.id);
-  };
+  }, [updateBlocks]);
 
-  const handleUpdateBlockAttributes = (blockId, newAttributes, newChildren = null) => {
-    const updated = blocks.map((b) => {
-      if (b.id === blockId) {
-        return {
-          ...b,
-          attributes: { ...b.attributes, ...newAttributes },
-          ...(newChildren ? { children: newChildren } : {}),
-        };
-      }
-      return b;
+  const handleUpdateBlockAttributes = React.useCallback((blockId, newAttributes, newChildren = null) => {
+    setBlocks((prevBlocks) => {
+      const updated = prevBlocks.map((b) => {
+        if (b.id === blockId) {
+          return {
+            ...b,
+            attributes: { ...b.attributes, ...newAttributes },
+            ...(newChildren ? { children: newChildren } : {}),
+          };
+        }
+        return b;
+      });
+      updateBlocks(updated);
+      return updated;
     });
-    updateBlocks(updated);
-  };
+  }, [updateBlocks]);
 
-  const handleMoveUp = (index) => {
+  const handleMoveUp = React.useCallback((index) => {
     if (index <= 0) return;
-    const updated = [...blocks];
-    const temp = updated[index - 1];
-    updated[index - 1] = updated[index];
-    updated[index] = temp;
-    updateBlocks(updated);
-  };
-
-  const handleMoveDown = (index) => {
-    if (index >= blocks.length - 1) return;
-    const updated = [...blocks];
-    const temp = updated[index + 1];
-    updated[index + 1] = updated[index];
-    updated[index] = temp;
-    updateBlocks(updated);
-  };
-
-  const handleDuplicateBlock = (index) => {
-    const targetBlock = blocks[index];
-    if (!targetBlock) return;
-    const duplicated = {
-      ...JSON.parse(JSON.stringify(targetBlock)),
-      id: "block_" + Math.random().toString(36).substring(2, 9),
-    };
-    const updated = [...blocks];
-    updated.splice(index + 1, 0, duplicated);
-    updateBlocks(updated);
-    setSelectedBlockId(duplicated.id);
-  };
-
-  const handleDeleteBlock = (blockId) => {
-    if (blocks.length <= 1) {
-      updateBlocks([createBlock("paragraph", { content: "" })]);
-      return;
-    }
-    const updated = blocks.filter((b) => b.id !== blockId);
-    updateBlocks(updated);
-    setSelectedBlockId(null);
-  };
-
-  const handleChangeBlockType = (blockId, newType, extraAttrs = {}) => {
-    const updated = blocks.map((b) => {
-      if (b.id === blockId) {
-        return createBlock(newType, { ...b.attributes, ...extraAttrs });
-      }
-      return b;
+    setBlocks((prevBlocks) => {
+      const updated = [...prevBlocks];
+      const temp = updated[index - 1];
+      updated[index - 1] = updated[index];
+      updated[index] = temp;
+      updateBlocks(updated);
+      return updated;
     });
-    updateBlocks(updated);
-  };
+  }, [updateBlocks]);
+
+  const handleMoveDown = React.useCallback((index) => {
+    setBlocks((prevBlocks) => {
+      if (index >= prevBlocks.length - 1) return prevBlocks;
+      const updated = [...prevBlocks];
+      const temp = updated[index + 1];
+      updated[index + 1] = updated[index];
+      updated[index] = temp;
+      updateBlocks(updated);
+      return updated;
+    });
+  }, [updateBlocks]);
+
+  const handleDuplicateBlock = React.useCallback((index) => {
+    setBlocks((prevBlocks) => {
+      const targetBlock = prevBlocks[index];
+      if (!targetBlock) return prevBlocks;
+      const duplicated = {
+        ...JSON.parse(JSON.stringify(targetBlock)),
+        id: "block_" + Math.random().toString(36).substring(2, 9),
+      };
+      const updated = [...prevBlocks];
+      updated.splice(index + 1, 0, duplicated);
+      updateBlocks(updated);
+      setSelectedBlockId(duplicated.id);
+      return updated;
+    });
+  }, [updateBlocks]);
+
+  const handleDeleteBlock = React.useCallback((blockId) => {
+    setBlocks((prevBlocks) => {
+      if (prevBlocks.length <= 1) {
+        const fallback = [createBlock("paragraph", { content: "" })];
+        updateBlocks(fallback);
+        return fallback;
+      }
+      const updated = prevBlocks.filter((b) => b.id !== blockId);
+      updateBlocks(updated);
+      return updated;
+    });
+    setSelectedBlockId(null);
+  }, [updateBlocks]);
+
+  const handleChangeBlockType = React.useCallback((blockId, newType, extraAttrs = {}) => {
+    setBlocks((prevBlocks) => {
+      const updated = prevBlocks.map((b) => {
+        if (b.id === blockId) {
+          return createBlock(newType, { ...b.attributes, ...extraAttrs });
+        }
+        return b;
+      });
+      updateBlocks(updated);
+      return updated;
+    });
+  }, [updateBlocks]);
 
   // Render individual block component
   const renderBlock = (block, index) => {
@@ -680,115 +710,123 @@ export default function BlockEditorContainer({
       />
 
       {/* Keyboard Shortcuts Help Modal */}
-      {showShortcutsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-[#141424] border border-indigo-500/30 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2.5 text-indigo-400 font-bold text-base">
-                <Keyboard size={20} />
-                <span>WordPress Gutenberg Keyboard Shortcuts</span>
+      {showShortcutsModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[999999] overflow-y-auto bg-black/85 backdrop-blur-md flex justify-center items-start pt-20 sm:pt-24 pb-8 px-3 sm:px-4 animate-in fade-in duration-200">
+          <div className="relative bg-[#141424] border border-indigo-500/40 rounded-2xl max-w-2xl w-full shadow-2xl flex flex-col max-h-[calc(100vh-120px)] overflow-hidden my-auto sm:my-0">
+            {/* Modal Header */}
+            <div className="w-full flex items-center justify-between border-b border-white/12 px-5 sm:px-6 py-4 shrink-0 bg-[#18182b] z-20">
+              <div className="flex items-center gap-3 text-indigo-400 font-bold text-sm sm:text-base">
+                <div className="w-8.5 h-8.5 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                  <Keyboard size={18} />
+                </div>
+                <span className="text-white font-['Outfit'] font-bold text-sm sm:text-base tracking-tight">
+                  WordPress Gutenberg Keyboard Shortcuts
+                </span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowShortcutsModal(false)}
-                className="text-gray-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer shrink-0"
+                title="Close Modal (Esc)"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-4 text-xs text-gray-300">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 text-xs text-gray-300">
               {/* Block Controls */}
               <div>
-                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">Block Navigation & Editing</h4>
+                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2.5">Block Navigation & Editing</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Remove / Delete Selected Block</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Shift + Alt + Z / Del</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Remove / Delete Selected Block</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Shift + Alt + Z / Del</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Duplicate Block</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Shift + D</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Duplicate Block</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Shift + D</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Insert Block BEFORE</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + T</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Insert Block BEFORE</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + T</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Insert Block AFTER</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + Y</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Insert Block AFTER</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + Y</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Move Block Up / Down</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Shift + ↑ / ↓</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Move Block Up / Down</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Shift + ↑ / ↓</span>
                   </div>
                 </div>
               </div>
 
               {/* Heading & Block Transformations */}
               <div>
-                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">Heading Levels & Block Transformations</h4>
+                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2.5">Heading Levels & Block Transformations</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to Heading 1 .. 6</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + 1 ... 6</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to Heading 1 .. 6</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + 1 ... 6</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to Paragraph</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + P</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to Paragraph</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + P</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to Code Block</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + C</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to Code Block</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + C</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to Quote Block</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + Q</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to Quote Block</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + Q</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to List Block</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + U</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to List Block</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + U</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Convert to Custom HTML</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Alt + K</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Convert to Custom HTML</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Alt + K</span>
                   </div>
                 </div>
               </div>
 
               {/* Global Editor Controls */}
               <div>
-                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">Editor Controls & Navigation</h4>
+                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2.5">Editor Controls & Navigation</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Save Post / Draft</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + S</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Save Post / Draft</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + S</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Undo / Redo</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Z / Ctrl + Y</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Undo / Redo</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Z / Ctrl + Y</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Toggle List View Outline</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Ctrl + Shift + Alt + O</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Toggle List View Outline</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Ctrl + Shift + Alt + O</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Open Shortcuts Help</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Shift + Alt + H / Ctrl + Shift + ?</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Open Shortcuts Help</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Shift + Alt + H / Ctrl + Shift + ?</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Slash Block Inserter</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Type / in Paragraph</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Slash Block Inserter</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Type / in Paragraph</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#090912] border border-white/5">
-                    <span className="font-semibold text-white">Deselect / Close Modals</span>
-                    <span className="bg-indigo-600/30 text-indigo-200 px-2 py-1 rounded font-mono font-bold border border-indigo-500/30">Escape</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Deselect / Close Modals</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Escape</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 text-right border-t border-white/10">
+            {/* Modal Footer */}
+            <div className="px-4 sm:px-6 py-3.5 border-t border-white/10 text-right shrink-0 bg-[#141424]">
               <button
                 type="button"
                 onClick={() => setShowShortcutsModal(false)}
@@ -798,7 +836,8 @@ export default function BlockEditorContainer({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

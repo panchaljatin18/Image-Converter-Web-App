@@ -10,10 +10,13 @@ export default function BlogAdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Load posts
-  const fetchPosts = () => {
+  // Load posts with AbortController for clean teardown
+  const fetchPosts = React.useCallback(() => {
+    const controller = new AbortController();
     setLoading(true);
-    fetch("/api/admin/blog")
+    setErrorMsg("");
+
+    fetch("/api/admin/blog", { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.posts) {
@@ -23,39 +26,48 @@ export default function BlogAdminDashboard() {
         }
       })
       .catch((err) => {
-        setErrorMsg("Error fetching blog posts from server.");
-        console.error(err);
+        if (err.name !== "AbortError") {
+          setErrorMsg("Error fetching blog posts from server.");
+          console.error(err);
+        }
       })
       .finally(() => setLoading(false));
-  };
 
-  const handleDeleteClick = async (slug, title) => {
+    return () => controller.abort();
+  }, []);
+
+  const handleDeleteClick = React.useCallback(async (slug, title) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      // Optimistic state update
+      setPosts((prev) => prev.filter((p) => p.slug !== slug));
+
       try {
         const res = await fetch(`/api/admin/blog/${slug}`, { method: "DELETE" });
         const data = await res.json();
-        if (data.success) {
-          fetchPosts(); // Reload posts
-        } else {
+        if (!data.success) {
           alert(data.error || "Failed to delete post.");
+          fetchPosts(); // Rollback if server fails
         }
       } catch (err) {
         alert("Error deleting post from server.");
+        fetchPosts(); // Rollback
       }
     }
-  };
+  }, [fetchPosts]);
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const cleanup = fetchPosts();
+    return () => cleanup && cleanup();
+  }, [fetchPosts]);
 
-  // Filter posts
+  // Filter posts efficiently
   const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const query = searchQuery.toLowerCase().trim();
     return posts.filter((post) => {
-      const title = post.frontmatter.title || "";
-      const slug = post.slug || "";
-      const query = searchQuery.toLowerCase();
-      return title.toLowerCase().includes(query) || slug.toLowerCase().includes(query);
+      const title = (post.frontmatter?.title || "").toLowerCase();
+      const slug = (post.slug || "").toLowerCase();
+      return title.includes(query) || slug.includes(query);
     });
   }, [posts, searchQuery]);
 
