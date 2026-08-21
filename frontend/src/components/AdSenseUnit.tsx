@@ -53,11 +53,19 @@ export default function AdSenseUnit({
       }
     };
 
+    const deferLoad = () => {
+      if ("requestIdleCallback" in window) {
+        (window as any).requestIdleCallback(() => loadAdSenseScriptAndPush(), { timeout: 2500 });
+      } else {
+        setTimeout(loadAdSenseScriptAndPush, 1000);
+      }
+    };
+
     if ("IntersectionObserver" in window) {
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            loadAdSenseScriptAndPush();
+            deferLoad();
             observer.disconnect();
           }
         },
@@ -66,7 +74,7 @@ export default function AdSenseUnit({
       observer.observe(el);
       return () => observer.disconnect();
     } else {
-      const timer = setTimeout(loadAdSenseScriptAndPush, 4000);
+      const timer = setTimeout(deferLoad, 4000);
       return () => clearTimeout(timer);
     }
   }, []);

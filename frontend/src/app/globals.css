@@ -8,6 +8,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-outfit), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* ─── High-Fidelity Crisp Image Rendering ────────────────────── */
+img, picture, canvas, svg {
+  image-rendering: -webkit-optimize-contrast;
+  shape-rendering: geometricPrecision;
+}
+
 /* ─── Hide main page scrollbar only ─────────────────────────────── */
 html, body {
   scrollbar-width: none;        /* Firefox */

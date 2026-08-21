@@ -125,10 +125,11 @@ export default function Footer() {
               <Image
                 src="/CG.webp"
                 alt="Converter Galaxy Logo"
-                width={180}
-                height={65}
+                width={400}
+                height={140}
+                quality={100}
+                unoptimized
                 loading="lazy"
-                style={{ width: "auto", height: "auto" }}
                 className="h-[65px] md:h-[85px] w-auto object-contain"
               />
             </Link>

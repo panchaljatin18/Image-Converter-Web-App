@@ -1176,7 +1176,7 @@ export default function Hero() {
   }, [clearOutputUrl]);
 
   return (
-    <section className="relative min-h-screen flex items-start md:items-center pt-[96px] pb-[36px] sm:pt-[108px] sm:pb-[43px] md:pt-[118px] md:pb-[50px] lg:pt-[128px] lg:pb-[57px] xl:pt-[138px] xl:pb-[90px] 2xl:pt-[148px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
+    <section className="relative min-h-screen flex items-start md:items-center pt-[76px] pb-[36px] sm:pt-[80px] sm:pb-[43px] md:pt-[84px] md:pb-[50px] lg:pt-[88px] lg:pb-[57px] xl:pt-[92px] xl:pb-[70px] 2xl:pt-[96px] 2xl:pb-[72px] bg-gradient-to-br from-[#0f0f1a] via-[#121221] to-[#0f1729]">
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute inset-0 [background-image:linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_42%,transparent_80%)]" />

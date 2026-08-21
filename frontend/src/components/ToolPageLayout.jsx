@@ -42,7 +42,7 @@ export default async function ToolPageLayout({
   const relatedPosts = toolKey ? await getRelatedBlogPosts(toolKey) : [];
 
   return (
-    <div className="pt-20 min-h-screen">
+    <div className="pt-[64px] min-h-screen">
       {toolPath && toolCategory && (
         <SEO
           type="tool"
@@ -58,7 +58,7 @@ export default async function ToolPageLayout({
         />
       )}
       {/* Header */}
-      <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-12 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#0f0f1a] to-[#13131f] border-b border-white/6 py-8 md:py-10 relative overflow-hidden">
         {/* BG Glow */}
         <div
           className="absolute -top-[100px] -right-[100px] w-[400px] h-[400px] rounded-full pointer-events-none"
@@ -132,7 +132,7 @@ export default async function ToolPageLayout({
                   src={`/${toolKey}.webp`}
                   alt={`How to use ${title} tool guide`}
                   className="w-full h-auto object-cover aspect-[16/9]"
-                  loading="eager"
+                  loading="lazy"
                 />
               </div>
             )}

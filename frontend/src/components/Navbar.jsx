@@ -23,48 +23,56 @@ import Button from "./Button";
 const tools = [
   {
     name: "JPG to PNG",
+    desc: "Convert JPG to transparent PNG",
     href: "/tools/jpg-to-png",
     icon: <RefreshCw size={16} />,
     color: "#6366f1",
   },
   {
     name: "PNG to JPG",
+    desc: "Convert PNG to compressed JPG",
     href: "/tools/png-to-jpg",
     icon: <RefreshCw size={16} />,
     color: "#06b6d4",
   },
   {
     name: "WebP Converter",
+    desc: "Convert to & from WebP format",
     href: "/tools/webp-converter",
     icon: <FileImage size={16} />,
     color: "#f59e0b",
   },
   {
     name: "Image Compressor",
+    desc: "Reduce size without quality loss",
     href: "/tools/image-compressor",
     icon: <Minimize2 size={16} />,
     color: "#10b981",
   },
   {
     name: "Image Resizer",
+    desc: "Change pixel dimensions easily",
     href: "/tools/image-resizer",
     icon: <Zap size={16} />,
     color: "#8b5cf6",
   },
   {
     name: "Crop Image",
+    desc: "Crop & trim image boundaries",
     href: "/tools/crop-image",
     icon: <Crop size={16} />,
     color: "#ef4444",
   },
   {
     name: "Image to PDF",
+    desc: "Combine images into a PDF document",
     href: "/tools/image-to-pdf",
     icon: <FileText size={16} />,
     color: "#f97316",
   },
   {
     name: "PDF to Image",
+    desc: "Extract PDF pages as high-res images",
     href: "/tools/pdf-to-image",
     icon: <FileText size={16} />,
     color: "#ec4899",
@@ -87,9 +95,21 @@ export default function Navbar() {
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const desktopDropdownRef = useRef(null);
+  const hoverTimeoutRef = useRef(null);
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isAuthRoute = authRoutes.has(pathname);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setDropdownOpen(false);
+    }, 150);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -152,29 +172,17 @@ export default function Navbar() {
           }`}
       >
         <Container className="flex items-center justify-between gap-6">
-          {/* Logo - Desktop */}
-          <Link href="/" className="logo-nav-desktop no-underline">
+          {/* Logo */}
+          <Link href="/" className="flex items-center no-underline -ml-2 md:-ml-4">
             <Image
               src="/CG.webp"
               alt="Converter Galaxy Logo"
-              width={200}
-              height={50}
+              width={400}
+              height={110}
+              quality={100}
+              unoptimized
               priority
-              style={{ width: "auto", height: "auto" }}
-              className="h-auto w-auto object-contain"
-            />
-          </Link>
-
-          {/* Logo - Mobile */}
-          <Link href="/" className="logo-nav-mobile no-underline">
-            <Image
-              src="/CG.webp"
-              alt="Converter Galaxy Logo"
-              width={160}
-              height={40}
-              priority
-              style={{ width: "auto", height: "auto" }}
-              className="h-auto w-auto object-contain"
+              className="h-[34px] md:h-[45px] w-auto object-contain"
             />
           </Link>
 
@@ -186,8 +194,8 @@ export default function Navbar() {
                   key={link.name}
                   ref={desktopDropdownRef}
                   className="relative"
-                  onMouseEnter={() => setDropdownOpen(true)}
-                  onMouseLeave={() => setDropdownOpen(false)}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 >
                   <button
                     type="button"
@@ -209,33 +217,54 @@ export default function Navbar() {
 
                   {/* Dropdown */}
                   <div
-                    className={`absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-[#13131f]/98 backdrop-blur-[20px] border border-indigo-500/20 rounded-2xl p-3 w-[520px] grid grid-cols-2 gap-1 shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.1)] z-[1001] transition-all duration-200 origin-top ${
+                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[540px] z-[9999] transition-all duration-200 origin-top ${
                       dropdownOpen
                         ? "opacity-100 visible translate-y-0 scale-100 pointer-events-auto"
                         : "opacity-0 invisible translate-y-2 scale-95 pointer-events-none"
                     }`}
                   >
-                    {tools.map((tool) => (
-                      <Link
-                        key={tool.href}
-                        href={tool.href}
-                        onClick={() => setDropdownOpen(false)}
-                        aria-label={`Open ${tool.name}`}
-                        className="flex items-center gap-2.5 p-2.5 rounded-lg no-underline text-[#cbd5e1] text-[0.875rem] font-medium transition-all duration-200 hover:bg-indigo-500/10 hover:text-white"
-                      >
-                        <span
-                          className="w-7 h-7 rounded-[7px] flex items-center justify-center shrink-0 border"
-                          style={{
-                            background: `${tool.color}22`,
-                            borderColor: `${tool.color}44`,
-                            color: tool.color,
-                          }}
+                    <div className="bg-[#121220] border border-indigo-500/30 rounded-2xl p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.95),0_0_0_1px_rgba(99,102,241,0.2)]">
+                      <div className="flex items-center justify-between px-2 pb-2.5 mb-2 border-b border-white/6 text-[0.7rem] text-[#94a3b8] font-bold tracking-wider uppercase">
+                        <span>Online Image Tools</span>
+                        <Link
+                          href="/tools"
+                          onClick={() => setDropdownOpen(false)}
+                          className="text-indigo-400 hover:text-indigo-300 transition-colors normal-case font-medium text-[0.75rem] no-underline"
                         >
-                          {tool.icon}
-                        </span>
-                        {tool.name}
-                      </Link>
-                    ))}
+                          View all →
+                        </Link>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {tools.map((tool) => (
+                          <Link
+                            key={tool.href}
+                            href={tool.href}
+                            onClick={() => setDropdownOpen(false)}
+                            aria-label={`Open ${tool.name}`}
+                            className="flex items-center gap-3 p-2.5 rounded-xl no-underline text-[#cbd5e1] border border-transparent hover:border-indigo-500/20 hover:bg-indigo-500/10 hover:text-white transition-all duration-150 group"
+                          >
+                            <span
+                              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                              style={{
+                                background: `${tool.color}18`,
+                                borderColor: `${tool.color}35`,
+                                color: tool.color,
+                              }}
+                            >
+                              {tool.icon}
+                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold text-[0.85rem] text-[#f8fafc] group-hover:text-indigo-300 transition-colors truncate">
+                                {tool.name}
+                              </span>
+                              <span className="text-[0.725rem] text-[#94a3b8] truncate">
+                                {tool.desc}
+                              </span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (

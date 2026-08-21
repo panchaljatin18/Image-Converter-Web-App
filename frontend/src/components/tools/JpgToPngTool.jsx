@@ -7,8 +7,6 @@ import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
 
-import imageCompression from "browser-image-compression";
-
 export default function JpgToPngTool() {
   const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
   const [file, setFile] = useState(null);

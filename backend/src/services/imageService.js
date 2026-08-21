@@ -33,7 +33,7 @@ const imageService = {
    * Convert image to a target format.
    * Supports JPG, PNG, WEBP, AVIF, etc.
    */
-  async convertFormat(inputPath, originalName, targetFormat, quality = 85, bgColor = null) {
+  async convertFormat(inputPath, originalName, targetFormat, quality = 90, bgColor = null) {
     const ext = targetFormat.toLowerCase();
     const { filename, fullPath } = buildOutputPath(DOWNLOADS_DIR, originalName, ext);
     const q = Math.min(Math.max(Math.round(quality), 1), 100);

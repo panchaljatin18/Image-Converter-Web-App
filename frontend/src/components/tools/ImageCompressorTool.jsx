@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import imageCompression from "browser-image-compression";
 import { Download, RefreshCw, CheckCircle, Sliders, Zap } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";

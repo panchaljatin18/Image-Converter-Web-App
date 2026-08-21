@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -74,6 +73,7 @@ export default function ImageToPdfTool() {
     setProgress(5);
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const pdfDoc = await PDFDocument.create();
       let [pgW, pgH] = PAGE_SIZES[pageSize];
       if (orientation === "landscape") [pgW, pgH] = [pgH, pgW];

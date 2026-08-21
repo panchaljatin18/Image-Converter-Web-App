@@ -7,8 +7,6 @@ import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
 
-import imageCompression from "browser-image-compression";
-
 const OUTPUT_FORMATS = [
   { value: "webp", label: "To WebP", mime: "image/webp", ext: ".webp" },
   { value: "png", label: "WebP → PNG", mime: "image/png", ext: ".png" },
