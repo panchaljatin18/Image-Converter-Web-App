@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }) {
             >
               <User size={14} className="text-indigo-400 group-hover:scale-110 transition-transform shrink-0" />
               <span className="hover:underline underline-offset-4 decoration-indigo-400 font-medium">
-                {post.frontmatter.author || "ConvertGalaxy Team"}
+                {post.frontmatter.author || "Jatin Panchal"}
               </span>
             </a>
           </div>
@@ -221,12 +221,18 @@ export default async function BlogPostPage({ params }) {
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-[#9494a3] leading-relaxed max-w-[540px] mb-5 font-normal">
+                <p className="text-xs sm:text-sm text-[#9494a3] leading-relaxed max-w-[540px] mb-4 font-normal">
                   I&apos;m a web developer and the founder of Convertgalaxy.com, dedicated to clean code and practical
                   problem-solving. I write hands-on tutorials derived directly from real-world projects, breaking down
-                  complex topics into actionable insights. I share what I learn so other developers can learn faster
-                  and grow together.
+                  complex topics into actionable insights.
                 </p>
+
+                <Link
+                  href="/author/jatin-panchal"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors mb-5 no-underline"
+                >
+                  View Full Author Profile & Articles <ArrowRight size={13} />
+                </Link>
 
                 {/* Social Links Row */}
                 <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-white/5">

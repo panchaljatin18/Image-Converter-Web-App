@@ -11,6 +11,73 @@ export interface BreadcrumbItem {
 }
 
 /**
+ * Jatin Panchal Person Schema for Google E-E-A-T & Knowledge Panel Ranking
+ */
+export function getJatinPanchalPersonSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${SITE_URL}/author/jatin-panchal/#person`,
+    "name": "Jatin Panchal",
+    "givenName": "Jatin",
+    "familyName": "Panchal",
+    "url": `${SITE_URL}/author/jatin-panchal`,
+    "image": {
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/author.webp/#image`,
+      "url": `${SITE_URL}/author.webp`,
+      "caption": "Jatin Panchal - Founder & Web Developer at ConvertGalaxy"
+    },
+    "jobTitle": "Founder & Lead Web Developer",
+    "worksFor": {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      "name": "Convert Galaxy",
+      "url": SITE_URL
+    },
+    "sameAs": [
+      "https://github.com/panchaljatin18",
+      "https://www.linkedin.com/in/jatinpanchal08/",
+      "https://x.com/Panchaljatin123",
+      "https://convertgalaxy.com"
+    ],
+    "knowsAbout": [
+      "Web Development",
+      "Image Processing & Compression",
+      "PDF Conversion",
+      "Full-Stack Web Engineering",
+      "SEO & Performance Optimization"
+    ],
+    "description": "Jatin Panchal is a web developer and founder of ConvertGalaxy.com, specializing in high-performance browser-based tools, image processing, and full-stack web engineering."
+  };
+}
+
+/**
+ * Author Profile Page Schema (ProfilePage + Person)
+ */
+export function getAuthorProfileSchema() {
+  return [
+    getJatinPanchalPersonSchema(),
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "@id": `${SITE_URL}/author/jatin-panchal/#profilepage`,
+      "url": `${SITE_URL}/author/jatin-panchal`,
+      "name": "Jatin Panchal - Author Profile",
+      "description": "Official author profile of Jatin Panchal, Founder & Lead Web Developer at ConvertGalaxy.",
+      "mainEntity": {
+        "@id": `${SITE_URL}/author/jatin-panchal/#person`
+      }
+    },
+    getBreadcrumbSchema([
+      { name: "Home", item: SITE_URL },
+      { name: "Authors", item: `${SITE_URL}/blog` },
+      { name: "Jatin Panchal", item: `${SITE_URL}/author/jatin-panchal` }
+    ])
+  ];
+}
+
+/**
  * Base Organization Schema
  */
 export function getOrganizationSchema() {
@@ -26,9 +93,13 @@ export function getOrganizationSchema() {
       "width": "512",
       "height": "512"
     },
+    "founder": {
+      "@id": `${SITE_URL}/author/jatin-panchal/#person`
+    },
     "sameAs": [
       "https://x.com/ConvertGalaxy",
-      "https://facebook.com/ConvertGalaxy"
+      "https://facebook.com/ConvertGalaxy",
+      "https://github.com/panchaljatin18"
     ],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -377,6 +448,27 @@ export function getBlogPostingSchema(post: {
   image?: string;
   authorName?: string;
 }) {
+  const isJatin = !post.authorName || post.authorName.toLowerCase().includes("jatin");
+  const authorSchema = isJatin
+    ? {
+        "@type": "Person",
+        "@id": `${SITE_URL}/author/jatin-panchal/#person`,
+        "name": "Jatin Panchal",
+        "url": `${SITE_URL}/author/jatin-panchal`,
+        "image": `${SITE_URL}/author.webp`,
+        "jobTitle": "Founder & Lead Web Developer",
+        "sameAs": [
+          "https://github.com/panchaljatin18",
+          "https://www.linkedin.com/in/jatinpanchal08/",
+          "https://x.com/Panchaljatin123"
+        ]
+      }
+    : {
+        "@type": "Person",
+        "name": post.authorName,
+        "url": SITE_URL
+      };
+
   return [
     {
       "@context": "https://schema.org",
@@ -387,11 +479,7 @@ export function getBlogPostingSchema(post: {
       "datePublished": post.datePublished,
       "dateModified": post.dateModified || post.datePublished,
       "url": post.url,
-      "author": {
-        "@type": "Person",
-        "name": post.authorName || "Convert Galaxy Team",
-        "url": SITE_URL
-      },
+      "author": authorSchema,
       "publisher": {
         "@id": `${SITE_URL}/#organization`
       }

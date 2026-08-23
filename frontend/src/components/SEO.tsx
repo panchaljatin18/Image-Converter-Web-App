@@ -8,12 +8,13 @@ import {
   getWebApplicationSchema,
   getBlogSchema,
   getBlogPostingSchema,
+  getAuthorProfileSchema,
   FAQItem,
   StepItem,
 } from "@/lib/schema";
 
 interface SEOProps {
-  type: "homepage" | "about" | "contact" | "faq" | "tool" | "blog" | "blogpost";
+  type: "homepage" | "about" | "contact" | "faq" | "tool" | "blog" | "blogpost" | "author";
   tool?: {
     name: string;
     path: string;
@@ -64,6 +65,9 @@ export default function SEO({ type, tool, faqs, posts, post }: SEOProps) {
       break;
     case "blogpost":
       if (post) schemaData = getBlogPostingSchema(post);
+      break;
+    case "author":
+      schemaData = getAuthorProfileSchema();
       break;
     default:
       break;
