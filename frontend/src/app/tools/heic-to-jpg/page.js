@@ -1,22 +1,32 @@
 import ToolPageLayout from "@/components/ToolPageLayout"
-import HeicToJpgTool from "@/components/tools/HeicToJpgTool"
 import { constructMetadata } from "@/lib/metadata"
+import dynamic from "next/dynamic"
+
+const HeicToJpgTool = dynamic(() => import("@/components/tools/HeicToJpgTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+})
 
 export const metadata = constructMetadata({
-  title: "HEIC to JPG Converter Free – Convert iPhone Photos to JPG Online",
+  title: "Convert iPhone HEIC Photos to JPG Online (Private & Instant) – ConvertGalaxy",
   description:
-    "Convert iPhone HEIC & HEIF photos to JPG online free instantly. No app install, no signup, no watermark — 100% browser-based, private & secure conversion.",
+    "Convert iPhone HEIC & HEIF photos to JPG online instantly without cloud storage upload. Preserve camera EXIF metadata, original resolution, 100% private browser processing.",
   canonicalPath: "/tools/heic-to-jpg",
   ogImage: "https://www.convertgalaxy.com/heic-to-jpg.webp",
   keywords: [
+    "convert iphone heic photos to jpg without server upload",
+    "how to convert heic to jpg on windows pc without itunes",
+    "private heic to jpg converter local browser processing",
+    "batch convert iphone heic photos to jpg preserving exif data",
+    "convert heic camera uploads to jpg for online portal",
     "heic to jpg converter free",
     "convert heic to jpg online free",
-    "iphone photo to jpg free",
-    "heic to jpg no signup",
-    "heic to jpg no watermark",
+    "iphone photo to jpg private",
     "heif to jpg converter",
     "convert apple photos to jpg",
-    "best heic to jpg converter online",
   ],
 })
 
@@ -42,8 +52,8 @@ const toolFaqs = [
     a: "Our converter preserves original photo resolution and details. By keeping the quality setting at 85%-95%, the output JPG will look virtually identical to your original HEIC photo.",
   },
   {
-    q: "Are my iPhone photos safe when uploaded?",
-    a: "Yes. Your privacy is protected. Files are processed securely over encrypted SSL connections and are automatically deleted immediately after conversion.",
+    q: "Are my iPhone photos safe when converted online?",
+    a: "Yes! Your photos are processed privately in your local browser using client-side WebAssembly technology without being saved or retained on external cloud servers.",
   },
   {
     q: "Can I convert HEIC photos on Windows or Android?",
@@ -54,12 +64,12 @@ const toolFaqs = [
 export default function HeicToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert HEIC to JPG Online Free"
-      description="Convert Apple HEIC and HEIF photos to high-quality JPG images instantly. Fast, secure, free — works on Windows, Mac, iPhone, and Android."
+      title="Convert iPhone HEIC Photos to JPG Online (Private & Instant)"
+      description="Convert Apple HEIC photos to universal JPG format instantly. Preserve original camera resolution and EXIF metadata without uploading files to external servers."
       uiDescription={
         <span>
           Convert Apple HEIC photos to universal JPG format instantly with
-          custom quality & EXIF metadata controls. 100% free — secure browser & server processing.
+          custom quality & EXIF metadata controls. 100% private browser-side processing.
         </span>
       }
       icon="📱"

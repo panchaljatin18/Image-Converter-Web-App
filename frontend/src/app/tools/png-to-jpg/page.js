@@ -1,21 +1,30 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import PngToJpgTool from "@/components/tools/PngToJpgTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const PngToJpgTool = dynamic(() => import("@/components/tools/PngToJpgTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "PNG to JPG Converter – Free, Fast, No Watermark",
-  description: "Convert PNG to JPG online free instantly. Reduce file size, handle transparent backgrounds with custom fill color. No signup, no watermark, 100% browser-based.",
+  title: "Convert Transparent PNG to JPG Online (Custom Background Fill) – ConvertGalaxy",
+  description: "Convert transparent PNG images to JPG with custom solid background fill. Fix black background glitches, shrink file size for web uploads, 100% free browser processing.",
   canonicalPath: "/tools/png-to-jpg",
   ogImage: "https://www.convertgalaxy.com/png-to-jpg.webp",
   keywords: [
+    "convert transparent png to jpg with custom background",
+    "convert png to jpg without black background glitch",
+    "convert transparent png logo to solid white background jpg",
+    "bulk convert png screenshots to compact jpg files",
+    "convert png passport scan to jpg for government portal",
     "png to jpg converter free",
     "convert png to jpg online free",
     "png to jpeg free",
-    "png to jpg no watermark",
-    "png to jpg no signup",
-    "compress png to jpg free",
     "png to jpg transparent background",
-    "best png to jpg converter",
   ]
 });
 
@@ -35,11 +44,11 @@ const relatedTools = [
 export default function PngToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert PNG to JPG Online Free"
-      description="Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
+      title="Convert Transparent PNG to JPG Online (Custom Solid Background)"
+      description="Convert PNG images to JPG with custom solid background color controls. Prevents transparent background corruption glitches, shrinks file size for web forms."
       uiDescription={
         <span>
-          Convert PNG images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser.
+          Convert PNG images to JPG format with custom quality and solid background color controls. Prevents transparent pixels from turning black while shrinking file size for web forms.
         </span>
       }
       icon="🖼️"

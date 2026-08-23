@@ -1,21 +1,28 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import WebPConverterTool from "@/components/tools/WebPConverterTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const WebPConverterTool = dynamic(() => import("@/components/tools/WebPConverterTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "WebP Converter Free – Convert JPG/PNG to WebP Online, Faster Websites",
-  description: "Convert JPG, PNG or any image to WebP format free online. Smaller files = faster websites. No signup, no watermark — 100% browser-based, instant WebP conversion.",
+  title: "Convert Image to WebP Online (Reduce File Size Without Server Install) – ConvertGalaxy",
+  description: "Convert JPG, PNG, and photos to modern WebP format online. Reduce image file size by up to 80% without server side tools. 100% private browser processing.",
   canonicalPath: "/tools/webp-converter",
   ogImage: "https://www.convertgalaxy.com/webp-converter.webp",
   keywords: [
-    "webp converter free",
+    "reduce webp file size without server side installation",
+    "convert jpg to webp lossless compression for archival site images",
     "convert image to webp online free",
     "jpg to webp converter free",
     "png to webp free",
     "webp converter no watermark",
-    "best webp converter online",
     "convert jpeg to webp online",
-    "webp image converter no signup",
   ]
 });
 

@@ -1,26 +1,29 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import PNGToWebPTool from "@/components/tools/PNGToWebPTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const PNGToWebPTool = dynamic(() => import("@/components/tools/PNGToWebPTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "PNG to WebP Converter Free – Convert PNG to WebP Online",
-  description: "Convert PNG images to WebP online for free. No account, no watermark — instant download, 100% private browser-based processing with transparency support.",
+  title: "Batch Convert PNG to WebP Online (Boost Shopify & PageSpeed) – ConvertGalaxy",
+  description: "Convert transparent PNG assets to ultra-lightweight WebP format. Shrink image weight up to 80% while retaining alpha channel transparency. Improve Core Web Vitals performance.",
   canonicalPath: "/tools/png-to-webp",
   ogImage: "https://www.convertgalaxy.com/png-to-webp.webp",
   keywords: [
+    "batch convert png to webp for faster shopify loading",
+    "convert transparent png graphics to webp for dark mode sites",
+    "batch convert png assets to webp for wordpress pagespeed boost",
+    "convert png vector icons to ultra lightweight webp graphics",
     "png to webp converter free",
     "convert png to webp online",
     "png to webp transparency",
-    "png to webp no watermark",
-    "png to webp no signup",
-    "best png to webp converter",
-    "png image to webp online free",
-    "browser based png to webp",
-    "compress png to webp",
-    "lossless png to webp",
     "convert transparent png to webp",
-    "google webp image optimizer",
-    "png to webp converter with quality control"
   ]
 });
 
@@ -38,11 +41,11 @@ const relatedTools = [
 export default function PNGToWebPPage() {
   return (
     <ToolPageLayout
-      title="Convert PNG to WebP Online Free"
-      description="Convert PNG images to WebP format with custom quality settings. Preserves alpha transparency while producing up to 35% smaller, web-optimized files instantly in your browser."
+      title="Batch Convert PNG to WebP Online (Boost Site Speed)"
+      description="Convert PNG images to modern WebP format instantly. Preserves full alpha transparency while reducing file weight up to 80% to boost Google PageSpeed & Core Web Vitals."
       uiDescription={
         <span>
-          Convert PNG images to WebP format with custom quality settings. Preserves alpha transparency while producing up to 35% smaller, web-optimized files instantly in your browser.
+          Convert PNG images to modern WebP format instantly. Preserves full alpha transparency while reducing file weight up to 80% to boost Google PageSpeed & Core Web Vitals.
         </span>
       }
       icon="🖼️"

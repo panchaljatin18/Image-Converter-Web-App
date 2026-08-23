@@ -1,21 +1,29 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import WebPToJpgTool from "@/components/tools/WebPToJpgTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const WebPToJpgTool = dynamic(() => import("@/components/tools/WebPToJpgTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "WebP to JPG Converter Free – Convert WebP Images to JPEG Online",
-  description: "Convert WebP images to JPG/JPEG format online for free. No account, no watermark — instant download, 100% private browser-based processing. Works on all devices.",
+  title: "Convert WebP Product Images to JPG Online (Amazon & Marketplace Ready) – ConvertGalaxy",
+  description: "Convert WebP files downloaded from websites into standard JPG format for Amazon seller listings, legacy desktop software, and CMS platforms. 100% free browser processing.",
   canonicalPath: "/tools/webp-to-jpg",
   ogImage: "https://www.convertgalaxy.com/webp-to-jpg.webp",
   keywords: [
+    "convert webp product images to jpg for amazon seller listing",
+    "convert webp images downloaded from browser to standard jpg",
+    "batch convert webp file directory to jpg for desktop editing",
+    "convert webp graphics to jpg for adobe photoshop legacy",
+    "convert webp product images to jpg for amazon seller dashboard",
     "webp to jpg converter free",
     "convert webp to jpg online free",
-    "webp to jpeg converter",
     "save webp as jpg free",
-    "webp to jpg no watermark",
-    "webp to jpg no signup",
-    "best webp to jpg converter",
-    "webp image to jpg online",
   ]
 });
 
@@ -35,11 +43,11 @@ const relatedTools = [
 export default function WebPToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert WebP to JPG Online Free"
-      description="Convert WebP images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser."
+      title="Convert WebP Product Images to JPG Online (Marketplace Ready)"
+      description="Convert WebP images downloaded from websites to standard JPEG format instantly. Compatible with Amazon Seller Central, legacy graphic editors, and desktop photo viewers."
       uiDescription={
         <span>
-          Convert WebP images to JPG format with custom quality settings. Handles transparent backgrounds, producing smaller, web-optimized files instantly in your browser.
+          Convert WebP images downloaded from websites to standard JPEG format instantly with quality controls. Compatible with Amazon Seller Central, legacy graphic editors, and desktop photo viewers.
         </span>
       }
       icon="🖼️"

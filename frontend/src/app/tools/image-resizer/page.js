@@ -1,21 +1,29 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import ImageResizerTool from "@/components/tools/ImageResizerTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const ImageResizerTool = dynamic(() => import("@/components/tools/ImageResizerTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Resizer Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "Image Resizer Online Free – Resize Photos by Pixels, % or Preset Sizes",
-  description: "Resize any photo online free by exact pixels, percentage, or preset sizes (Instagram, passport, thumbnail, 4K). No signup, no watermark — instant browser-based resizing.",
+  title: "Resize Image Online (Exact Pixels, Inches for Printing & Social Media) – ConvertGalaxy",
+  description: "Resize photos to exact pixel width/height or physical inch measurements for print and online forms. Lock aspect ratio to prevent stretching. Free, fast browser resizer.",
   canonicalPath: "/tools/image-resizer",
   ogImage: "https://www.convertgalaxy.com/image-resizer.webp",
   keywords: [
+    "resize image to exact dimensions in inches for printing",
+    "resize jpg photo for email signature banner 600px width",
+    "resize photo for official visa or passport application dimensions",
     "image resizer online free",
     "resize image in pixels online free",
     "photo resizer free no watermark",
     "resize image for instagram free",
-    "resize image online no signup",
     "bulk image resizer online",
-    "reduce image dimensions online",
-    "best image resizer online",
   ]
 });
 
@@ -34,8 +42,8 @@ const relatedTools = [
 export default function ImageResizerPage() {
   return (
     <ToolPageLayout
-      title="Resize Images Online Free"
-      description="Resize your images to exact pixel dimensions. Lock aspect ratio to prevent distortion, use social media presets, or enter custom dimensions. Supports JPG, PNG, and WebP output."
+      title="Resize Image Online (Exact Pixels, Inches & Aspect Ratios)"
+      description="Resize images to exact pixel dimensions or physical print inches. Lock aspect ratio to prevent distortion, use custom presets, or export in JPG, PNG, and WebP format."
       icon="📐"
       color="#8b5cf6"
       gradient="linear-gradient(135deg, #8b5cf6, #a78bfa)"

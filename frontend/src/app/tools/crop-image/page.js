@@ -1,21 +1,29 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import CropImageTool from "@/components/tools/CropImageTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const CropImageTool = dynamic(() => import("@/components/tools/CropImageTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Cropper Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "Crop Image Online Free – Custom Size, Aspect Ratio & Preset Shapes",
-  description: "Crop any photo online free with custom size, preset aspect ratios (square, 16:9, passport) or freeform selection. No signup, no watermark — 100% browser-based.",
+  title: "Crop Image Online Free (Exact Aspect Ratios for LinkedIn, IG & Avatars) – ConvertGalaxy",
+  description: "Crop images to exact aspect ratios (16:9, 1:1, square) for LinkedIn banners, Instagram profile avatars, and passport photos. Free rule-of-thirds grid visual cropper.",
   canonicalPath: "/tools/crop-image",
   ogImage: "https://www.convertgalaxy.com/crop-image.webp",
   keywords: [
+    "crop image to exact aspect ratio for linkedin banner",
+    "crop profile picture into precise square for instagram avatar",
+    "crop headshot photo to 2x2 passport specification free",
     "crop image online free",
     "free image cropper no watermark",
     "crop photo to square online free",
     "crop image for instagram free",
-    "crop image no signup",
     "online image cropper",
-    "crop photo online free",
-    "best image cropper online",
   ]
 });
 
@@ -34,11 +42,11 @@ const relatedTools = [
 export default function CropImagePage() {
   return (
     <ToolPageLayout
-      title="Crop Your Image Online Free"
-      description="Drag to select a crop area on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP."
+      title="Crop Image Online Free (Aspect Ratios for Social Media & Avatars)"
+      description="Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly."
       uiDescription={
         <span>
-          Drag to select a crop area on your image. Choose from aspect ratio presets or go freeform. Preview with a rule-of-thirds overlay and download in JPG, PNG, or WebP.
+          Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly.
         </span>
       }
       icon="✂️"

@@ -1,21 +1,29 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import ImageCompressorTool from "@/components/tools/ImageCompressorTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const ImageCompressorTool = dynamic(() => import("@/components/tools/ImageCompressorTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Compressor Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "Image Compressor Online Free – Compress JPG, PNG, WebP Without Quality Loss",
-  description: "Compress JPG, PNG & WebP images online free without losing visible quality. Reduce photo size by up to 80% in seconds — no signup, no watermark, 100% browser-based.",
+  title: "Compress Image Size Online (Reduce PNG & JPG KB Without Quality Loss) – ConvertGalaxy",
+  description: "Compress PNG & JPG image size without degrading text sharpness or visual clarity. Reduce file size up to 90% for Discord custom emojis, WordPress PageSpeed, email limits.",
   canonicalPath: "/tools/image-compressor",
   ogImage: "https://www.convertgalaxy.com/image-compressor.webp",
   keywords: [
+    "compress png image size without degrading text sharpness",
+    "compress png image for discord custom emoji 256kb limit",
+    "bulk compress jpg photos for wordpress pagespeed optimization",
+    "compress jpg image to under 100kb for passport application",
     "image compressor online free",
     "compress image without losing quality",
     "reduce photo size online free",
-    "compress jpeg online free",
     "compress png online free",
-    "image compressor no watermark",
-    "reduce image file size free",
-    "best image compressor online",
   ]
 });
 
@@ -34,11 +42,11 @@ const relatedTools = [
 export default function ImageCompressorPage() {
   return (
     <ToolPageLayout
-      title="Compress Images Online Free — No Quality Loss"
-      description="Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web optimization, email attachments, and faster page loads. All processing happens in your browser."
+      title="Compress Image Size Online (Preserve Visual Quality)"
+      description="Shrink PNG, JPG & WebP image file sizes up to 90% without degrading visual sharpness or text clarity. Perfect for PageSpeed optimization, Discord emojis, and email attachments."
       uiDescription={
         <span>
-          Reduce image file sizes by up to 90% without noticeable quality loss. Perfect for web optimization, email attachments, and faster page loads. All processing happens in your browser.
+          Shrink PNG, JPG & WebP image file sizes up to 90% without degrading visual sharpness or text clarity. Perfect for PageSpeed optimization, Discord emojis, and email attachments.
         </span>
       }
       icon="🗜️"

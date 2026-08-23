@@ -1,21 +1,30 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
-import JpgToPngTool from "@/components/tools/JpgToPngTool";
 import { constructMetadata } from "@/lib/metadata";
+import dynamic from "next/dynamic";
+
+const JpgToPngTool = dynamic(() => import("@/components/tools/JpgToPngTool"), {
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[300px] flex items-center justify-center">
+      Loading Converter Tool...
+    </div>
+  ),
+});
 
 export const metadata = constructMetadata({
-  title: "JPG to PNG Converter – Free, No Signup, Lossless Quality",
-  description: "Convert JPG to PNG online for free in seconds. Lossless quality, transparent background support, no watermark, no signup — 100% browser-based, instant results.",
+  title: "Convert JPG to PNG Online (Lossless Quality & Transparency Ready) – ConvertGalaxy",
+  description: "Convert JPG to PNG format online for transparent background editing and graphic design workflows. Preserve sharp text rendering, prevent artifact blur, 100% free browser processing.",
   canonicalPath: "/tools/jpg-to-png",
   ogImage: "https://www.convertgalaxy.com/jpg-to-png.webp",
   keywords: [
+    "convert jpg to png for transparent background editing",
+    "convert jpg logo to png with transparent background",
+    "change jpeg diagram to png for crisp text display",
+    "convert jpg to high resolution transparent png file",
+    "batch convert jpg screenshots to png without quality loss",
     "jpg to png converter free",
     "convert jpg to png online free",
     "jpeg to png converter",
-    "jpg to png no watermark",
     "jpg to png transparent background",
-    "free jpg to png",
-    "online jpg to png no signup",
-    "best jpg to png converter",
   ]
 });
 
@@ -34,11 +43,11 @@ const relatedTools = [
 export default function JpgToPngPage() {
   return (
     <ToolPageLayout
-      title="Convert JPG to PNG Online – Free & Lossless"
-      description="Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded."
+      title="Convert JPG to PNG Online (Lossless Quality & Transparency Ready)"
+      description="Convert JPG graphics to lossless PNG format instantly. Ideal for graphic editing, removing compression artifacts around text, and preparing images for transparent backgrounds."
       uiDescription={
         <span>
-          Convert your JPG images to lossless PNG format instantly. Perfect for images requiring transparency support. 100% free, browser-based — zero data uploaded.
+          Convert JPG graphics to lossless PNG format instantly. Ideal for graphic editing, removing compression artifacts around text, and preparing images for transparent backgrounds. 100% browser-based.
         </span>
       }
       icon="🔄"

@@ -177,10 +177,9 @@ export default function Navbar() {
             <Image
               src="/CG.webp"
               alt="Converter Galaxy Logo"
-              width={400}
-              height={110}
-              quality={100}
-              unoptimized
+              width={240}
+              height={66}
+              quality={85}
               priority
               className="h-[34px] md:h-[45px] w-auto object-contain"
             />
