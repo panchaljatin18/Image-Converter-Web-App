@@ -15,20 +15,39 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "No file provided for upload." }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const originalBuffer = Buffer.from(await file.arrayBuffer());
     const filename = file.name;
     const timestamp = Date.now();
 
-    // Sanitize and create safe filename
-    const cleanName = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const safeFilename = `${timestamp}_${cleanName}`;
+    // Optimize image using sharp (resize to max 1200px width, convert to webp quality 80)
+    let optimizedBuffer = originalBuffer;
+    let contentType = "image/webp";
+    const cleanBaseName = filename.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9.-]/g, "_");
+    const safeFilename = `${timestamp}_${cleanBaseName}.webp`;
 
-    // Save image to MongoDB
+    try {
+      const sharp = (await import("sharp")).default;
+      let pipeline = sharp(originalBuffer);
+      const metadata = await pipeline.metadata();
+
+      if (metadata.width && metadata.width > 1200) {
+        pipeline = pipeline.resize({ width: 1200, withoutEnlargement: true });
+      }
+
+      optimizedBuffer = await pipeline
+        .webp({ quality: 80, effort: 5 })
+        .toBuffer();
+    } catch (sharpErr) {
+        console.warn("Sharp image compression fallback to original buffer:", sharpErr);
+        contentType = file.type || "image/png";
+    }
+
+    // Save optimized image to MongoDB
     await dbConnect();
     await BlogImage.create({
       filename: safeFilename,
-      contentType: file.type || "image/png",
-      data: buffer,
+      contentType,
+      data: optimizedBuffer,
     });
 
     const fileUrl = `/api/uploads/blog/${safeFilename}`;

@@ -13,9 +13,31 @@ export async function GET(req, { params }) {
     const imageDoc = await BlogImage.findOne({ filename });
 
     if (imageDoc) {
-      return new Response(imageDoc.data, {
+      let responseData = imageDoc.data;
+      let contentType = imageDoc.contentType || "image/webp";
+
+      // On-the-fly optimization fallback if image is still uncompressed (>300KB or png/jpg)
+      if (imageDoc.data && imageDoc.data.length > 300 * 1024 && contentType !== "image/webp") {
+        try {
+          const sharp = (await import("sharp")).default;
+          const webpBuffer = await sharp(imageDoc.data)
+            .resize({ width: 1200, withoutEnlargement: true })
+            .webp({ quality: 80 })
+            .toBuffer();
+
+          responseData = webpBuffer;
+          contentType = "image/webp";
+
+          // Update MongoDB in background
+          BlogImage.updateOne({ _id: imageDoc._id }, { data: webpBuffer, contentType: "image/webp" }).catch(() => {});
+        } catch (e) {
+          console.warn("On-the-fly image compression skipped:", e);
+        }
+      }
+
+      return new Response(responseData, {
         headers: {
-          "Content-Type": imageDoc.contentType,
+          "Content-Type": contentType,
           "Cache-Control": "public, max-age=31536000, immutable",
         },
       });
@@ -29,7 +51,7 @@ export async function GET(req, { params }) {
 
     const extension = filename.split(".").pop()?.toLowerCase();
     let fileBuffer = fs.readFileSync(filePath);
-    let contentType = "image/jpeg";
+    let contentType = "image/webp";
 
     if (extension === "heic" || extension === "heif") {
       try {
@@ -41,20 +63,23 @@ export async function GET(req, { params }) {
 
         // Read converted JPG buffer
         fileBuffer = fs.readFileSync(tempJpgPath);
-
-        // Clean up temp JPG file
         fs.unlinkSync(tempJpgPath);
-
-        contentType = "image/jpeg";
       } catch (err) {
         console.error("On-the-fly HEIC conversion failed:", err);
-        contentType = "image/heic";
       }
-    } else {
+    }
+
+    try {
+      const sharp = (await import("sharp")).default;
+      fileBuffer = await sharp(fileBuffer)
+        .resize({ width: 1200, withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+    } catch (e) {
       if (extension === "png") contentType = "image/png";
-      else if (extension === "webp") contentType = "image/webp";
       else if (extension === "gif") contentType = "image/gif";
       else if (extension === "svg") contentType = "image/svg+xml";
+      else contentType = "image/jpeg";
     }
 
     return new Response(fileBuffer, {

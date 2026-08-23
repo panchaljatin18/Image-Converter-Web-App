@@ -22,7 +22,7 @@ export function markdownToHtml(md) {
 
   // Images: ![alt](url)
   html = html.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
-    return `<figure class="my-8 text-center"><img src="${url}" alt="${alt}" class="w-full max-h-[500px] object-cover rounded-2xl border border-white/10 shadow-2xl mx-auto" />${alt ? `<figcaption class="text-center text-xs text-[#9494a3] mt-2 font-mono">${alt}</figcaption>` : ''}</figure>`;
+    return `<figure class="my-8 text-center"><img src="${url}" alt="${alt}" loading="lazy" decoding="async" class="w-full max-h-[500px] object-cover rounded-2xl border border-white/10 shadow-2xl mx-auto" />${alt ? `<figcaption class="text-center text-xs text-[#9494a3] mt-2 font-mono">${alt}</figcaption>` : ''}</figure>`;
   });
 
   // Bold text
