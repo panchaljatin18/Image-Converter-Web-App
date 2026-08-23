@@ -178,15 +178,19 @@ export default async function JatinPanchalAuthorPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="no-underline group">
                 <div className="h-full flex flex-col rounded-3xl border border-white/8 bg-[#131325]/80 overflow-hidden hover:border-indigo-500/40 hover:shadow-[0_10px_30px_rgba(99,102,241,0.12)] transition-all duration-300">
                   {post.frontmatter.image ? (
-                    <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/6 bg-[#090915]">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/6 bg-gradient-to-br from-[#121226] via-[#0d0d1a] to-[#181532] flex items-center justify-center">
                       <Image
                         src={post.frontmatter.image}
                         alt={post.frontmatter.imageAlt || post.frontmatter.title}
                         fill
+                        unoptimized
+                        priority={index < 2}
+                        loading={index < 2 ? "eager" : "lazy"}
+                        decoding="async"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />

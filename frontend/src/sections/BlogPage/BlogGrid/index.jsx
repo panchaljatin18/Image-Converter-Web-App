@@ -150,25 +150,30 @@ export default function BlogGrid({ initialPosts = [] }) {
         </div>
       ) : filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPosts.map((post) => (
+          {filteredPosts.map((post, index) => (
             <div
               key={post.slug}
               className="bg-[#131325]/80 border border-white/8 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col hover:border-indigo-500/50 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(99,102,241,0.12)] group"
             >
               {/* Header Visual with Post Cover Image */}
-              <div className="w-full h-[200px] relative overflow-hidden select-none border-b border-white/6 bg-[#090915]">
-                {post.frontmatter.image && (
+              <div className="w-full h-[200px] relative overflow-hidden select-none border-b border-white/6 bg-gradient-to-br from-[#121226] via-[#0d0d1a] to-[#181532] flex items-center justify-center">
+                {post.frontmatter.image ? (
                   <Image
                     src={post.frontmatter.image}
                     alt={post.frontmatter.imageAlt || post.frontmatter.title}
                     fill
+                    unoptimized
+                    priority={index < 3}
+                    loading={index < 3 ? "eager" : "lazy"}
+                    decoding="async"
                     className="object-cover transition-transform duration-500 group-hover:scale-103"
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                    loading="lazy"
                   />
+                ) : (
+                  <BookOpen size={36} className="text-indigo-400/40" />
                 )}
                 <span
-                  className="absolute top-4 right-4 py-1 px-3 rounded-full text-[0.7rem] font-bold uppercase tracking-wider border backdrop-blur-md bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                  className="absolute top-4 right-4 py-1 px-3 rounded-full text-[0.7rem] font-bold uppercase tracking-wider border backdrop-blur-md bg-indigo-500/15 text-indigo-300 border-indigo-500/30 z-10"
                 >
                   {post.category}
                 </span>

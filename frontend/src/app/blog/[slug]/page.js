@@ -115,11 +115,13 @@ export default async function BlogPostPage({ params }) {
 
         {/* Featured Image */}
         {post.frontmatter.image && (
-          <div className="max-w-[850px] mx-auto mb-8 sm:mb-12 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/8 bg-black/40 shadow-2xl relative aspect-[16/9] w-full">
+          <div className="max-w-[850px] mx-auto mb-8 sm:mb-12 rounded-2xl sm:rounded-[28px] overflow-hidden border border-white/8 bg-gradient-to-br from-[#121226] via-[#0d0d1a] to-[#181532] shadow-2xl relative aspect-[16/9] w-full flex items-center justify-center">
             <Image
               src={post.frontmatter.image}
               alt={post.frontmatter.imageAlt || post.frontmatter.title}
               fill
+              unoptimized
+              decoding="async"
               className="object-cover"
               sizes="(max-width: 850px) 100vw, 850px"
               priority
@@ -311,15 +313,18 @@ export default async function BlogPostPage({ params }) {
                 <Link key={rp.slug} href={`/blog/${rp.slug}`} className="no-underline group">
                   <div className="h-full flex flex-col rounded-2xl border border-white/8 bg-[#0f0f1c] overflow-hidden hover:border-indigo-500/40 hover:shadow-[0_0_24px_rgba(99,102,241,0.12)] transition-all duration-300">
                     {rp.frontmatter.image ? (
-                      <div className="relative aspect-[16/9] w-full overflow-hidden">
+                      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-[#121226] via-[#0d0d1a] to-[#181532]">
                         <Image
                           src={rp.frontmatter.image}
                           alt={rp.frontmatter.imageAlt || rp.frontmatter.title}
                           fill
+                          unoptimized
+                          loading="lazy"
+                          decoding="async"
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                           sizes="(max-width: 640px) 100vw, 33vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f1c]/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f1c]/70 to-transparent pointer-events-none" />
                       </div>
                     ) : (
                       <div className="aspect-[16/9] w-full bg-gradient-to-br from-indigo-500/10 to-cyan-500/5 flex items-center justify-center">
