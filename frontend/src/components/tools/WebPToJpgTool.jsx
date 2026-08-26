@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Sliders, Sparkles } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Sliders, Sparkles, ExternalLink } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -217,7 +217,7 @@ export default function WebPToJpgTool() {
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Button
               variant="primary"
               size="lg"
@@ -232,6 +232,17 @@ export default function WebPToJpgTool() {
               <Download size={18} />
               {downloading ? "Downloading..." : "Download JPG"}
             </Button>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline flex-1"
+            >
+              <Button variant="secondary" size="lg" className="w-full justify-center">
+                <ExternalLink size={18} />
+                Open in New Tab
+              </Button>
+            </a>
             <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another
             </Button>

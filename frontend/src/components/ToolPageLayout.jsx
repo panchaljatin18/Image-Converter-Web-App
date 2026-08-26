@@ -122,7 +122,7 @@ export default async function ToolPageLayout({
 
       {/* Rich Educational Content */}
       {richContent && (
-        <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24">
+        <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24 cv-auto-section">
           <Container className="flex flex-col gap-16">
             
             {/* Premium Discover Featured Image in Post Guide */}
@@ -255,7 +255,7 @@ export default async function ToolPageLayout({
 
       {/* Related Guides Section */}
       {relatedPosts && relatedPosts.length > 0 && (
-        <div className="bg-[#0f0f1a] border-t border-white/8 py-12">
+        <div className="bg-[#0f0f1a] border-t border-white/8 py-12 cv-auto-section">
           <Container>
             <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
               Related Guides & Tips
@@ -299,7 +299,7 @@ export default async function ToolPageLayout({
 
       {/* Related Tools */}
       {relatedTools.length > 0 && (
-        <div className="bg-[#13131f] border-t border-white/8 py-12">
+        <div className="bg-[#13131f] border-t border-white/8 py-12 cv-auto-section">
           <Container>
             <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
               Related Tools

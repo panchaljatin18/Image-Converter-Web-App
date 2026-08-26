@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import "../prose.css";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, User, Zap, ArrowRight, BookOpen, Tag, Globe, CheckCircle2 } from "lucide-react";
 import Container from "@/components/Container";

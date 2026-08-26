@@ -39,10 +39,18 @@ export default function HomePage() {
     <>
       <SEO type="homepage" />
       <Hero />
-      <Features />
-      <HowItWorks />
-      <FaqPreview />
-      <CtaBanner />
+      <div className="cv-auto-section">
+        <Features />
+      </div>
+      <div className="cv-auto-section">
+        <HowItWorks />
+      </div>
+      <div className="cv-auto-section">
+        <FaqPreview />
+      </div>
+      <div className="cv-auto-section">
+        <CtaBanner />
+      </div>
     </>
   )
 }

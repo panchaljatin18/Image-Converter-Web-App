@@ -319,16 +319,20 @@ export function htmlToBlocks(html = "") {
       } else {
         // Standard text paragraph
         const textContent = node.innerHTML.trim();
-        if (textContent) {
+        const strippedText = textContent.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+        if (strippedText.length > 0 || node.querySelector("img") || node.querySelector("iframe")) {
           blocks.push(createBlock("paragraph", { content: textContent }));
         }
       }
     } else if (tagName === "ul" || tagName === "ol") {
-      const items = Array.from(node.querySelectorAll("li")).map((li) => li.innerHTML);
+      const items = Array.from(node.querySelectorAll("li"))
+        .map((li) => li.innerHTML.trim())
+        .filter((item) => item.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0);
       blocks.push(
         createBlock("list", {
           listType: tagName === "ol" ? "ordered" : "unordered",
-          items: items.length > 0 ? items : [node.innerHTML],
+          ordered: tagName === "ol",
+          items: items.length > 0 ? items : [""],
         })
       );
     } else if (tagName === "blockquote") {
@@ -369,9 +373,10 @@ export function htmlToBlocks(html = "") {
     } else if (tagName === "hr") {
       blocks.push(createBlock("divider", { style: "line" }));
     } else {
-      const textContent = node.innerText || node.textContent || "";
-      if (textContent.trim()) {
-        blocks.push(createBlock("paragraph", { content: node.innerHTML }));
+      const textContent = node.innerHTML ? node.innerHTML.trim() : "";
+      const strippedText = textContent.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+      if (strippedText.length > 0) {
+        blocks.push(createBlock("paragraph", { content: textContent }));
       }
     }
   });

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Crop } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Crop, ExternalLink } from "lucide-react";
 import Button from "@/components/Button";
 
 import { useConversionLimit } from "@/context/ConversionLimitContext";
@@ -978,7 +978,7 @@ export default function CropImageTool() {
             </div>
           </div>
 
-          <div className="flex gap-3 justify-center max-w-[480px] mx-auto">
+          <div className="flex gap-3 justify-center max-w-[600px] mx-auto flex-wrap">
             <Button
               variant="primary"
               size="md"
@@ -993,6 +993,17 @@ export default function CropImageTool() {
               <Download size={16} />
               {downloading ? "Downloading..." : "Download Cropped"}
             </Button>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline flex-1"
+            >
+              <Button variant="secondary" size="md" className="w-full justify-center">
+                <ExternalLink size={16} />
+                Open in New Tab
+              </Button>
+            </a>
             <Button variant="secondary" size="md" onClick={reset} className="flex-1 justify-center">
               Crop Another
             </Button>

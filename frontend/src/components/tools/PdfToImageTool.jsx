@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Download, FileText, AlertCircle, Info } from "lucide-react";
+import { Download, FileText, AlertCircle, Info, ExternalLink } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
+import { downloadFile } from "@/lib/downloadFile";
 
 const getPdfErrorMessage = (err, pdfjsLib) => {
   const rawMessage = err?.message?.trim() || "Unknown PDF conversion error.";
@@ -309,12 +310,28 @@ export default function PdfToImageTool() {
                       {r.size} · {r.width}×{r.height}px
                     </p>
                   </div>
-                  <a href={r.url} download={r.name} className="w-full no-underline block">
-                    <Button variant="primary" size="sm" className="w-full justify-center gap-1.5">
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="w-full justify-center gap-1.5"
+                      onClick={() => downloadFile(r.url, r.name)}
+                    >
                       <Download size={13} />
                       Download
                     </Button>
-                  </a>
+                    <a
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="no-underline block w-full"
+                    >
+                      <Button variant="secondary" size="sm" className="w-full justify-center gap-1.5">
+                        <ExternalLink size={13} />
+                        Open in New Tab
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}

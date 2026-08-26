@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Trash2, FileText, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -322,7 +322,7 @@ export default function ImageToPdfTool() {
             <p className="font-bold text-[1.1rem] mb-1.5 text-[#f8fafc]">{result.name}</p>
             <p className="text-[#64748b] text-[0.875rem]">{result.size} · {result.pages} page{result.pages > 1 ? "s" : ""}</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Button
               variant="primary"
               size="lg"
@@ -337,6 +337,17 @@ export default function ImageToPdfTool() {
               <Download size={18} />
               {downloading ? "Downloading..." : "Download PDF"}
             </Button>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline flex-1"
+            >
+              <Button variant="secondary" size="lg" className="w-full justify-center">
+                <ExternalLink size={18} />
+                Open in New Tab
+              </Button>
+            </a>
             <Button variant="secondary" size="lg" onClick={reset}>Convert More</Button>
           </div>
         </div>

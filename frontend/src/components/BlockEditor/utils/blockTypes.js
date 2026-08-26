@@ -46,7 +46,7 @@ export const BLOCK_DEFINITIONS = [
     description: "Create a bulleted or numbered list.",
     defaultAttributes: {
       listType: "unordered", // unordered, ordered
-      items: ["First list item", "Second list item"],
+      items: [""],
       textColor: "#ffffff",
     },
   },
@@ -150,7 +150,6 @@ export const BLOCK_DEFINITIONS = [
       layout: "50-50", // 50-50, 33-33-33, 30-70, 70-30, 25-25-25-25
       columnCount: 2,
     },
-    // columns have nested blocks array per column index
   },
   {
     type: "divider",
@@ -166,10 +165,16 @@ export const BLOCK_DEFINITIONS = [
   },
 ];
 
-export function createBlock(type, attributes = {}, children = []) {
+let idCounter = 0;
+export function generateBlockId() {
+  idCounter = (idCounter + 1) % 1000000;
+  return "block_" + Date.now().toString(36) + "_" + idCounter.toString(36) + "_" + Math.random().toString(36).substring(2, 6);
+}
+
+export function createBlock(type, attributes = {}, children = [], customId = null) {
   const def = BLOCK_DEFINITIONS.find((b) => b.type === type);
   return {
-    id: "block_" + Math.random().toString(36).substring(2, 9),
+    id: customId || generateBlockId(),
     type,
     attributes: { ...def?.defaultAttributes, ...attributes },
     children: children || [],

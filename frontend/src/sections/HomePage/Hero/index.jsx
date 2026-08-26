@@ -7,21 +7,20 @@ import Link from "next/link";
 import { isConversionSupported, standardImageFormats } from "../../../lib/conversions";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { useSession } from "next-auth/react";
-import googleDriveService from "../../../services/googleDriveService";
-import dropboxService from "../../../services/dropboxService";
-import onedriveService from "../../../services/onedriveService";
-import authService from "../../../services/authService";
+
 
 const GoogleDrivePicker = dynamic(() => import("../../../components/GoogleDrivePicker"), { ssr: false });
 const DropboxFilePicker = dynamic(() => import("../../../components/DropboxFilePicker"), { ssr: false });
 const OneDrivePicker = dynamic(() => import("../../../components/OneDrivePicker"), { ssr: false });
 import Container from "@/components/Container";
 import Button from "@/components/Button";
+import { downloadFile } from "@/lib/downloadFile";
 import {
   AlertCircle,
   CheckCircle,
   ChevronDown,
   Download,
+  ExternalLink,
   FileImage,
   RefreshCw,
   Sparkles,
@@ -765,89 +764,106 @@ export default function Hero() {
   const [imgWidth, setImgWidth] = useState(0);
   const [imgHeight, setImgHeight] = useState(0);
 
-  const getEffectiveToken = () => {
-    return session?.accessToken || authService.getToken();
+  const getEffectiveToken = async () => {
+    if (session?.accessToken) return session.accessToken;
+    const authModule = await import("../../../services/authService");
+    return authModule.default.getToken();
   };
 
   useEffect(() => {
+    let isMounted = true;
     if (cloudProvider === "google-drive") {
-      const token = getEffectiveToken();
-      if (!token) {
-        setIsDriveConnected(false);
-        setDriveEmail("");
-        return;
-      }
+      (async () => {
+        const token = await getEffectiveToken();
+        if (!token) {
+          if (isMounted) {
+            setIsDriveConnected(false);
+            setDriveEmail("");
+          }
+          return;
+        }
 
-      setCheckingDrive(true);
-      googleDriveService.getStatus(token)
-        .then((data) => {
-          if (data.success) {
+        if (isMounted) setCheckingDrive(true);
+        try {
+          const driveModule = await import("../../../services/googleDriveService");
+          const data = await driveModule.default.getStatus(token);
+          if (isMounted && data.success) {
             setIsDriveConnected(data.connected);
             setDriveEmail(data.email || "");
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error("Error loading Drive status:", err);
-          setIsDriveConnected(false);
-        })
-        .finally(() => {
-          setCheckingDrive(false);
-        });
+          if (isMounted) setIsDriveConnected(false);
+        } finally {
+          if (isMounted) setCheckingDrive(false);
+        }
+      })();
     }
+    return () => { isMounted = false; };
   }, [cloudProvider, session]);
 
   useEffect(() => {
+    let isMounted = true;
     if (cloudProvider === "dropbox") {
-      const token = getEffectiveToken();
-      if (!token) {
-        setIsDropboxConnected(false);
-        setDropboxEmail("");
-        return;
-      }
+      (async () => {
+        const token = await getEffectiveToken();
+        if (!token) {
+          if (isMounted) {
+            setIsDropboxConnected(false);
+            setDropboxEmail("");
+          }
+          return;
+        }
 
-      setCheckingDropbox(true);
-      dropboxService.getStatus(token)
-        .then((data) => {
-          if (data.success) {
+        if (isMounted) setCheckingDropbox(true);
+        try {
+          const dropboxModule = await import("../../../services/dropboxService");
+          const data = await dropboxModule.default.getStatus(token);
+          if (isMounted && data.success) {
             setIsDropboxConnected(data.connected);
             setDropboxEmail(data.email || "");
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error("Error loading Dropbox status:", err);
-          setIsDropboxConnected(false);
-        })
-        .finally(() => {
-          setCheckingDropbox(false);
-        });
+          if (isMounted) setIsDropboxConnected(false);
+        } finally {
+          if (isMounted) setCheckingDropbox(false);
+        }
+      })();
     }
+    return () => { isMounted = false; };
   }, [cloudProvider, session]);
 
   useEffect(() => {
+    let isMounted = true;
     if (cloudProvider === "onedrive") {
-      const token = getEffectiveToken();
-      if (!token) {
-        setIsOneDriveConnected(false);
-        setOnedriveEmail("");
-        return;
-      }
+      (async () => {
+        const token = await getEffectiveToken();
+        if (!token) {
+          if (isMounted) {
+            setIsOneDriveConnected(false);
+            setOnedriveEmail("");
+          }
+          return;
+        }
 
-      setCheckingOneDrive(true);
-      onedriveService.getStatus(token)
-        .then((data) => {
-          if (data.success) {
+        if (isMounted) setCheckingOneDrive(true);
+        try {
+          const onedriveModule = await import("../../../services/onedriveService");
+          const data = await onedriveModule.default.getStatus(token);
+          if (isMounted && data.success) {
             setIsOneDriveConnected(data.connected);
             setOnedriveEmail(data.email || "");
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error("Error loading OneDrive status:", err);
-          setIsOneDriveConnected(false);
-        })
-        .finally(() => {
-          setCheckingOneDrive(false);
-        });
+          if (isMounted) setIsOneDriveConnected(false);
+        } finally {
+          if (isMounted) setCheckingOneDrive(false);
+        }
+      })();
     }
+    return () => { isMounted = false; };
   }, [cloudProvider, session]);
 
   const target = targetFormat ? (ALL_FORMAT_LOOKUP.get(targetFormat) || null) : null;
@@ -1245,9 +1261,7 @@ export default function Hero() {
 
                 {/* Convert From Card */}
                 <div ref={sourceRef} className="relative z-10 flex-1">
-                  <motion.div
-                    variants={floatingAnim}
-                    animate="animate"
+                  <div
                     onClick={() => {
                       if (!file) {
                         setIsAutoCycling(false);
@@ -1255,7 +1269,7 @@ export default function Hero() {
                         setIsTargetDropdownOpen(false);
                       }
                     }}
-                    className={`bg-gradient-to-br from-[#1e1e36]/90 to-[#121221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${file
+                    className={`animate-float-slow gpu-accelerated bg-gradient-to-br from-[#1e1e36]/90 to-[#121221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${file
                       ? "cursor-not-allowed border-white/5 opacity-60"
                       : "cursor-pointer border-indigo-500/20 hover:border-indigo-500/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
                       }`}
@@ -1274,7 +1288,7 @@ export default function Hero() {
                       </span>
                     </div>
                     <ChevronDown size={18} className="mt-2 text-slate-300 opacity-80" style={{ transform: isSourceDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />
-                  </motion.div>
+                  </div>
 
                   <AnimatePresence>
                     {isSourceDropdownOpen && (
@@ -1338,16 +1352,14 @@ export default function Hero() {
 
                     return (
                       <>
-                        <motion.div
-                          variants={floatingAnim}
-                          animate="animate"
+                        <div
                           onClick={() => {
                             if (!hasConversions) return;
                             setIsAutoCycling(false);
                             setIsTargetDropdownOpen(!isTargetDropdownOpen);
                             setIsSourceDropdownOpen(false);
                           }}
-                          className={`bg-gradient-to-br from-[#121e36]/90 to-[#0e1221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${hasConversions
+                          className={`animate-float-slow gpu-accelerated bg-gradient-to-br from-[#121e36]/90 to-[#0e1221]/95 backdrop-blur-md border rounded-[22px] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),_0_10px_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center h-[120px] transition-all duration-300 ${hasConversions
                             ? "cursor-pointer border-cyan-500/20 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
                             : "cursor-not-allowed border-white/5 opacity-60"
                             }`}
@@ -1372,7 +1384,7 @@ export default function Hero() {
                             )}
                           </div>
                           {hasConversions && <ChevronDown size={18} className="mt-2 text-cyan-400 opacity-90" style={{ transform: isTargetDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />}
-                        </motion.div>
+                        </div>
 
                         <AnimatePresence>
                           {isTargetDropdownOpen && hasConversions && (
@@ -1592,15 +1604,16 @@ export default function Hero() {
                             size="sm"
                             className="min-w-[160px] justify-center"
                             onClick={async () => {
-                              const token = getEffectiveToken();
+                              const token = await getEffectiveToken();
                               if (!token) {
                                 setError("Please log in to your account first.");
                                 return;
                               }
                               if (cloudProvider === "google-drive") {
                                 try {
+                                  const driveModule = await import("../../../services/googleDriveService");
                                   const redirectUri = `${window.location.origin}/dashboard/google-drive/callback`;
-                                  const data = await googleDriveService.getAuthUrl(token, redirectUri);
+                                  const data = await driveModule.default.getAuthUrl(token, redirectUri);
                                   if (data.success && data.url) {
                                     window.location.href = data.url;
                                   } else {
@@ -1611,8 +1624,9 @@ export default function Hero() {
                                 }
                               } else if (cloudProvider === "dropbox") {
                                 try {
+                                  const dropboxModule = await import("../../../services/dropboxService");
                                   const redirectUri = `${window.location.origin}/dashboard/dropbox/callback`;
-                                  const data = await dropboxService.getAuthUrl(token, redirectUri);
+                                  const data = await dropboxModule.default.getAuthUrl(token, redirectUri);
                                   if (data.success && data.url) {
                                     window.location.href = data.url;
                                   } else {
@@ -1623,8 +1637,9 @@ export default function Hero() {
                                 }
                               } else if (cloudProvider === "onedrive") {
                                 try {
+                                  const onedriveModule = await import("../../../services/onedriveService");
                                   const redirectUri = `${window.location.origin}/dashboard/onedrive/callback`;
-                                  const data = await onedriveService.getAuthUrl(token, redirectUri);
+                                  const data = await onedriveModule.default.getAuthUrl(token, redirectUri);
                                   if (data.success && data.url) {
                                     window.location.href = data.url;
                                   } else {
@@ -1781,14 +1796,26 @@ export default function Hero() {
                       </p>
                     </div>
                     <div className="flex gap-3 flex-wrap justify-center">
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="justify-center"
+                        onClick={async () => {
+                          await downloadFile(result.url, result.name);
+                        }}
+                      >
+                        <Download size={18} />
+                        Download {target?.label || targetFormat.toUpperCase()}
+                      </Button>
                       <a
                         href={result.url}
-                        download={result.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="no-underline"
                       >
-                        <Button variant="primary" size="lg" className="justify-center">
-                          <Download size={18} />
-                          Download {target?.label || targetFormat.toUpperCase()}
+                        <Button variant="secondary" size="lg" className="justify-center">
+                          <ExternalLink size={18} />
+                          Open in New Tab
                         </Button>
                       </a>
                       <Button variant="secondary" size="lg" onClick={reset}>

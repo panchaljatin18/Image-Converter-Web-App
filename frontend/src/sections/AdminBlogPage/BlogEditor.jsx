@@ -2184,7 +2184,7 @@ export default function BlogEditor({ initialSlug = null }) {
   }
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-[#090912]">
+    <div className="w-full h-screen flex flex-col bg-[#090912] overflow-hidden">
       {errorMsg && (
         <div className="fixed top-4 right-4 z-50 p-4 bg-rose-600 text-white rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold font-['Outfit']">
           <AlertTriangle size={16} /> {errorMsg}

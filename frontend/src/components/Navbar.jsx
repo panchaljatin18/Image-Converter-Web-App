@@ -159,7 +159,7 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  if (isAuthRoute) {
+  if (isAuthRoute || pathname.startsWith("/admin")) {
     return null;
   }
 
@@ -181,6 +181,7 @@ export default function Navbar() {
               height={66}
               quality={85}
               priority
+              sizes="(max-width: 768px) 180px, 240px"
               className="h-[34px] md:h-[45px] w-auto object-contain"
             />
           </Link>

@@ -110,12 +110,12 @@ export default function Footer() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
 
-  if (authRoutes.has(pathname)) {
+  if (authRoutes.has(pathname) || pathname.startsWith("/admin")) {
     return null;
   }
 
   return (
-    <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-8">
+    <footer className="bg-[#0d0d16]/98 border-t border-indigo-500/12 pt-8 cv-auto-section">
       <Container>
         {/* Top Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-6 pb-6">
@@ -129,6 +129,7 @@ export default function Footer() {
                 height={85}
                 quality={85}
                 loading="lazy"
+                sizes="(max-width: 768px) 200px, 280px"
                 className="h-[65px] md:h-[85px] w-auto object-contain"
               />
             </Link>

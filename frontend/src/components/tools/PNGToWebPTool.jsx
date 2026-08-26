@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import ToolUploader from "@/components/ToolUploader";
-import { Download, RefreshCw, CheckCircle, Sliders, AlertCircle, Sparkles } from "lucide-react";
+import { Download, RefreshCw, CheckCircle, Sliders, AlertCircle, Sparkles, ExternalLink } from "lucide-react";
 import Button from "@/components/Button";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
 import { downloadFile } from "@/lib/downloadFile";
@@ -319,6 +319,17 @@ export default function PNGToWebPTool() {
               <Download size={18} />
               {downloading ? "Downloading..." : "Download WebP"}
             </Button>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline flex-1"
+            >
+              <Button variant="secondary" size="lg" className="w-full justify-center">
+                <ExternalLink size={18} />
+                Open in New Tab
+              </Button>
+            </a>
             <Button variant="secondary" size="lg" onClick={reset}>
               Convert Another PNG
             </Button>

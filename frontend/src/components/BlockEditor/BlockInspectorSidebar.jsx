@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Sliders, FileText, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Sliders, FileText, Image as ImageIcon, Sparkles, ChevronRight } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
 export default function BlockInspectorSidebar({
   selectedBlock,
   onChangeBlockAttributes,
+  onClose,
   // Document props
   title,
   setTitle,
@@ -28,9 +29,19 @@ export default function BlockInspectorSidebar({
   const attrs = selectedBlock?.attributes || {};
 
   return (
-    <aside className="w-80 bg-[#12121e] border-l border-white/10 flex flex-col h-full overflow-y-auto select-none font-['Outfit']">
+    <aside className="w-80 bg-[#12121e] border-l border-white/10 flex flex-col shrink-0 h-full overflow-y-auto select-none font-['Outfit']">
       {/* Dual Tab Header */}
-      <div className="flex items-center border-b border-white/10 bg-[#161626] sticky top-0 z-20">
+      <div className="flex items-center border-b border-white/10 bg-[#161626] sticky top-0 z-20 px-1">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl bg-indigo-600/20 hover:bg-gradient-to-tr hover:from-indigo-600 hover:to-purple-600 border border-indigo-500/30 text-indigo-300 hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer ml-1 shrink-0 shadow-md hover:scale-110 active:scale-95"
+            title="Collapse Inspector Sidebar"
+          >
+            <ChevronRight size={16} />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setActiveTab("block")}

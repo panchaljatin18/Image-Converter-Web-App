@@ -107,6 +107,7 @@ app.use("/api/onedrive",     generalLimiter);
 // ── Static file serving ───────────────────────────────────────────────────────
 app.use("/downloads", express.static(DOWNLOADS_DIR, {
   setHeaders: (res) => {
+    res.setHeader("Content-Disposition", "inline");
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
     res.set("Access-Control-Allow-Headers", "Range, Content-Type");

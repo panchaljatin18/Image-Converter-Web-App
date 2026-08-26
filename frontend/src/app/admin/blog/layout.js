@@ -15,8 +15,10 @@ export default function AdminLayout({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem("admin_sidebar_collapsed");
     if (saved !== null) setIsCollapsed(saved === "true");
   }, []);
@@ -180,96 +182,123 @@ export default function AdminLayout({ children }) {
     );
   }
 
+  const isEditor = pathname !== "/admin/blog";
+
   // RENDER MAIN PANEL LAYOUT
   return (
-    <div className="admin-body min-h-screen flex flex-col md:flex-row pt-20 md:pt-24">
+    <div className={`admin-body flex flex-col md:flex-row pt-0 ${isEditor ? "h-screen overflow-hidden" : "min-h-screen"}`}>
       <aside
-        className={`admin-sidebar shrink-0 flex flex-col justify-between py-6 px-3.5 transition-all duration-300 ease-in-out sticky top-20 md:top-24 z-20 md:h-[calc(100vh-96px)] ${
-          isCollapsed ? "md:w-20" : "md:w-64"
-        } w-full`}
+        className={`admin-sidebar shrink-0 flex flex-col justify-between py-4 px-3 transition-all duration-300 ease-in-out sticky top-0 z-20 ${
+          isEditor ? "h-screen" : "min-h-screen"
+        } ${isCollapsed ? "w-20" : "w-64"} overflow-hidden select-none`}
       >
-        <div className="space-y-6">
-          {/* Sidebar Header + Collapse Toggle */}
-          <div className="flex items-center justify-between px-1">
-            <div className={`flex items-center gap-3 overflow-hidden transition-all duration-300 ${isCollapsed ? "md:w-0 md:opacity-0 md:hidden" : "w-auto opacity-100"}`}>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-white shadow-[0_4px_16px_rgba(139,92,246,0.3)] shrink-0">
-                <ShieldCheck size={20} className="text-white" />
+        <div className="space-y-5 flex-1 flex flex-col justify-between">
+          <div className="space-y-5">
+            {/* Sidebar Profile Header */}
+            <div className="flex items-center gap-3 px-1 pt-1 pb-3 border-b border-white/5 overflow-hidden">
+              <div className="relative shrink-0">
+                <div
+                  className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#8b5cf6] via-[#a855f7] to-[#06b6d4] flex items-center justify-center text-white shadow-[0_0_15px_rgba(139,92,246,0.4)] shrink-0"
+                  title="Jatin Panchal (CMS Admin)"
+                >
+                  <ShieldCheck size={22} className="text-white" />
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-[#141422] rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Online" />
               </div>
-              <div className="whitespace-nowrap">
-                <h2 className="font-['Outfit'] font-extrabold text-sm text-[#f8fafc] leading-tight">Jatin Panchal</h2>
-                <span className="text-[10px] font-semibold text-[#8b5cf6] uppercase tracking-wider">CMS ADMIN DASHBOARD</span>
+
+              <div
+                className={`whitespace-nowrap transition-all duration-300 overflow-hidden ${
+                  isCollapsed ? "opacity-0 w-0 pointer-events-none" : "opacity-100 w-auto"
+                }`}
+              >
+                <h2 className="font-['Outfit'] font-extrabold text-sm text-[#f8fafc] leading-tight">
+                  Jatin Panchal
+                </h2>
+                <span className="text-[9px] font-bold text-[#c084fc] uppercase tracking-wider bg-[#8b5cf6]/15 px-1.5 py-0.5 rounded border border-[#8b5cf6]/25">
+                  CMS Admin
+                </span>
               </div>
             </div>
 
-            {/* Icon when Collapsed */}
-            {isCollapsed && (
-              <div
-                className="hidden md:flex w-9 h-9 mx-auto rounded-xl bg-gradient-to-tr from-[#8b5cf6] to-[#06b6d4] items-center justify-center text-white shadow-[0_4px_16px_rgba(139,92,246,0.3)] shrink-0"
-                title="Jatin Panchal (CMS Admin)"
+            {/* Navigation Category Label */}
+            <div className="px-2">
+              <span
+                className={`text-[10px] font-bold text-[#64647a] uppercase tracking-widest font-mono transition-opacity duration-200 block ${
+                  isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
+                }`}
               >
-                <ShieldCheck size={20} className="text-white" />
-              </div>
-            )}
+                Menu Navigation
+              </span>
+            </div>
 
-            {/* Toggle Button */}
+            {/* Nav Items */}
+            <nav className="space-y-1.5 flex flex-col">
+              <Link
+                href="/admin/blog"
+                title={isCollapsed ? "Posts List" : ""}
+                className={`group admin-sidebar-item flex items-center gap-3 py-2.5 px-3.5 rounded-xl transition-all font-medium ${
+                  isCollapsed ? "justify-center px-0" : ""
+                } ${pathname === "/admin/blog" ? "admin-sidebar-item-active" : ""}`}
+              >
+                <FileText size={19} className="shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                <span
+                  className={`transition-all duration-300 whitespace-nowrap text-sm overflow-hidden ${
+                    isCollapsed ? "opacity-0 w-0 pointer-events-none" : "opacity-100 w-auto"
+                  }`}
+                >
+                  Posts List
+                </span>
+              </Link>
+
+              <Link
+                href="/admin/blog/new"
+                title={isCollapsed ? "New Post" : ""}
+                className={`group admin-sidebar-item flex items-center gap-3 py-2.5 px-3.5 rounded-xl transition-all font-medium ${
+                  isCollapsed ? "justify-center px-0" : ""
+                } ${pathname === "/admin/blog/new" ? "admin-sidebar-item-active" : ""}`}
+              >
+                <PlusCircle size={19} className="shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                <span
+                  className={`transition-all duration-300 whitespace-nowrap text-sm overflow-hidden ${
+                    isCollapsed ? "opacity-0 w-0 pointer-events-none" : "opacity-100 w-auto"
+                  }`}
+                >
+                  New Post
+                </span>
+              </Link>
+            </nav>
+          </div>
+
+          {/* Collapse Toggle Button placed below menu items */}
+          <div className="pt-3 border-t border-white/10 hidden md:block">
             <button
               type="button"
               onClick={toggleSidebar}
-              className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer hidden md:flex items-center justify-center shrink-0 ml-auto"
+              className={`w-full group flex items-center gap-3 py-2 px-2.5 rounded-2xl bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-indigo-600/10 hover:from-indigo-600/25 hover:to-purple-600/25 border border-indigo-500/25 hover:border-indigo-500/60 text-indigo-300 hover:text-white shadow-lg shadow-indigo-950/40 transition-all duration-300 cursor-pointer ${
+                isCollapsed ? "justify-center px-0 bg-transparent border-0 shadow-none" : ""
+              }`}
               title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
-              {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+              <div className="w-8.5 h-8.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 border border-indigo-400/40 flex items-center justify-center shrink-0 text-white shadow-md shadow-indigo-600/40 group-hover:scale-110 group-hover:border-white/40 transition-all duration-200">
+                {isCollapsed ? (
+                  <ChevronRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
+                ) : (
+                  <ChevronLeft size={17} className="group-hover:-translate-x-0.5 transition-transform" />
+                )}
+              </div>
+              <span
+                className={`transition-all duration-300 whitespace-nowrap text-xs font-extrabold tracking-wider text-indigo-200 group-hover:text-white overflow-hidden ${
+                  isCollapsed ? "opacity-0 w-0 pointer-events-none" : "opacity-100 w-auto"
+                }`}
+              >
+                Collapse Sidebar
+              </span>
             </button>
           </div>
-
-          {/* Nav Items */}
-          <nav className="space-y-2 flex flex-row md:flex-col gap-2 md:gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
-            <Link
-              href="/admin/blog"
-              title={isCollapsed ? "Posts List" : ""}
-              className={`admin-sidebar-item shrink-0 flex items-center gap-3 p-3 rounded-xl transition-all ${
-                isCollapsed ? "md:justify-center md:px-0" : ""
-              } ${pathname === "/admin/blog" ? "admin-sidebar-item-active text-[#8b5cf6] bg-indigo-500/10" : ""}`}
-            >
-              <FileText size={18} className="shrink-0" />
-              <span className={`transition-all duration-200 whitespace-nowrap ${isCollapsed ? "md:hidden" : "inline"}`}>
-                Posts List
-              </span>
-            </Link>
-
-            <Link
-              href="/admin/blog/new"
-              title={isCollapsed ? "New Post" : ""}
-              className={`admin-sidebar-item shrink-0 flex items-center gap-3 p-3 rounded-xl transition-all ${
-                isCollapsed ? "md:justify-center md:px-0" : ""
-              } ${pathname === "/admin/blog/new" ? "admin-sidebar-item-active text-[#8b5cf6] bg-indigo-500/10" : ""}`}
-            >
-              <PlusCircle size={18} className="shrink-0" />
-              <span className={`transition-all duration-200 whitespace-nowrap ${isCollapsed ? "md:hidden" : "inline"}`}>
-                New Post
-              </span>
-            </Link>
-          </nav>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="border-t border-[#2a2a38] pt-4">
-          <Link
-            href="/"
-            title={isCollapsed ? "Back to Site" : ""}
-            className={`admin-sidebar-item shrink-0 flex items-center gap-3 p-3 rounded-xl transition-all ${
-              isCollapsed ? "md:justify-center md:px-0" : ""
-            }`}
-          >
-            <ArrowLeft size={18} className="shrink-0" />
-            <span className={`transition-all duration-200 whitespace-nowrap ${isCollapsed ? "md:hidden" : "inline"}`}>
-              Back to Site
-            </span>
-          </Link>
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-[#0f0f1a]">
+      <main className={`flex-1 bg-[#0f0f1a] min-w-0 ${isEditor ? "p-0 h-screen overflow-hidden flex flex-col" : "p-6 md:p-10 overflow-y-auto"}`}>
         {children}
       </main>
     </div>
