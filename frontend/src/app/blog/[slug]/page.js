@@ -120,6 +120,7 @@ export default async function BlogPostPage({ params }) {
             <Image
               src={post.frontmatter.image}
               alt={post.frontmatter.imageAlt || post.frontmatter.title}
+              title={post.frontmatter.imageTitle || post.frontmatter.imageAlt || post.frontmatter.title}
               fill
               unoptimized
               decoding="async"

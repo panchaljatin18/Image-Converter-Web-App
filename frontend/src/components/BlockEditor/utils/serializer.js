@@ -248,7 +248,7 @@ export function htmlToBlocks(html = "") {
   childNodes.forEach((node) => {
     const tagName = node.tagName.toLowerCase();
 
-    // Check if node is an explicit custom-html block (style, script, accordion details, table, or custom-html card)
+    // Check if node is an explicit custom-html block or raw custom code node
     const isExplicitCustomHtmlClass =
       node.classList.contains("wp-block-custom-html") ||
       node.classList.contains("faq-container") ||
@@ -261,11 +261,19 @@ export function htmlToBlocks(html = "") {
       tagName === "script" ||
       tagName === "style" ||
       tagName === "details" ||
-      tagName === "table";
+      tagName === "table" ||
+      tagName === "form" ||
+      tagName === "iframe" ||
+      tagName === "svg" ||
+      tagName === "div" ||
+      tagName === "section" ||
+      tagName === "article" ||
+      node.hasAttribute("style") ||
+      node.className !== "";
 
     const isCustomHtmlNode = isExplicitCustomHtmlClass || isCustomHtmlTag;
 
-    // Check if paragraph or div contains CSS rules mistakenly wrapped
+    // Check if paragraph or div contains CSS rules or markup mistakenly wrapped
     const isCorruptedCss =
       ((node.innerHTML.includes("{") && node.innerHTML.includes("}")) || node.innerHTML.includes("<style>")) &&
       (node.innerHTML.includes("margin") ||
@@ -274,27 +282,19 @@ export function htmlToBlocks(html = "") {
         node.innerHTML.includes("summary") ||
         node.innerHTML.includes("faq"));
 
-    if (isCorruptedCss) {
-      const codeText = node.innerHTML
-        .replace(/<br\s*\/?>/gi, "\n")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&");
-
-      blocks.push(createBlock("custom-html", { html: codeText }));
+    if (isCorruptedCss || (isCustomHtmlNode && tagName !== "p")) {
+      const rawCode = extractRawHtmlFromNode(node);
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock && lastBlock.type === "custom-html") {
+        lastBlock.attributes.html = (lastBlock.attributes.html + "\n\n" + rawCode).trim();
+        lastBlock.attributes.content = lastBlock.attributes.html;
+      } else {
+        blocks.push(createBlock("custom-html", { html: rawCode, content: rawCode }));
+      }
       return;
     }
 
-    if (isCustomHtmlNode) {
-      const rawCode = extractRawHtmlFromNode(node);
-      const lastBlock = blocks[blocks.length - 1];
-      // Only merge if last block is a <style> tag and current node is a <div> belonging to the same snippet
-      if (lastBlock && lastBlock.type === "custom-html" && lastBlock.attributes.html.startsWith("<style") && !lastBlock.attributes.html.includes("<div")) {
-        lastBlock.attributes.html = (lastBlock.attributes.html + "\n\n" + rawCode).trim();
-      } else {
-        blocks.push(createBlock("custom-html", { html: rawCode }));
-      }
-    } else if (/^h[1-6]$/.test(tagName)) {
+    if (/^h[1-6]$/.test(tagName)) {
       const level = parseInt(tagName.replace("h", ""), 10);
       blocks.push(
         createBlock("heading", {
@@ -303,16 +303,15 @@ export function htmlToBlocks(html = "") {
           anchor: node.id || "",
         })
       );
-    } else if (tagName === "p" || tagName === "div" || tagName === "span" || tagName === "article" || tagName === "section") {
+    } else if (tagName === "p") {
       // Check if node contains an <img> element
       const img = node.querySelector("img");
-      if (img || tagName === "img") {
-        const targetImg = img || node;
+      if (img) {
         const cap = node.querySelector("figcaption");
         blocks.push(
           createBlock("image", {
-            url: targetImg.getAttribute("src") || "",
-            alt: targetImg.getAttribute("alt") || "",
+            url: img.getAttribute("src") || "",
+            alt: img.getAttribute("alt") || "",
             caption: cap ? cap.innerHTML : "",
           })
         );
@@ -320,7 +319,7 @@ export function htmlToBlocks(html = "") {
         // Standard text paragraph
         const textContent = node.innerHTML.trim();
         const strippedText = textContent.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
-        if (strippedText.length > 0 || node.querySelector("img") || node.querySelector("iframe")) {
+        if (strippedText.length > 0) {
           blocks.push(createBlock("paragraph", { content: textContent }));
         }
       }
@@ -373,10 +372,9 @@ export function htmlToBlocks(html = "") {
     } else if (tagName === "hr") {
       blocks.push(createBlock("divider", { style: "line" }));
     } else {
-      const textContent = node.innerHTML ? node.innerHTML.trim() : "";
-      const strippedText = textContent.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
-      if (strippedText.length > 0) {
-        blocks.push(createBlock("paragraph", { content: textContent }));
+      const textContent = node.outerHTML || node.innerHTML ? (node.outerHTML || node.innerHTML).trim() : "";
+      if (textContent.length > 0) {
+        blocks.push(createBlock("custom-html", { html: textContent, content: textContent }));
       }
     }
   });
@@ -387,6 +385,7 @@ export function htmlToBlocks(html = "") {
     const last = consolidated[consolidated.length - 1];
     if (b.type === "custom-html" && last && last.type === "custom-html") {
       last.attributes.html = (last.attributes.html + "\n\n" + b.attributes.html).trim();
+      last.attributes.content = last.attributes.html;
     } else {
       consolidated.push(b);
     }

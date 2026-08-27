@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════════
+   Admin Panel — Mobile-First Fluid Scaler Design System
+   ═══════════════════════════════════════════════════════════ */
+
 /* Scoped styling specifically for the blog admin panel */
 .admin-body {
   --admin-bg-main: #0f0f1a;
@@ -6,7 +10,7 @@
   --admin-border: #2a2a38;
   --admin-text-primary: #f5f5f7;
   --admin-text-muted: #9494a3;
-  --admin-accent: #8b5cf6; /* premium brand violet */
+  --admin-accent: #8b5cf6;
   --admin-accent-hover: #7c3aed;
   --admin-accent-glow: rgba(139, 92, 246, 0.15);
   --admin-success: #22c55e;
@@ -16,10 +20,30 @@
   --admin-danger: #ef4444;
   --admin-danger-bg: rgba(239, 68, 68, 0.15);
 
+  /* Fluid type scale — clamp(min, preferred, max) */
+  --admin-font-xs:   clamp(0.65rem, 1.5vw, 0.75rem);
+  --admin-font-sm:   clamp(0.75rem, 1.8vw, 0.875rem);
+  --admin-font-base: clamp(0.85rem, 2vw, 1rem);
+  --admin-font-lg:   clamp(1rem,   2.5vw, 1.125rem);
+  --admin-font-xl:   clamp(1.15rem, 3vw, 1.5rem);
+  --admin-font-2xl:  clamp(1.4rem,  4vw, 2rem);
+  --admin-font-3xl:  clamp(1.7rem,  5vw, 2.5rem);
+
+  /* Fluid spacing */
+  --admin-space-sm:  clamp(0.5rem, 1.5vw, 0.75rem);
+  --admin-space-md:  clamp(0.75rem, 2vw, 1.25rem);
+  --admin-space-lg:  clamp(1rem,   3vw, 1.75rem);
+
+  /* Touch target minimum */
+  --admin-touch-min: 44px;
+
   background-color: var(--admin-bg-main) !important;
   color: var(--admin-text-primary) !important;
   min-height: 100vh;
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--admin-font-base);
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
 }
 
 /* Sidebar Styling */
@@ -28,6 +52,7 @@
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .admin-sidebar-item {
@@ -38,11 +63,12 @@
   border-radius: 12px;
   color: #9494a3;
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--admin-font-sm);
   transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   border: 1px solid transparent;
   position: relative;
+  min-height: var(--admin-touch-min);
 }
 
 .admin-sidebar-item:hover {
@@ -67,10 +93,11 @@
 .admin-card {
   background-color: var(--admin-bg-panel);
   border: 1px solid var(--admin-border);
-  border-radius: 12px;
+  border-radius: clamp(8px, 1.5vw, 14px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  padding: 24px;
+  padding: clamp(14px, 3vw, 24px);
 }
+
 
 /* Text & Form Inputs */
 .admin-label {
@@ -686,4 +713,142 @@
   outline: none !important;
   resize: vertical !important;
 }
+
+/* Custom HTML Block Render Width Containment */
+.custom-html-render {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  box-sizing: border-box !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.custom-html-render * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.custom-html-render img,
+.custom-html-render video,
+.custom-html-render iframe,
+.custom-html-render embed,
+.custom-html-render object {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.custom-html-render table {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Mobile-First Responsive Rules
+   ═══════════════════════════════════════════════════════════ */
+
+/* Fluid button base — ensures touch targets on all screens */
+.admin-btn {
+  min-height: var(--admin-touch-min, 44px);
+  font-size: var(--admin-font-sm, 0.875rem);
+  padding: clamp(7px, 1.5vw, 10px) clamp(10px, 2.5vw, 18px);
+  gap: clamp(4px, 1vw, 8px);
+}
+
+/* Table responsive: allow horizontal scroll on small screens */
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+/* Fluid admin table font scaling */
+.admin-table th,
+.admin-table td {
+  font-size: var(--admin-font-sm);
+  padding: clamp(8px, 2vw, 14px) clamp(10px, 2.5vw, 20px);
+  white-space: nowrap;
+}
+
+/* Admin table first column can wrap on medium screens */
+@media (min-width: 640px) {
+  .admin-table td:first-child {
+    white-space: normal;
+  }
+}
+
+/* ─── Breakpoint: mobile < 768px ─── */
+@media (max-width: 767px) {
+  /* Give more breathing room on small screens */
+  .admin-card {
+    padding: 14px 12px;
+    border-radius: 10px;
+  }
+
+  /* Heading scale */
+  .admin-body h1 {
+    font-size: var(--admin-font-2xl);
+  }
+  .admin-body h2 {
+    font-size: var(--admin-font-xl);
+  }
+  .admin-body h3 {
+    font-size: var(--admin-font-lg);
+  }
+
+  /* Admin inputs full width and taller on mobile for touch */
+  .admin-input,
+  .admin-select,
+  .admin-textarea {
+    min-height: var(--admin-touch-min);
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    padding: 10px 12px;
+  }
+
+  /* Admin badge spacing */
+  .admin-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  /* Table hidden on mobile — replaced by card list in JSX */
+  .admin-table {
+    display: none;
+  }
+
+  /* Make sidebar drag-able overlay feel native on mobile */
+  .admin-sidebar {
+    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* ─── Breakpoint: tablet 768–1024px ─── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .admin-card {
+    padding: 18px;
+  }
+
+  .admin-input,
+  .admin-select,
+  .admin-textarea {
+    font-size: 14px;
+  }
+}
+
+/* ─── Large Desktop 1440px+ ─── */
+@media (min-width: 1440px) {
+  .admin-body {
+    --admin-font-base: 1rem;
+    --admin-font-sm:   0.875rem;
+  }
+
+  .admin-card {
+    padding: 28px 32px;
+    border-radius: 16px;
+  }
+}
+
 

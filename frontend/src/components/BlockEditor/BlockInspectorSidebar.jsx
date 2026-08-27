@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Sliders, FileText, Image as ImageIcon, Sparkles, ChevronRight } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Sliders, FileText, Image as ImageIcon, Sparkles, ChevronRight, Upload, Loader2, Trash2 } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
 export default function BlockInspectorSidebar({
@@ -21,12 +21,64 @@ export default function BlockInspectorSidebar({
   setTags,
   coverImage,
   setCoverImage,
+  imageAlt = "",
+  setImageAlt,
+  imageTitle = "",
+  setImageTitle,
   onOpenMediaModal,
 }) {
   const [activeTab, setActiveTab] = useState("block"); // block, document
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef(null);
 
   const selectedDef = selectedBlock ? BLOCK_DEFINITIONS.find((b) => b.type === selectedBlock.type) : null;
   const attrs = selectedBlock?.attributes || {};
+
+  const handleImageFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success && data.url) {
+        setCoverImage(data.url);
+        // If imageAlt is empty, auto-generate SEO friendly alt text based on post title or focus keyword
+        if (!imageAlt && setImageAlt) {
+          const autoAlt = focusKeyword ? `${focusKeyword} guide illustration` : `${title || "Featured image"} - ConvertGalaxy`;
+          setImageAlt(autoAlt);
+        }
+        if (!imageTitle && setImageTitle) {
+          setImageTitle(title || file.name.replace(/\.[^/.]+$/, ""));
+        }
+      } else {
+        setUploadError(data.error || "Image upload failed.");
+      }
+    } catch (err) {
+      setUploadError("Error uploading image to server.");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleAutoGenerateAlt = () => {
+    if (setImageAlt) {
+      const autoAlt = focusKeyword ? `${focusKeyword} - ${title || "ConvertGalaxy"}` : `${title || "Featured image"} illustration`;
+      setImageAlt(autoAlt);
+    }
+  };
 
   return (
     <aside className="w-80 bg-[#12121e] border-l border-white/10 flex flex-col shrink-0 h-full overflow-y-auto select-none font-['Outfit']">
@@ -235,7 +287,6 @@ export default function BlockInspectorSidebar({
             </div>
           )
         ) : (
-          /* Document Tab */
           <div className="space-y-5">
             <div>
               <label className="text-xs font-bold text-gray-300 block mb-1.5">Post Title</label>
@@ -243,6 +294,7 @@ export default function BlockInspectorSidebar({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter post title..."
                 className="w-full bg-[#0a0a14] border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-indigo-500 font-bold"
               />
             </div>
@@ -253,6 +305,7 @@ export default function BlockInspectorSidebar({
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
+                placeholder="url-slug-example"
                 className="w-full bg-[#0a0a14] border border-white/10 rounded-xl px-3 py-2 text-xs text-cyan-300 outline-none focus:border-indigo-500 font-mono"
               />
             </div>
@@ -269,28 +322,112 @@ export default function BlockInspectorSidebar({
               </select>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-gray-300 block mb-1.5">Cover Featured Image</label>
-              {coverImage ? (
-                <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 group">
-                  <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+            {/* Featured Cover Image Section */}
+            <div className="space-y-2 pt-2 border-t border-white/10">
+              <label className="text-xs font-bold text-gray-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <ImageIcon size={13} className="text-indigo-400" /> Featured Cover Image
+                </span>
+                {coverImage && (
                   <button
                     type="button"
-                    onClick={() => setCoverImage("")}
-                    className="absolute top-2 right-2 p-1.5 bg-rose-600 text-white rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                    onClick={() => {
+                      setCoverImage("");
+                      if (setImageAlt) setImageAlt("");
+                      if (setImageTitle) setImageTitle("");
+                    }}
+                    className="text-rose-400 hover:text-rose-300 flex items-center gap-1 cursor-pointer text-xs"
+                    title="Remove Cover Image"
                   >
-                    Remove
+                    <Trash2 size={12} /> Remove
                   </button>
+                )}
+              </label>
+
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleImageFileUpload}
+                className="hidden"
+              />
+
+              {uploadError && (
+                <div className="p-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg text-[11px] font-medium">
+                  {uploadError}
+                </div>
+              )}
+
+              {coverImage ? (
+                <div className="space-y-3">
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-white/15 bg-[#0a0a14] group">
+                    <img src={coverImage} alt={imageAlt || "Cover"} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shadow-md cursor-pointer flex items-center gap-1"
+                      >
+                        <Upload size={12} /> Replace Image
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-[10px] uppercase font-bold text-gray-400">Alt Text (SEO)</label>
+                      <button
+                        type="button"
+                        onClick={handleAutoGenerateAlt}
+                        className="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
+                      >
+                        Auto-Fill
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={imageAlt}
+                      onChange={(e) => setImageAlt && setImageAlt(e.target.value)}
+                      placeholder="SEO description for search engines..."
+                      className="w-full bg-[#0a0a14] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-gray-400 mb-1 block">Title / Caption</label>
+                    <input
+                      type="text"
+                      value={imageTitle}
+                      onChange={(e) => setImageTitle && setImageTitle(e.target.value)}
+                      placeholder="Image title attribute..."
+                      className="w-full bg-[#0a0a14] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+                    />
+                  </div>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => onOpenMediaModal && onOpenMediaModal((url) => setCoverImage(url))}
-                  className="w-full py-6 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-white hover:border-indigo-500/40 transition-all cursor-pointer"
-                >
-                  <ImageIcon size={20} />
-                  <span className="text-xs font-semibold">Select Cover Image</span>
-                </button>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full py-6 border-2 border-dashed border-white/15 hover:border-indigo-500/40 bg-[#0a0a14]/60 hover:bg-indigo-500/5 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-white transition-all cursor-pointer group"
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2 size={20} className="animate-spin text-indigo-400" />
+                        <span className="text-xs font-semibold text-indigo-300">Uploading & Optimizing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon size={22} className="text-indigo-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-semibold">Select Cover Image</span>
+                        <span className="text-[10px] text-gray-500">Auto-converts to optimized WebP</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
 
@@ -300,6 +437,7 @@ export default function BlockInspectorSidebar({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
+                placeholder="150-160 character description for Google snippet..."
                 className="w-full bg-[#0a0a14] border border-white/10 rounded-xl p-3 text-xs text-gray-300 outline-none focus:border-indigo-500 leading-relaxed"
               />
             </div>
@@ -310,6 +448,7 @@ export default function BlockInspectorSidebar({
                 type="text"
                 value={focusKeyword}
                 onChange={(e) => setFocusKeyword(e.target.value)}
+                placeholder="e.g. png to jpg"
                 className="w-full bg-[#0a0a14] border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-indigo-500"
               />
             </div>

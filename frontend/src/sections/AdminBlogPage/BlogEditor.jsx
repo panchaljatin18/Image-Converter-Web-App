@@ -871,6 +871,19 @@ export default function BlogEditor({ initialSlug = null }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // Auto-dismiss error and success toasts after 4 seconds
+  useEffect(() => {
+    if (!errorMsg) return;
+    const t = setTimeout(() => setErrorMsg(""), 4000);
+    return () => clearTimeout(t);
+  }, [errorMsg]);
+
+  useEffect(() => {
+    if (!successMsg) return;
+    const t = setTimeout(() => setSuccessMsg(""), 4000);
+    return () => clearTimeout(t);
+  }, [successMsg]);
+
   const fileInputRef = useRef(null);
 
   // Calculate live stats (word count, char count, reading time)
@@ -2186,12 +2199,20 @@ export default function BlogEditor({ initialSlug = null }) {
   return (
     <div className="w-full h-screen flex flex-col bg-[#090912] overflow-hidden">
       {errorMsg && (
-        <div className="fixed top-4 right-4 z-50 p-4 bg-rose-600 text-white rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold font-['Outfit']">
+        <div
+          className="fixed top-4 right-4 z-50 p-4 bg-rose-600 text-white rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold font-['Outfit'] animate-in slide-in-from-top-2 fade-in duration-300 cursor-pointer"
+          onClick={() => setErrorMsg("")}
+          title="Click to dismiss"
+        >
           <AlertTriangle size={16} /> {errorMsg}
         </div>
       )}
       {successMsg && (
-        <div className="fixed top-4 right-4 z-50 p-4 bg-emerald-600 text-white rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold font-['Outfit']">
+        <div
+          className="fixed top-4 right-4 z-50 p-4 bg-emerald-600 text-white rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold font-['Outfit'] animate-in slide-in-from-top-2 fade-in duration-300 cursor-pointer"
+          onClick={() => setSuccessMsg("")}
+          title="Click to dismiss"
+        >
           <Check size={16} /> {successMsg}
         </div>
       )}
@@ -2215,9 +2236,10 @@ export default function BlogEditor({ initialSlug = null }) {
         setTags={setTags}
         coverImage={coverImage}
         setCoverImage={setCoverImage}
-        onOpenMediaModal={(callback) => {
-          setShowMediaModal(true);
-        }}
+        imageAlt={imageAlt}
+        setImageAlt={setImageAlt}
+        imageTitle={imageTitle}
+        setImageTitle={setImageTitle}
       />
     </div>
   );

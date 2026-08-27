@@ -1,8 +1,10 @@
 import { SITE_URL } from "./metadata";
 
 export interface FAQItem {
-  question: string;
-  answer: string;
+  question?: string;
+  answer?: string;
+  q?: string;
+  a?: string;
 }
 
 export interface BreadcrumbItem {
@@ -380,14 +382,16 @@ export function getFAQSchema(faqs: FAQItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqs.map((faq) => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
+    "mainEntity": faqs
+      .filter((faq) => (faq.question || faq.q) && (faq.answer || faq.a))
+      .map((faq) => ({
+        "@type": "Question",
+        "name": faq.question || faq.q || "",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer || faq.a || ""
+        }
+      }))
   };
 }
 
@@ -469,13 +473,24 @@ export function getBlogPostingSchema(post: {
         "url": SITE_URL
       };
 
+  const imageUrl = post.image || `${SITE_URL}/og-image.webp`;
+
   return [
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": post.url
+      },
       "headline": post.title,
       "description": post.description,
-      "image": post.image || `${SITE_URL}/og-image.webp`,
+      "image": {
+        "@type": "ImageObject",
+        "url": imageUrl,
+        "width": 1200,
+        "height": 675
+      },
       "datePublished": post.datePublished,
       "dateModified": post.dateModified || post.datePublished,
       "url": post.url,

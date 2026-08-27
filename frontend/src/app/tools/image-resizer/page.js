@@ -11,19 +11,19 @@ const ImageResizerTool = dynamic(() => import("@/components/tools/ImageResizerTo
 });
 
 export const metadata = constructMetadata({
-  title: "Resize Image Online (Exact Pixels, Inches for Printing & Social Media) – ConvertGalaxy",
-  description: "Resize photos to exact pixel width/height or physical inch measurements for print and online forms. Lock aspect ratio to prevent stretching. Free, fast browser resizer.",
+  title: "Image Resizer – Resize Images Online for Free | ConvertGalaxy",
+  description: "Resize images to exact pixel dimensions, percentages, or print inches online for free. Lock aspect ratios to prevent distortion with fast browser-based processing.",
   canonicalPath: "/tools/image-resizer",
   ogImage: "https://www.convertgalaxy.com/image-resizer.webp",
   keywords: [
-    "resize image to exact dimensions in inches for printing",
-    "resize jpg photo for email signature banner 600px width",
-    "resize photo for official visa or passport application dimensions",
-    "image resizer online free",
-    "resize image in pixels online free",
-    "photo resizer free no watermark",
-    "resize image for instagram free",
-    "bulk image resizer online",
+    "image resizer",
+    "resize image",
+    "resize image online free",
+    "photo resizer free",
+    "resize image in pixels",
+    "resize photo online",
+    "bulk image resizer",
+    "resize image without losing quality",
   ]
 });
 
@@ -42,8 +42,8 @@ const relatedTools = [
 export default function ImageResizerPage() {
   return (
     <ToolPageLayout
-      title="Resize Image Online (Exact Pixels, Inches & Aspect Ratios)"
-      description="Resize images to exact pixel dimensions or physical print inches. Lock aspect ratio to prevent distortion, use custom presets, or export in JPG, PNG, and WebP format."
+      title="Image Resizer – Resize Images Online for Free"
+      description="Resize images to exact pixel dimensions, percentages, or print inches. Lock aspect ratios to prevent distortion and export high-quality images with 100% private browser processing."
       icon="📐"
       color="#8b5cf6"
       gradient="linear-gradient(135deg, #8b5cf6, #a78bfa)"

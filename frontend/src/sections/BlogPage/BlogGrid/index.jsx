@@ -161,6 +161,7 @@ export default function BlogGrid({ initialPosts = [] }) {
                   <Image
                     src={post.frontmatter.image}
                     alt={post.frontmatter.imageAlt || post.frontmatter.title}
+                    title={post.frontmatter.imageTitle || post.frontmatter.imageAlt || post.frontmatter.title}
                     fill
                     unoptimized
                     priority={index < 3}

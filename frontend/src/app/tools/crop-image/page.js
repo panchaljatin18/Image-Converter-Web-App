@@ -11,18 +11,18 @@ const CropImageTool = dynamic(() => import("@/components/tools/CropImageTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "Crop Image Online Free (Exact Aspect Ratios for LinkedIn, IG & Avatars) – ConvertGalaxy",
-  description: "Crop images to exact aspect ratios (16:9, 1:1, square) for LinkedIn banners, Instagram profile avatars, and passport photos. Free rule-of-thirds grid visual cropper.",
+  title: "Crop Image Online – Free Image Cropper & Aspect Ratio Tool | ConvertGalaxy",
+  description: "Crop images online for free with exact aspect ratio presets for Instagram, LinkedIn banners, and passport photos. Visual rule-of-thirds grid with instant download.",
   canonicalPath: "/tools/crop-image",
   ogImage: "https://www.convertgalaxy.com/crop-image.webp",
   keywords: [
-    "crop image to exact aspect ratio for linkedin banner",
-    "crop profile picture into precise square for instagram avatar",
-    "crop headshot photo to 2x2 passport specification free",
-    "crop image online free",
-    "free image cropper no watermark",
-    "crop photo to square online free",
-    "crop image for instagram free",
+    "crop image",
+    "crop image online",
+    "free image cropper",
+    "crop photo online",
+    "crop image to square",
+    "image cropper free",
+    "crop photo aspect ratio",
     "online image cropper",
   ]
 });
@@ -42,8 +42,8 @@ const relatedTools = [
 export default function CropImagePage() {
   return (
     <ToolPageLayout
-      title="Crop Image Online Free (Aspect Ratios for Social Media & Avatars)"
-      description="Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly."
+      title="Crop Image Online – Free Image Cropper & Aspect Ratio Tool"
+      description="Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly with 100% private processing."
       uiDescription={
         <span>
           Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly.

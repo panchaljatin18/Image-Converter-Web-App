@@ -11,13 +11,14 @@ const WebPConverterTool = dynamic(() => import("@/components/tools/WebPConverter
 });
 
 export const metadata = constructMetadata({
-  title: "Convert Image to WebP Online (Reduce File Size Without Server Install) – ConvertGalaxy",
-  description: "Convert JPG, PNG, and photos to modern WebP format online. Reduce image file size by up to 80% without server side tools. 100% private browser processing.",
+  title: "WebP Converter – Convert Images to WebP Online Free | ConvertGalaxy",
+  description: "Convert JPG, PNG, and photos to modern WebP format online. Reduce image file size by up to 80% without server-side tools or quality loss. 100% private in browser.",
   canonicalPath: "/tools/webp-converter",
   ogImage: "https://www.convertgalaxy.com/webp-converter.webp",
   keywords: [
-    "reduce webp file size without server side installation",
-    "convert jpg to webp lossless compression for archival site images",
+    "webp converter",
+    "convert to webp",
+    "image to webp",
     "convert image to webp online free",
     "jpg to webp converter free",
     "png to webp free",
@@ -41,11 +42,11 @@ const relatedTools = [
 export default function WebPConverterPage() {
   return (
     <ToolPageLayout
-      title="Convert Any Image to WebP Online"
-      description="Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality."
+      title="WebP Converter – Convert Images to WebP Online Free"
+      description="Convert any image to modern WebP format online. Drastically reduce web page load times and improve Core Web Vitals with 100% client-side browser processing."
       uiDescription={
         <span>
-          Convert any image to WebP for maximum web performance, or convert WebP back to JPG/PNG. WebP offers 26% smaller files than PNG with equivalent quality.
+          Convert any JPG or PNG image to ultra-fast WebP format online. Drastically reduce web page load times with 100% client-side browser processing.
         </span>
       }
       icon="⚡"

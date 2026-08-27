@@ -11,19 +11,19 @@ const ImageToPdfTool = dynamic(() => import("@/components/tools/ImageToPdfTool")
 });
 
 export const metadata = constructMetadata({
-  title: "Convert Image to PDF Online (Combine JPG & PNG Scans into PDF) – ConvertGalaxy",
-  description: "Combine receipt photos, document screenshots, and JPG scans into a clean multi-page PDF document. Ideal for expense reports, student homework, and contract submissions.",
+  title: "Image to PDF Converter – Combine JPG & PNG to PDF Online | ConvertGalaxy",
+  description: "Convert and combine multiple JPG, PNG, and WebP images into a single clean PDF document online for free. Customize page sizes, margins, and orientation privately.",
   canonicalPath: "/tools/image-to-pdf",
   ogImage: "https://www.convertgalaxy.com/image-to-pdf.webp",
   keywords: [
-    "combine receipts jpg into pdf for expense report",
-    "convert multiple png screenshots into single pdf document",
-    "combine mobile camera document photos into clear pdf file",
-    "image to pdf converter free",
-    "jpg to pdf free online",
-    "convert jpg to pdf no signup",
-    "multiple images to pdf online free",
-    "png to pdf converter free",
+    "image to pdf",
+    "image to pdf converter",
+    "convert image to pdf",
+    "jpg to pdf",
+    "png to pdf",
+    "combine images to pdf",
+    "convert jpg to pdf online free",
+    "photos to pdf converter",
   ]
 });
 
@@ -42,8 +42,8 @@ const relatedTools = [
 export default function ImageToPdfPage() {
   return (
     <ToolPageLayout
-      title="Convert Images to PDF Online (Combine Scans & Receipts)"
-      description="Combine multiple receipt photos, screenshots, and document scans into a single PDF. Customize page size (A4, Letter), margins, orientation, and reorder pages easily."
+      title="Image to PDF Converter – Combine Images to PDF Online Free"
+      description="Combine multiple receipt photos, screenshots, and document scans into a single PDF. Customize page size (A4, Letter), margins, orientation, and reorder pages easily with 100% private browser processing."
       icon="📄"
       color="#f97316"
       gradient="linear-gradient(135deg, #f97316, #fb923c)"

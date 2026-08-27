@@ -3,13 +3,13 @@ import { Metadata } from "next";
 export const SITE_URL = "https://www.convertgalaxy.com";
 
 export const GLOBAL_SEO_DEFAULTS = {
-  applicationName: "Convert Galaxy",
+  applicationName: "ConvertGalaxy",
   title: {
-    default: "Convert Galaxy – #1 Free Online Image Converter & Compressor (No Quality Loss)",
-    template: "%s | Convert Galaxy – Free Image Tools",
+    default: "ConvertGalaxy – Free Online Image Converter, Compressor & Editor (100% Private)",
+    template: "%s | ConvertGalaxy",
   },
   description:
-    "Free online image converter and compressor to convert JPG, PNG, WebP, HEIC & PDF without losing quality. Fast batch image converter — 100% private, no signup, no watermark.",
+    "Free online image converter and batch optimizer to convert JPG, PNG, WebP, HEIC & PDF directly in your browser without losing quality. 100% private, no file uploads, no signup required.",
   keywords: [
     "free image converter",
     "free online image converter",

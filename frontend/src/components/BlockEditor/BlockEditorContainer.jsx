@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { createBlock, generateBlockId, BLOCK_DEFINITIONS } from "./utils/blockTypes";
 import { blocksToHtml, htmlToBlocks } from "./utils/serializer";
+import "@/app/blog/prose.css";
 
 import ParagraphBlock from "./blocks/ParagraphBlock";
 import HeadingBlock from "./blocks/HeadingBlock";
@@ -81,6 +82,10 @@ export default function BlockEditorContainer({
   setTags,
   coverImage = "",
   setCoverImage,
+  imageAlt = "",
+  setImageAlt,
+  imageTitle = "",
+  setImageTitle,
   onOpenMediaModal,
 }) {
   // State for Blocks Array
@@ -656,6 +661,7 @@ export default function BlockEditorContainer({
       onChange: (newAttrs, newChildren) => handleUpdateBlockAttributes(block.id, newAttrs, newChildren),
       isSelected,
       isSlashActive,
+      onSelect: () => setSelectedBlockId(block.id),
       onSelectSlashCommand: () => {
         const filtered = SLASH_COMMANDS.filter((cmd) => {
           if (!slashQuery) return true;
@@ -761,15 +767,16 @@ export default function BlockEditorContainer({
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#090912] text-white font-['Outfit'] select-none">
       {/* Top Header Toolbar */}
-      <header className="h-14 bg-[#141424] border-b border-indigo-500/20 px-6 flex items-center justify-between shrink-0 z-40 shadow-xl">
-        <div className="flex items-center gap-3">
+      <header className="h-12 sm:h-14 bg-[#141424] border-b border-indigo-500/20 px-2 sm:px-6 flex items-center justify-between shrink-0 z-40 shadow-xl gap-1 sm:gap-3">
+        {/* Left Controls */}
+        <div className="flex items-center gap-1 sm:gap-3">
           <button
             type="button"
             onClick={() => {
               setInsertIndex(null);
               setIsInserterOpen(true);
             }}
-            className="w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-600/30 transition-all cursor-pointer shrink-0"
             title="Add Block"
           >
             +
@@ -784,7 +791,7 @@ export default function BlockEditorContainer({
             <Layers size={18} />
           </button>
 
-          <div className="w-px h-5 bg-white/10 mx-1" />
+          <div className="w-px h-5 bg-white/10 mx-0 sm:mx-1" />
 
           {/* Undo / Redo */}
           <button
@@ -806,18 +813,19 @@ export default function BlockEditorContainer({
             <Redo2 size={16} />
           </button>
 
+          {/* Keyboard shortcuts — hidden on mobile */}
           <button
             type="button"
             onClick={() => setShowShortcutsModal(true)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer ml-1"
+            className="hidden sm:flex p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer ml-1"
             title="Keyboard Shortcuts Help"
           >
             <Keyboard size={16} />
           </button>
         </div>
 
-        {/* Device Responsiveness Toggle */}
-        <div className="flex items-center gap-1 bg-[#0a0a14] p-1 rounded-xl border border-white/10">
+        {/* Device Responsiveness Toggle — hidden on mobile (use the preview on device) */}
+        <div className="hidden sm:flex items-center gap-1 bg-[#0a0a14] p-1 rounded-xl border border-white/10">
           <button
             type="button"
             onClick={() => setDeviceMode("desktop")}
@@ -851,7 +859,7 @@ export default function BlockEditorContainer({
         </div>
 
         {/* Save / Update Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={() => setIsInspectorOpen((prev) => !prev)}
@@ -872,7 +880,7 @@ export default function BlockEditorContainer({
               onSave && onSave(html, blocks, "Draft");
             }}
             disabled={saving}
-            className="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer border border-white/10"
+            className="hidden sm:flex px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer border border-white/10"
           >
             Save Draft
           </button>
@@ -883,10 +891,11 @@ export default function BlockEditorContainer({
               onSave && onSave(html, blocks, "Published");
             }}
             disabled={saving}
-            className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2"
+            className="px-2.5 sm:px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-1.5"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            Publish Post
+            <span className="hidden xs:inline">Publish</span>
+            <span className="xs:hidden">Save</span>
           </button>
         </div>
       </header>
@@ -920,9 +929,9 @@ export default function BlockEditorContainer({
               }
             }
           }}
-          className="flex-1 overflow-y-auto px-12 md:px-24 py-8 md:py-12 flex justify-center bg-[#0d0d18] cursor-text"
+          className="flex-1 overflow-y-auto px-3 sm:px-8 md:px-16 py-5 sm:py-8 md:py-12 flex justify-center bg-[#0d0d18] cursor-text"
         >
-          <div id="canvas-inner" className={`w-full ${deviceWidths[deviceMode]} px-6 sm:px-10 md:px-16 min-w-0 break-words transition-all duration-300 min-h-[500px] mx-auto`}>
+          <div id="canvas-inner" className={`w-full ${deviceWidths[deviceMode]} px-2 sm:px-6 md:px-10 min-w-0 break-words transition-all duration-300 min-h-[500px] mx-auto`}>
             {/* Post Title Field */}
             <input
               type="text"
@@ -981,6 +990,10 @@ export default function BlockEditorContainer({
             setTags={setTags}
             coverImage={coverImage}
             setCoverImage={setCoverImage}
+            imageAlt={imageAlt}
+            setImageAlt={setImageAlt}
+            imageTitle={imageTitle}
+            setImageTitle={setImageTitle}
             onOpenMediaModal={onOpenMediaModal}
           />
         )}

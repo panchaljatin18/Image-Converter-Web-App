@@ -11,22 +11,22 @@ const HeicToJpgTool = dynamic(() => import("@/components/tools/HeicToJpgTool"), 
 })
 
 export const metadata = constructMetadata({
-  title: "Convert iPhone HEIC Photos to JPG Online (Private & Instant) – ConvertGalaxy",
+  title: "HEIC to JPG Converter – Free Online, No Upload Required | ConvertGalaxy",
   description:
-    "Convert iPhone HEIC & HEIF photos to JPG online instantly without cloud storage upload. Preserve camera EXIF metadata, original resolution, 100% private browser processing.",
+    "Convert iPhone HEIC photos to JPG online for free. Preserve camera EXIF metadata and original resolution with 100% private browser processing without server uploads.",
   canonicalPath: "/tools/heic-to-jpg",
   ogImage: "https://www.convertgalaxy.com/heic-to-jpg.webp",
   keywords: [
-    "convert iphone heic photos to jpg without server upload",
-    "how to convert heic to jpg on windows pc without itunes",
-    "private heic to jpg converter local browser processing",
-    "batch convert iphone heic photos to jpg preserving exif data",
-    "convert heic camera uploads to jpg for online portal",
-    "heic to jpg converter free",
+    "heic to jpg",
+    "heic to jpg converter",
+    "convert heic to jpg",
     "convert heic to jpg online free",
-    "iphone photo to jpg private",
+    "heic to jpg converter free",
+    "iphone photo to jpg",
     "heif to jpg converter",
     "convert apple photos to jpg",
+    "heic to jpg no upload",
+    "heic to jpg private",
   ],
 })
 
@@ -64,12 +64,11 @@ const toolFaqs = [
 export default function HeicToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert iPhone HEIC Photos to JPG Online (Private & Instant)"
+      title="HEIC to JPG Converter – Convert iPhone Photos to JPG Online"
       description="Convert Apple HEIC photos to universal JPG format instantly. Preserve original camera resolution and EXIF metadata without uploading files to external servers."
       uiDescription={
         <span>
-          Convert Apple HEIC photos to universal JPG format instantly with
-          custom quality & EXIF metadata controls. 100% private browser-side processing.
+          Convert Apple iPhone HEIC and HEIF photos to universal JPG format instantly with custom quality & EXIF metadata controls. 100% private browser-side processing.
         </span>
       }
       icon="📱"

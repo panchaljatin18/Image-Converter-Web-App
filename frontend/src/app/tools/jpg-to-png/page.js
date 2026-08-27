@@ -11,20 +11,20 @@ const JpgToPngTool = dynamic(() => import("@/components/tools/JpgToPngTool"), {
 });
 
 export const metadata = constructMetadata({
-  title: "Convert JPG to PNG Online (Lossless Quality & Transparency Ready) – ConvertGalaxy",
-  description: "Convert JPG to PNG format online for transparent background editing and graphic design workflows. Preserve sharp text rendering, prevent artifact blur, 100% free browser processing.",
+  title: "JPG to PNG Converter – Free Online Image Converter | ConvertGalaxy",
+  description: "Convert JPG to PNG online for free. Preserve crisp text rendering, prevent compression artifacts, and prepare images for transparent backgrounds without uploading files.",
   canonicalPath: "/tools/jpg-to-png",
   ogImage: "https://www.convertgalaxy.com/jpg-to-png.webp",
   keywords: [
-    "convert jpg to png for transparent background editing",
-    "convert jpg logo to png with transparent background",
-    "change jpeg diagram to png for crisp text display",
-    "convert jpg to high resolution transparent png file",
-    "batch convert jpg screenshots to png without quality loss",
-    "jpg to png converter free",
+    "jpg to png",
+    "jpg to png converter",
+    "convert jpg to png",
     "convert jpg to png online free",
+    "jpg to png converter free",
     "jpeg to png converter",
+    "convert jpeg to png",
     "jpg to png transparent background",
+    "lossless jpg to png converter",
   ]
 });
 
@@ -43,8 +43,8 @@ const relatedTools = [
 export default function JpgToPngPage() {
   return (
     <ToolPageLayout
-      title="Convert JPG to PNG Online (Lossless Quality & Transparency Ready)"
-      description="Convert JPG graphics to lossless PNG format instantly. Ideal for graphic editing, removing compression artifacts around text, and preparing images for transparent backgrounds."
+      title="JPG to PNG Converter – Convert JPG to PNG Online Free"
+      description="Convert JPG graphics to lossless PNG format instantly. Ideal for graphic editing, removing compression artifacts around text, and preparing images for transparent backgrounds. 100% browser-based."
       uiDescription={
         <span>
           Convert JPG graphics to lossless PNG format instantly. Ideal for graphic editing, removing compression artifacts around text, and preparing images for transparent backgrounds. 100% browser-based.

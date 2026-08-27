@@ -9,15 +9,18 @@ const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
 const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
 export const metadata = constructMetadata({
-  title: "Free Online Image Converter & Compressor – Convert Without Losing Quality",
-  description: "Free online image converter and batch image compressor. Compress and convert images (JPG, PNG, WebP, HEIC, PDF) without losing quality. 100% private, no signup.",
+  title: "Image Converter Online – Free, Fast & Private Image Tools | ConvertGalaxy",
+  description: "Free online image converter to batch convert JPG, PNG, WebP, HEIC & PDF directly in your browser without uploading to a server. 100% private with no quality loss.",
   canonicalPath: "",
   keywords: [
     "free image converter",
+    "image converter online",
     "free online image converter",
-    "image converter without losing quality",
+    "online image converter",
+    "convert images without uploading",
+    "private image converter",
     "batch image converter",
-    "compress and convert image",
+    "image converter without losing quality",
     "jpg to png converter free",
     "png to jpg free",
     "heic to jpg converter",
@@ -28,9 +31,6 @@ export const metadata = constructMetadata({
     "pdf to image converter",
     "crop image online free",
     "convert image free no signup",
-    "image compressor no watermark",
-    "best free image converter",
-    "online image tools",
   ],
 });
 

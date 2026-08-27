@@ -11,19 +11,19 @@ const ImageCompressorTool = dynamic(() => import("@/components/tools/ImageCompre
 });
 
 export const metadata = constructMetadata({
-  title: "Compress Image Size Online (Reduce PNG & JPG KB Without Quality Loss) – ConvertGalaxy",
-  description: "Compress PNG & JPG image size without degrading text sharpness or visual clarity. Reduce file size up to 90% for Discord custom emojis, WordPress PageSpeed, email limits.",
+  title: "Image Compressor – Reduce JPG, PNG & WebP Size Online | ConvertGalaxy",
+  description: "Compress JPG, PNG, and WebP images online for free without losing quality. Reduce file size up to 90% for web performance, Discord emojis, and email attachments.",
   canonicalPath: "/tools/image-compressor",
   ogImage: "https://www.convertgalaxy.com/image-compressor.webp",
   keywords: [
-    "compress png image size without degrading text sharpness",
-    "compress png image for discord custom emoji 256kb limit",
-    "bulk compress jpg photos for wordpress pagespeed optimization",
-    "compress jpg image to under 100kb for passport application",
-    "image compressor online free",
+    "image compressor",
+    "compress image",
+    "compress image online free",
     "compress image without losing quality",
     "reduce photo size online free",
     "compress png online free",
+    "compress jpeg online",
+    "reduce image size kb",
   ]
 });
 
@@ -42,11 +42,11 @@ const relatedTools = [
 export default function ImageCompressorPage() {
   return (
     <ToolPageLayout
-      title="Compress Image Size Online (Preserve Visual Quality)"
+      title="Image Compressor – Compress Images Online Without Quality Loss"
       description="Shrink PNG, JPG & WebP image file sizes up to 90% without degrading visual sharpness or text clarity. Perfect for PageSpeed optimization, Discord emojis, and email attachments."
       uiDescription={
         <span>
-          Shrink PNG, JPG & WebP image file sizes up to 90% without degrading visual sharpness or text clarity. Perfect for PageSpeed optimization, Discord emojis, and email attachments.
+          Shrink PNG, JPG & WebP image file sizes up to 90% without degrading visual sharpness or text clarity. Perfect for PageSpeed optimization and email attachments. 100% private in your browser.
         </span>
       }
       icon="🗜️"

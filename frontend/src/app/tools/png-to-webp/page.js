@@ -11,18 +11,18 @@ const PNGToWebPTool = dynamic(() => import("@/components/tools/PNGToWebPTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "Batch Convert PNG to WebP Online (Boost Shopify & PageSpeed) – ConvertGalaxy",
-  description: "Convert transparent PNG assets to ultra-lightweight WebP format. Shrink image weight up to 80% while retaining alpha channel transparency. Improve Core Web Vitals performance.",
+  title: "PNG to WebP Converter – Convert PNG to WebP Online Free | ConvertGalaxy",
+  description: "Convert PNG to WebP online for free. Shrink image file size up to 80% while retaining full alpha transparency to boost website speed and Core Web Vitals.",
   canonicalPath: "/tools/png-to-webp",
   ogImage: "https://www.convertgalaxy.com/png-to-webp.webp",
   keywords: [
-    "batch convert png to webp for faster shopify loading",
-    "convert transparent png graphics to webp for dark mode sites",
-    "batch convert png assets to webp for wordpress pagespeed boost",
-    "convert png vector icons to ultra lightweight webp graphics",
+    "png to webp",
+    "png to webp converter",
+    "convert png to webp",
+    "convert png to webp online free",
     "png to webp converter free",
-    "convert png to webp online",
     "png to webp transparency",
+    "batch convert png to webp",
     "convert transparent png to webp",
   ]
 });
@@ -30,7 +30,7 @@ export const metadata = constructMetadata({
 const relatedTools = [
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
   { name: "WebP Converter", href: "/tools/webp-converter", icon: "⚡" },
-  { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "🖼️" },
+  { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },
   { name: "HEIC to JPG", href: "/tools/heic-to-jpg", icon: "📱" },
   { name: "Image Compressor", href: "/tools/image-compressor", icon: "🗜️" },
   { name: "Image Resizer", href: "/tools/image-resizer", icon: "📐" },
@@ -41,11 +41,11 @@ const relatedTools = [
 export default function PNGToWebPPage() {
   return (
     <ToolPageLayout
-      title="Batch Convert PNG to WebP Online (Boost Site Speed)"
-      description="Convert PNG images to modern WebP format instantly. Preserves full alpha transparency while reducing file weight up to 80% to boost Google PageSpeed & Core Web Vitals."
+      title="PNG to WebP Converter – Convert PNG to WebP Online Free"
+      description="Convert PNG graphics to modern WebP format online. Reduce image file size by up to 80% while preserving alpha transparency for faster website load times."
       uiDescription={
         <span>
-          Convert PNG images to modern WebP format instantly. Preserves full alpha transparency while reducing file weight up to 80% to boost Google PageSpeed & Core Web Vitals.
+          Convert PNG graphics to modern WebP format online. Reduce image file size by up to 80% while preserving alpha transparency for faster website load times. 100% private browser processing.
         </span>
       }
       icon="🖼️"

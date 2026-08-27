@@ -211,16 +211,27 @@ body::-webkit-scrollbar {
   perspective: 1000px;
 }
 
+/* Eliminate 300ms mobile touch delay across all clickable elements */
+a, button, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
 /* Reduce backdrop filter blur on mobile to prevent main-thread GPU/CPU stutter */
 @media (max-width: 768px) {
   .cv-auto-section {
     contain-intrinsic-size: 1px 400px;
   }
 
-  /* Optimize font rendering speed */
+  /* Optimize font rendering speed and minimize layout shifts */
   body {
     text-rendering: optimizeSpeed;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Optimize tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

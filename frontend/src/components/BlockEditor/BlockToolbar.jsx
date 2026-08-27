@@ -172,34 +172,36 @@ export default function BlockToolbar({
         </span>
       </div>
 
-      {/* HTML / Preview Tab Toggle for Custom HTML Block */}
+      {/* HTML / Preview Tab Toggle for Custom HTML Block (Floating Toolbar Pop-up) */}
       {block.type === "custom-html" && (
-        <>
-          <div className="flex items-center gap-1 bg-[#090912] p-0.5 rounded-lg border border-white/10 mx-1">
-            <button
-              type="button"
-              onClick={() => onChangeAttributes({ mode: "html" })}
-              className={`px-2.5 py-0.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                (block.attributes?.mode || "html") === "html"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              HTML
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeAttributes({ mode: "preview" })}
-              className={`px-2.5 py-0.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                block.attributes?.mode === "preview"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Preview
-            </button>
-          </div>
-        </>
+        <div className="flex items-center gap-1 bg-[#090912] p-0.5 rounded-lg border border-white/10 mx-1 select-none" role="tablist">
+          <button
+            role="tab"
+            aria-selected={(block.attributes?.mode || "html") === "html"}
+            type="button"
+            onClick={() => onChangeAttributes({ mode: "html" })}
+            className={`px-2.5 py-0.5 text-xs font-bold rounded-md transition-all cursor-pointer font-['Outfit'] ${
+              (block.attributes?.mode || "html") === "html"
+                ? "bg-indigo-600 text-white shadow-sm"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            HTML
+          </button>
+          <button
+            role="tab"
+            aria-selected={block.attributes?.mode === "preview"}
+            type="button"
+            onClick={() => onChangeAttributes({ mode: "preview" })}
+            className={`px-2.5 py-0.5 text-xs font-bold rounded-md transition-all cursor-pointer font-['Outfit'] ${
+              block.attributes?.mode === "preview"
+                ? "bg-indigo-600 text-white shadow-sm"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Preview
+          </button>
+        </div>
       )}
 
       <div className="w-px h-4 bg-white/10 mx-0.5" />

@@ -9,13 +9,13 @@ export default function ToolsHeader() {
       <Container className="relative z-[1]">
         <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 bg-indigo-500/15 border border-indigo-500/30 rounded-full text-[#818cf8] font-semibold text-[0.78rem] tracking-wider uppercase mb-5">
           <Zap size={12} />
-          8 Free Tools
+          11 Free Tools
         </span>
         <h1 className="text-3xl md:text-5xl font-bold leading-tight font-['Outfit'] tracking-tight mb-4 text-[#f8fafc]">
           All Image Tools <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">in One Place</span>
         </h1>
-        <p className="text-[#94a3b8] text-[1.1rem] max-w-[520px] mx-auto">
-          Every tool is 100% free, browser-based, and processes your images locally — no uploads, no registration.
+        <p className="text-[#94a3b8] text-[1.1rem] max-w-[560px] mx-auto">
+          Every tool is 100% free, browser-based, and processes your images locally — no file uploads, no registration required.
         </p>
       </Container>
     </div>

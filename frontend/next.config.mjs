@@ -85,7 +85,7 @@ const nextConfig = {
         headers: securityHeaders,
       },
       {
-        source: "/CG.png",
+        source: "/(.*).(webp|png|jpg|jpeg|gif|svg|ico|woff|woff2)",
         headers: [
           {
             key: "Cache-Control",

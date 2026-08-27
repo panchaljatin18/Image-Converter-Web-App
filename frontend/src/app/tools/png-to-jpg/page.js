@@ -11,20 +11,21 @@ const PngToJpgTool = dynamic(() => import("@/components/tools/PngToJpgTool"), {
 });
 
 export const metadata = constructMetadata({
-  title: "Convert Transparent PNG to JPG Online (Custom Background Fill) – ConvertGalaxy",
-  description: "Convert transparent PNG images to JPG with custom solid background fill. Fix black background glitches, shrink file size for web uploads, 100% free browser processing.",
+  title: "PNG to JPG Converter – Free Online, Private & Fast | ConvertGalaxy",
+  description: "Convert PNG to JPG online for free. Adjust image quality, handle transparent backgrounds seamlessly, and batch convert PNG images directly in your browser without uploading files.",
   canonicalPath: "/tools/png-to-jpg",
   ogImage: "https://www.convertgalaxy.com/png-to-jpg.webp",
   keywords: [
-    "convert transparent png to jpg with custom background",
-    "convert png to jpg without black background glitch",
-    "convert transparent png logo to solid white background jpg",
-    "bulk convert png screenshots to compact jpg files",
-    "convert png passport scan to jpg for government portal",
-    "png to jpg converter free",
+    "png to jpg",
+    "png to jpg converter",
+    "convert png to jpg",
     "convert png to jpg online free",
-    "png to jpeg free",
+    "png to jpg converter free",
+    "png to jpeg converter",
+    "free png to jpg",
+    "convert png to jpg without losing quality",
     "png to jpg transparent background",
+    "png to jpg no upload",
   ]
 });
 
@@ -44,11 +45,11 @@ const relatedTools = [
 export default function PngToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert Transparent PNG to JPG Online (Custom Solid Background)"
-      description="Convert PNG images to JPG with custom solid background color controls. Prevents transparent background corruption glitches, shrinks file size for web forms."
+      title="PNG to JPG Converter – Convert PNG to JPG Online Free"
+      description="Convert PNG images to high-quality JPG format in seconds. Adjust quality, replace transparent backgrounds with solid colors, and batch process images 100% privately in your browser."
       uiDescription={
         <span>
-          Convert PNG images to JPG format with custom quality and solid background color controls. Prevents transparent pixels from turning black while shrinking file size for web forms.
+          Convert PNG images to universal JPG format in seconds. Adjust quality, replace transparent backgrounds with custom colors, and batch process files 100% privately in your browser.
         </span>
       }
       icon="🖼️"

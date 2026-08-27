@@ -11,19 +11,19 @@ const WebPToJpgTool = dynamic(() => import("@/components/tools/WebPToJpgTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "Convert WebP Product Images to JPG Online (Amazon & Marketplace Ready) – ConvertGalaxy",
-  description: "Convert WebP files downloaded from websites into standard JPG format for Amazon seller listings, legacy desktop software, and CMS platforms. 100% free browser processing.",
+  title: "WebP to JPG Converter – Free, Fast & Private | ConvertGalaxy",
+  description: "Convert WebP to JPG online for free. Easily transform WebP images downloaded from websites into standard JPG format for Amazon, Photoshop, and CMS platforms.",
   canonicalPath: "/tools/webp-to-jpg",
   ogImage: "https://www.convertgalaxy.com/webp-to-jpg.webp",
   keywords: [
-    "convert webp product images to jpg for amazon seller listing",
-    "convert webp images downloaded from browser to standard jpg",
-    "batch convert webp file directory to jpg for desktop editing",
-    "convert webp graphics to jpg for adobe photoshop legacy",
-    "convert webp product images to jpg for amazon seller dashboard",
-    "webp to jpg converter free",
+    "webp to jpg",
+    "webp to jpg converter",
+    "convert webp to jpg",
     "convert webp to jpg online free",
-    "save webp as jpg free",
+    "webp to jpg converter free",
+    "save webp as jpg",
+    "change webp to jpg",
+    "webp to jpeg online",
   ]
 });
 
@@ -43,11 +43,11 @@ const relatedTools = [
 export default function WebPToJpgPage() {
   return (
     <ToolPageLayout
-      title="Convert WebP Product Images to JPG Online (Marketplace Ready)"
-      description="Convert WebP images downloaded from websites to standard JPEG format instantly. Compatible with Amazon Seller Central, legacy graphic editors, and desktop photo viewers."
+      title="WebP to JPG Converter – Convert WebP to JPG Online Free"
+      description="Convert WebP images into universal JPG format instantly. Perfect for Amazon seller listings, photo editing software, and legacy systems with 100% private browser processing."
       uiDescription={
         <span>
-          Convert WebP images downloaded from websites to standard JPEG format instantly with quality controls. Compatible with Amazon Seller Central, legacy graphic editors, and desktop photo viewers.
+          Convert WebP images to standard JPG format instantly. Perfect for Amazon seller listings, photo editing software, and legacy systems with 100% private browser processing.
         </span>
       }
       icon="🖼️"
