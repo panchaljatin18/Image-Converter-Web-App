@@ -9,27 +9,15 @@ const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
 const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
 export const metadata = constructMetadata({
-  title: "Free Online Image Converter – JPG, PNG, WebP & More | ConvertGalaxy",
-  description: "Convert images online for free with ConvertGalaxy. Fast, browser-based image converter supporting JPG, PNG, WebP, HEIC, GIF, and PDF with 100% privacy and no quality loss.",
+  title: "Free Image Converter – JPG, PNG & WebP | ConvertGalaxy",
+  description: "Convert JPG, PNG, WebP, HEIC & PDF online for free with ConvertGalaxy. Fast, private, browser-based image converter with no file limits or quality loss.",
   canonicalPath: "",
   keywords: [
-    "free online image converter",
-    "online image converter",
-    "image converter",
     "free image converter",
-    "convert images online",
-    "online image conversion",
-    "image conversion tool",
-    "jpg to png converter free",
-    "png to jpg free",
-    "heic to jpg converter",
-    "webp converter free",
-    "compress image online free",
-    "resize image online free",
-    "image to pdf free",
-    "pdf to image converter",
-    "crop image online free",
-    "convert image free no signup",
+    "online image converter",
+    "jpg to png",
+    "png to jpg",
+    "webp converter",
   ],
 });
 

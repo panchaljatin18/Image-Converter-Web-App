@@ -10,6 +10,11 @@
     "lint": "eslint",
     "worker": "ts-node --project tsconfig.worker.json worker/index.ts"
   },
+  "allowScripts": {
+    "msgpackr-extract": true,
+    "sharp": true,
+    "unrs-resolver": true
+  },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
