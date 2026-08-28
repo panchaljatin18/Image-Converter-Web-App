@@ -14,15 +14,12 @@ export default function HowItWorks() {
         <div className="text-center max-w-[650px] mx-auto mb-14">
           <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <CheckCircle size={12} />
-            Simple Process
+            How It Works
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
-            How to Convert an Image{" "}
-            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Online in 3 Steps</span>
+            Convert Images in{" "}
+            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">3 Simple Steps</span>
           </h2>
-          <p className="text-[#94a3b8] text-[1.05rem] leading-[1.7]">
-            Convert any image file format in seconds directly inside your web browser.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

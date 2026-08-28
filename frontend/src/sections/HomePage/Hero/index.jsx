@@ -1213,20 +1213,19 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-7xl font-bold lg:whitespace-nowrap whitespace-normal mb-3 tracking-[-0.02em] leading-[1.09] font-['Outfit']">
+            <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-[64px] font-bold whitespace-normal mb-4 tracking-[-0.02em] leading-[1.12] font-['Outfit']">
               Free Online Image Converter
+              <br />
+              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Fast, Private &amp; No Upload</span>
             </h1>
-            <p className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-4 font-['Outfit']">
-              Fast, Private &amp; Browser-Based
-            </p>
 
             <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">
-              Convert, compress, and optimize JPG, PNG, WebP, HEIC, GIF, and PDF files directly in your browser.
-              Fast, 100% private, and with zero server uploads or quality loss.
+              Convert, compress, and optimize any image directly in your browser. Auto-detect formats, adjust quality,
+              and batch process files 100% privately without uploading to external servers.
             </p>
 
             <div className="flex flex-wrap gap-2.5 mb-7">
-              {["100% Client-Side", "Batch Processing", "Zero Quality Loss", "No File Uploads"].map((item) => (
+              {["Auto detect", "Browser only", "Fast output"].map((item) => (
                 <span
                   key={item}
                   className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-white/3 border border-white/8 rounded-full text-[#94a3b8] font-medium text-[0.75rem] transition-all duration-200"

@@ -3,9 +3,8 @@ import Hero from "@/sections/HomePage/Hero"
 import SEO from "@/components/SEO"
 import { constructMetadata } from "@/lib/metadata"
 
-const ToolsGrid = dynamic(() => import("@/sections/HomePage/ToolsGrid"))
-const HowItWorks = dynamic(() => import("@/sections/HomePage/HowItWorks"))
 const Features = dynamic(() => import("@/sections/HomePage/Features"))
+const HowItWorks = dynamic(() => import("@/sections/HomePage/HowItWorks"))
 const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
 const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
@@ -23,16 +22,14 @@ export const metadata = constructMetadata({
     "image conversion tool",
     "jpg to png converter free",
     "png to jpg free",
-    "webp converter free",
     "heic to jpg converter",
-    "png to webp",
-    "webp to jpg",
-    "batch image converter",
-    "image converter without losing quality",
-    "browser image converter",
-    "image converter no upload",
-    "compress and convert image",
-    "image to pdf converter free",
+    "webp converter free",
+    "compress image online free",
+    "resize image online free",
+    "image to pdf free",
+    "pdf to image converter",
+    "crop image online free",
+    "convert image free no signup",
   ],
 });
 
@@ -42,13 +39,10 @@ export default function HomePage() {
       <SEO type="homepage" />
       <Hero />
       <div className="cv-auto-section">
-        <ToolsGrid />
+        <Features />
       </div>
       <div className="cv-auto-section">
         <HowItWorks />
-      </div>
-      <div className="cv-auto-section">
-        <Features />
       </div>
       <div className="cv-auto-section">
         <FaqPreview />

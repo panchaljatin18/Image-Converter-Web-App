@@ -15,7 +15,7 @@ export default function CtaBanner() {
           <div className="relative z-10">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
               Start Converting Your Images{" "}
-              <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Online for Free</span>
+              <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Right Now</span>
             </h2>
             <p className="text-[#94a3b8] text-[1.1rem] max-w-[540px] mx-auto mb-9 leading-[1.7]">
               Convert, compress, and edit your images in seconds with ConvertGalaxy — 100% private, browser-based, and free forever.
