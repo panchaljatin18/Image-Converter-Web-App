@@ -18,14 +18,14 @@ export default function Features() {
         <div className="text-center max-w-[650px] mx-auto mb-14">
           <span className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-[0.78rem] font-semibold tracking-wider uppercase bg-indigo-500/15 text-[#818cf8] border border-indigo-500/30 mb-4">
             <Star size={12} />
-            Why ConvertGalaxy
+            Why Choose Us
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
-            Built for{" "}
-            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Speed, Privacy & Quality</span>
+            Why Use ConvertGalaxy for{" "}
+            <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Online Image Conversion</span>
           </h2>
-          <p className="text-[#cbd5e1] text-[1.1rem] leading-[1.7]">
-            No other online image tool matches our combination of browser-based processing, zero data storage, and professional output quality.
+          <p className="text-[#cbd5e1] text-[1.05rem] leading-[1.7]">
+            Built with modern web standards to deliver local client-side processing, complete file privacy, and studio-grade image output.
           </p>
         </div>
 

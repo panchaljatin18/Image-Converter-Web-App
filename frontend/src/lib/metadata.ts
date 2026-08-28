@@ -134,7 +134,7 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
   if (cleanPath.endsWith("/")) {
     cleanPath = cleanPath.slice(0, -1);
   }
-  const canonicalUrl = cleanPath ? `${SITE_URL}/${cleanPath}` : SITE_URL;
+  const canonicalUrl = cleanPath ? `${SITE_URL}/${cleanPath}` : `${SITE_URL}/`;
 
   const robotsConfig = noIndex
     ? {
@@ -143,17 +143,26 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
       }
     : GLOBAL_SEO_DEFAULTS.robots;
 
+  const resolvedTitle = title
+    ? typeof title === "string"
+      ? { absolute: title }
+      : title
+    : GLOBAL_SEO_DEFAULTS.title.default;
+
+  const displayTitle = typeof title === "string" ? title : GLOBAL_SEO_DEFAULTS.title.default;
+
   return {
     ...GLOBAL_SEO_DEFAULTS,
-    title: title ? title : GLOBAL_SEO_DEFAULTS.title.default,
+    title: resolvedTitle,
     description: description || GLOBAL_SEO_DEFAULTS.description,
+    keywords: keywords.length > 0 ? keywords : GLOBAL_SEO_DEFAULTS.keywords,
     robots: robotsConfig,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       ...GLOBAL_SEO_DEFAULTS.openGraph,
-      title: title || GLOBAL_SEO_DEFAULTS.openGraph.title,
+      title: displayTitle,
       description: description || GLOBAL_SEO_DEFAULTS.openGraph.description,
       type: ogType,
       url: canonicalUrl,
@@ -162,13 +171,13 @@ export function constructMetadata(options: MetadataOptions = {}): Metadata {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: title || "Convert Galaxy – Free Online Image Tools",
+          alt: displayTitle,
         },
       ],
     },
     twitter: {
       ...GLOBAL_SEO_DEFAULTS.twitter,
-      title: title || GLOBAL_SEO_DEFAULTS.twitter.title,
+      title: displayTitle,
       description: description || GLOBAL_SEO_DEFAULTS.twitter.description,
       images: [ogImage],
     },

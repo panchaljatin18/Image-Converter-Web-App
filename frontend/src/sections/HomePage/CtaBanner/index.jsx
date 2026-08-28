@@ -15,19 +15,19 @@ export default function CtaBanner() {
           <div className="relative z-10">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.02em] leading-tight font-['Outfit'] mb-4 text-[#f8fafc]">
               Start Converting Your Images{" "}
-              <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Right Now</span>
+              <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Online for Free</span>
             </h2>
-            <p className="text-[#94a3b8] text-[1.1rem] max-w-[520px] mx-auto mb-9 leading-[1.7]">
-              Join millions of users who trust ConvertGalaxy for fast, private, and high-quality image processing.
+            <p className="text-[#94a3b8] text-[1.1rem] max-w-[540px] mx-auto mb-9 leading-[1.7]">
+              Convert, compress, and edit your images in seconds with ConvertGalaxy — 100% private, browser-based, and free forever.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <Link href="/tools" className="no-underline">
+              <a href="#converter-panel" className="no-underline">
                 <Button variant="primary" size="lg" className="flex items-center gap-2">
                   <Zap size={18} />
-                  Get Started — It&apos;s Free
+                  Start Converting — It&apos;s Free
                   <ArrowRight size={18} />
                 </Button>
-              </Link>
+              </a>
               <Link href="/blog" className="no-underline">
                 <Button variant="secondary" size="lg">
                   Read Our Blog

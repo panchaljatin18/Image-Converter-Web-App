@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import ContactForm from "../ContactForm";
 import { Mail, Clock, MessageCircle } from "lucide-react";
 import Container from "@/components/Container";
@@ -74,9 +75,22 @@ export default function ContactContent() {
           </div>
 
           {/* Privacy note */}
-          <div className="p-4 bg-indigo-500/7 border border-indigo-500/15 rounded-xl">
+          <div className="p-4 bg-indigo-500/7 border border-indigo-500/15 rounded-xl mb-3.5">
             <p className="text-[0.8rem] text-[#64748b] leading-relaxed">
               🔒 <strong className="text-[#818cf8]">Your privacy matters.</strong> We only use your contact information to respond to your message. We never share your data with third parties.
+            </p>
+          </div>
+
+          {/* Quick link to homepage */}
+          <div className="p-4 bg-[#1a1a2e] border border-white/8 rounded-xl">
+            <p className="text-[0.85rem] text-[#94a3b8] leading-relaxed">
+              Looking to convert files right now?{" "}
+              <Link
+                href="/"
+                className="text-[#818cf8] font-semibold hover:text-[#a5b4fc] underline underline-offset-2 transition-colors"
+              >
+                Visit ConvertGalaxy to use our free online image converter.
+              </Link>
             </p>
           </div>
         </div>

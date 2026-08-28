@@ -114,20 +114,28 @@ export function getOrganizationSchema() {
 
 export const HOMEPAGE_FAQS: FAQItem[] = [
   {
-    question: "Are my images stored on your servers?",
-    answer: "No. All image processing happens entirely in your browser using client-side JavaScript and Canvas API. Your images never leave your device, ensuring complete privacy."
+    question: "What is an online image converter?",
+    answer: "An online image converter is a browser-based tool that transforms image files from one format to another (such as JPG to PNG, PNG to WebP, or HEIC to JPG) directly in your browser without requiring desktop software installation."
   },
   {
-    question: "Is ConvertGalaxy completely free?",
-    answer: "Yes! All tools on ConvertGalaxy are 100% free to use with no hidden costs, subscriptions, or account requirements."
+    question: "Which image formats does ConvertGalaxy support?",
+    answer: "ConvertGalaxy supports major image formats including JPG, JPEG, PNG, WebP, GIF, BMP, TIFF, HEIC, AVIF, and PDF."
   },
   {
-    question: "What image formats do you support?",
-    answer: "We support JPG/JPEG, PNG, WebP, GIF, BMP, and TIFF formats across our various tools."
+    question: "Is ConvertGalaxy free to use?",
+    answer: "Yes, ConvertGalaxy is 100% free with no subscriptions, fees, watermarks, or account registration required."
   },
   {
-    question: "Is there a file size limit?",
-    answer: "Most tools support files up to 50MB. For batch operations, we recommend files under 20MB each for optimal performance."
+    question: "How do I convert an image online?",
+    answer: "Simply drag and drop your image into the converter, choose your target format, adjust quality or resolution if needed, and click Download for instant results."
+  },
+  {
+    question: "Are my uploaded images stored on your servers?",
+    answer: "No. All conversions happen entirely in your web browser using HTML5 and Canvas APIs. Your files never leave your computer or phone, ensuring complete privacy."
+  },
+  {
+    question: "Can I convert multiple images at once?",
+    answer: "Yes, ConvertGalaxy supports batch conversion and batch compression, allowing you to process multiple images simultaneously."
   }
 ];
 
@@ -203,7 +211,7 @@ export const ALL_FAQS: FAQItem[] = [
 ];
 
 /**
- * Homepage Schema (Combined WebSite, Organization, SoftwareApplication suite, and SearchAction)
+ * Homepage Schema (Combined WebSite, Organization, WebApplication, and SearchAction)
  */
 export function getHomepageSchema() {
   return [
@@ -212,8 +220,8 @@ export function getHomepageSchema() {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
-      "url": SITE_URL,
-      "name": "Convert Galaxy",
+      "url": `${SITE_URL}/`,
+      "name": "ConvertGalaxy",
       "description": "Free Online Image Converter, Compressor & Editor",
       "publisher": {
         "@id": `${SITE_URL}/#organization`
@@ -229,14 +237,14 @@ export function getHomepageSchema() {
     },
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "@id": `${SITE_URL}/#application_suite`,
-      "name": "Convert Galaxy Tools Suite",
+      "@type": "WebApplication",
+      "@id": `${SITE_URL}/#webapplication`,
+      "name": "ConvertGalaxy Free Online Image Converter",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "All",
-      "browserRequirements": "Requires HTML5, WebAssembly support. Runs offline locally.",
-      "url": SITE_URL,
-      "description": "Enterprise-grade local browser-based image conversions, compression, resizing and editing toolsuite.",
+      "browserRequirements": "Requires modern web browser with HTML5 Canvas support. Runs client-side in browser.",
+      "url": `${SITE_URL}/`,
+      "description": "Free online image converter to batch convert JPG, PNG, WebP, HEIC, GIF, and PDF directly in your browser with 100% privacy.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -248,7 +256,7 @@ export function getHomepageSchema() {
     },
     getFAQSchema(HOMEPAGE_FAQS),
     getBreadcrumbSchema([
-      { name: "Home", item: SITE_URL }
+      { name: "Home", item: `${SITE_URL}/` }
     ])
   ];
 }

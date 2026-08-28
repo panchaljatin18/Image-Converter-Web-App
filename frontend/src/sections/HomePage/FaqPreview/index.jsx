@@ -3,10 +3,30 @@ import { ArrowRight } from "lucide-react";
 import Container from "@/components/Container";
 
 const faqs = [
-  { q: "Are my images stored on your servers?", a: "No. All image processing happens entirely in your browser using client-side JavaScript and Canvas API. Your images never leave your device, ensuring complete privacy." },
-  { q: "Is ConvertGalaxy completely free?", a: "Yes! All tools on ConvertGalaxy are 100% free to use with no hidden costs, subscriptions, or account requirements." },
-  { q: "What image formats do you support?", a: "We support JPG/JPEG, PNG, WebP, GIF, BMP, and TIFF formats across our various tools." },
-  { q: "Is there a file size limit?", a: "Most tools support files up to 50MB. For batch operations, we recommend files under 20MB each for optimal performance." },
+  {
+    q: "What is an online image converter?",
+    a: "An online image converter is a browser-based tool that transforms image files from one format to another (such as JPG to PNG, PNG to WebP, or HEIC to JPG) directly in your browser without requiring desktop software installation."
+  },
+  {
+    q: "Which image formats does ConvertGalaxy support?",
+    a: "ConvertGalaxy supports major image formats including JPG, JPEG, PNG, WebP, GIF, BMP, TIFF, HEIC, AVIF, and PDF."
+  },
+  {
+    q: "Is ConvertGalaxy free to use?",
+    a: "Yes, ConvertGalaxy is 100% free with no subscriptions, fees, watermarks, or account registration required."
+  },
+  {
+    q: "How do I convert an image online?",
+    a: "Simply drag and drop your image into the converter, choose your target format, adjust quality or resolution if needed, and click Download for instant results."
+  },
+  {
+    q: "Are my uploaded images stored on your servers?",
+    a: "No. All conversions happen entirely in your web browser using HTML5 and Canvas APIs. Your files never leave your computer or phone, ensuring complete privacy."
+  },
+  {
+    q: "Can I convert multiple images at once?",
+    a: "Yes, ConvertGalaxy supports batch conversion and batch compression, allowing you to process multiple images simultaneously."
+  },
 ];
 
 export default function FaqPreview() {
@@ -19,6 +39,9 @@ export default function FaqPreview() {
             Frequently Asked{" "}
             <span className="bg-gradient-to-r from-[#6366f1] to-[#06b6d4] bg-clip-text text-transparent">Questions</span>
           </h2>
+          <p className="text-[#94a3b8] text-[1.05rem] leading-[1.7]">
+            Common questions about ConvertGalaxy&apos;s free online image conversion tools.
+          </p>
         </div>
 
         <div className="max-w-[720px] mx-auto">
