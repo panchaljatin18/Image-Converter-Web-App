@@ -1213,18 +1213,20 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-[64px] font-bold whitespace-normal mb-4 tracking-[-0.02em] leading-[1.12] font-['Outfit']">
-              Free Online Image Converter
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[52px] 2xl:text-[58px] font-bold tracking-[-0.02em] leading-[1.1] font-['Outfit'] mb-3.5">
+              Free Online Image<br />Converter
               <br />
-              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">Fast, Private &amp; No Upload</span>
+              <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent whitespace-nowrap">
+                Fast, Private &amp; No Upload
+              </span>
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl 2xl:text-xl text-[#94a3b8] leading-relaxed max-w-[560px] mb-7">
+            <p className="text-sm sm:text-base md:text-[0.95rem] lg:text-[1rem] xl:text-[1.05rem] text-[#94a3b8] leading-relaxed max-w-[540px] mb-5">
               Convert, compress, and optimize any image directly in your browser. Auto-detect formats, adjust quality,
               and batch process files 100% privately without uploading to external servers.
             </p>
 
-            <div className="flex flex-wrap gap-2.5 mb-7">
+            <div className="flex flex-wrap gap-2.5 mb-5">
               {["Auto detect", "Browser only", "Fast output"].map((item) => (
                 <span
                   key={item}
