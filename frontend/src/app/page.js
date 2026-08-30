@@ -1,12 +1,10 @@
-import dynamic from "next/dynamic"
 import Hero from "@/sections/HomePage/Hero"
+import Features from "@/sections/HomePage/Features"
+import HowItWorks from "@/sections/HomePage/HowItWorks"
+import FaqPreview from "@/sections/HomePage/FaqPreview"
+import CtaBanner from "@/sections/HomePage/CtaBanner"
 import SEO from "@/components/SEO"
 import { constructMetadata } from "@/lib/metadata"
-
-const Features = dynamic(() => import("@/sections/HomePage/Features"))
-const HowItWorks = dynamic(() => import("@/sections/HomePage/HowItWorks"))
-const FaqPreview = dynamic(() => import("@/sections/HomePage/FaqPreview"))
-const CtaBanner = dynamic(() => import("@/sections/HomePage/CtaBanner"))
 
 export const metadata = constructMetadata({
   title: "Free Image Converter – JPG, PNG & WebP | ConvertGalaxy",

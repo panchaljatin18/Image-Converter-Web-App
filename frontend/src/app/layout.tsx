@@ -39,10 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
       <head>
-        <link rel="preload" href="/CG.webp" as="image" type="image/webp" fetchPriority="high" />
-        <link rel="preconnect" href="https://image-converter-web-app.onrender.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image-converter-web-app.onrender.com" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
         <NextAuthProvider>

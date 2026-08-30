@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { isConversionSupported, standardImageFormats } from "../../../lib/conversions";
 import { useConversionLimit } from "@/context/ConversionLimitContext";
-import { useSession } from "next-auth/react";
 
 
 const GoogleDrivePicker = dynamic(() => import("../../../components/GoogleDrivePicker"), { ssr: false });
@@ -729,8 +727,6 @@ export default function Hero() {
     }
   }, [sourceFormat, file]);
 
-  const { data: session } = useSession();
-
   // Cloud/URL upload states
   const [uploadMethod, setUploadMethod] = useState("file"); // "file", "url", "cloud"
   const [cloudProvider, setCloudProvider] = useState(null); // "google-drive", "dropbox", "onedrive"
@@ -765,7 +761,11 @@ export default function Hero() {
   const [imgHeight, setImgHeight] = useState(0);
 
   const getEffectiveToken = async () => {
-    if (session?.accessToken) return session.accessToken;
+    try {
+      const { getSession } = await import("next-auth/react");
+      const currentSession = await getSession();
+      if (currentSession?.accessToken) return currentSession.accessToken;
+    } catch {}
     const authModule = await import("../../../services/authService");
     return authModule.default.getToken();
   };
@@ -800,7 +800,7 @@ export default function Hero() {
       })();
     }
     return () => { isMounted = false; };
-  }, [cloudProvider, session]);
+  }, [cloudProvider]);
 
   useEffect(() => {
     let isMounted = true;
@@ -832,7 +832,7 @@ export default function Hero() {
       })();
     }
     return () => { isMounted = false; };
-  }, [cloudProvider, session]);
+  }, [cloudProvider]);
 
   useEffect(() => {
     let isMounted = true;
@@ -864,7 +864,7 @@ export default function Hero() {
       })();
     }
     return () => { isMounted = false; };
-  }, [cloudProvider, session]);
+  }, [cloudProvider]);
 
   const target = targetFormat ? (ALL_FORMAT_LOOKUP.get(targetFormat) || null) : null;
   const source = getSourceFormat(file);
@@ -1292,25 +1292,20 @@ export default function Hero() {
                     <ChevronDown size={18} className="mt-2 text-slate-300 opacity-80" style={{ transform: isSourceDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />
                   </div>
 
-                  <AnimatePresence>
-                    {isSourceDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-[calc(100%+8px)] left-0 w-[270px] sm:w-[310px] z-[999]"
-                      >
-                        <TargetFormatSelect
-                          value={sourceFormat}
-                          onChange={(val) => {
-                            setSourceFormat(val);
-                            setIsSourceDropdownOpen(false);
-                          }}
-                          sourceFormatLabel={targetFormat}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {isSourceDropdownOpen && (
+                    <div
+                      className="absolute top-[calc(100%+8px)] left-0 w-[270px] sm:w-[310px] z-[999] transition-all duration-150 transform opacity-100 translate-y-0"
+                    >
+                      <TargetFormatSelect
+                        value={sourceFormat}
+                        onChange={(val) => {
+                          setSourceFormat(val);
+                          setIsSourceDropdownOpen(false);
+                        }}
+                        sourceFormatLabel={targetFormat}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Swap Button */}
@@ -1319,13 +1314,13 @@ export default function Hero() {
                   {!file && (
                     <div className="absolute inset-0 bg-indigo-500 rounded-full blur-[10px] opacity-40 animate-pulse pointer-events-none" />
                   )}
-                  <motion.button
-                    whileHover={file ? {} : { scale: 1.15, rotate: 180 }}
-                    whileTap={file ? {} : { scale: 0.9 }}
+                  <button
+                    type="button"
+                    aria-label="Swap source and target formats"
                     onClick={file ? undefined : handleSwap}
                     className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white transition-all duration-300 ring-4 ring-[#0f0f1a] ${file
                       ? "bg-white/5 border border-white/8 text-slate-600 cursor-not-allowed opacity-40 shadow-none"
-                      : "bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-500 border border-white/20 cursor-pointer shadow-[0_0_20px_rgba(99,102,241,0.4),_inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_0_28px_rgba(6,182,212,0.6),_inset_0_2px_6px_rgba(255,255,255,0.5)]"
+                      : "bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-500 border border-white/20 cursor-pointer shadow-[0_0_20px_rgba(99,102,241,0.4),_inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_0_28px_rgba(6,182,212,0.6),_inset_0_2px_6px_rgba(255,255,255,0.5)] hover:scale-110 active:scale-95 hover:rotate-180"
                       }`}
                   >
                     <svg
@@ -1343,7 +1338,7 @@ export default function Hero() {
                       <path d="M21 7H9" />
                       <path d="M3 17H15" />
                     </svg>
-                  </motion.button>
+                  </button>
                 </div>
 
                 {/* Convert To Card */}
@@ -1388,26 +1383,21 @@ export default function Hero() {
                           {hasConversions && <ChevronDown size={18} className="mt-2 text-cyan-400 opacity-90" style={{ transform: isTargetDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }} />}
                         </div>
 
-                        <AnimatePresence>
-                          {isTargetDropdownOpen && hasConversions && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 10 }}
-                              className="absolute top-[calc(100%+8px)] right-0 w-[270px] sm:w-[310px] z-[999]"
-                            >
-                              <TargetFormatSelect
-                                value={targetFormat}
-                                onChange={(val) => {
-                                  setTargetFormat(val);
-                                  setIsTargetDropdownOpen(false);
-                                }}
-                                sourceFormatLabel={file ? (file.name.includes('.') ? file.name.split('.').pop() : sourceFormat) : sourceFormat}
-                                allowedFormats={file ? allowedConversions : undefined}
-                              />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        {isTargetDropdownOpen && hasConversions && (
+                          <div
+                            className="absolute top-[calc(100%+8px)] right-0 w-[270px] sm:w-[310px] z-[999] transition-all duration-150 transform opacity-100 translate-y-0"
+                          >
+                            <TargetFormatSelect
+                              value={targetFormat}
+                              onChange={(val) => {
+                                setTargetFormat(val);
+                                setIsTargetDropdownOpen(false);
+                              }}
+                              sourceFormatLabel={file ? (file.name.includes('.') ? file.name.split('.').pop() : sourceFormat) : sourceFormat}
+                              allowedFormats={file ? allowedConversions : undefined}
+                            />
+                          </div>
+                        )}
                       </>
                     );
                   })()}
