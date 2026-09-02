@@ -1,14 +1,15 @@
 import "./globals.css"
+import dynamic from "next/dynamic"
 import { Inter, Outfit } from "next/font/google"
 import { AuthProvider } from "@/hooks/useAuth"
 import { ConversionLimitProvider } from "@/context/ConversionLimitContext"
 import NextAuthProvider from "@/components/NextAuthProvider"
 import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import Script from "next/script"
 import { GLOBAL_SEO_DEFAULTS } from "@/lib/metadata"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+
+const Footer = dynamic(() => import("@/components/Footer"))
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
       <head>
+        <link rel="preconnect" href="https://image-converter-web-app.onrender.com" />
         <link rel="dns-prefetch" href="https://image-converter-web-app.onrender.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0f0f1a] text-[#f8fafc] antialiased">
         <NextAuthProvider>

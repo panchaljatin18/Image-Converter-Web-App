@@ -127,9 +127,8 @@ export default function Footer() {
                 alt="Converter Galaxy Logo"
                 width={280}
                 height={85}
-                quality={85}
                 loading="lazy"
-                sizes="(max-width: 768px) 200px, 280px"
+                unoptimized
                 className="h-[65px] md:h-[85px] w-auto object-contain"
               />
             </Link>

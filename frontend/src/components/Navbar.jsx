@@ -179,9 +179,8 @@ export default function Navbar() {
               alt="Converter Galaxy Logo"
               width={240}
               height={66}
-              quality={85}
               priority
-              sizes="(max-width: 768px) 180px, 240px"
+              unoptimized
               className="h-[34px] md:h-[45px] w-auto object-contain"
             />
           </Link>
