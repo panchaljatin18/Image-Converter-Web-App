@@ -131,6 +131,17 @@ export const BLOCK_DEFINITIONS = [
     },
   },
   {
+    type: "html",
+    name: "Custom HTML",
+    category: "widgets",
+    icon: "FileCode",
+    description: "Add raw HTML, CSS, or FAQ Schema markup with live preview.",
+    defaultAttributes: {
+      html: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
+      content: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
+    },
+  },
+  {
     type: "custom-html",
     name: "Custom HTML",
     category: "widgets",
@@ -138,6 +149,7 @@ export const BLOCK_DEFINITIONS = [
     description: "Add raw HTML, CSS, or FAQ Schema markup with live preview.",
     defaultAttributes: {
       html: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
+      content: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
     },
   },
   {
@@ -171,12 +183,113 @@ export function generateBlockId() {
   return "block_" + Date.now().toString(36) + "_" + idCounter.toString(36) + "_" + Math.random().toString(36).substring(2, 6);
 }
 
-export function createBlock(type, attributes = {}, children = [], customId = null) {
-  const def = BLOCK_DEFINITIONS.find((b) => b.type === type);
+/**
+ * Normalizes an individual block into the standard structured representation
+ */
+export function normalizeBlock(block) {
+  if (!block || typeof block !== "object") {
+    return createBlock("paragraph", { content: "" });
+  }
+
+  const rawType = (block.type || "paragraph").toLowerCase();
+  const type = rawType === "custom-html" ? "html" : rawType;
+
+  const rawAttrs = block.attrs || block.attributes || {};
+  const attrs = { ...rawAttrs };
+
+  let content = block.content !== undefined ? block.content : "";
+  if (content === "" && (type === "html" || type === "custom-html")) {
+    content = attrs.html !== undefined ? attrs.html : (attrs.content !== undefined ? attrs.content : "");
+  } else if (content === "" && type === "code") {
+    content = attrs.code !== undefined ? attrs.code : (attrs.content !== undefined ? attrs.content : "");
+  } else if (content === "" && attrs.content !== undefined) {
+    content = attrs.content;
+  }
+
+  // Ensure mirrored attributes for backwards-compatible component prop access
+  if (type === "html" || type === "custom-html") {
+    attrs.html = content;
+    attrs.content = content;
+  } else if (type === "code") {
+    attrs.code = content;
+    attrs.content = content;
+  } else {
+    attrs.content = content;
+  }
+
+  const children = Array.isArray(block.children)
+    ? block.children.map((c) => (Array.isArray(c) ? c.map(normalizeBlock) : normalizeBlock(c)))
+    : Array.isArray(block.innerBlocks)
+    ? block.innerBlocks.map(normalizeBlock)
+    : [];
+
   return {
-    id: customId || generateBlockId(),
+    id: block.id || generateBlockId(),
     type,
-    attributes: { ...def?.defaultAttributes, ...attributes },
+    attrs,
+    attributes: attrs,
+    content,
+    children,
+  };
+}
+
+/**
+ * Normalizes full post structured block state: { version: 1, blocks: [...] }
+ */
+export function normalizeBlockState(raw) {
+  if (!raw) return { version: 1, blocks: [] };
+
+  if (Array.isArray(raw)) {
+    return { version: 1, blocks: raw.map(normalizeBlock) };
+  }
+
+  if (typeof raw === "object") {
+    if (Array.isArray(raw.blocks)) {
+      return {
+        version: raw.version || 1,
+        blocks: raw.blocks.map(normalizeBlock),
+      };
+    }
+    // If raw was a single block object
+    if (raw.type) {
+      return { version: 1, blocks: [normalizeBlock(raw)] };
+    }
+  }
+
+  return { version: 1, blocks: [] };
+}
+
+export function createBlock(type, attributes = {}, children = [], customId = null) {
+  const normType = type === "custom-html" ? "html" : type;
+  const def = BLOCK_DEFINITIONS.find((b) => b.type === normType || b.type === type);
+  const defAttrs = def?.defaultAttributes || {};
+  const mergedAttrs = { ...defAttrs, ...attributes };
+
+  let content = attributes.content;
+  if (content === undefined) {
+    if (normType === "html") content = mergedAttrs.html || "";
+    else if (normType === "code") content = mergedAttrs.code || "";
+    else content = mergedAttrs.content || "";
+  }
+
+  if (normType === "html") {
+    mergedAttrs.html = content;
+    mergedAttrs.content = content;
+  } else if (normType === "code") {
+    mergedAttrs.code = content;
+    mergedAttrs.content = content;
+  } else {
+    mergedAttrs.content = content;
+  }
+
+  const id = customId || generateBlockId();
+
+  return {
+    id,
+    type: normType,
+    attrs: mergedAttrs,
+    attributes: mergedAttrs,
+    content,
     children: children || [],
   };
 }

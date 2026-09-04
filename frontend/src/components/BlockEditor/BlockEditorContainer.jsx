@@ -10,6 +10,7 @@ import {
   Smartphone,
   Check,
   Save,
+  Send,
   Eye,
   Loader2,
   Slash,
@@ -19,7 +20,7 @@ import {
   ChevronRight,
   Sliders,
 } from "lucide-react";
-import { createBlock, generateBlockId, BLOCK_DEFINITIONS } from "./utils/blockTypes";
+import { createBlock, generateBlockId, BLOCK_DEFINITIONS, normalizeBlock, normalizeBlockState } from "./utils/blockTypes";
 import { blocksToHtml, htmlToBlocks } from "./utils/serializer";
 import "@/app/blog/prose.css";
 
@@ -66,6 +67,7 @@ export default function BlockEditorContainer({
   initialHtml = "",
   initialBlocks = null,
   onSave,
+  onBlocksChange,
   saving = false,
   // Document level props
   postTitle = "",
@@ -88,12 +90,18 @@ export default function BlockEditorContainer({
   setImageTitle,
   onOpenMediaModal,
 }) {
-  // State for Blocks Array
+  // State for Blocks Array (Structured Block representation as source of truth)
   const [blocks, setBlocks] = useState(() => {
-    if (Array.isArray(initialBlocks) && initialBlocks.length > 0) {
-      return ensureUniqueBlockIds(initialBlocks);
+    if (initialBlocks) {
+      const norm = normalizeBlockState(initialBlocks);
+      if (norm.blocks.length > 0) {
+        return ensureUniqueBlockIds(norm.blocks);
+      }
     }
-    return ensureUniqueBlockIds(htmlToBlocks(initialHtml));
+    if (initialHtml && initialHtml.trim()) {
+      return ensureUniqueBlockIds(htmlToBlocks(initialHtml));
+    }
+    return [createBlock("paragraph", { content: "" })];
   });
 
   const [selectedBlockId, setSelectedBlockId] = useState(null);
@@ -136,13 +144,18 @@ export default function BlockEditorContainer({
   const isLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (Array.isArray(initialBlocks) && initialBlocks.length > 0) {
-      const clean = ensureUniqueBlockIds(initialBlocks);
-      setBlocks(clean);
-      setHistory([clean]);
-      setHistoryIndex(0);
-      isLoadedRef.current = true;
-    } else if (initialHtml && initialHtml.trim() && !isLoadedRef.current) {
+    if (initialBlocks) {
+      const norm = normalizeBlockState(initialBlocks);
+      if (norm.blocks.length > 0) {
+        const clean = ensureUniqueBlockIds(norm.blocks);
+        setBlocks(clean);
+        setHistory([clean]);
+        setHistoryIndex(0);
+        isLoadedRef.current = true;
+        return;
+      }
+    }
+    if (initialHtml && initialHtml.trim() && !isLoadedRef.current) {
       const parsed = ensureUniqueBlockIds(htmlToBlocks(initialHtml));
       setBlocks(parsed);
       setHistory([parsed]);
@@ -203,8 +216,18 @@ export default function BlockEditorContainer({
       // 1. Save Post: Ctrl + S / Cmd + S
       if (isCmdOrCtrl && key === "s") {
         e.preventDefault();
-        const htmlOutput = blocksToHtml(blocks);
-        if (onSave) onSave(htmlOutput, blocks, postStatus);
+        const htmlOutput = blocksToHtml(blocks, { includeDelimiters: true });
+        const structuredBlocks = {
+          version: 1,
+          blocks: blocks.map((b) => ({
+            id: b.id,
+            type: b.type === "custom-html" ? "html" : b.type,
+            attrs: b.attrs || b.attributes || {},
+            content: b.content !== undefined ? b.content : (b.attributes?.content || b.attributes?.html || b.attributes?.code || ""),
+            children: b.children || [],
+          })),
+        };
+        if (onSave) onSave(htmlOutput, structuredBlocks, postStatus);
         return;
       }
 
@@ -415,7 +438,10 @@ export default function BlockEditorContainer({
       setHistoryIndex(nextHistory.length - 1);
       return nextHistory;
     });
-  }, [historyIndex]);
+    if (onBlocksChange) {
+      onBlocksChange(cleanBlocks);
+    }
+  }, [historyIndex, onBlocksChange]);
 
   const handleUndo = React.useCallback(() => {
     if (historyIndex > 0) {
@@ -496,9 +522,17 @@ export default function BlockEditorContainer({
   const handleUpdateBlockAttributes = React.useCallback((blockId, newAttributes, newChildren = null) => {
     const updated = blocks.map((b) => {
       if (b.id === blockId) {
+        const mergedAttrs = { ...(b.attrs || b.attributes), ...newAttributes };
+        let newContent = b.content;
+        if (newAttributes.content !== undefined) newContent = newAttributes.content;
+        else if (newAttributes.html !== undefined) newContent = newAttributes.html;
+        else if (newAttributes.code !== undefined) newContent = newAttributes.code;
+
         return {
           ...b,
-          attributes: { ...b.attributes, ...newAttributes },
+          attrs: mergedAttrs,
+          attributes: mergedAttrs,
+          content: newContent !== undefined ? newContent : b.content,
           ...(newChildren ? { children: newChildren } : {}),
         };
       }
@@ -715,6 +749,7 @@ export default function BlockEditorContainer({
       case "code":
         BlockComp = CodeBlock;
         break;
+      case "html":
       case "custom-html":
         BlockComp = CustomHtmlBlock;
         break;
@@ -876,8 +911,18 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => {
-              const html = blocksToHtml(blocks);
-              onSave && onSave(html, blocks, "Draft");
+              const html = blocksToHtml(blocks, { includeDelimiters: true });
+              const structured = {
+                version: 1,
+                blocks: blocks.map((b) => ({
+                  id: b.id,
+                  type: b.type === "custom-html" ? "html" : b.type,
+                  attrs: b.attrs || b.attributes || {},
+                  content: b.content !== undefined ? b.content : (b.attributes?.content || b.attributes?.html || b.attributes?.code || ""),
+                  children: b.children || [],
+                })),
+              };
+              onSave && onSave(html, structured, "Draft");
             }}
             disabled={saving}
             className="hidden sm:flex px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer border border-white/10"
@@ -887,15 +932,25 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => {
-              const html = blocksToHtml(blocks);
-              onSave && onSave(html, blocks, "Published");
+              const html = blocksToHtml(blocks, { includeDelimiters: true });
+              const structured = {
+                version: 1,
+                blocks: blocks.map((b) => ({
+                  id: b.id,
+                  type: b.type === "custom-html" ? "html" : b.type,
+                  attrs: b.attrs || b.attributes || {},
+                  content: b.content !== undefined ? b.content : (b.attributes?.content || b.attributes?.html || b.attributes?.code || ""),
+                  children: b.children || [],
+                })),
+              };
+              onSave && onSave(html, structured, "Published");
             }}
             disabled={saving}
-            className="px-2.5 sm:px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-1.5"
+            className="px-3.5 sm:px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-1.5"
+            title={postStatus === "Published" ? "Update post" : "Publish post"}
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            <span className="hidden xs:inline">Publish</span>
-            <span className="xs:hidden">Save</span>
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+            <span>{postStatus === "Published" ? "Update" : "Publish"}</span>
           </button>
         </div>
       </header>

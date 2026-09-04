@@ -1,80 +1,144 @@
 // Block JSON <-> Semantic HTML Serializer & Parser
-
-import { createBlock } from "./blockTypes";
+import { createBlock, normalizeBlock, normalizeBlockState } from "./blockTypes.js";
 
 /**
- * Converts a structured JSON blocks array into clean semantic HTML for public rendering
+ * Sanitizes and unwraps any corrupted leftover preview pane elements or raw placeholders
  */
-export function blocksToHtml(blocks = []) {
+export function sanitizeCorruptedCode(htmlStr = "") {
+  if (!htmlStr) return "";
+  let clean = htmlStr;
+
+  // 1. Strip all leftover preview pane container elements and raw placeholders
+  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-preview-pane[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "");
+  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-preview-content[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "");
+  clean = clean.replace(/___PROTECTED_RAW_\d+___/gi, "");
+
+  // 2. Unwrap outer wp-block-custom-html wrappers if whole string was wrapped in legacy editor
+  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-custom-html[^"]*"[^>]*>[\s\S]*?<textarea[^>]*>([\s\S]*?)<\/textarea>[\s\S]*?<\/div>/gi, (m, rawCode) => {
+    return rawCode.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
+  });
+
+  return clean;
+}
+
+/**
+ * Converts a structured JSON blocks array into semantic HTML.
+ * When includeDelimiters is true (default), wraps each block in explicit delimiters:
+ * <!-- block:type {attrs} --> ... <!-- /block:type -->
+ * When forPublic is true, omits delimiters for public frontend rendering.
+ */
+export function blocksToHtml(blocks = [], options = {}) {
   if (!Array.isArray(blocks) || blocks.length === 0) return "";
+  const includeDelimiters = options.includeDelimiters !== false && !options.forPublic;
 
   return blocks
-    .map((block) => {
-      const { type, attributes = {}, children = [] } = block;
+    .map((rawBlock) => {
+      const block = normalizeBlock(rawBlock);
+      const { type, attrs = {}, children = [] } = block;
 
       switch (type) {
         case "paragraph": {
-          const { content = "", fontSize = "normal", align = "left", textColor = "" } = attributes;
-          if (!content.trim()) return "";
+          const content = block.content !== undefined ? block.content : (attrs.content || "");
+          const { fontSize = "normal", align = "left", textColor = "" } = attrs;
           const styleAttr = `text-align: ${align};${textColor ? ` color: ${textColor};` : ""}`;
           const classAttr = fontSize !== "normal" ? ` class="text-${fontSize}"` : "";
-          return `<p style="${styleAttr}"${classAttr}>${content}</p>`;
+          const pHtml = `<p style="${styleAttr}"${classAttr}>${content}</p>`;
+
+          if (!includeDelimiters) return pHtml;
+          const hasCustomAttrs = fontSize !== "normal" || align !== "left" || Boolean(textColor);
+          const meta = hasCustomAttrs ? ` ${JSON.stringify({ fontSize, align, textColor })}` : "";
+          return `<!-- block:paragraph${meta} -->\n${pHtml}\n<!-- /block:paragraph -->`;
         }
 
         case "heading": {
-          const { content = "", level = 2, align = "left", anchor = "", textColor = "" } = attributes;
-          if (!content.trim()) return "";
+          const content = block.content !== undefined ? block.content : (attrs.content || "");
+          const { level = 2, align = "left", anchor = "", textColor = "" } = attrs;
           const hTag = `h${Math.min(Math.max(level, 1), 6)}`;
           const idAttr = anchor ? ` id="${anchor}"` : "";
           const styleAttr = `text-align: ${align};${textColor ? ` color: ${textColor};` : ""}`;
-          return `<${hTag}${idAttr} style="${styleAttr}">${content}</${hTag}>`;
+          const hHtml = `<${hTag}${idAttr} style="${styleAttr}">${content}</${hTag}>`;
+
+          if (!includeDelimiters) return hHtml;
+          const meta = ` ${JSON.stringify({ level, align, anchor, textColor })}`;
+          return `<!-- block:heading${meta} -->\n${hHtml}\n<!-- /block:heading -->`;
         }
 
-        case "list": {
-          const { listType = "unordered", items = [], textColor = "" } = attributes;
-          if (!items || items.length === 0) return "";
-          const tag = listType === "ordered" ? "ol" : "ul";
-          const styleAttr = textColor ? ` style="color: ${textColor};"` : "";
-          const listItems = items.map((item) => `<li>${item}</li>`).join("");
-          return `<${tag}${styleAttr}>${listItems}</${tag}>`;
-        }
-
-        case "quote": {
-          const { content = "", citation = "", style = "default", textColor = "" } = attributes;
-          const styleAttr = textColor ? ` style="color: ${textColor};"` : "";
-          const classAttr = style === "large" ? ' class="quote-large"' : "";
-          const citeHtml = citation ? `<cite>— ${citation}</cite>` : "";
-          return `<blockquote${classAttr}${styleAttr}><p>${content}</p>${citeHtml}</blockquote>`;
+        case "html":
+        case "custom-html": {
+          const rawHtml = block.content !== undefined ? block.content : (attrs.html || attrs.content || "");
+          if (!includeDelimiters) return rawHtml;
+          return `<!-- block:html -->\n${rawHtml}\n<!-- /block:html -->`;
         }
 
         case "code": {
-          const { code = "", language = "javascript" } = attributes;
-          const escaped = (code || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          return `<pre><code class="language-${language}">${escaped}</code></pre>`;
+          const code = block.content !== undefined ? block.content : (attrs.code || "");
+          const { language = "javascript" } = attrs;
+          const escaped = (code || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          const codeHtml = `<pre><code class="language-${language}">${escaped}</code></pre>`;
+
+          if (!includeDelimiters) return codeHtml;
+          const meta = ` ${JSON.stringify({ language })}`;
+          return `<!-- block:code${meta} -->\n${codeHtml}\n<!-- /block:code -->`;
+        }
+
+        case "list": {
+          const { listType = "unordered", items = [], textColor = "" } = attrs;
+          const isOrdered = listType === "ordered" || attrs.ordered;
+          const tag = isOrdered ? "ol" : "ul";
+          const styleAttr = textColor ? ` style="color: ${textColor};"` : "";
+          const listItems = (items && items.length > 0 ? items : [""])
+            .map((item) => `<li>${item}</li>`)
+            .join("");
+          const listHtml = `<${tag}${styleAttr}>${listItems}</${tag}>`;
+
+          if (!includeDelimiters) return listHtml;
+          const meta = ` ${JSON.stringify({ listType: isOrdered ? "ordered" : "unordered", ordered: isOrdered, textColor })}`;
+          return `<!-- block:list${meta} -->\n${listHtml}\n<!-- /block:list -->`;
+        }
+
+        case "quote": {
+          const { citation = "", style = "default", textColor = "" } = attrs;
+          const content = block.content !== undefined ? block.content : (attrs.content || "");
+          const styleAttr = textColor ? ` style="color: ${textColor};"` : "";
+          const classAttr = style === "large" ? ' class="quote-large"' : "";
+          const citeHtml = citation ? `<cite>— ${citation}</cite>` : "";
+          const quoteHtml = `<blockquote${classAttr}${styleAttr}><p>${content}</p>${citeHtml}</blockquote>`;
+
+          if (!includeDelimiters) return quoteHtml;
+          const meta = ` ${JSON.stringify({ citation, style, textColor })}`;
+          return `<!-- block:quote${meta} -->\n${quoteHtml}\n<!-- /block:quote -->`;
         }
 
         case "image": {
-          const { url = "", alt = "", caption = "", align = "center", width = "100%" } = attributes;
-          if (!url) return "";
+          const { url = "", alt = "", caption = "", align = "center", width = "100%" } = attrs;
+          if (!url && !includeDelimiters) return "";
           const alignClass = align !== "center" ? ` align-${align}` : "";
           const capHtml = caption ? `<figcaption>${caption}</figcaption>` : "";
-          return `<figure class="wp-block-image${alignClass}"><img src="${url}" alt="${alt || "Image"}" style="max-width:${width};height:auto;" />${capHtml}</figure>`;
+          const imgHtml = `<figure class="wp-block-image${alignClass}"><img src="${url}" alt="${alt || "Image"}" style="max-width:${width};height:auto;" />${capHtml}</figure>`;
+
+          if (!includeDelimiters) return imgHtml;
+          const meta = ` ${JSON.stringify({ url, alt, caption, align, width })}`;
+          return `<!-- block:image${meta} -->\n${imgHtml}\n<!-- /block:image -->`;
         }
 
         case "gallery": {
-          const { images = [], columns = 3, gap = 16 } = attributes;
-          if (!images || images.length === 0) return "";
-          const imgItems = images
+          const { images = [], columns = 3, gap = 16 } = attrs;
+          if ((!images || images.length === 0) && !includeDelimiters) return "";
+          const imgItems = (images || [])
             .map(
               (img) => `<figure><img src="${img.url}" alt="${img.alt || ""}" />${img.caption ? `<figcaption>${img.caption}</figcaption>` : ""}</figure>`
             )
             .join("");
-          return `<div class="wp-block-gallery columns-${columns}" style="gap:${gap}px;">${imgItems}</div>`;
+          const galHtml = `<div class="wp-block-gallery columns-${columns}" style="gap:${gap}px;">${imgItems}</div>`;
+
+          if (!includeDelimiters) return galHtml;
+          const meta = ` ${JSON.stringify({ columns, gap })}`;
+          return `<!-- block:gallery${meta} -->\n${galHtml}\n<!-- /block:gallery -->`;
         }
 
         case "embed": {
-          const { url = "", provider = "youtube", caption = "" } = attributes;
-          if (!url) return "";
+          const { url = "", provider = "youtube", caption = "" } = attrs;
+          if (!url && !includeDelimiters) return "";
           let embedSrc = url;
           if (provider === "youtube" && url.includes("watch?v=")) {
             const videoId = url.split("watch?v=")[1]?.split("&")[0];
@@ -84,41 +148,52 @@ export function blocksToHtml(blocks = []) {
             embedSrc = `https://player.vimeo.com/video/${vimeoId}`;
           }
           const capHtml = caption ? `<figcaption>${caption}</figcaption>` : "";
-          return `<figure class="wp-block-embed"><div class="aspect-video-wrapper"><iframe src="${embedSrc}" frameborder="0" allowfullscreen></iframe></div>${capHtml}</figure>`;
+          const embHtml = `<figure class="wp-block-embed"><div class="aspect-video-wrapper"><iframe src="${embedSrc}" frameborder="0" allowfullscreen></iframe></div>${capHtml}</figure>`;
+
+          if (!includeDelimiters) return embHtml;
+          const meta = ` ${JSON.stringify({ url, provider, caption })}`;
+          return `<!-- block:embed${meta} -->\n${embHtml}\n<!-- /block:embed -->`;
         }
 
         case "button": {
-          const { text = "Click", url = "#", variant = "primary", align = "left", targetBlank = true } = attributes;
+          const { text = "Click", url = "#", variant = "primary", align = "left", targetBlank = true } = attrs;
           const targetAttr = targetBlank ? ' target="_blank" rel="noopener noreferrer"' : "";
-          return `<div class="wp-block-button align-${align}"><a href="${url}" class="wp-btn btn-${variant}"${targetAttr}>${text}</a></div>`;
-        }
+          const btnHtml = `<div class="wp-block-button align-${align}"><a href="${url}" class="wp-btn btn-${variant}"${targetAttr}>${text}</a></div>`;
 
-        case "custom-html": {
-          const { html = "" } = attributes;
-          if (!html.trim()) return "";
-          return `<!-- wp:html -->\n${html.trim()}\n<!-- /wp:html -->`;
+          if (!includeDelimiters) return btnHtml;
+          const meta = ` ${JSON.stringify({ text, url, variant, align, targetBlank })}`;
+          return `<!-- block:button${meta} -->\n${btnHtml}\n<!-- /block:button -->`;
         }
 
         case "columns": {
-          const { layout = "50-50" } = attributes;
-          // Render each column's child blocks
+          const { layout = "50-50" } = attrs;
           const colHtmls = (children || []).map((colBlocks) => {
-            const innerHtml = blocksToHtml(colBlocks);
+            const innerHtml = blocksToHtml(Array.isArray(colBlocks) ? colBlocks : [colBlocks], options);
             return `<div class="wp-block-column">${innerHtml}</div>`;
           }).join("");
-          return `<div class="wp-block-columns layout-${layout}">${colHtmls}</div>`;
+          const colsHtml = `<div class="wp-block-columns layout-${layout}">${colHtmls}</div>`;
+
+          if (!includeDelimiters) return colsHtml;
+          const meta = ` ${JSON.stringify({ layout })}`;
+          return `<!-- block:columns${meta} -->\n${colsHtml}\n<!-- /block:columns -->`;
         }
 
         case "divider": {
-          const { style = "line", height = 32 } = attributes;
-          if (style === "spacer") {
-            return `<div class="wp-block-spacer" style="height:${height}px;"></div>`;
-          }
-          return `<hr class="wp-block-separator style-${style}" />`;
+          const { style = "line", height = 32 } = attrs;
+          const divHtml = style === "spacer"
+            ? `<div class="wp-block-spacer" style="height:${height}px;"></div>`
+            : `<hr class="wp-block-separator style-${style}" />`;
+
+          if (!includeDelimiters) return divHtml;
+          const meta = ` ${JSON.stringify({ style, height })}`;
+          return `<!-- block:divider${meta} -->\n${divHtml}\n<!-- /block:divider -->`;
         }
 
-        default:
-          return "";
+        default: {
+          const rawContent = block.content !== undefined ? block.content : "";
+          if (!includeDelimiters) return rawContent;
+          return `<!-- block:${type} -->\n${rawContent}\n<!-- /block:${type} -->`;
+        }
       }
     })
     .filter(Boolean)
@@ -126,207 +201,184 @@ export function blocksToHtml(blocks = []) {
 }
 
 /**
- * Extract raw code from custom-html wrapper nodes if present
+ * Fallback parser for legacy content without explicit block delimiters.
+ * Ensures HTML tags (like <div> or <p>) are never used to mistakenly convert paragraphs to HTML blocks.
  */
-function extractRawHtmlFromNode(node) {
-  if (!node) return "";
+export function parseLegacyHtmlToBlocks(rawHtml = "") {
+  const cleanHtml = sanitizeCorruptedCode(rawHtml);
+  if (!cleanHtml.trim()) return [];
 
-  // If node is a wp-block-custom-html wrapper card, extract the inner textarea content
-  const textarea = node.querySelector ? node.querySelector("textarea") : null;
-  if (textarea) {
-    return (textarea.value || textarea.textContent || "").trim();
-  }
+  // Browser DOM parser
+  if (typeof document !== "undefined") {
+    const container = document.createElement("div");
+    container.innerHTML = cleanHtml;
+    const childNodes = Array.from(container.children);
 
-  // If node is a script tag, details, style tag, or div, return outerHTML
-  return node.outerHTML || node.textContent || "";
-}
-
-/**
- * Sanitizes and unwraps any corrupted <p class="text-[#cbd5e1]"> tags wrapping CSS rules or HTML code
- */
-function sanitizeCorruptedCode(htmlStr = "") {
-  if (!htmlStr) return "";
-  let clean = htmlStr;
-
-  // 1. Strip all leftover preview pane container elements and raw placeholders
-  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-preview-pane[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "");
-  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-preview-content[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "");
-  clean = clean.replace(/___PROTECTED_RAW_\d+___/gi, "");
-
-  // 2. Unwrap outer wp-block-custom-html wrappers if whole string is wrapped
-  clean = clean.replace(/<div[^>]*class="[^"]*wp-block-custom-html[^"]*"[^>]*>[\s\S]*?<textarea[^>]*>([\s\S]*?)<\/textarea>[\s\S]*?<\/div>/gi, (m, rawCode) => {
-    return rawCode.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
-  });
-
-  // 3. Unwrap corrupted <p class="text-[#cbd5e1]"> tags wrapping CSS rules or HTML code
-  clean = clean.replace(/<p[^>]*class="[^"]*text-\[#cbd5e1\][^"]*"[^>]*>([\s\S]*?)<\/p>/gi, (m, content) => {
-    if (
-      content.includes("summary") ||
-      content.includes("faq") ||
-      content.includes("{") ||
-      content.includes("padding:") ||
-      content.includes("font-size:") ||
-      content.includes("min-height:") ||
-      content.includes("<style") ||
-      content.includes("<div")
-    ) {
-      return content.replace(/<br\s*\/?>/gi, "\n").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    if (childNodes.length === 0) {
+      return [createBlock("paragraph", { content: cleanHtml.trim() })];
     }
-    return m;
-  });
 
-  return clean;
-}
-
-/**
- * Parses raw HTML / Markdown into structured JSON block cards
- */
-export function htmlToBlocks(html = "") {
-  if (!html || !html.trim()) {
-    return [createBlock("paragraph", { content: "" })];
-  }
-
-  const cleanHtml = sanitizeCorruptedCode(html);
-
-  // 1. IF HTML CONTAINS GUTENBERG BLOCK MARKERS (<!-- wp:html --> etc.)
-  if (cleanHtml.includes("<!-- wp:")) {
     const blocks = [];
-    const wpBlockRegex = /<!-- wp:(\w+)(?:\s+({[\s\S]*?}))?\s*-->([\s\S]*?)<!-- \/wp:\1 -->/g;
-    let match;
+    childNodes.forEach((node) => {
+      const tagName = node.tagName.toLowerCase();
 
-    while ((match = wpBlockRegex.exec(cleanHtml)) !== null) {
-      const type = match[1];
-      const rawAttrs = match[2];
-      const content = match[3] ? match[3].trim() : "";
-
-      let attributes = {};
-      if (rawAttrs) {
-        try {
-          attributes = JSON.parse(rawAttrs);
-        } catch (e) {}
+      // Heading elements
+      if (/^h[1-6]$/.test(tagName)) {
+        const level = parseInt(tagName.replace("h", ""), 10);
+        blocks.push(
+          createBlock("heading", {
+            level,
+            content: node.innerHTML.trim(),
+            anchor: node.id || "",
+          })
+        );
+        return;
       }
 
-      if (type === "html") {
-        blocks.push(createBlock("custom-html", { html: content }));
-      } else if (type === "paragraph") {
-        const innerText = content.replace(/^<p[^>]*>/, "").replace(/<\/p>$/, "").trim();
-        blocks.push(createBlock("paragraph", { ...attributes, content: innerText || content }));
-      } else if (type === "heading") {
-        const levelMatch = content.match(/<h([1-6])/i);
-        const level = levelMatch ? parseInt(levelMatch[1], 10) : attributes.level || 2;
-        const innerText = content.replace(/^<h[1-6][^>]*>/, "").replace(/<\/h[1-6]>$/, "").trim();
-        blocks.push(createBlock("heading", { ...attributes, level, content: innerText || content }));
-      } else if (type === "code") {
-        const codeMatch = content.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
-        const codeText = codeMatch ? codeMatch[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">") : content;
-        blocks.push(createBlock("code", { ...attributes, code: codeText }));
-      } else {
-        blocks.push(createBlock("custom-html", { html: content }));
+      // Paragraph elements
+      if (tagName === "p") {
+        const img = node.querySelector("img");
+        if (img && node.childNodes.length === 1) {
+          blocks.push(
+            createBlock("image", {
+              url: img.getAttribute("src") || "",
+              alt: img.getAttribute("alt") || "",
+              caption: "",
+            })
+          );
+        } else {
+          blocks.push(createBlock("paragraph", { content: node.innerHTML.trim() }));
+        }
+        return;
       }
-    }
 
-    if (blocks.length > 0) {
-      return blocks;
-    }
-  }
-
-  // 2. FALLBACK FOR DOM NODES (Legacy / Plain HTML)
-  const blocks = [];
-  const container = typeof document !== "undefined" ? document.createElement("div") : null;
-
-  if (!container) {
-    return [createBlock("custom-html", { html: cleanHtml })];
-  }
-
-  container.innerHTML = cleanHtml;
-  const childNodes = Array.from(container.children);
-
-  if (childNodes.length === 0) {
-    return [createBlock("paragraph", { content: cleanHtml.trim() })];
-  }
-
-  childNodes.forEach((node) => {
-    const tagName = node.tagName.toLowerCase();
-
-    // Check if node is an explicit custom-html block or raw custom code node
-    const isExplicitCustomHtmlClass =
-      node.classList.contains("wp-block-custom-html") ||
-      node.classList.contains("faq-container") ||
-      node.classList.contains("faq-schema-block") ||
-      node.classList.contains("custom-html-block") ||
-      node.classList.contains("wp-custom-html-card") ||
-      node.classList.contains("format-table");
-
-    const isCustomHtmlTag =
-      tagName === "script" ||
-      tagName === "style" ||
-      tagName === "details" ||
-      tagName === "table" ||
-      tagName === "form" ||
-      tagName === "iframe" ||
-      tagName === "svg" ||
-      tagName === "div" ||
-      tagName === "section" ||
-      tagName === "article" ||
-      node.hasAttribute("style") ||
-      node.className !== "";
-
-    const isCustomHtmlNode = isExplicitCustomHtmlClass || isCustomHtmlTag;
-
-    // Check if paragraph or div contains CSS rules or markup mistakenly wrapped
-    const isCorruptedCss =
-      ((node.innerHTML.includes("{") && node.innerHTML.includes("}")) || node.innerHTML.includes("<style>")) &&
-      (node.innerHTML.includes("margin") ||
-        node.innerHTML.includes("padding") ||
-        node.innerHTML.includes("font-size") ||
-        node.innerHTML.includes("summary") ||
-        node.innerHTML.includes("faq"));
-
-    if (isCorruptedCss || (isCustomHtmlNode && tagName !== "p")) {
-      const rawCode = extractRawHtmlFromNode(node);
-      const lastBlock = blocks[blocks.length - 1];
-      if (lastBlock && lastBlock.type === "custom-html") {
-        lastBlock.attributes.html = (lastBlock.attributes.html + "\n\n" + rawCode).trim();
-        lastBlock.attributes.content = lastBlock.attributes.html;
-      } else {
-        blocks.push(createBlock("custom-html", { html: rawCode, content: rawCode }));
+      // Pre / Code blocks
+      if (tagName === "pre") {
+        const code = node.querySelector("code");
+        const langMatch = (code?.className || "").match(/language-([a-z0-9_-]+)/i);
+        blocks.push(
+          createBlock("code", {
+            code: code ? code.innerText : node.innerText,
+            content: code ? code.innerText : node.innerText,
+            language: langMatch ? langMatch[1] : "javascript",
+          })
+        );
+        return;
       }
-      return;
-    }
 
-    if (/^h[1-6]$/.test(tagName)) {
-      const level = parseInt(tagName.replace("h", ""), 10);
-      blocks.push(
-        createBlock("heading", {
-          level,
-          content: node.innerHTML,
-          anchor: node.id || "",
-        })
-      );
-    } else if (tagName === "p") {
-      // Check if node contains an <img> element
-      const img = node.querySelector("img");
-      if (img) {
+      // Lists
+      if (tagName === "ul" || tagName === "ol") {
+        const items = Array.from(node.querySelectorAll("li"))
+          .map((li) => li.innerHTML.trim())
+          .filter(Boolean);
+        blocks.push(
+          createBlock("list", {
+            listType: tagName === "ol" ? "ordered" : "unordered",
+            ordered: tagName === "ol",
+            items: items.length > 0 ? items : [""],
+          })
+        );
+        return;
+      }
+
+      // Blockquotes
+      if (tagName === "blockquote") {
+        const p = node.querySelector("p");
+        const cite = node.querySelector("cite");
+        blocks.push(
+          createBlock("quote", {
+            content: p ? p.innerHTML.trim() : node.innerHTML.trim(),
+            citation: cite ? cite.innerText.replace(/^—\s*/, "").trim() : "",
+          })
+        );
+        return;
+      }
+
+      // Figures with images
+      if (tagName === "figure" && node.querySelector("img")) {
+        const img = node.querySelector("img");
         const cap = node.querySelector("figcaption");
         blocks.push(
           createBlock("image", {
             url: img.getAttribute("src") || "",
             alt: img.getAttribute("alt") || "",
-            caption: cap ? cap.innerHTML : "",
+            caption: cap ? cap.innerHTML.trim() : "",
           })
         );
-      } else {
-        // Standard text paragraph
-        const textContent = node.innerHTML.trim();
-        const strippedText = textContent.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
-        if (strippedText.length > 0) {
-          blocks.push(createBlock("paragraph", { content: textContent }));
-        }
+        return;
       }
+
+      // Horizontal dividers
+      if (tagName === "hr") {
+        blocks.push(createBlock("divider", { style: "line" }));
+        return;
+      }
+
+      // Button wrapper
+      if (node.classList.contains("wp-block-button")) {
+        const a = node.querySelector("a");
+        blocks.push(
+          createBlock("button", {
+            text: a ? a.innerText.trim() : "Button",
+            url: a ? a.getAttribute("href") : "#",
+          })
+        );
+        return;
+      }
+
+      // For any complex custom HTML, widgets, scripts, styles, forms, or tables, preserve as HTML block
+      const outer = node.outerHTML || node.innerHTML || "";
+      if (outer.trim()) {
+        blocks.push(createBlock("html", { html: outer.trim(), content: outer.trim() }));
+      }
+    });
+
+    return blocks.length > 0 ? blocks : [createBlock("paragraph", { content: cleanHtml.trim() })];
+  }
+
+  // Server-side / Node fallback parser (without DOM)
+  const blocks = [];
+  const topTagRegex = /<(p|h[1-6]|pre|ul|ol|blockquote|figure|div|hr|section|table)([^>]*)>([\s\S]*?)<\/\1>|<(hr|img)([^>]*)\/?>/gi;
+  let match;
+  let lastIndex = 0;
+  let foundTags = false;
+
+  while ((match = topTagRegex.exec(cleanHtml)) !== null) {
+    foundTags = true;
+    const interText = cleanHtml.slice(lastIndex, match.index).trim();
+    if (interText) {
+      blocks.push(createBlock("paragraph", { content: interText }));
+    }
+    lastIndex = topTagRegex.lastIndex;
+
+    const fullMatch = match[0];
+    const tagName = (match[1] || match[4] || "").toLowerCase();
+    const innerContent = match[3] !== undefined ? match[3].trim() : "";
+
+    if (tagName === "p") {
+      const imgMatch = innerContent.match(/^<img[^>]*src="([^"]*)"[^>]*\/?>$/i);
+      if (imgMatch) {
+        blocks.push(createBlock("image", { url: imgMatch[1], alt: "", caption: "" }));
+      } else {
+        blocks.push(createBlock("paragraph", { content: innerContent }));
+      }
+    } else if (/^h[1-6]$/.test(tagName)) {
+      const level = parseInt(tagName.replace("h", ""), 10);
+      blocks.push(createBlock("heading", { level, content: innerContent }));
+    } else if (tagName === "pre") {
+      const codeMatch = innerContent.match(/<code(?: class="language-([^"]+)")?[^>]*>([\s\S]*?)<\/code>/i);
+      const codeText = codeMatch
+        ? codeMatch[2].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+        : innerContent;
+      const lang = codeMatch ? codeMatch[1] : "javascript";
+      blocks.push(createBlock("code", { language: lang || "javascript", code: codeText, content: codeText }));
     } else if (tagName === "ul" || tagName === "ol") {
-      const items = Array.from(node.querySelectorAll("li"))
-        .map((li) => li.innerHTML.trim())
-        .filter((item) => item.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0);
+      const items = [];
+      const liRegex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+      let liM;
+      while ((liM = liRegex.exec(innerContent)) !== null) {
+        items.push(liM[1].trim());
+      }
       blocks.push(
         createBlock("list", {
           listType: tagName === "ol" ? "ordered" : "unordered",
@@ -335,61 +387,209 @@ export function htmlToBlocks(html = "") {
         })
       );
     } else if (tagName === "blockquote") {
-      const p = node.querySelector("p");
-      const cite = node.querySelector("cite");
-      blocks.push(
-        createBlock("quote", {
-          content: p ? p.innerHTML : node.innerHTML,
-          citation: cite ? cite.innerText.replace(/^—\s*/, "") : "",
-        })
-      );
-    } else if (tagName === "pre") {
-      const code = node.querySelector("code");
-      blocks.push(
-        createBlock("code", {
-          code: code ? code.innerText : node.innerText,
-          language: "javascript",
-        })
-      );
-    } else if (tagName === "figure" && node.querySelector("img")) {
-      const img = node.querySelector("img");
-      const cap = node.querySelector("figcaption");
-      blocks.push(
-        createBlock("image", {
-          url: img.getAttribute("src") || "",
-          alt: img.getAttribute("alt") || "",
-          caption: cap ? cap.innerHTML : "",
-        })
-      );
-    } else if (node.classList.contains("wp-block-button")) {
-      const a = node.querySelector("a");
-      blocks.push(
-        createBlock("button", {
-          text: a ? a.innerText : "Button",
-          url: a ? a.getAttribute("href") : "#",
-        })
-      );
+      const pMatch = innerContent.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+      const text = pMatch ? pMatch[1].trim() : innerContent;
+      blocks.push(createBlock("quote", { content: text }));
     } else if (tagName === "hr") {
       blocks.push(createBlock("divider", { style: "line" }));
     } else {
-      const textContent = node.outerHTML || node.innerHTML ? (node.outerHTML || node.innerHTML).trim() : "";
-      if (textContent.length > 0) {
-        blocks.push(createBlock("custom-html", { html: textContent, content: textContent }));
+      // Complex tags: div, section, table, etc. preserved as HTML block
+      blocks.push(createBlock("html", { html: fullMatch.trim(), content: fullMatch.trim() }));
+    }
+  }
+
+  const trailingText = cleanHtml.slice(lastIndex).trim();
+  if (trailingText) {
+    blocks.push(createBlock("paragraph", { content: trailingText }));
+  }
+
+  if (!foundTags) {
+    const lines = cleanHtml.split(/\n\s*\n+/);
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed) {
+        blocks.push(createBlock("paragraph", { content: trimmed }));
       }
     }
-  });
+  }
 
-  // Post-process: Consolidate any consecutive custom-html blocks into 1 single custom-html block!
-  const consolidated = [];
-  blocks.forEach((b) => {
-    const last = consolidated[consolidated.length - 1];
-    if (b.type === "custom-html" && last && last.type === "custom-html") {
-      last.attributes.html = (last.attributes.html + "\n\n" + b.attributes.html).trim();
-      last.attributes.content = last.attributes.html;
-    } else {
-      consolidated.push(b);
+  return blocks.length > 0 ? blocks : [createBlock("paragraph", { content: cleanHtml.trim() })];
+}
+
+
+/**
+ * Parses HTML into structured JSON blocks.
+ * Uses explicit block delimiters (<!-- block:type --> or <!-- wp:type -->) as primary source of truth.
+ * Falls back to legacy parsing only when no delimiters are present.
+ */
+export function htmlToBlocks(html = "") {
+  if (!html || !html.trim()) {
+    return [createBlock("paragraph", { content: "" })];
+  }
+
+  const cleanHtml = sanitizeCorruptedCode(html);
+
+  // 1. PRIMARY PATH: Explicit block delimiters
+  const hasBlockDelimiters = /<!--\s*(?:block|wp):([\w-]+)/i.test(cleanHtml);
+
+  if (hasBlockDelimiters) {
+    const blocks = [];
+    const blockRegex = /<!--\s*(?:block|wp):([\w-]+)(?:\s+({[\s\S]*?}))?\s*-->([\s\S]*?)<!--\s*\/(?:block|wp):\1\s*-->/gi;
+    let match;
+    let lastIndex = 0;
+
+    while ((match = blockRegex.exec(cleanHtml)) !== null) {
+      // Capture any un-delimited content between block markers
+      const intermediate = cleanHtml.slice(lastIndex, match.index).trim();
+      if (intermediate) {
+        const fallbackBlocks = parseLegacyHtmlToBlocks(intermediate);
+        blocks.push(...fallbackBlocks);
+      }
+      lastIndex = blockRegex.lastIndex;
+
+      const rawType = match[1].toLowerCase();
+      const type = rawType === "custom-html" ? "html" : rawType;
+      const rawAttrs = match[2];
+      const innerContent = match[3] !== undefined ? match[3].replace(/^\n+|\n+$/g, "") : "";
+
+      let attributes = {};
+      if (rawAttrs) {
+        try {
+          attributes = JSON.parse(rawAttrs);
+        } catch (e) {}
+      }
+
+      switch (type) {
+        case "html":
+        case "custom-html": {
+          // HTML Block Rule: An HTML Block must preserve its complete HTML source exactly
+          // The <h2>, <p>, <div>, <section> inside this HTML must NOT be converted
+          blocks.push(createBlock("html", { ...attributes, html: innerContent, content: innerContent }));
+          break;
+        }
+
+        case "paragraph": {
+          const text = innerContent
+            .replace(/^<p[^>]*>/i, "")
+            .replace(/<\/p>$/i, "")
+            .trim();
+          blocks.push(createBlock("paragraph", { ...attributes, content: text }));
+          break;
+        }
+
+        case "heading": {
+          const levelMatch = innerContent.match(/<h([1-6])/i);
+          const level = levelMatch ? parseInt(levelMatch[1], 10) : (attributes.level || 2);
+          const text = innerContent
+            .replace(/^<h[1-6][^>]*>/i, "")
+            .replace(/<\/h[1-6]>$/i, "")
+            .trim();
+          blocks.push(createBlock("heading", { ...attributes, level, content: text }));
+          break;
+        }
+
+        case "code": {
+          const codeMatch = innerContent.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+          const codeText = codeMatch
+            ? codeMatch[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+            : innerContent.replace(/^<pre[^>]*>/i, "").replace(/<\/pre>$/i, "");
+          const langMatch = innerContent.match(/class="language-([^"]+)"/i);
+          const language = langMatch ? langMatch[1] : (attributes.language || "javascript");
+          blocks.push(createBlock("code", { ...attributes, language, code: codeText, content: codeText }));
+          break;
+        }
+
+        case "list": {
+          const items = [];
+          const liRegex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+          let liMatch;
+          while ((liMatch = liRegex.exec(innerContent)) !== null) {
+            items.push(liMatch[1].trim());
+          }
+          const isOrdered = /<ol[^>]*>/i.test(innerContent) || attributes.listType === "ordered" || attributes.ordered;
+          blocks.push(
+            createBlock("list", {
+              ...attributes,
+              listType: isOrdered ? "ordered" : "unordered",
+              ordered: isOrdered,
+              items: items.length > 0 ? items : (attributes.items || [""]),
+            })
+          );
+          break;
+        }
+
+        case "quote": {
+          const pMatch = innerContent.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+          const citeMatch = innerContent.match(/<cite[^>]*>(?:—\s*)?([\s\S]*?)<\/cite>/i);
+          const text = pMatch
+            ? pMatch[1].trim()
+            : innerContent.replace(/<cite[\s\S]*?<\/cite>/gi, "").replace(/^<blockquote[^>]*>/i, "").replace(/<\/blockquote>$/i, "").trim();
+          const citation = citeMatch ? citeMatch[1].trim() : (attributes.citation || "");
+          blocks.push(createBlock("quote", { ...attributes, content: text, citation }));
+          break;
+        }
+
+        case "image": {
+          const imgMatch = innerContent.match(/<img[^>]*src="([^"]*)"[^>]*>/i);
+          const altMatch = innerContent.match(/alt="([^"]*)"/i);
+          const capMatch = innerContent.match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i);
+          blocks.push(
+            createBlock("image", {
+              ...attributes,
+              url: attributes.url || (imgMatch ? imgMatch[1] : ""),
+              alt: attributes.alt !== undefined ? attributes.alt : (altMatch ? altMatch[1] : ""),
+              caption: attributes.caption !== undefined ? attributes.caption : (capMatch ? capMatch[1] : ""),
+            })
+          );
+          break;
+        }
+
+        case "divider": {
+          blocks.push(createBlock("divider", attributes));
+          break;
+        }
+
+        case "button": {
+          const aMatch = innerContent.match(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/i);
+          blocks.push(
+            createBlock("button", {
+              ...attributes,
+              url: attributes.url || (aMatch ? aMatch[1] : "#"),
+              text: attributes.text || (aMatch ? aMatch[2] : "Button"),
+            })
+          );
+          break;
+        }
+
+        case "embed": {
+          const ifrMatch = innerContent.match(/<iframe[^>]*src="([^"]*)"[^>]*>/i);
+          blocks.push(
+            createBlock("embed", {
+              ...attributes,
+              url: attributes.url || (ifrMatch ? ifrMatch[1] : ""),
+            })
+          );
+          break;
+        }
+
+        default:
+          blocks.push(createBlock(type, { ...attributes, content: innerContent }));
+          break;
+      }
     }
-  });
 
-  return consolidated.length > 0 ? consolidated : [createBlock("paragraph", { content: "" })];
+    // Capture trailing content after last marker
+    const trailing = cleanHtml.slice(lastIndex).trim();
+    if (trailing) {
+      const fallbackBlocks = parseLegacyHtmlToBlocks(trailing);
+      blocks.push(...fallbackBlocks);
+    }
+
+    if (blocks.length > 0) {
+      return blocks;
+    }
+  }
+
+  // 2. FALLBACK PATH: Legacy content without explicit block delimiters
+  return parseLegacyHtmlToBlocks(cleanHtml);
 }

@@ -166,14 +166,14 @@ export default function BlockToolbar({
             ? (block.attributes?.listType === "ordered" || block.attributes?.ordered)
               ? "Numbered List"
               : "Bullet List"
-            : block.type === "custom-html"
+            : (block.type === "custom-html" || block.type === "html")
             ? "Custom HTML"
             : currentDef ? currentDef.name : block.type}
         </span>
       </div>
 
       {/* HTML / Preview Tab Toggle for Custom HTML Block (Floating Toolbar Pop-up) */}
-      {block.type === "custom-html" && (
+      {(block.type === "custom-html" || block.type === "html") && (
         <div className="flex items-center gap-1 bg-[#090912] p-0.5 rounded-lg border border-white/10 mx-1 select-none" role="tablist">
           <button
             role="tab"

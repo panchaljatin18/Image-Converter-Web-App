@@ -32,8 +32,15 @@ export default function BlockInspectorSidebar({
   const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef(null);
 
-  const selectedDef = selectedBlock ? BLOCK_DEFINITIONS.find((b) => b.type === selectedBlock.type) : null;
-  const attrs = selectedBlock?.attributes || {};
+  const selectedDef = selectedBlock
+    ? BLOCK_DEFINITIONS.find(
+        (b) =>
+          b.type === selectedBlock.type ||
+          (selectedBlock.type === "html" && b.type === "custom-html") ||
+          (selectedBlock.type === "custom-html" && b.type === "html")
+      )
+    : null;
+  const attrs = selectedBlock?.attrs || selectedBlock?.attributes || {};
 
   const handleImageFileUpload = async (e) => {
     const file = e.target.files?.[0];

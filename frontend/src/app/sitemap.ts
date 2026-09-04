@@ -105,14 +105,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic published blog posts from DB & markdown storage
   try {
     const posts = await getBlogPosts(false); // only published posts
-    posts.forEach((post) => {
-      routes.push({
-        url: `${SITE_URL}/blog/${post.slug}`,
-        lastModified: post.frontmatter.date ? new Date(post.frontmatter.date) : currentDate,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
+    posts
+      .filter((post) => post.slug !== "cms-editor-block-identity-html-block-persistence-fix")
+      .forEach((post) => {
+        routes.push({
+          url: `${SITE_URL}/blog/${post.slug}`,
+          lastModified: post.frontmatter.date ? new Date(post.frontmatter.date) : currentDate,
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        });
       });
-    });
   } catch (e) {
     console.error("Error fetching published blog posts for sitemap:", e);
   }

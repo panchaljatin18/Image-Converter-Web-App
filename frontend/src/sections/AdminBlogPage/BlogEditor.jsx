@@ -904,6 +904,7 @@ export default function BlogEditor({ initialSlug = null }) {
   const [draftNotice, setDraftNotice] = useState("");
   const [availableDraft, setAvailableDraft] = useState(null);
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState("");
+  const currentBlocksRef = useRef(null);
 
   const saveDraftToLocalStorage = (overrideData = {}) => {
     if (typeof window === "undefined") return;
@@ -911,6 +912,10 @@ export default function BlogEditor({ initialSlug = null }) {
       const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
       const currentMd = editorMode === "visual" ? htmlToMarkdown(currentHtml) : markdownContent;
       const now = Date.now();
+      const blocksToSave = overrideData.content_blocks !== undefined
+        ? overrideData.content_blocks
+        : (currentBlocksRef.current ? { version: 1, blocks: currentBlocksRef.current } : initialBlocks);
+
       const draftData = {
         title: overrideData.title !== undefined ? overrideData.title : title,
         slug: overrideData.slug !== undefined ? overrideData.slug : slug,
@@ -925,7 +930,7 @@ export default function BlogEditor({ initialSlug = null }) {
         status: overrideData.status !== undefined ? overrideData.status : status,
         markdownContent: overrideData.markdownContent !== undefined ? overrideData.markdownContent : currentMd,
         htmlContent: overrideData.htmlContent !== undefined ? overrideData.htmlContent : currentHtml,
-        content_blocks: overrideData.content_blocks !== undefined ? overrideData.content_blocks : initialBlocks,
+        content_blocks: blocksToSave,
         editorMode: overrideData.editorMode !== undefined ? overrideData.editorMode : editorMode,
         timestamp: now,
       };
@@ -1293,8 +1298,10 @@ export default function BlogEditor({ initialSlug = null }) {
               setInitialHtmlContent(activeHtml);
               if (savedDraft.content_blocks) {
                 setInitialBlocks(savedDraft.content_blocks);
+                currentBlocksRef.current = savedDraft.content_blocks.blocks || savedDraft.content_blocks;
               } else if (data.post && data.post.content_blocks) {
                 setInitialBlocks(data.post.content_blocks);
+                currentBlocksRef.current = data.post.content_blocks.blocks || data.post.content_blocks;
               }
               if (savedDraft.editorMode) setEditorMode(savedDraft.editorMode);
               calculateStats(activeMd);
@@ -1316,8 +1323,9 @@ export default function BlogEditor({ initialSlug = null }) {
               const loadedHtml = serverHtml || markdownToHtml(content);
               setHtmlContent(loadedHtml);
               setInitialHtmlContent(loadedHtml);
-              if (data.post.content_blocks) {
+              if (data.post && data.post.content_blocks) {
                 setInitialBlocks(data.post.content_blocks);
+                currentBlocksRef.current = data.post.content_blocks.blocks || data.post.content_blocks;
               }
               calculateStats(content);
             }
@@ -1346,6 +1354,10 @@ export default function BlogEditor({ initialSlug = null }) {
         setMarkdownContent(savedDraft.markdownContent || "");
         setHtmlContent(savedDraft.htmlContent || "");
         setInitialHtmlContent(savedDraft.htmlContent || "");
+        if (savedDraft.content_blocks) {
+          setInitialBlocks(savedDraft.content_blocks);
+          currentBlocksRef.current = savedDraft.content_blocks.blocks || savedDraft.content_blocks;
+        }
         if (savedDraft.editorMode) setEditorMode(savedDraft.editorMode);
         calculateStats(savedDraft.markdownContent || "");
         setDraftNotice("Restored unsaved draft from local storage.");
@@ -2141,6 +2153,10 @@ export default function BlogEditor({ initialSlug = null }) {
     const currentSlug = slug || title.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
     const slugToUse = activeSlugRef.current || currentSlug;
 
+    const structuredBlocks = (blocksJson && Array.isArray(blocksJson.blocks))
+      ? blocksJson
+      : { version: 1, blocks: Array.isArray(blocksJson) ? blocksJson : [] };
+
     const payload = {
       slug: currentSlug,
       title,
@@ -2156,7 +2172,7 @@ export default function BlogEditor({ initialSlug = null }) {
       status: targetStatus,
       content: htmlOutput || "",
       editorHtml: htmlOutput || "",
-      content_blocks: blocksJson || [],
+      content_blocks: structuredBlocks,
     };
 
     try {
@@ -2173,7 +2189,12 @@ export default function BlogEditor({ initialSlug = null }) {
       if (resData.success) {
         const nextSlug = resData.slug || currentSlug;
         activeSlugRef.current = nextSlug;
-        if (blocksJson) setInitialBlocks(blocksJson);
+        setInitialBlocks(structuredBlocks);
+        currentBlocksRef.current = structuredBlocks.blocks;
+        setStatus(targetStatus);
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem(DRAFT_KEY);
+        }
         setSuccessMsg(`Post saved successfully as ${targetStatus}!`);
         setTimeout(() => setSuccessMsg(""), 3000);
       } else {
@@ -2221,6 +2242,10 @@ export default function BlogEditor({ initialSlug = null }) {
         initialHtml={htmlContent}
         initialBlocks={initialBlocks}
         onSave={handleBlockSave}
+        onBlocksChange={(updatedBlocks) => {
+          currentBlocksRef.current = updatedBlocks;
+          saveDraftToLocalStorage({ content_blocks: { version: 1, blocks: updatedBlocks } });
+        }}
         saving={saving}
         postTitle={title}
         setPostTitle={setTitle}
