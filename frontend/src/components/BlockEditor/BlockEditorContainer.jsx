@@ -105,6 +105,11 @@ export default function BlockEditorContainer({
   });
 
   const [selectedBlockId, setSelectedBlockId] = useState(null);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  const blocksContainerRef = useRef(null);
+  const titleInputRef = useRef(null);
+  const ctrlACountRef = useRef(0);
+  const ctrlALastTimeRef = useRef(0);
 
   // Undo / Redo Stack
   const [history, setHistory] = useState([blocks]);
@@ -213,6 +218,104 @@ export default function BlockEditorContainer({
         }
       }
 
+      // Multi-press Ctrl+A / Cmd+A Handler:
+      // Press 1x -> Native block text selection
+      // Press 3x -> Select all blog blocks across the entire blog canvas, excluding Main Heading (postTitle)
+      if (isCmdOrCtrl && key === "a") {
+        const isInsideTitle = activeEl && (activeEl === titleInputRef.current || titleInputRef.current?.contains(activeEl));
+        const isInsideSidebar = activeEl && (activeEl.closest?.(".inspector-sidebar") || activeEl.closest?.("aside"));
+
+        // If inside Main Heading input or sidebar, allow normal input select all
+        if (isInsideTitle || isInsideSidebar) {
+          ctrlACountRef.current = 0;
+          return;
+        }
+
+        const now = Date.now();
+        if (now - ctrlALastTimeRef.current < 2000) {
+          ctrlACountRef.current += 1;
+        } else {
+          ctrlACountRef.current = 1;
+        }
+        ctrlALastTimeRef.current = now;
+
+        if (ctrlACountRef.current >= 3) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          setIsAllSelected(true);
+          setSelectedBlockId(null);
+
+          if (activeEl && typeof activeEl.blur === "function") {
+            activeEl.blur();
+          }
+
+          if (blocksContainerRef.current) {
+            try {
+              const range = document.createRange();
+              range.selectNodeContents(blocksContainerRef.current);
+              const sel = window.getSelection();
+              if (sel) {
+                sel.removeAllRanges();
+                sel.addRange(range);
+              }
+            } catch (err) {
+              console.warn("Error creating DOM selection across blocks:", err);
+            }
+          }
+          return;
+        }
+        return;
+      }
+
+      // If user presses any non-modifier key, reset the Ctrl+A counter
+      if (!isCmdOrCtrl && !["control", "meta", "alt", "shift"].includes(key)) {
+        ctrlACountRef.current = 0;
+      }
+
+      // Handle actions when entire blog is selected (isAllSelected === true)
+      if (isAllSelected) {
+        // Backspace or Delete: Clears all blocks and creates a new empty paragraph block
+        if (e.key === "Backspace" || e.key === "Delete") {
+          e.preventDefault();
+          const emptyBlock = createBlock("paragraph", { content: "" });
+          updateBlocks([emptyBlock]);
+          setSelectedBlockId(emptyBlock.id);
+          setIsAllSelected(false);
+          ctrlACountRef.current = 0;
+          const sel = window.getSelection();
+          if (sel) sel.removeAllRanges();
+          return;
+        }
+
+        // Copy (Ctrl+C / Cmd+C): Native selection covers blocksContainerRef so browser copies cleanly
+        if (isCmdOrCtrl && key === "c") {
+          return;
+        }
+
+        // Printable key typed: Replace all blocks with typed character
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          const newBlock = createBlock("paragraph", { content: e.key });
+          updateBlocks([newBlock]);
+          setSelectedBlockId(newBlock.id);
+          setIsAllSelected(false);
+          ctrlACountRef.current = 0;
+          const sel = window.getSelection();
+          if (sel) sel.removeAllRanges();
+          return;
+        }
+
+        // Navigation or Escape keys: Deselect all blocks
+        if (["escape", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+          setIsAllSelected(false);
+          ctrlACountRef.current = 0;
+          const sel = window.getSelection();
+          if (sel) sel.removeAllRanges();
+          if (key === "escape") return;
+        }
+      }
+
       // 1. Save Post: Ctrl + S / Cmd + S
       if (isCmdOrCtrl && key === "s") {
         e.preventDefault();
@@ -275,6 +378,12 @@ export default function BlockEditorContainer({
         if (isInserterOpen) setIsInserterOpen(false);
         if (isOutlineOpen) setIsOutlineOpen(false);
         if (selectedBlockId) setSelectedBlockId(null);
+        if (isAllSelected) {
+          setIsAllSelected(false);
+          ctrlACountRef.current = 0;
+          const sel = window.getSelection();
+          if (sel) sel.removeAllRanges();
+        }
         return;
       }
 
@@ -425,7 +534,7 @@ export default function BlockEditorContainer({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [blocks, selectedBlockId, historyIndex, history, onSave, postStatus, showShortcutsModal, isInserterOpen, isOutlineOpen]);
+  }, [blocks, selectedBlockId, historyIndex, history, onSave, postStatus, showShortcutsModal, isInserterOpen, isOutlineOpen, isAllSelected]);
 
   // Update blocks with history tracking (limit history stack size to 100 for memory optimization)
   const updateBlocks = React.useCallback((newBlocks) => {
@@ -769,12 +878,21 @@ export default function BlockEditorContainer({
         data-block-id={block.id}
         onClick={(e) => {
           e.stopPropagation();
+          if (isAllSelected) {
+            setIsAllSelected(false);
+            const sel = window.getSelection();
+            if (sel) sel.removeAllRanges();
+          }
           setSelectedBlockId(block.id);
         }}
-        className="relative mb-1 mt-0 group/block"
+        className={`relative mb-1 mt-0 group/block transition-all duration-150 ${
+          isAllSelected
+            ? "bg-indigo-600/20 ring-2 ring-indigo-500/70 rounded-xl shadow-lg shadow-indigo-500/10"
+            : ""
+        }`}
       >
         {/* Floating Block Toolbar */}
-        {isSelected && (
+        {isSelected && !isAllSelected && (
           <BlockToolbar
             block={block}
             onMoveUp={() => handleMoveUp(index)}
@@ -972,6 +1090,13 @@ export default function BlockEditorContainer({
         {/* Canvas Area */}
         <main
           onClick={(e) => {
+            if (isAllSelected) {
+              setIsAllSelected(false);
+              const sel = window.getSelection();
+              if (sel) sel.removeAllRanges();
+            }
+            ctrlACountRef.current = 0;
+
             if (e.target.tagName === "MAIN" || e.target.id === "canvas-inner") {
               const lastBlock = blocks[blocks.length - 1];
               if (!lastBlock || lastBlock.type !== "paragraph" || (lastBlock.attributes?.content || "").trim() !== "") {
@@ -987,8 +1112,9 @@ export default function BlockEditorContainer({
           className="flex-1 overflow-y-auto px-3 sm:px-8 md:px-16 py-5 sm:py-8 md:py-12 flex justify-center bg-[#0d0d18] cursor-text"
         >
           <div id="canvas-inner" className={`w-full ${deviceWidths[deviceMode]} px-2 sm:px-6 md:px-10 min-w-0 break-words transition-all duration-300 min-h-[500px] mx-auto`}>
-            {/* Post Title Field */}
+            {/* Post Title Field (Main Heading - Excluded from Select All) */}
             <input
+              ref={titleInputRef}
               type="text"
               placeholder="Add post title..."
               value={postTitle}
@@ -996,31 +1122,37 @@ export default function BlockEditorContainer({
               className="w-full bg-transparent text-3xl sm:text-4xl font-extrabold text-white outline-none placeholder-gray-600 font-['Outfit'] tracking-tight mb-6"
             />
 
-            {/* Blocks Canvas List */}
-            {blocks.map((block, idx) => (
-              <React.Fragment key={block.id}>
-                {renderBlock(block, idx)}
-                
-                {/* WordPress Centered Hover Inserter Line between blocks (Zero Layout Height) */}
-                <div className="relative h-0 flex items-center justify-center opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 group/inserter z-30">
-                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent group-hover/inserter:via-indigo-500 transition-colors pointer-events-none" />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setInsertIndex(idx + 1);
-                      setIsInserterOpen(true);
-                    }}
-                    className="relative z-10 w-5 h-5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-xs font-bold shadow-md shadow-indigo-600/30 transition-transform scale-90 group-hover/inserter:scale-110 cursor-pointer -translate-y-1/2"
-                    title="Add block here"
-                  >
-                    <Plus size={13} />
-                  </button>
-                </div>
-              </React.Fragment>
-            ))}
-
+            {/* Blocks Canvas List Container (Select All Target, excludes Main Heading) */}
+            <div
+              id="blocks-canvas-container"
+              ref={blocksContainerRef}
+              className="w-full select-text selection:bg-indigo-500/40 selection:text-white"
+            >
+              {blocks.map((block, idx) => (
+                <React.Fragment key={block.id}>
+                  {renderBlock(block, idx)}
+                  
+                  {/* WordPress Centered Hover Inserter Line between blocks (Zero Layout Height) */}
+                  <div className="relative h-0 flex items-center justify-center opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 group/inserter z-30">
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent group-hover/inserter:via-indigo-500 transition-colors pointer-events-none" />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInsertIndex(idx + 1);
+                        setIsInserterOpen(true);
+                      }}
+                      className="relative z-10 w-5 h-5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-xs font-bold shadow-md shadow-indigo-600/30 transition-transform scale-90 group-hover/inserter:scale-110 cursor-pointer -translate-y-1/2"
+                      title="Add block here"
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
+                </React.Fragment>
+              ))}
             </div>
+
+          </div>
         </main>
 
         {/* Right Inspector Sidebar */}
@@ -1101,6 +1233,10 @@ export default function BlockEditorContainer({
               <div>
                 <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2.5">Block Navigation & Editing</h4>
                 <div className="space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
+                    <span className="font-semibold text-white text-xs sm:text-sm">Select All Blog Content (Excludes Title)</span>
+                    <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Press Ctrl + A (3 times)</span>
+                  </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-[#090912] border border-white/5">
                     <span className="font-semibold text-white text-xs sm:text-sm">Remove / Delete Selected Block</span>
                     <span className="bg-indigo-600/30 text-indigo-200 px-2.5 py-1 rounded-lg font-mono text-[11px] sm:text-xs font-bold border border-indigo-500/30 shrink-0 self-start sm:self-auto">Shift + Alt + Z / Del</span>
