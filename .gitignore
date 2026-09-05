@@ -64,3 +64,8 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
+# Dynamic blog posts (stored directly in MongoDB)
+frontend/src/content/blog/
+src/content/blog/
+content/blog/
+*.blocks.json

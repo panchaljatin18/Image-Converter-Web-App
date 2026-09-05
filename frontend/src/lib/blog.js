@@ -447,6 +447,7 @@ export async function getBlogPosts(includeDrafts = false) {
         relatedToolSlug: post.relatedToolSlug || "",
         image: post.image || "",
         imageAlt: post.imageAlt || "",
+        imageTitle: post.imageTitle || "",
         author: post.author || "Convert Galaxy Team",
         status: post.status || "Draft",
       },
@@ -455,174 +456,54 @@ export async function getBlogPosts(includeDrafts = false) {
       content_blocks: post.content_blocks ? normalizeBlockState(post.content_blocks) : null,
     }));
   } catch (e) {
-    console.error("Error loading blog posts from DB, using disk fallback:", e);
-  }
-
-  // Fallback to reading markdown files on disk if DB returned nothing or failed
-  if (posts.length === 0 && fs.existsSync(BLOG_DIR)) {
-    try {
-      const files = fs.readdirSync(BLOG_DIR);
-      for (const file of files) {
-        if (!file.endsWith(".md")) continue;
-        const filePath = path.join(BLOG_DIR, file);
-        const fileContent = fs.readFileSync(filePath, "utf-8");
-        const { frontmatter, content } = parseMarkdownFile(fileContent);
-        const slug = file.replace(".md", "");
-
-        if (!includeDrafts && frontmatter.status === "Draft") continue;
-
-        const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
-        let loadedBlocks = null;
-        if (fs.existsSync(blocksFilePath)) {
-          try {
-            loadedBlocks = normalizeBlockState(JSON.parse(fs.readFileSync(blocksFilePath, "utf-8")));
-          } catch (e) {}
-        }
-        if (!loadedBlocks) {
-          loadedBlocks = { version: 1, blocks: htmlToBlocks(content) };
-        }
-        const htmlContent = blocksToHtml(loadedBlocks.blocks, { includeDelimiters: false, forPublic: true });
-
-        posts.push({
-          slug,
-          frontmatter: {
-            title: frontmatter.title || "Untitled Post",
-            description: frontmatter.description || "",
-            date: frontmatter.date || new Date().toISOString().split("T")[0],
-            focusKeyword: frontmatter.focusKeyword || "",
-            relatedToolSlug: frontmatter.relatedToolSlug || "",
-            image: frontmatter.image || "",
-            imageAlt: frontmatter.imageAlt || "",
-            author: frontmatter.author || "Convert Galaxy Team",
-            status: frontmatter.status || "Draft",
-          },
-          content,
-          htmlContent: htmlContent || markdownToHtml(content),
-          content_blocks: loadedBlocks,
-        });
-      }
-    } catch (fsErr) {
-      console.error("Disk reading fallback failed:", fsErr);
-    }
+    console.error("Error loading blog posts from DB:", e);
   }
 
   return posts;
 }
 
 /**
- * Reads a single post by slug from MongoDB (with disk fallback).
+ * Reads a single post by slug exclusively from MongoDB.
  */
 export async function getBlogPostBySlug(slug) {
   try {
     await dbConnect();
-    await seedMarkdownToDB();
-
-    const filePath = path.join(BLOG_DIR, `${slug}.md`);
-    let diskContent = null;
-    let diskFrontmatter = null;
-    if (fs.existsSync(filePath)) {
-      try {
-        const fileContent = fs.readFileSync(filePath, "utf-8");
-        const parsed = parseMarkdownFile(fileContent);
-        diskFrontmatter = parsed.frontmatter;
-        diskContent = parsed.content;
-      } catch (fsErr) {}
-    }
 
     const post = await BlogPost.findOne({ slug });
     if (post) {
-      // Check if DB content has leftover preview pane markers or corrupted code
-      const isDbCorrupted = post.content.includes("wp-block-preview-pane") || post.content.includes("___PROTECTED_RAW");
-      const activeContent = (isDbCorrupted && diskContent) ? diskContent : post.content;
-
       let loadedBlocks = null;
       if (post.content_blocks && (post.content_blocks.blocks || Array.isArray(post.content_blocks))) {
         loadedBlocks = normalizeBlockState(post.content_blocks);
       } else {
-        // Check companion .blocks.json on disk
-        const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
-        if (fs.existsSync(blocksFilePath)) {
-          try {
-            loadedBlocks = normalizeBlockState(JSON.parse(fs.readFileSync(blocksFilePath, "utf-8")));
-          } catch (e) {}
-        }
-      }
-
-      if (!loadedBlocks) {
-        loadedBlocks = { version: 1, blocks: htmlToBlocks(activeContent) };
+        loadedBlocks = { version: 1, blocks: htmlToBlocks(post.content || "") };
       }
 
       let htmlContent = post.htmlContent;
-      if (!htmlContent || isDbCorrupted || htmlContent.includes("<!-- block:")) {
+      if (!htmlContent || htmlContent.includes("<!-- block:")) {
         htmlContent = blocksToHtml(loadedBlocks.blocks, { includeDelimiters: false, forPublic: true });
-      }
-
-      if (isDbCorrupted && diskContent) {
-        // Update DB with clean disk content
-        BlogPost.findOneAndUpdate({ slug }, { content: diskContent, htmlContent }).catch(() => {});
       }
 
       return {
         slug: post.slug,
         frontmatter: {
-          title: (isDbCorrupted && diskFrontmatter?.title) ? diskFrontmatter.title : post.title,
+          title: post.title,
           description: post.description,
           date: post.date,
           focusKeyword: post.focusKeyword || "",
           relatedToolSlug: post.relatedToolSlug || "",
           image: post.image || "",
           imageAlt: post.imageAlt || "",
+          imageTitle: post.imageTitle || "",
           author: post.author || "Convert Galaxy Team",
           status: post.status || "Draft",
         },
-        content: activeContent,
-        htmlContent: htmlContent || markdownToHtml(activeContent),
+        content: post.content,
+        htmlContent: htmlContent || markdownToHtml(post.content),
         content_blocks: loadedBlocks,
       };
     }
   } catch (e) {
     console.error(`Error loading blog post by slug (${slug}) from DB:`, e);
-  }
-
-  // Disk fallback for single post
-  try {
-    const filePath = path.join(BLOG_DIR, `${slug}.md`);
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, "utf-8");
-      const { frontmatter, content } = parseMarkdownFile(fileContent);
-
-      let loadedBlocks = null;
-      const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
-      if (fs.existsSync(blocksFilePath)) {
-        try {
-          loadedBlocks = normalizeBlockState(JSON.parse(fs.readFileSync(blocksFilePath, "utf-8")));
-        } catch (e) {}
-      }
-      if (!loadedBlocks) {
-        loadedBlocks = { version: 1, blocks: htmlToBlocks(content) };
-      }
-      const htmlContent = blocksToHtml(loadedBlocks.blocks, { includeDelimiters: false, forPublic: true });
-
-      return {
-        slug,
-        frontmatter: {
-          title: frontmatter.title || "Untitled Post",
-          description: frontmatter.description || "",
-          date: frontmatter.date || new Date().toISOString().split("T")[0],
-          focusKeyword: frontmatter.focusKeyword || "",
-          relatedToolSlug: frontmatter.relatedToolSlug || "",
-          image: frontmatter.image || "",
-          imageAlt: frontmatter.imageAlt || "",
-          author: frontmatter.author || "Convert Galaxy Team",
-          status: frontmatter.status || "Draft",
-        },
-        content,
-        htmlContent: htmlContent || markdownToHtml(content),
-        content_blocks: loadedBlocks,
-      };
-    }
-  } catch (fsErr) {
-    console.error(`Disk fallback for ${slug} failed:`, fsErr);
   }
 
   return null;
@@ -697,36 +578,7 @@ export async function saveBlogPost(slug, {
   const finalContent = delimitedContent || sanitizeAndBalanceDivs(content || "");
   const finalHtmlContent = publicHtml || markdownToHtml(finalContent);
 
-  // 1. Save to local markdown file in src/content/blog + companion .blocks.json
-  try {
-    if (!fs.existsSync(BLOG_DIR)) {
-      fs.mkdirSync(BLOG_DIR, { recursive: true });
-    }
-    const mdFileContent = `---
-title: "${(title || "").replace(/"/g, '\\"')}"
-description: "${(description || "").replace(/"/g, '\\"')}"
-date: "${date || new Date().toISOString().split("T")[0]}"
-focusKeyword: "${focusKeyword || ""}"
-relatedToolSlug: "${relatedToolSlug || ""}"
-image: "${image || ""}"
-imageAlt: "${imageAlt || ""}"
-imageTitle: "${imageTitle || ""}"
-author: "${author || "Convert Galaxy Team"}"
-status: "${status || "Draft"}"
----
-
-${finalContent}`;
-
-    fs.writeFileSync(path.join(BLOG_DIR, `${slug}.md`), mdFileContent, "utf-8");
-
-    // Write structured companion file for disk resilience
-    const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
-    fs.writeFileSync(blocksFilePath, JSON.stringify(structuredBlocks, null, 2), "utf-8");
-  } catch (fsErr) {
-    console.error("Warning: Failed writing markdown/blocks file to disk:", fsErr);
-  }
-
-  // 2. Save/update in MongoDB
+  // 1. Save/update directly in MongoDB
   try {
     await dbConnect();
     await BlogPost.findOneAndUpdate(
@@ -750,10 +602,11 @@ ${finalContent}`;
       { upsert: true, new: true }
     );
   } catch (e) {
-    console.error("Warning: Error saving blog post to DB:", e);
+    console.error("Error saving blog post to DB:", e);
+    throw e;
   }
 
-  // 3. Revalidate Next.js static & server caches
+  // 2. Revalidate Next.js static & server caches
   try {
     revalidatePath("/blog");
     revalidatePath(`/blog/${slug}`);
@@ -764,34 +617,30 @@ ${finalContent}`;
 }
 
 /**
- * Deletes the blog post from MongoDB and local markdown storage.
+ * Deletes the blog post from MongoDB database.
  */
 export async function deleteBlogPost(slug) {
-  let deletedFromDisk = false;
   let deletedFromDb = false;
 
-  // 1. Delete local file from src/content/blog
-  try {
-    const filePath = path.join(BLOG_DIR, `${slug}.md`);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      deletedFromDisk = true;
-    }
-    const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
-    if (fs.existsSync(blocksFilePath)) {
-      fs.unlinkSync(blocksFilePath);
-    }
-  } catch (fsErr) {
-    console.error("Error deleting markdown file from disk:", fsErr);
-  }
-
-  // 2. Delete from MongoDB
+  // 1. Delete from MongoDB
   try {
     await dbConnect();
     const result = await BlogPost.deleteOne({ slug });
     deletedFromDb = result.deletedCount > 0;
   } catch (e) {
     console.error("Error deleting blog post from DB:", e);
+  }
+
+  // 2. Clean up legacy disk files if any still exist
+  try {
+    if (fs.existsSync(BLOG_DIR)) {
+      const filePath = path.join(BLOG_DIR, `${slug}.md`);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      const blocksFilePath = path.join(BLOG_DIR, `${slug}.blocks.json`);
+      if (fs.existsSync(blocksFilePath)) fs.unlinkSync(blocksFilePath);
+    }
+  } catch (fsErr) {
+    // Ignore legacy cleanup error
   }
 
   // 3. Revalidate Next.js cache
@@ -803,6 +652,6 @@ export async function deleteBlogPost(slug) {
     // Ignore revalidation error
   }
 
-  return deletedFromDisk || deletedFromDb;
+  return deletedFromDb;
 }
 
