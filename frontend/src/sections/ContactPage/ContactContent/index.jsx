@@ -22,7 +22,7 @@ const TwitterIcon = ({ size = 20, className }) => (
 );
 
 const contactInfo = [
-  { icon: <Mail size={20} />, label: "Email", value: "jmpanchal394@gmail.com", href: "mailto:jmpanchal394@gmail.com", title: "Email ConvertGalaxy support", color: "#6366f1" },
+  { icon: <Mail size={20} />, label: "Email", value: "hello@convertgalaxy.com", href: "mailto:hello@convertgalaxy.com", title: "Email ConvertGalaxy support", color: "#6366f1" },
   { icon: <TwitterIcon size={20} />, label: "Twitter / X", value: "@Panchaljatin123", href: "https://x.com/Panchaljatin123", title: "Follow Jatin Panchal on Twitter/X", color: "#06b6d4" },
   { icon: <Clock size={20} />, label: "Response Time", value: "Within 24 hours", href: null, color: "#10b981" },
   { icon: <MessageCircle size={20} />, label: "Support Hours", value: "Mon – Fri, 9am – 6pm IST", href: null, color: "#f59e0b" },

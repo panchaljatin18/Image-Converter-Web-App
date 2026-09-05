@@ -231,7 +231,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       // 1. Admin Intercept: Check if email matches admin email
-      if (emailTrim === "jmpanchal394@gmail.com") {
+      if (emailTrim === "hello@convertgalaxy.com" || emailTrim === "jmpanchal394@gmail.com") {
         try {
           const adminRes = await fetch("/api/admin/auth", {
             method: "POST",

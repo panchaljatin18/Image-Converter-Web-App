@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     async function loadUser() {
       const adminSession = typeof window !== "undefined" && sessionStorage.getItem("cg_admin_session") === "authorized";
       if (adminSession) {
-        setUser({ name: "Jatin Panchal", email: "jmpanchal394@gmail.com", role: "admin" });
+        setUser({ name: "Jatin Panchal", email: "hello@convertgalaxy.com", role: "admin" });
       }
 
       const token = authService.getToken();

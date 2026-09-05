@@ -86,7 +86,7 @@ export default function AboutContent() {
             Security is the cornerstone of ConvertGalaxy. Because typical online utilities pose data privacy risks by processing your documents on third-party remote nodes, we take full advantage of client-side architecture to bypass cloud transmission entirely.
           </p>
           <p className="text-[#cbd5e1] text-[0.95rem] leading-relaxed">
-            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <Link href="/contact" aria-label="Go to Contact page" className="text-[#818cf8] hover:underline" title="Go to Contact Page">Contact page</Link> or email us at <a href="mailto:jmpanchal394@gmail.com" aria-label="Email ConvertGalaxy Support" className="text-[#818cf8] hover:underline" title="Email ConvertGalaxy Support">jmpanchal394@gmail.com</a>.
+            If you have any suggestions, feedback, or would like to partner with us, please reach out via our <Link href="/contact" aria-label="Go to Contact page" className="text-[#818cf8] hover:underline" title="Go to Contact Page">Contact page</Link> or email us at <a href="mailto:hello@convertgalaxy.com" aria-label="Email ConvertGalaxy Support" className="text-[#818cf8] hover:underline" title="Email ConvertGalaxy Support">hello@convertgalaxy.com</a>.
           </p>
         </div>
 

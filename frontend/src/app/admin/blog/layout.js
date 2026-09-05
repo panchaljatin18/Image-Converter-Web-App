@@ -79,7 +79,7 @@ export default function AdminLayout({ children }) {
         sessionStorage.setItem("cg_admin_session", "authorized");
         setIsAuthorized(true);
         if (setUser) {
-          setUser({ name: "Jatin Panchal", email: "jmpanchal394@gmail.com", role: "admin" });
+          setUser({ name: "Jatin Panchal", email: "hello@convertgalaxy.com", role: "admin" });
         }
       } else {
         setAuthError(data.error || "Authentication failed.");

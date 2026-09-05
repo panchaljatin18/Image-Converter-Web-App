@@ -16,7 +16,7 @@ export async function POST(req) {
     const expectedUsername = "Jatin Panchal";
     const expectedPassword = process.env.ADMIN_PASSWORD || "Jatin@123@$$#$";
 
-    const isUsernameValid = username === expectedUsername || username === "jmpanchal394@gmail.com";
+    const isUsernameValid = username === expectedUsername || username === "hello@convertgalaxy.com" || username === "jmpanchal394@gmail.com";
     const isPasswordValid = password === expectedPassword;
 
     if (isUsernameValid && isPasswordValid) {
