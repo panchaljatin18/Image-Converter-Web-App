@@ -75,6 +75,24 @@ export const BLOCK_DEFINITIONS = [
     },
   },
   {
+    type: "table",
+    name: "Table",
+    category: "text",
+    icon: "Table",
+    description: "Insert a structured table for data, comparisons, or specifications.",
+    defaultAttributes: {
+      hasHeader: true,
+      hasFooter: false,
+      striped: true,
+      head: ["Column 1", "Column 2", "Column 3"],
+      rows: [
+        ["Item 1", "Description 1", "Value 1"],
+        ["Item 2", "Description 2", "Value 2"],
+      ],
+      foot: [],
+    },
+  },
+  {
     type: "image",
     name: "Image",
     category: "media",

@@ -19,9 +19,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Sliders,
+  PanelTop,
 } from "lucide-react";
 import { createBlock, generateBlockId, BLOCK_DEFINITIONS, normalizeBlock, normalizeBlockState } from "./utils/blockTypes";
-import { blocksToHtml, htmlToBlocks } from "./utils/serializer";
+import { blocksToHtml, htmlToBlocks, parseClipboardContent } from "./utils/serializer";
 import "@/app/blog/prose.css";
 
 import ParagraphBlock from "./blocks/ParagraphBlock";
@@ -36,6 +37,7 @@ import CodeBlock from "./blocks/CodeBlock";
 import CustomHtmlBlock from "./blocks/CustomHtmlBlock";
 import EmbedBlock from "./blocks/EmbedBlock";
 import DividerBlock from "./blocks/DividerBlock";
+import TableBlock from "./blocks/TableBlock";
 
 import BlockToolbar from "./BlockToolbar";
 import BlockInserter from "./BlockInserter";
@@ -121,6 +123,7 @@ export default function BlockEditorContainer({
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [deviceMode, setDeviceMode] = useState("desktop"); // desktop, tablet, mobile
   const [insertIndex, setInsertIndex] = useState(null);
+  const [isTopToolbar, setIsTopToolbar] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -744,9 +747,21 @@ export default function BlockEditorContainer({
 
   const [focusPosition, setFocusPosition] = useState("start");
 
-  const handleEnterNextBlock = React.useCallback((index, initialContent = "") => {
+  const handleEnterNextBlock = React.useCallback((index, initialContent = "", currentBlockContent = null) => {
     const newBlock = createBlock("paragraph", { content: initialContent });
     const updated = [...blocks];
+    if (currentBlockContent !== null && updated[index]) {
+      const mergedAttrs = {
+        ...(updated[index].attrs || updated[index].attributes || {}),
+        content: currentBlockContent,
+      };
+      updated[index] = {
+        ...updated[index],
+        attrs: mergedAttrs,
+        attributes: mergedAttrs,
+        content: currentBlockContent,
+      };
+    }
     updated.splice(index + 1, 0, newBlock);
     updateBlocks(updated);
     setFocusPosition("start");
@@ -793,6 +808,65 @@ export default function BlockEditorContainer({
     handleChangeBlockType(slashBlockId, cmd.type, cmd.extra || {});
   }, [slashBlockId, handleChangeBlockType]);
 
+  const handleNavigateBlock = React.useCallback(
+    (fromIndex, direction, position = "start") => {
+      if (direction === "up" && fromIndex > 0) {
+        const prevBlock = blocks[fromIndex - 1];
+        if (prevBlock) {
+          setSelectedBlockId(prevBlock.id);
+          setFocusPosition(position);
+        }
+      } else if (direction === "down" && fromIndex < blocks.length - 1) {
+        const nextBlock = blocks[fromIndex + 1];
+        if (nextBlock) {
+          setSelectedBlockId(nextBlock.id);
+          setFocusPosition(position);
+        }
+      }
+    },
+    [blocks]
+  );
+
+  const handlePaste = React.useCallback(
+    (e) => {
+      const htmlData = e.clipboardData?.getData("text/html") || "";
+      const textData = e.clipboardData?.getData("text/plain") || "";
+      const parsedBlocks = parseClipboardContent(htmlData, textData);
+
+      if (parsedBlocks && parsedBlocks.length > 0) {
+        e.preventDefault();
+        const cleanPasted = ensureUniqueBlockIds(parsedBlocks);
+
+        let targetIdx = blocks.length;
+        if (selectedBlockId) {
+          const curIdx = blocks.findIndex((b) => b.id === selectedBlockId);
+          if (curIdx !== -1) {
+            const curBlock = blocks[curIdx];
+            const isCurEmpty =
+              curBlock.type === "paragraph" &&
+              (!curBlock.attributes?.content || curBlock.attributes.content.trim() === "");
+
+            if (isCurEmpty) {
+              const updated = [...blocks];
+              updated.splice(curIdx, 1, ...cleanPasted);
+              updateBlocks(updated);
+              setSelectedBlockId(cleanPasted[cleanPasted.length - 1].id);
+              return;
+            } else {
+              targetIdx = curIdx + 1;
+            }
+          }
+        }
+
+        const updated = [...blocks];
+        updated.splice(targetIdx, 0, ...cleanPasted);
+        updateBlocks(updated);
+        setSelectedBlockId(cleanPasted[cleanPasted.length - 1].id);
+      }
+    },
+    [blocks, selectedBlockId, updateBlocks]
+  );
+
   // Render individual block component
   const renderBlock = (block, index) => {
     const isSelected = block.id === selectedBlockId;
@@ -821,11 +895,12 @@ export default function BlockEditorContainer({
       },
       focusPosition: isSelected ? focusPosition : "start",
       onOpenMediaModal,
-      onEnterNextBlock: (nextContent = "") => handleEnterNextBlock(index, nextContent),
+      onEnterNextBlock: (nextContent = "", currentBlockContent = null) => handleEnterNextBlock(index, nextContent, currentBlockContent),
       onMergeWithPreviousBlock: (currentContent = "") => handleMergeWithPreviousBlock(index, block.id, currentContent),
       onDeleteEmptyBlock: () => handleDeleteEmptyBlockOnBackspace(index, block.id),
       onChangeType: (newType, extraAttrs) => handleChangeBlockType(block.id, newType, extraAttrs),
       onSlashQuery: (q, pos) => handleSlashQuery(block.id, q, pos),
+      onNavigateBlock: (dir, pos) => handleNavigateBlock(index, dir, pos),
       onOpenInserter: () => {
         setInsertIndex(index + 1);
         setIsInserterOpen(true);
@@ -836,6 +911,9 @@ export default function BlockEditorContainer({
     switch (block.type) {
       case "heading":
         BlockComp = HeadingBlock;
+        break;
+      case "table":
+        BlockComp = TableBlock;
         break;
       case "image":
         BlockComp = ImageBlock;
@@ -885,22 +963,33 @@ export default function BlockEditorContainer({
           }
           setSelectedBlockId(block.id);
         }}
-        className={`relative mb-1 mt-0 group/block transition-all duration-150 ${
+        className={`relative my-2 sm:my-3 group/block transition-all duration-150 ${
+          isSelected && !isAllSelected && !isTopToolbar ? "mt-11" : ""
+        } ${
           isAllSelected
             ? "bg-indigo-600/20 ring-2 ring-indigo-500/70 rounded-xl shadow-lg shadow-indigo-500/10"
             : ""
         }`}
       >
-        {/* Floating Block Toolbar */}
-        {isSelected && !isAllSelected && (
+        {/* Floating Block Toolbar (Only when not in Top Toolbar mode) */}
+        {isSelected && !isAllSelected && !isTopToolbar && (
           <BlockToolbar
             block={block}
             onMoveUp={() => handleMoveUp(index)}
             onMoveDown={() => handleMoveDown(index)}
             onDuplicate={() => handleDuplicateBlock(index)}
             onDelete={() => handleDeleteBlock(block.id)}
+            onInsertBefore={() => {
+              setInsertIndex(index);
+              setIsInserterOpen(true);
+            }}
+            onInsertAfter={() => {
+              setInsertIndex(index + 1);
+              setIsInserterOpen(true);
+            }}
             onChangeType={(newType, extraAttrs) => handleChangeBlockType(block.id, newType, extraAttrs)}
             onChangeAttributes={(newAttrs) => handleUpdateBlockAttributes(block.id, newAttrs)}
+            isTopToolbar={false}
           />
         )}
 
@@ -974,6 +1063,20 @@ export default function BlockEditorContainer({
             title="Keyboard Shortcuts Help"
           >
             <Keyboard size={16} />
+          </button>
+
+          {/* WordPress Gutenberg Top Toolbar Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsTopToolbar((prev) => !prev)}
+            className={`hidden sm:flex p-2 rounded-xl transition-colors cursor-pointer ml-1 ${
+              isTopToolbar
+                ? "bg-indigo-600/30 text-indigo-300 border border-indigo-500/40"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            }`}
+            title={isTopToolbar ? "Top Toolbar Enabled (Click for floating toolbar)" : "Enable Top Toolbar (WordPress Gutenberg style)"}
+          >
+            <PanelTop size={16} />
           </button>
         </div>
 
@@ -1073,6 +1176,41 @@ export default function BlockEditorContainer({
         </div>
       </header>
 
+      {/* Pinned Gutenberg Top Toolbar */}
+      {isTopToolbar && selectedBlock && !isAllSelected && (
+        <div className="bg-[#141424] border-b border-indigo-500/20 px-4 py-1.5 flex items-center shrink-0 z-30 shadow-md overflow-x-auto">
+          <BlockToolbar
+            block={selectedBlock}
+            onMoveUp={() => {
+              const idx = blocks.findIndex((b) => b.id === selectedBlock.id);
+              if (idx > 0) handleMoveUp(idx);
+            }}
+            onMoveDown={() => {
+              const idx = blocks.findIndex((b) => b.id === selectedBlock.id);
+              if (idx !== -1 && idx < blocks.length - 1) handleMoveDown(idx);
+            }}
+            onDuplicate={() => {
+              const idx = blocks.findIndex((b) => b.id === selectedBlock.id);
+              if (idx !== -1) handleDuplicateBlock(idx);
+            }}
+            onDelete={() => handleDeleteBlock(selectedBlock.id)}
+            onInsertBefore={() => {
+              const idx = blocks.findIndex((b) => b.id === selectedBlock.id);
+              setInsertIndex(Math.max(0, idx));
+              setIsInserterOpen(true);
+            }}
+            onInsertAfter={() => {
+              const idx = blocks.findIndex((b) => b.id === selectedBlock.id);
+              setInsertIndex(idx !== -1 ? idx + 1 : blocks.length);
+              setIsInserterOpen(true);
+            }}
+            onChangeType={(newType, extraAttrs) => handleChangeBlockType(selectedBlock.id, newType, extraAttrs)}
+            onChangeAttributes={(newAttrs) => handleUpdateBlockAttributes(selectedBlock.id, newAttrs)}
+            isTopToolbar={true}
+          />
+        </div>
+      )}
+
       {/* Main Body (Canvas + Inspector Sidebar) */}
       <div className="flex-1 flex overflow-hidden h-[calc(100vh-56px)] relative">
         {/* Floating Right Expand Edge Tab */}
@@ -1126,6 +1264,7 @@ export default function BlockEditorContainer({
             <div
               id="blocks-canvas-container"
               ref={blocksContainerRef}
+              onPaste={handlePaste}
               className="w-full select-text selection:bg-indigo-500/40 selection:text-white"
             >
               {blocks.map((block, idx) => (

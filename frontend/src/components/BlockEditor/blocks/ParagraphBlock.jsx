@@ -12,6 +12,7 @@ function ParagraphBlock({
   onChangeType,
   onSlashQuery,
   onOpenInserter,
+  onNavigateBlock,
   focusPosition = "start",
 }) {
   const { content = "", fontSize = "normal", align = "left", textColor = "#ffffff" } = attributes;
@@ -146,30 +147,74 @@ function ParagraphBlock({
       return;
     }
 
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-
-      const selection = window.getSelection();
-      let textAfter = "";
-
+    if (e.key === "ArrowUp" && onNavigateBlock) {
+      const selection = typeof window !== "undefined" ? window.getSelection() : null;
       if (selection && selection.rangeCount > 0 && inputRef.current) {
         const range = selection.getRangeAt(0);
-
+        const preRange = document.createRange();
+        preRange.selectNodeContents(inputRef.current);
+        preRange.setEnd(range.startContainer, range.startOffset);
+        const preText = preRange.toString();
+        if (!preText.includes("\n") && preText.length === 0) {
+          e.preventDefault();
+          onNavigateBlock("up", "end");
+          return;
+        }
+      }
+    } else if (e.key === "ArrowDown" && onNavigateBlock) {
+      const selection = typeof window !== "undefined" ? window.getSelection() : null;
+      if (selection && selection.rangeCount > 0 && inputRef.current) {
+        const range = selection.getRangeAt(0);
         const postRange = document.createRange();
         postRange.selectNodeContents(inputRef.current);
         postRange.setStart(range.endContainer, range.endOffset);
-        textAfter = postRange.toString();
+        const postText = postRange.toString();
+        if (!postText.includes("\n") && postText.length === 0) {
+          e.preventDefault();
+          onNavigateBlock("down", "start");
+          return;
+        }
+      }
+    }
 
-        if (textAfter && textAfter.trim()) {
-          const fragment = range.extractContents();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      const selection = typeof window !== "undefined" ? window.getSelection() : null;
+
+      if (selection && selection.rangeCount > 0 && inputRef.current) {
+        const range = selection.getRangeAt(0);
+        const ancestor = range.commonAncestorContainer.nodeType === 3
+          ? range.commonAncestorContainer.parentNode
+          : range.commonAncestorContainer;
+
+        if (inputRef.current.contains(ancestor) || inputRef.current === ancestor) {
+          if (!range.collapsed) {
+            range.deleteContents();
+          }
+
+          const postRange = document.createRange();
+          postRange.selectNodeContents(inputRef.current);
+          postRange.setStart(range.endContainer, range.endOffset);
+
+          const fragment = postRange.extractContents();
           const div = document.createElement("div");
           div.appendChild(fragment);
-          const splitHtml = div.innerHTML;
 
-          const currentHeadHtml = inputRef.current.innerHTML;
-          onChange({ content: currentHeadHtml });
+          let splitHtml = div.innerHTML.replace(/^(\s*<br\s*\/?>|\s)+/i, "");
+          let currentHeadHtml = inputRef.current.innerHTML.replace(/(\s*<br\s*\/?>\s*)+$/i, "");
 
-          if (onEnterNextBlock) onEnterNextBlock(splitHtml);
+          const isSplitEmpty = !splitHtml || splitHtml.replace(/<[^>]*>/g, "").trim() === "";
+          const finalSplitHtml = isSplitEmpty ? "" : splitHtml;
+
+          const isHeadEmpty = !currentHeadHtml || currentHeadHtml.replace(/<[^>]*>/g, "").trim() === "";
+          const finalHeadHtml = isHeadEmpty ? "" : currentHeadHtml;
+
+          inputRef.current.innerHTML = finalHeadHtml;
+
+          if (onEnterNextBlock) {
+            onEnterNextBlock(finalSplitHtml, finalHeadHtml);
+          }
           return;
         }
       }

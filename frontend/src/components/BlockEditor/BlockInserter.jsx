@@ -14,6 +14,7 @@ import {
   FileCode,
   Columns,
   Minus,
+  Table,
 } from "lucide-react";
 import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
@@ -29,6 +30,7 @@ export default function BlockInserter({ isOpen, onClose, onSelectBlock }) {
     List,
     Quote,
     Code,
+    Table,
     Image: ImageIcon,
     Grid,
     Video,

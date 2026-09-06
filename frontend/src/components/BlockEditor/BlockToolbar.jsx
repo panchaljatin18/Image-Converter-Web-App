@@ -14,6 +14,17 @@ import {
   Unlink,
   List,
   ListOrdered,
+  Type,
+  Heading as HeadingIcon,
+  Quote,
+  Code as CodeIcon,
+  Table as TableIcon,
+  FileCode,
+  MoreVertical,
+  Copy,
+  Plus,
+  Trash2,
+  Check,
 } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
@@ -23,9 +34,17 @@ export default function BlockToolbar({
   onMoveDown,
   onDuplicate,
   onDelete,
+  onInsertBefore,
+  onInsertAfter,
   onChangeType,
   onChangeAttributes,
+  isTopToolbar = false,
 }) {
+  const [showTypeSwitcher, setShowTypeSwitcher] = useState(false);
+  const [showHeadingMenu, setShowHeadingMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [copiedNotification, setCopiedNotification] = useState(false);
+
   const [showLinkPopover, setShowLinkPopover] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [openInNewTab, setOpenInNewTab] = useState(false);
@@ -37,8 +56,43 @@ export default function BlockToolbar({
 
   const currentDef = BLOCK_DEFINITIONS.find((b) => b.type === block.type);
 
+  const iconMap = {
+    paragraph: Type,
+    heading: HeadingIcon,
+    list: List,
+    quote: Quote,
+    code: CodeIcon,
+    table: TableIcon,
+    "custom-html": FileCode,
+    html: FileCode,
+  };
+
+  const CurrentTypeIcon = iconMap[block.type] || Type;
+
   const applyFormat = (command, value = null) => {
     document.execCommand(command, false, value);
+  };
+
+  const handleInlineCode = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    let parent = range.commonAncestorContainer;
+    if (parent.nodeType === 3) parent = parent.parentNode;
+    const codeEl = parent.closest ? parent.closest("code") : null;
+    if (codeEl) {
+      const textNode = document.createTextNode(codeEl.textContent);
+      codeEl.parentNode.replaceChild(textNode, codeEl);
+    } else {
+      const selectedText = selection.toString();
+      if (selectedText) {
+        const codeNode = document.createElement("code");
+        codeNode.className = "bg-white/10 text-indigo-300 px-1 py-0.5 rounded font-mono text-[0.9em]";
+        codeNode.textContent = selectedText;
+        range.deleteContents();
+        range.insertNode(codeNode);
+      }
+    }
   };
 
   const handleToggleLinkPopover = () => {
@@ -130,19 +184,92 @@ export default function BlockToolbar({
     setSavedRange(null);
   };
 
+  const handleTransformBlock = (newType) => {
+    setShowTypeSwitcher(false);
+    if (newType === block.type) return;
+
+    const currentContent = block.attributes?.content || block.attributes?.code || "";
+    let extraAttrs = {};
+
+    if (newType === "paragraph") {
+      if (block.type === "list") {
+        extraAttrs = { content: (block.attributes?.items || []).join("<br>") };
+      } else {
+        extraAttrs = { content: currentContent };
+      }
+    } else if (newType === "heading") {
+      extraAttrs = { content: currentContent, level: 2 };
+    } else if (newType === "list") {
+      let items = [""];
+      if (currentContent) {
+        const clean = currentContent.replace(/<[^>]*>/g, "").trim();
+        const lines = clean.split(/\n+/).filter(Boolean);
+        items = lines.length > 0 ? lines : [clean];
+      }
+      extraAttrs = { items, listType: "unordered", ordered: false };
+    } else if (newType === "quote") {
+      extraAttrs = { content: currentContent, citation: "" };
+    } else if (newType === "code") {
+      const rawText = currentContent.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "");
+      extraAttrs = { code: rawText, language: "javascript" };
+    } else if (newType === "table") {
+      extraAttrs = {
+        hasHeader: true,
+        striped: true,
+        head: ["Header 1", "Header 2", "Header 3"],
+        rows: [
+          ["Data 1", "Data 2", "Data 3"],
+          ["Data 4", "Data 5", "Data 6"],
+        ],
+      };
+    } else if (newType === "custom-html" || newType === "html") {
+      extraAttrs = { content: currentContent, mode: "html" };
+    }
+
+    onChangeType(newType, extraAttrs);
+  };
+
+  const handleCopyBlockHtml = () => {
+    const el = document.querySelector(`[data-block-id="${block.id}"]`);
+    if (el) {
+      navigator.clipboard.writeText(el.outerHTML);
+      setCopiedNotification(true);
+      setTimeout(() => setCopiedNotification(false), 2000);
+    }
+    setShowMoreMenu(false);
+  };
+
+  const transformOptions = [
+    { type: "paragraph", name: "Paragraph", icon: Type },
+    { type: "heading", name: "Heading", icon: HeadingIcon },
+    { type: "list", name: "List", icon: List },
+    { type: "quote", name: "Quote", icon: Quote },
+    { type: "code", name: "Code", icon: CodeIcon },
+    { type: "table", name: "Table", icon: TableIcon },
+    { type: "custom-html", name: "Custom HTML", icon: FileCode },
+  ];
+
   return (
-    <div className="absolute -top-12 left-0 z-40 bg-[#161622] border border-indigo-500/40 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 select-none">
+    <div
+      className={`${
+        isTopToolbar
+          ? "w-full border-b border-white/10 bg-[#161622] px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto shadow-md"
+          : "absolute -top-11 left-0 z-40 bg-[#161622] border border-indigo-500/40 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs text-white backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 select-none"
+      }`}
+    >
       {/* Drag Handle */}
-      <div className="p-1.5 text-gray-400 hover:text-white cursor-grab active:cursor-grabbing" title="Drag to reorder">
-        <GripVertical size={14} />
-      </div>
+      {!isTopToolbar && (
+        <div className="p-1.5 text-gray-400 hover:text-white cursor-grab active:cursor-grabbing" title="Drag to reorder">
+          <GripVertical size={14} />
+        </div>
+      )}
 
       {/* Up / Down Arrows */}
       <button
         type="button"
         onClick={onMoveUp}
         className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-        title="Move Up"
+        title="Move Up (Ctrl+Shift+Up)"
       >
         <ChevronUp size={14} />
       </button>
@@ -150,29 +277,115 @@ export default function BlockToolbar({
         type="button"
         onClick={onMoveDown}
         className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-        title="Move Down"
+        title="Move Down (Ctrl+Shift+Down)"
       >
         <ChevronDown size={14} />
       </button>
 
       <div className="w-px h-4 bg-white/10 mx-0.5" />
 
-      {/* Block Information Badge (No Dropdown) */}
-      <div className="bg-[#0c0c16] text-indigo-300 font-bold font-['Outfit'] border border-white/10 rounded-lg px-2.5 py-1 text-xs select-none flex items-center gap-1.5 shrink-0">
-        <span>
-          {block.type === "heading"
-            ? `Heading ${block.attributes?.level || 2}`
-            : block.type === "list"
-            ? (block.attributes?.listType === "ordered" || block.attributes?.ordered)
-              ? "Numbered List"
-              : "Bullet List"
-            : (block.type === "custom-html" || block.type === "html")
-            ? "Custom HTML"
-            : currentDef ? currentDef.name : block.type}
-        </span>
+      {/* WordPress Block Switcher Dropdown */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            setShowTypeSwitcher(!showTypeSwitcher);
+            setShowHeadingMenu(false);
+            setShowMoreMenu(false);
+          }}
+          className="bg-[#0c0c16] hover:bg-white/10 text-indigo-300 hover:text-white font-bold font-['Outfit'] border border-white/10 rounded-lg px-2.5 py-1 text-xs select-none flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+          title="Transform block type"
+        >
+          <CurrentTypeIcon size={14} className="text-indigo-400" />
+          <span>
+            {block.type === "heading"
+              ? `Heading ${block.attributes?.level || 2}`
+              : block.type === "list"
+              ? (block.attributes?.listType === "ordered" || block.attributes?.ordered)
+                ? "Numbered List"
+                : "Bullet List"
+              : (block.type === "custom-html" || block.type === "html")
+              ? "Custom HTML"
+              : currentDef ? currentDef.name : block.type}
+          </span>
+          <ChevronDown size={12} className="text-gray-400" />
+        </button>
+
+        {showTypeSwitcher && (
+          <div className="absolute top-full left-0 mt-1.5 z-50 bg-[#161626] border border-white/15 rounded-xl p-1.5 shadow-2xl min-w-[170px] font-['Outfit'] space-y-0.5">
+            <div className="px-2.5 py-1 text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              Transform To
+            </div>
+            {transformOptions.map((opt) => {
+              const OptIcon = opt.icon;
+              const isCurrent =
+                block.type === opt.type ||
+                (opt.type === "custom-html" && block.type === "html");
+              return (
+                <button
+                  key={opt.type}
+                  type="button"
+                  onClick={() => handleTransformBlock(opt.type)}
+                  className={`w-full px-2.5 py-1.5 text-xs text-left rounded-lg flex items-center justify-between cursor-pointer transition-colors ${
+                    isCurrent
+                      ? "bg-indigo-600/30 text-indigo-200 font-bold"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <OptIcon size={13} className="text-indigo-400" />
+                    {opt.name}
+                  </span>
+                  {isCurrent && <Check size={13} className="text-indigo-400" />}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* HTML / Preview Tab Toggle for Custom HTML Block (Floating Toolbar Pop-up) */}
+      {/* WordPress Heading Level Selector (When block is a Heading) */}
+      {block.type === "heading" && (
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {
+              setShowHeadingMenu(!showHeadingMenu);
+              setShowTypeSwitcher(false);
+              setShowMoreMenu(false);
+            }}
+            className="px-2 py-1 bg-[#0c0c16] hover:bg-white/10 text-indigo-300 font-bold rounded-lg border border-white/10 flex items-center gap-1 text-xs cursor-pointer transition-colors"
+            title="Change Heading Level"
+          >
+            <span>H{block.attributes?.level || 2}</span>
+            <ChevronDown size={11} className="text-gray-400" />
+          </button>
+
+          {showHeadingMenu && (
+            <div className="absolute top-full left-0 mt-1.5 z-50 bg-[#161626] border border-white/15 rounded-xl p-1 shadow-2xl flex items-center gap-1 font-['Outfit']">
+              {[1, 2, 3, 4, 5, 6].map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => {
+                    onChangeAttributes({ level: lvl });
+                    setShowHeadingMenu(false);
+                  }}
+                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    (block.attributes?.level || 2) === lvl
+                      ? "bg-indigo-600 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  H{lvl}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* HTML / Preview Tab Toggle for Custom HTML Block */}
       {(block.type === "custom-html" || block.type === "html") && (
         <div className="flex items-center gap-1 bg-[#090912] p-0.5 rounded-lg border border-white/10 mx-1 select-none" role="tablist">
           <button
@@ -245,6 +458,16 @@ export default function BlockToolbar({
             <Strikethrough size={13} />
           </button>
 
+          {/* Inline Code Formatting Button */}
+          <button
+            type="button"
+            onClick={handleInlineCode}
+            className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer font-mono"
+            title="Inline Code (<code>)"
+          >
+            <CodeIcon size={13} />
+          </button>
+
           {/* Bullet List Button */}
           <button
             type="button"
@@ -252,11 +475,9 @@ export default function BlockToolbar({
               if (block.type === "list") {
                 const isCurrentBullet = block.attributes?.listType !== "ordered" && !block.attributes?.ordered;
                 if (isCurrentBullet) {
-                  // UNSELECT: Toggle back to Paragraph!
                   const paragraphContent = (block.attributes?.items || []).join("<br>");
                   onChangeType("paragraph", { content: paragraphContent });
                 } else {
-                  // Switch from Numbered to Bullet
                   onChangeAttributes({ listType: "unordered", ordered: false });
                 }
               } else {
@@ -280,11 +501,9 @@ export default function BlockToolbar({
               if (block.type === "list") {
                 const isCurrentNumbered = block.attributes?.listType === "ordered" || block.attributes?.ordered;
                 if (isCurrentNumbered) {
-                  // UNSELECT: Toggle back to Paragraph!
                   const paragraphContent = (block.attributes?.items || []).join("<br>");
                   onChangeType("paragraph", { content: paragraphContent });
                 } else {
-                  // Switch from Bullet to Numbered
                   onChangeAttributes({ listType: "ordered", ordered: true });
                 }
               } else {
@@ -356,7 +575,108 @@ export default function BlockToolbar({
         </>
       )}
 
+      {/* WordPress More Options Menu (...) */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            setShowMoreMenu(!showMoreMenu);
+            setShowTypeSwitcher(false);
+            setShowHeadingMenu(false);
+          }}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+          title="More options (Options menu)"
+        >
+          <MoreVertical size={13} />
+        </button>
 
+        {showMoreMenu && (
+          <div className="absolute right-0 top-full mt-1.5 z-50 bg-[#161626] border border-white/15 rounded-xl p-1.5 shadow-2xl min-w-[180px] font-['Outfit'] space-y-0.5">
+            {onDuplicate && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  onDuplicate();
+                }}
+                className="w-full px-2.5 py-1.5 text-xs text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Copy size={12} className="text-gray-400" /> Duplicate
+                </span>
+                <span className="text-[10px] text-gray-500 font-mono">Ctrl+Shift+D</span>
+              </button>
+            )}
+
+            {onInsertBefore && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  onInsertBefore();
+                }}
+                className="w-full px-2.5 py-1.5 text-xs text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Plus size={12} className="text-gray-400" /> Insert Before
+                </span>
+                <span className="text-[10px] text-gray-500 font-mono">Ctrl+Alt+T</span>
+              </button>
+            )}
+
+            {onInsertAfter && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  onInsertAfter();
+                }}
+                className="w-full px-2.5 py-1.5 text-xs text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Plus size={12} className="text-gray-400" /> Insert After
+                </span>
+                <span className="text-[10px] text-gray-500 font-mono">Ctrl+Alt+Y</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleCopyBlockHtml}
+              className="w-full px-2.5 py-1.5 text-xs text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <CodeIcon size={12} className="text-gray-400" /> Copy Block HTML
+              </span>
+            </button>
+
+            <div className="w-full h-px bg-white/10 my-1" />
+
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  onDelete();
+                }}
+                className="w-full px-2.5 py-1.5 text-xs text-left text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg flex items-center justify-between cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Trash2 size={12} /> Delete Block
+                </span>
+                <span className="text-[10px] text-rose-400/60 font-mono">Shift+Alt+Z</span>
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Copy Notification Toast */}
+      {copiedNotification && (
+        <div className="absolute -bottom-8 right-0 bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-lg animate-in fade-in duration-200">
+          HTML Copied!
+        </div>
+      )}
 
       {/* WordPress Floating Link Popover Box */}
       {showLinkPopover && (

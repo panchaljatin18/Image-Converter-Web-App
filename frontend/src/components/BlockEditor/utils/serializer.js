@@ -178,6 +178,62 @@ export function blocksToHtml(blocks = [], options = {}) {
           return `<!-- block:columns${meta} -->\n${colsHtml}\n<!-- /block:columns -->`;
         }
 
+        case "table": {
+          const {
+            hasHeader = true,
+            hasFooter = false,
+            striped = true,
+            head = [],
+            rows = [],
+            foot = [],
+          } = attrs;
+
+          const colCount = Math.max(
+            Array.isArray(head) ? head.length : 0,
+            ...(Array.isArray(rows) ? rows.map((r) => (Array.isArray(r) ? r.length : 0)) : [0]),
+            Array.isArray(foot) ? foot.length : 0,
+            1
+          );
+
+          let tableInner = "";
+
+          if (hasHeader && Array.isArray(head) && head.length > 0) {
+            tableInner += "<thead><tr>";
+            for (let c = 0; c < colCount; c++) {
+              tableInner += `<th>${head[c] !== undefined ? head[c] : ""}</th>`;
+            }
+            tableInner += "</tr></thead>";
+          }
+
+          if (Array.isArray(rows) && rows.length > 0) {
+            tableInner += "<tbody>";
+            for (const row of rows) {
+              tableInner += "<tr>";
+              for (let c = 0; c < colCount; c++) {
+                const cellVal = Array.isArray(row) && row[c] !== undefined ? row[c] : "";
+                tableInner += `<td>${cellVal}</td>`;
+              }
+              tableInner += "</tr>";
+            }
+            tableInner += "</tbody>";
+          }
+
+          if (hasFooter && Array.isArray(foot) && foot.length > 0) {
+            tableInner += "<tfoot><tr>";
+            for (let c = 0; c < colCount; c++) {
+              tableInner += `<td>${foot[c] !== undefined ? foot[c] : ""}</td>`;
+            }
+            tableInner += "</tr></tfoot>";
+          }
+
+          const figClass = `wp-block-table${striped ? " is-style-stripes" : ""}`;
+          const tableHtml = `<figure class="${figClass}"><table>${tableInner}</table></figure>`;
+
+          if (!includeDelimiters) return tableHtml;
+          const meta = ` ${JSON.stringify({ hasHeader, hasFooter, striped, head, rows, foot })}`;
+          return `<!-- block:table${meta} -->\n${tableHtml}\n<!-- /block:table -->`;
+        }
+
         case "divider": {
           const { style = "line", height = 32 } = attrs;
           const divHtml = style === "spacer"
@@ -314,8 +370,8 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
         return;
       }
 
-      // Button wrapper
-      if (node.classList.contains("wp-block-button")) {
+      // Buttons
+      if (node.classList && (node.classList.contains("wp-block-button") || node.classList.contains("wp-block-buttons"))) {
         const a = node.querySelector("a");
         blocks.push(
           createBlock("button", {
@@ -326,7 +382,59 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
         return;
       }
 
-      // For any complex custom HTML, widgets, scripts, styles, forms, or tables, preserve as HTML block
+      // Table handling (WordPress Gutenberg core/table)
+      const tableEl = tagName === "table" ? node : (node.querySelector ? node.querySelector("table") : null);
+      if (tableEl) {
+        const thead = tableEl.querySelector("thead");
+        const tbody = tableEl.querySelector("tbody");
+        const tfoot = tableEl.querySelector("tfoot");
+
+        let head = [];
+        if (thead) {
+          const ths = thead.querySelectorAll("th, td");
+          head = Array.from(ths).map((th) => th.innerHTML.trim());
+        }
+
+        let rows = [];
+        const trs = tbody ? tbody.querySelectorAll("tr") : tableEl.querySelectorAll("tr");
+        trs.forEach((tr, rIdx) => {
+          if (!thead && rIdx === 0 && tr.querySelector("th")) {
+            head = Array.from(tr.querySelectorAll("th, td")).map((c) => c.innerHTML.trim());
+            return;
+          }
+          if (thead && tr.closest("thead")) return;
+          if (tfoot && tr.closest("tfoot")) return;
+
+          const cells = Array.from(tr.querySelectorAll("td, th")).map((td) => td.innerHTML.trim());
+          if (cells.length > 0) {
+            rows.push(cells);
+          }
+        });
+
+        let foot = [];
+        if (tfoot) {
+          const fds = tfoot.querySelectorAll("th, td");
+          foot = Array.from(fds).map((f) => f.innerHTML.trim());
+        }
+
+        const isStriped =
+          (node.classList && node.classList.contains("is-style-stripes")) ||
+          (tableEl.classList && tableEl.classList.contains("is-style-stripes"));
+
+        blocks.push(
+          createBlock("table", {
+            hasHeader: head.length > 0,
+            hasFooter: foot.length > 0,
+            striped: isStriped,
+            head: head.length > 0 ? head : ["Column 1", "Column 2"],
+            rows: rows.length > 0 ? rows : [["Cell 1", "Cell 2"]],
+            foot,
+          })
+        );
+        return;
+      }
+
+      // For any complex custom HTML, widgets, scripts, styles, forms, preserve as HTML block
       const outer = node.outerHTML || node.innerHTML || "";
       if (outer.trim()) {
         blocks.push(createBlock("html", { html: outer.trim(), content: outer.trim() }));
@@ -392,8 +500,38 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
       blocks.push(createBlock("quote", { content: text }));
     } else if (tagName === "hr") {
       blocks.push(createBlock("divider", { style: "line" }));
+    } else if (tagName === "table") {
+      const theadMatch = innerContent.match(/<thead[^>]*>([\s\S]*?)<\/thead>/i);
+      let head = [];
+      if (theadMatch) {
+        const thMatches = [...theadMatch[1].matchAll(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi)];
+        head = thMatches.map((m) => m[1].trim());
+      }
+      const tbodyMatch = innerContent.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/i);
+      const rowSource = tbodyMatch ? tbodyMatch[1] : innerContent.replace(/<thead[^>]*>[\s\S]*?<\/thead>/i, "").replace(/<tfoot[^>]*>[\s\S]*?<\/tfoot>/i, "");
+      const rowMatches = [...rowSource.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+      const rows = [];
+      rowMatches.forEach((rm, rIdx) => {
+        const cellMatches = [...rm[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)];
+        const cells = cellMatches.map((m) => m[1].trim());
+        if (!head.length && rIdx === 0 && rm[1].includes("<th")) {
+          head = cells;
+        } else if (cells.length > 0) {
+          rows.push(cells);
+        }
+      });
+      blocks.push(
+        createBlock("table", {
+          hasHeader: head.length > 0,
+          hasFooter: false,
+          striped: true,
+          head: head.length > 0 ? head : ["Column 1", "Column 2"],
+          rows: rows.length > 0 ? rows : [["Cell 1", "Cell 2"]],
+          foot: [],
+        })
+      );
     } else {
-      // Complex tags: div, section, table, etc. preserved as HTML block
+      // Complex tags: div, section, etc. preserved as HTML block
       blocks.push(createBlock("html", { html: fullMatch.trim(), content: fullMatch.trim() }));
     }
   }
@@ -572,6 +710,11 @@ export function htmlToBlocks(html = "") {
           break;
         }
 
+        case "table": {
+          blocks.push(createBlock("table", { ...attributes }));
+          break;
+        }
+
         default:
           blocks.push(createBlock(type, { ...attributes, content: innerContent }));
           break;
@@ -592,4 +735,43 @@ export function htmlToBlocks(html = "") {
 
   // 2. FALLBACK PATH: Legacy content without explicit block delimiters
   return parseLegacyHtmlToBlocks(cleanHtml);
+}
+
+/**
+ * Smart clipboard parser for rich text and multi-paragraph paste events.
+ * Converts multi-paragraph or HTML clipboard data into structured Gutenberg blocks.
+ */
+export function parseClipboardContent(htmlData = "", plainTextData = "") {
+  if (htmlData && htmlData.trim()) {
+    // If it contains HTML block-level elements, parse into Gutenberg blocks
+    if (/<(p|h[1-6]|ul|ol|table|blockquote|pre|figure|img|div|hr)[\s>]/i.test(htmlData)) {
+      const parsed = htmlToBlocks(htmlData);
+      if (parsed && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  }
+
+  if (plainTextData && plainTextData.trim()) {
+    // If it contains multiple paragraphs separated by blank lines
+    if (plainTextData.includes("\n\n") || plainTextData.includes("\r\n\r\n")) {
+      const chunks = plainTextData.split(/\r?\n\s*\r?\n+/).map((c) => c.trim()).filter(Boolean);
+      if (chunks.length > 1) {
+        return chunks.map((chunk) => {
+          if (/^#+\s/.test(chunk)) {
+            const level = (chunk.match(/^(#+)/) || ["", "##"])[1].length;
+            const content = chunk.replace(/^#+\s*/, "");
+            return createBlock("heading", { level: Math.min(level, 6), content });
+          }
+          if (/^[-*]\s/.test(chunk)) {
+            const items = chunk.split(/\r?\n/).map((l) => l.replace(/^[-*]\s*/, "").trim()).filter(Boolean);
+            return createBlock("list", { ordered: false, items: items.length > 0 ? items : [""] });
+          }
+          return createBlock("paragraph", { content: chunk.replace(/\r?\n/g, "<br>") });
+        });
+      }
+    }
+  }
+
+  return null;
 }
