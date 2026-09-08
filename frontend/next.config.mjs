@@ -30,7 +30,16 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@vercel/analytics', '@vercel/speed-insights'],
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      '@vercel/analytics',
+      '@vercel/speed-insights',
+      'browser-image-compression',
+      'pdf-lib',
+      'archiver',
+      'unzipper',
+    ],
   },
 
   async headers() {

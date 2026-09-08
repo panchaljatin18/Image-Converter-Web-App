@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { AlertTriangle, RefreshCw, Code, Eye, Sun, Moon } from "lucide-react";
 
 /* ─── Sandboxed Preview (renders HTML with ConvertGalaxy Blog Typography & Dark Theme) ─── */
-function SandboxedPreview({ html, theme = "dark", onSelect }) {
+const SandboxedPreview = React.memo(function SandboxedPreview({ html, theme = "dark", onSelect }) {
   const iframeRef = useRef(null);
   const [height, setHeight] = useState(0);
+  const lastHtmlRef = useRef("");
 
   const updateIframeContent = useCallback(() => {
     const iframe = iframeRef.current;
@@ -12,6 +13,11 @@ function SandboxedPreview({ html, theme = "dark", onSelect }) {
 
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (!doc) return;
+
+    // Skip redundant doc.write if HTML and theme haven't changed
+    const currentKey = `${theme}::${html}`;
+    if (lastHtmlRef.current === currentKey) return;
+    lastHtmlRef.current = currentKey;
 
     doc.open();
     doc.write(`<!DOCTYPE html>
@@ -282,17 +288,15 @@ function SandboxedPreview({ html, theme = "dark", onSelect }) {
       onSelect?.();
     });
 
-    /* Resize iframe dynamically to content */
+    /* Resize iframe dynamically to content without infinite loop feedback */
     const updateHeight = () => {
       try {
         if (doc && doc.body) {
           const wrapper = doc.querySelector(".preview-wrapper") || doc.body;
-          const h = Math.max(
-            wrapper.scrollHeight,
-            doc.body.scrollHeight,
-            doc.documentElement.scrollHeight
-          );
-          setHeight(h + 12);
+          const rectHeight = Math.ceil(wrapper.getBoundingClientRect().height || doc.body.offsetHeight || 0);
+          if (rectHeight > 0) {
+            setHeight((prev) => (Math.abs(prev - rectHeight) > 2 ? rectHeight : prev));
+          }
         }
       } catch (_) {}
     };
@@ -303,20 +307,19 @@ function SandboxedPreview({ html, theme = "dark", onSelect }) {
     try {
       if (iframe.contentWindow && iframe.contentWindow.ResizeObserver) {
         ro = new iframe.contentWindow.ResizeObserver(updateHeight);
-        if (doc.body) ro.observe(doc.body);
+        const wrapper = doc.querySelector(".preview-wrapper") || doc.body;
+        if (wrapper) ro.observe(wrapper);
       }
     } catch (_) {}
 
     iframe.onload = updateHeight;
-    const t1 = setTimeout(updateHeight, 100);
-    const t2 = setTimeout(updateHeight, 350);
-    const t3 = setTimeout(updateHeight, 800);
+    const t1 = setTimeout(updateHeight, 50);
+    const t2 = setTimeout(updateHeight, 200);
 
     return () => {
       if (ro) ro.disconnect();
       clearTimeout(t1);
       clearTimeout(t2);
-      clearTimeout(t3);
     };
   }, [html, theme, onSelect]);
 
@@ -334,17 +337,18 @@ function SandboxedPreview({ html, theme = "dark", onSelect }) {
       style={{
         width: "100%",
         height: height > 0 ? `${height}px` : "auto",
-        minHeight: "48px",
+        minHeight: "32px",
         border: "none",
         background: "transparent",
         display: "block",
+        overflow: "hidden",
       }}
     />
   );
-}
+});
 
 /* ─── Main Custom HTML Block ─── */
-export default function CustomHtmlBlock({ attributes = {}, onChange, isSelected, onSelect }) {
+function CustomHtmlBlock({ attributes = {}, onChange, isSelected, onSelect }) {
   const { html = "", content = "", mode = "html", isCorrupted = false } = attributes;
   const currentHtml = html || content || "";
   const activeMode = mode || "html";
@@ -354,50 +358,65 @@ export default function CustomHtmlBlock({ attributes = {}, onChange, isSelected,
   const lineNumbersRef = useRef(null);
   const textareaRef = useRef(null);
   const preRef = useRef(null);
+  const scrollRafRef = useRef(null);
 
-  const handleChange = (val) => {
-    onChange({ html: val, content: val });
-  };
+  const handleChange = useCallback(
+    (val) => {
+      onChange({ html: val, content: val });
+    },
+    [onChange]
+  );
 
-  const handleScroll = (e) => {
+  const handleScroll = useCallback((e) => {
     const top = e.target.scrollTop;
     const left = e.target.scrollLeft;
-    if (lineNumbersRef.current) {
-      lineNumbersRef.current.scrollTop = top;
-    }
-    if (preRef.current) {
-      preRef.current.scrollTop = top;
-      preRef.current.scrollLeft = left;
-    }
-  };
 
-  const handleKeyDown = (e) => {
-    e.stopPropagation();
-
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
-      e.preventDefault();
-      setTabTrapEnabled((prev) => !prev);
-      return;
+    if (scrollRafRef.current) {
+      cancelAnimationFrame(scrollRafRef.current);
     }
 
-    if (e.key === "Tab" && tabTrapEnabled) {
-      e.preventDefault();
-      const start = e.target.selectionStart;
-      const end = e.target.selectionEnd;
-      const val = e.target.value;
-      const newValue = val.substring(0, start) + "  " + val.substring(end);
-      handleChange(newValue);
-      setTimeout(() => {
-        if (e.target) e.target.selectionStart = e.target.selectionEnd = start + 2;
-      }, 0);
-    }
-  };
+    scrollRafRef.current = requestAnimationFrame(() => {
+      if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = top;
+      }
+      if (preRef.current) {
+        preRef.current.scrollTop = top;
+        preRef.current.scrollLeft = left;
+      }
+    });
+  }, []);
 
-  const lineCount = Math.max(1, currentHtml.split("\n").length);
+  const handleKeyDown = useCallback(
+    (e) => {
+      e.stopPropagation();
 
-  const getHighlightedCode = (code) => {
-    if (!code) return "";
-    let escaped = code
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
+        e.preventDefault();
+        setTabTrapEnabled((prev) => !prev);
+        return;
+      }
+
+      if (e.key === "Tab" && tabTrapEnabled) {
+        e.preventDefault();
+        const start = e.target.selectionStart;
+        const end = e.target.selectionEnd;
+        const val = e.target.value;
+        const newValue = val.substring(0, start) + "  " + val.substring(end);
+        handleChange(newValue);
+        setTimeout(() => {
+          if (e.target) e.target.selectionStart = e.target.selectionEnd = start + 2;
+        }, 0);
+      }
+    },
+    [tabTrapEnabled, handleChange]
+  );
+
+  /* Memoize line count and syntax highlighting to prevent regex recalculation on every render */
+  const { lineCount, highlightedCode } = useMemo(() => {
+    const lines = Math.max(1, currentHtml.split("\n").length);
+    if (!currentHtml) return { lineCount: lines, highlightedCode: "" };
+
+    let escaped = currentHtml
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
@@ -418,8 +437,8 @@ export default function CustomHtmlBlock({ attributes = {}, onChange, isSelected,
       }
     );
 
-    return escaped;
-  };
+    return { lineCount: lines, highlightedCode: escaped };
+  }, [currentHtml]);
 
   /* ── Corrupted Block Recovery Banner ── */
   if (isCorrupted) {
@@ -458,146 +477,83 @@ export default function CustomHtmlBlock({ attributes = {}, onChange, isSelected,
     );
   }
 
-  /* ── Main Block Layout: Header Bar + Editor/Preview (WordPress Gutenberg style) ── */
+  /* ── Main Block Layout (WordPress Gutenberg 1:1 style) ── */
+  if (activeMode === "preview") {
+    return (
+      <div
+        className={`w-full my-2 transition-all ${
+          isSelected ? "ring-1 ring-indigo-500/50 rounded-lg" : ""
+        }`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect?.();
+        }}
+      >
+        {!currentHtml.trim() ? (
+          <div className="w-full p-6 rounded-xl border border-dashed border-white/15 bg-white/[0.02] text-center font-['Outfit'] select-none">
+            <div className="inline-flex items-center justify-center p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 mb-2">
+              <Code size={20} />
+            </div>
+            <div className="text-sm font-bold text-gray-200">Custom HTML</div>
+            <div className="text-xs text-gray-400 mt-1">
+              Add custom HTML code and preview how it looks.
+            </div>
+          </div>
+        ) : (
+          <SandboxedPreview html={currentHtml} theme={previewTheme} onSelect={onSelect} />
+        )}
+      </div>
+    );
+  }
+
+  /* ── HTML Edit Mode (Code Editor Box) ── */
   return (
     <div
-      className={`w-full my-3 rounded-2xl transition-all duration-200 overflow-hidden shadow-2xl ${
+      className={`w-full my-2 rounded-xl transition-all overflow-hidden bg-[#070710] border ${
         isSelected
-          ? "ring-2 ring-indigo-500/60 border border-indigo-500/70"
-          : "border border-white/10 hover:border-white/20"
-      } bg-[#0c0c16]`}
+          ? "border-indigo-500/80 ring-1 ring-indigo-500/50"
+          : "border-white/10 hover:border-white/20"
+      }`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect?.();
       }}
     >
-      {/* Block Header (WordPress Gutenberg style) */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#141424] border-b border-indigo-500/20 font-['Outfit'] select-none">
-        <div className="flex items-center gap-2 text-xs font-bold text-indigo-300">
-          <span className="p-1 rounded bg-indigo-500/10 text-indigo-400 font-mono text-[11px]">&lt;/&gt;</span>
-          <span>Custom HTML</span>
-          {currentHtml.includes('type="application/ld+json"') && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
-              ⚡ Schema
-            </span>
-          )}
+      <div className="relative flex h-[220px] max-h-[380px] overflow-hidden">
+        {/* Line Numbers Gutter */}
+        <div
+          ref={lineNumbersRef}
+          className="select-none py-3 px-3 text-right text-xs font-mono text-gray-600 bg-[#05050c] border-r border-white/10 shrink-0 min-w-[44px] leading-6 overflow-hidden"
+        >
+          {Array.from({ length: lineCount }).map((_, i) => (
+            <div key={i} className="h-6 leading-6">
+              {i + 1}
+            </div>
+          ))}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Theme switcher when in Preview mode */}
-          {activeMode === "preview" && (
-            <div className="flex items-center gap-1 bg-[#090912] p-0.5 rounded-lg border border-white/5 mr-1 text-[11px]">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPreviewTheme("dark");
-                }}
-                className={`px-2.5 py-1 rounded transition-all cursor-pointer font-medium flex items-center gap-1 ${
-                  previewTheme === "dark"
-                    ? "bg-indigo-600/60 text-white font-bold shadow-sm"
-                    : "text-gray-400 hover:text-white"
-                }`}
-                title="ConvertGalaxy Dark Blog Theme"
-              >
-                <Moon size={11} /> Blog Dark
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPreviewTheme("raw");
-                }}
-                className={`px-2.5 py-1 rounded transition-all cursor-pointer font-medium flex items-center gap-1 ${
-                  previewTheme === "raw"
-                    ? "bg-white/20 text-white font-bold shadow-sm"
-                    : "text-gray-400 hover:text-white"
-                }`}
-                title="Raw HTML / Default Styles"
-              >
-                <Sun size={11} /> Raw / Light
-              </button>
-            </div>
-          )}
-
-          {/* HTML / Preview Toggle Tabs */}
-          <div className="flex items-center gap-1 bg-[#090912] p-1 rounded-lg border border-white/10">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange({ mode: "html" });
-              }}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeMode === "html"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <Code size={12} /> HTML
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange({ mode: "preview" });
-              }}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeMode === "preview"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <Eye size={12} /> Preview
-            </button>
-          </div>
+        {/* Syntax Highlight Layer + Textarea */}
+        <div className="relative flex-1 w-full h-full overflow-hidden">
+          <pre
+            ref={preRef}
+            aria-hidden="true"
+            className="absolute inset-0 p-3 m-0 text-[13px] font-mono leading-6 whitespace-pre-wrap break-words pointer-events-none overflow-hidden text-cyan-200"
+            dangerouslySetInnerHTML={{ __html: highlightedCode + "\n" }}
+          />
+          <textarea
+            ref={textareaRef}
+            value={currentHtml}
+            onChange={(e) => handleChange(e.target.value)}
+            onScroll={handleScroll}
+            onKeyDown={handleKeyDown}
+            placeholder="Write HTML…"
+            spellCheck={false}
+            className="relative w-full h-full bg-transparent text-[13px] font-mono text-transparent caret-white outline-none placeholder:text-gray-600 leading-6 p-3 border-none selection:bg-indigo-500/40 resize-none overflow-y-auto whitespace-pre-wrap break-words"
+          />
         </div>
       </div>
-
-      {/* Mode Content */}
-      {activeMode === "html" ? (
-        <div className="relative flex bg-[#070710] h-[220px] max-h-[340px] overflow-hidden">
-          {/* Line Numbers Gutter */}
-          <div
-            ref={lineNumbersRef}
-            className="select-none py-3 px-3 text-right text-xs font-mono text-gray-600 bg-[#05050c] border-r border-white/10 shrink-0 min-w-[44px] leading-6 overflow-hidden"
-          >
-            {Array.from({ length: lineCount }).map((_, i) => (
-              <div key={i} className="h-6 leading-6">{i + 1}</div>
-            ))}
-          </div>
-
-          {/* Syntax Highlight Layer + Textarea */}
-          <div className="relative flex-1 w-full h-full overflow-hidden">
-            <pre
-              ref={preRef}
-              aria-hidden="true"
-              className="absolute inset-0 p-3 m-0 text-[13px] font-mono leading-6 whitespace-pre-wrap break-words pointer-events-none overflow-hidden text-cyan-200"
-              dangerouslySetInnerHTML={{ __html: getHighlightedCode(currentHtml) + "\n" }}
-            />
-            <textarea
-              ref={textareaRef}
-              value={currentHtml}
-              onChange={(e) => handleChange(e.target.value)}
-              onScroll={handleScroll}
-              onKeyDown={handleKeyDown}
-              placeholder="Write HTML…"
-              spellCheck={false}
-              className="relative w-full h-full bg-transparent text-[13px] font-mono text-transparent caret-white outline-none placeholder:text-gray-600 leading-6 p-3 border-none selection:bg-indigo-500/40 resize-none overflow-y-auto whitespace-pre-wrap break-words"
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="p-3 sm:p-5 bg-[#080811] min-h-[120px]">
-          {!currentHtml.trim() ? (
-            <div className="py-8 text-center text-gray-500 text-xs font-['Outfit'] select-none">
-              HTML preview will appear here once you add code.
-            </div>
-          ) : (
-            <SandboxedPreview html={currentHtml} theme={previewTheme} onSelect={onSelect} />
-          )}
-        </div>
-      )}
     </div>
   );
 }
+
+export default React.memo(CustomHtmlBlock);

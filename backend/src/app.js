@@ -18,11 +18,12 @@
 
 require("dotenv").config();
 
-const express   = require("express");
-const cors      = require("cors");
-const helmet    = require("helmet");
-const path      = require("path");
-const rateLimit = require("express-rate-limit");
+const express     = require("express");
+const compression = require("compression");
+const cors        = require("cors");
+const helmet      = require("helmet");
+const path        = require("path");
+const rateLimit   = require("express-rate-limit");
 
 const logger        = require("./utils/logger");
 const { DOWNLOADS_DIR } = require("./config/paths");
@@ -42,6 +43,9 @@ const NODE_ENV     = process.env.NODE_ENV || "development";
 const CORS_ORIGIN  = process.env.CORS_ORIGIN  || "http://localhost:3000";
 
 const app = express();
+
+// ── HTTP response compression ──────────────────────────────────────────────────
+app.use(compression());
 
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(helmet({
@@ -106,8 +110,10 @@ app.use("/api/onedrive",     generalLimiter);
 
 // ── Static file serving ───────────────────────────────────────────────────────
 app.use("/downloads", express.static(DOWNLOADS_DIR, {
+  maxAge: "1d",
   setHeaders: (res) => {
     res.setHeader("Content-Disposition", "inline");
+    res.setHeader("Cache-Control", "public, max-age=86400, immutable");
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
     res.set("Access-Control-Allow-Headers", "Range, Content-Type");
