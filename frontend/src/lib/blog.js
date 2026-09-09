@@ -655,3 +655,26 @@ export async function deleteBlogPost(slug) {
   return deletedFromDb;
 }
 
+/**
+ * Role-based server-side sanitization layer for Custom HTML blocks.
+ * Users with 'unfiltered_html' capability (admin/superadmin) save raw content as-is.
+ * Non-admin roles pass through an allowlist sanitizer stripping <script>, inline <style>, and on* event handlers.
+ */
+export function sanitizeCustomHtmlByRole(rawContent = "", userRole = "admin") {
+  if (!rawContent) return "";
+
+  // Administrators and Super Admins have 'unfiltered_html' capability -> raw identity passthrough
+  if (userRole === "admin" || userRole === "superadmin" || userRole === "administrator") {
+    return rawContent;
+  }
+
+  // Non-admin roles: strip <script>, <style>, and inline on* event attributes
+  let clean = rawContent;
+  clean = clean.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+  clean = clean.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+  clean = clean.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
+
+  return clean;
+}
+
+

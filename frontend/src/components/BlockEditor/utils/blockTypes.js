@@ -149,25 +149,51 @@ export const BLOCK_DEFINITIONS = [
     },
   },
   {
-    type: "html",
-    name: "Custom HTML",
-    category: "widgets",
-    icon: "FileCode",
-    description: "Add raw HTML, CSS, or FAQ Schema markup with live preview.",
-    defaultAttributes: {
-      html: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
-      content: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
-    },
-  },
-  {
     type: "custom-html",
     name: "Custom HTML",
     category: "widgets",
     icon: "FileCode",
-    description: "Add raw HTML, CSS, or FAQ Schema markup with live preview.",
+    description: "Add custom HTML code and preview it as you edit.",
+    keywords: ["embed"],
+    attributes: {
+      content: {
+        type: "string",
+        source: "raw",
+      },
+    },
+    supports: {
+      customClassName: false,
+      className: false,
+      html: false,
+      reusable: true,
+      multiple: true,
+    },
     defaultAttributes: {
-      html: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
-      content: '<div class="faq-container">\n  <h3>Frequently Asked Questions</h3>\n  <p>Your custom HTML code here...</p>\n</div>',
+      content: "",
+    },
+  },
+  {
+    type: "html",
+    name: "Custom HTML",
+    category: "widgets",
+    icon: "FileCode",
+    description: "Add custom HTML code and preview it as you edit.",
+    keywords: ["embed"],
+    attributes: {
+      content: {
+        type: "string",
+        source: "raw",
+      },
+    },
+    supports: {
+      customClassName: false,
+      className: false,
+      html: false,
+      reusable: true,
+      multiple: true,
+    },
+    defaultAttributes: {
+      content: "",
     },
   },
   {

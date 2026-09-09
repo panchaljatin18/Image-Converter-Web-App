@@ -65,9 +65,9 @@ export function blocksToHtml(blocks = [], options = {}) {
 
         case "html":
         case "custom-html": {
-          const rawHtml = block.content !== undefined ? block.content : (attrs.html || attrs.content || "");
+          const rawHtml = block.content !== undefined ? block.content : (attrs.content !== undefined ? attrs.content : (attrs.html || ""));
           if (!includeDelimiters) return rawHtml;
-          return `<!-- block:html -->\n${rawHtml}\n<!-- /block:html -->`;
+          return `<!-- wp:html -->\n${rawHtml}\n<!-- /wp:html -->`;
         }
 
         case "code": {
@@ -600,9 +600,15 @@ export function htmlToBlocks(html = "") {
       switch (type) {
         case "html":
         case "custom-html": {
-          // HTML Block Rule: An HTML Block must preserve its complete HTML source exactly
-          // The <h2>, <p>, <div>, <section> inside this HTML must NOT be converted
-          blocks.push(createBlock("html", { ...attributes, html: innerContent, content: innerContent }));
+          // source: "raw" — Byte-perfect preserve of content string character-by-character.
+          // Trim at most 1 leading newline and 1 trailing newline added for comment delimiter formatting.
+          let rawContent = match[3] !== undefined ? match[3] : "";
+          if (rawContent.startsWith("\r\n")) rawContent = rawContent.slice(2);
+          else if (rawContent.startsWith("\n")) rawContent = rawContent.slice(1);
+          if (rawContent.endsWith("\r\n")) rawContent = rawContent.slice(0, -2);
+          else if (rawContent.endsWith("\n")) rawContent = rawContent.slice(0, -1);
+
+          blocks.push(createBlock("custom-html", { ...attributes, content: rawContent, html: rawContent }));
           break;
         }
 
