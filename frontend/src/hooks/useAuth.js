@@ -87,7 +87,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Forgot Password handler
-  const forgotPassword = async (email) => {
+  const forgotPassword = useCallback(async (email) => {
     setLoading(true);
     setError(null);
     try {
@@ -99,10 +99,10 @@ export function AuthProvider({ children }) {
       setLoading(false);
       throw err;
     }
-  };
+  }, []);
 
   // Reset Password handler
-  const resetPassword = async (token, password) => {
+  const resetPassword = useCallback(async (token, password) => {
     setLoading(true);
     setError(null);
     try {
@@ -114,7 +114,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       throw err;
     }
-  };
+  }, []);
 
   // Logout handler
   const logout = useCallback(() => {
@@ -126,19 +126,22 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  const value = {
-    user,
-    setUser,
-    loading,
-    error,
-    isAuthenticated: !!user,
-    login,
-    register,
-    googleLogin,
-    forgotPassword,
-    resetPassword,
-    logout
-  };
+  const value = React.useMemo(
+    () => ({
+      user,
+      setUser,
+      loading,
+      error,
+      isAuthenticated: !!user,
+      login,
+      register,
+      googleLogin,
+      forgotPassword,
+      resetPassword,
+      logout,
+    }),
+    [user, loading, error, login, register, googleLogin, forgotPassword, resetPassword, logout]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { X, Shield, Zap, History, Cloud, Sparkles, Clock } from "lucide-react";
@@ -118,17 +118,20 @@ export function ConversionLimitProvider({ children }) {
     router.push(`/login?tab=${tab}`);
   };
 
+  const contextValue = useMemo(
+    () => ({
+      checkConversionLimit,
+      incrementConversionCount,
+      showAuthModal,
+      setShowAuthModal,
+      activeGuestConversions: conversionTimestamps.length,
+      maxGuestConversions: MAX_GUEST_CONVERSIONS_PER_24H,
+    }),
+    [checkConversionLimit, incrementConversionCount, showAuthModal, conversionTimestamps.length]
+  );
+
   return (
-    <ConversionLimitContext.Provider
-      value={{
-        checkConversionLimit,
-        incrementConversionCount,
-        showAuthModal,
-        setShowAuthModal,
-        activeGuestConversions: conversionTimestamps.length,
-        maxGuestConversions: MAX_GUEST_CONVERSIONS_PER_24H,
-      }}
-    >
+    <ConversionLimitContext.Provider value={contextValue}>
       {children}
 
       {/* Premium Authentication Modal */}
