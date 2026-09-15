@@ -38,7 +38,17 @@ export function blocksToHtml(blocks = [], options = {}) {
 
       switch (type) {
         case "paragraph": {
-          const content = block.content !== undefined ? block.content : (attrs.content || "");
+          let content = block.content !== undefined ? block.content : (attrs.content || "");
+          const hashMatch = typeof content === "string" ? content.match(/^(#{1,6})\s+(.*)$/s) : null;
+          if (hashMatch) {
+            const level = hashMatch[1].length;
+            const cleanContent = hashMatch[2].trim();
+            const hTag = `h${level}`;
+            const hHtml = `<${hTag}>${cleanContent}</${hTag}>`;
+            if (!includeDelimiters) return hHtml;
+            const meta = ` ${JSON.stringify({ level, align: "left", anchor: "", textColor: "" })}`;
+            return `<!-- block:heading${meta} -->\n${hHtml}\n<!-- /block:heading -->`;
+          }
           const { fontSize = "normal", align = "left", textColor = "" } = attrs;
           const styleAttr = `text-align: ${align};${textColor ? ` color: ${textColor};` : ""}`;
           const classAttr = fontSize !== "normal" ? ` class="text-${fontSize}"` : "";
@@ -51,7 +61,10 @@ export function blocksToHtml(blocks = [], options = {}) {
         }
 
         case "heading": {
-          const content = block.content !== undefined ? block.content : (attrs.content || "");
+          let content = block.content !== undefined ? block.content : (attrs.content || "");
+          if (typeof content === "string" && /^#{1,6}\s+/.test(content)) {
+            content = content.replace(/^#{1,6}\s+/, "");
+          }
           const { level = 2, align = "left", anchor = "", textColor = "" } = attrs;
           const hTag = `h${Math.min(Math.max(level, 1), 6)}`;
           const idAttr = anchor ? ` id="${anchor}"` : "";
@@ -303,7 +316,15 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
             })
           );
         } else {
-          blocks.push(createBlock("paragraph", { content: node.innerHTML.trim() }));
+          const innerText = node.innerHTML.trim();
+          const hashMatch = innerText.match(/^(#{1,6})\s+(.*)$/s);
+          if (hashMatch) {
+            const level = hashMatch[1].length;
+            const cleanText = hashMatch[2].trim();
+            blocks.push(createBlock("heading", { level, content: cleanText }));
+          } else {
+            blocks.push(createBlock("paragraph", { content: innerText }));
+          }
         }
         return;
       }

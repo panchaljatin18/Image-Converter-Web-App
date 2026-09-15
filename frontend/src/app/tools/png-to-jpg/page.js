@@ -11,7 +11,7 @@ const PngToJpgTool = dynamic(() => import("@/components/tools/PngToJpgTool"), {
 });
 
 export const metadata = constructMetadata({
-  title: "PNG to JPG Converter – Free Online, Private & Fast | ConvertGalaxy",
+  title: "PNG to JPG Converter – Convert Galaxy Tool",
   description: "Convert PNG to JPG online for free. Adjust image quality, handle transparent backgrounds seamlessly, and batch convert PNG images directly in your browser without uploading files.",
   canonicalPath: "/tools/png-to-jpg",
   ogImage: "https://www.convertgalaxy.com/png-to-jpg.webp",
@@ -19,13 +19,8 @@ export const metadata = constructMetadata({
     "png to jpg",
     "png to jpg converter",
     "convert png to jpg",
-    "convert png to jpg online free",
-    "png to jpg converter free",
-    "png to jpeg converter",
-    "free png to jpg",
-    "convert png to jpg without losing quality",
-    "png to jpg transparent background",
-    "png to jpg no upload",
+    "png to jpg free",
+    "png to jpg online",
   ]
 });
 

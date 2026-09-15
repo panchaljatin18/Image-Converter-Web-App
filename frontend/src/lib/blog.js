@@ -158,31 +158,31 @@ export function markdownToHtml(md) {
       continue;
     }
 
-    // Headings
-    if (block.startsWith("#### ")) {
+    // Strip outer <p> wrappers if block is just wrapping a markdown heading
+    if (/^<p[^>]*>\s*(#{1,6}\s+[\s\S]*?)\s*<\/p>$/i.test(block)) {
+      block = block.replace(/^<p[^>]*>\s*(#{1,6}\s+[\s\S]*?)\s*<\/p>$/i, "$1").trim();
+    }
+
+    // Headings (supports #, ##, ###, ####, #####, ######)
+    const headingMatch = block.match(/^(#{1,6})\s+(.*)$/s);
+    if (headingMatch) {
       if (insideList) {
         processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
-      processedBlocks.push(`<h4 class="font-['Outfit'] font-bold text-lg text-[#f8fafc] mt-6 mb-3">${block.slice(5)}</h4>`);
-    } else if (block.startsWith("### ")) {
-      if (insideList) {
-        processedBlocks.push(`</${insideList}>`);
-        insideList = false;
-      }
-      processedBlocks.push(`<h3 class="font-['Outfit'] font-bold text-xl text-[#f8fafc] mt-8 mb-4">${block.slice(4)}</h3>`);
-    } else if (block.startsWith("## ")) {
-      if (insideList) {
-        processedBlocks.push(`</${insideList}>`);
-        insideList = false;
-      }
-      processedBlocks.push(`<h2 class="font-['Outfit'] font-extrabold text-2xl text-[#f8fafc] mt-10 mb-5 border-b border-white/6 pb-2">${block.slice(3)}</h2>`);
-    } else if (block.startsWith("# ")) {
-      if (insideList) {
-        processedBlocks.push(`</${insideList}>`);
-        insideList = false;
-      }
-      processedBlocks.push(`<h1 class="font-['Outfit'] font-black text-3xl md:text-4xl text-[#f8fafc] mt-12 mb-6">${block.slice(2)}</h1>`);
+      const level = headingMatch[1].length;
+      const titleText = headingMatch[2].trim();
+      const hTag = `h${level}`;
+      const headingClassesMap = {
+        1: "font-['Outfit'] font-black text-[clamp(1.65rem,4vw,2.5rem)] text-[#f8fafc] mt-12 mb-6 break-words [overflow-wrap:anywhere]",
+        2: "font-['Outfit'] font-extrabold text-[clamp(1.35rem,3vw,1.85rem)] text-[#f8fafc] mt-10 mb-5 border-b border-indigo-500/20 pb-2 break-words [overflow-wrap:anywhere]",
+        3: "font-['Outfit'] font-bold text-[clamp(1.15rem,2.4vw,1.45rem)] text-[#f8fafc] mt-8 mb-4 break-words [overflow-wrap:anywhere]",
+        4: "font-['Outfit'] font-bold text-[clamp(1.02rem,2vw,1.2rem)] text-[#f8fafc] mt-6 mb-3 break-words [overflow-wrap:anywhere]",
+        5: "font-['Outfit'] font-semibold text-[clamp(0.95rem,1.8vw,1.1rem)] text-[#f8fafc] mt-5 mb-2 break-words [overflow-wrap:anywhere]",
+        6: "font-['Outfit'] font-bold text-[clamp(0.875rem,1.5vw,1rem)] text-[#a5b4fc] mt-4 mb-2 uppercase tracking-wider break-words [overflow-wrap:anywhere]",
+      };
+      processedBlocks.push(`<${hTag} class="${headingClassesMap[level] || headingClassesMap[2]}">${titleText}</${hTag}>`);
+      continue;
     }
     // Lists (bullet points starting with - or * )
     else if (block.startsWith("- ") || block.startsWith("* ")) {
@@ -238,7 +238,24 @@ export function markdownToHtml(md) {
         processedBlocks.push(`</${insideList}>`);
         insideList = false;
       }
-      processedBlocks.push(`<p class="text-[#cbd5e1] text-[1.025rem] leading-[1.8] mb-6">${block.replace(/\n/g, "<br />")}</p>`);
+      const cleanBlockText = block.replace(/^<p[^>]*>/i, "").replace(/<\/p>$/i, "").trim();
+      const paragraphHeadingMatch = cleanBlockText.match(/^(#{1,6})\s+(.*)$/s);
+      if (paragraphHeadingMatch) {
+        const level = paragraphHeadingMatch[1].length;
+        const titleText = paragraphHeadingMatch[2].trim();
+        const hTag = `h${level}`;
+        const headingClassesMap = {
+          1: "font-['Outfit'] font-black text-[clamp(1.65rem,4vw,2.5rem)] text-[#f8fafc] mt-12 mb-6 break-words [overflow-wrap:anywhere]",
+          2: "font-['Outfit'] font-extrabold text-[clamp(1.35rem,3vw,1.85rem)] text-[#f8fafc] mt-10 mb-5 border-b border-indigo-500/20 pb-2 break-words [overflow-wrap:anywhere]",
+          3: "font-['Outfit'] font-bold text-[clamp(1.15rem,2.4vw,1.45rem)] text-[#f8fafc] mt-8 mb-4 break-words [overflow-wrap:anywhere]",
+          4: "font-['Outfit'] font-bold text-[clamp(1.02rem,2vw,1.2rem)] text-[#f8fafc] mt-6 mb-3 break-words [overflow-wrap:anywhere]",
+          5: "font-['Outfit'] font-semibold text-[clamp(0.95rem,1.8vw,1.1rem)] text-[#f8fafc] mt-5 mb-2 break-words [overflow-wrap:anywhere]",
+          6: "font-['Outfit'] font-bold text-[clamp(0.875rem,1.5vw,1rem)] text-[#a5b4fc] mt-4 mb-2 uppercase tracking-wider break-words [overflow-wrap:anywhere]",
+        };
+        processedBlocks.push(`<${hTag} class="${headingClassesMap[level] || headingClassesMap[2]}">${titleText}</${hTag}>`);
+      } else {
+        processedBlocks.push(`<p class="text-[#cbd5e1] text-[1.025rem] leading-[1.8] mb-6 [overflow-wrap:anywhere]">${block.replace(/\n/g, "<br />")}</p>`);
+      }
     }
   }
 

@@ -11,22 +11,17 @@ const HeicToJpgTool = dynamic(() => import("@/components/tools/HeicToJpgTool"), 
 })
 
 export const metadata = constructMetadata({
-  title: "HEIC to JPG Converter – Free Online, No Upload Required | ConvertGalaxy",
+  title: "HEIC to JPG Converter – Convert Galaxy Tool for Free",
   description:
-    "Convert iPhone HEIC photos to JPG online for free. Preserve camera EXIF metadata and original resolution with 100% private browser processing without server uploads.",
+    "Convert iPhone HEIC to JPG online for free. Preserve camera EXIF metadata and original resolution with 100% private browser processing without server uploads.",
   canonicalPath: "/tools/heic-to-jpg",
   ogImage: "https://www.convertgalaxy.com/heic-to-jpg.webp",
   keywords: [
     "heic to jpg",
     "heic to jpg converter",
     "convert heic to jpg",
-    "convert heic to jpg online free",
-    "heic to jpg converter free",
-    "iphone photo to jpg",
+    "iphone format to jpg",
     "heif to jpg converter",
-    "convert apple photos to jpg",
-    "heic to jpg no upload",
-    "heic to jpg private",
   ],
 })
 

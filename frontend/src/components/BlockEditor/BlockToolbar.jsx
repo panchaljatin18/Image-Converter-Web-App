@@ -223,7 +223,22 @@ export default function BlockToolbar({
         ],
       };
     } else if (newType === "custom-html" || newType === "html") {
-      extraAttrs = { content: currentContent, mode: "html" };
+      let rawHtml = currentContent;
+      if (block.type === "table" && block.attributes) {
+        const { head = [], rows = [], foot = [], hasHeader = true, hasFooter = false, striped = true } = block.attributes;
+        let tableInner = "";
+        if (hasHeader && Array.isArray(head) && head.length > 0) {
+          tableInner += "<thead><tr>" + head.map((h) => `<th>${h}</th>`).join("") + "</tr></thead>";
+        }
+        if (Array.isArray(rows) && rows.length > 0) {
+          tableInner += "<tbody>" + rows.map((r) => "<tr>" + (Array.isArray(r) ? r.map((c) => `<td>${c}</td>`).join("") : "") + "</tr>").join("") + "</tbody>";
+        }
+        if (hasFooter && Array.isArray(foot) && foot.length > 0) {
+          tableInner += "<tfoot><tr>" + foot.map((f) => `<td>${f}</td>`).join("") + "</tr></tfoot>";
+        }
+        rawHtml = `<figure class="wp-block-table${striped ? " is-style-stripes" : ""}">\n<table>\n${tableInner}\n</table>\n</figure>`;
+      }
+      extraAttrs = { content: rawHtml, html: rawHtml, mode: "html" };
     }
 
     onChangeType(newType, extraAttrs);

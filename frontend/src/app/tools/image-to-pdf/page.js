@@ -11,19 +11,17 @@ const ImageToPdfTool = dynamic(() => import("@/components/tools/ImageToPdfTool")
 });
 
 export const metadata = constructMetadata({
-  title: "Image to PDF Converter – Combine JPG & PNG to PDF Online | ConvertGalaxy",
-  description: "Convert and combine multiple JPG, PNG, and WebP images into a single clean PDF document online for free. Customize page sizes, margins, and orientation privately.",
+  title: "PDF Converter – Convert Galaxy Official tool",
+  description: "Convert JPG, PNG, and WebP images into a single clean PDF document online for free. Customize page sizes, margins, and orientation privately.",
   canonicalPath: "/tools/image-to-pdf",
   ogImage: "https://www.convertgalaxy.com/image-to-pdf.webp",
   keywords: [
     "image to pdf",
-    "image to pdf converter",
-    "convert image to pdf",
+    "pdf converter",
+    "convert to pdf",
     "jpg to pdf",
     "png to pdf",
-    "combine images to pdf",
-    "convert jpg to pdf online free",
-    "photos to pdf converter",
+    "Convert Pdf",
   ]
 });
 
@@ -42,7 +40,7 @@ const relatedTools = [
 export default function ImageToPdfPage() {
   return (
     <ToolPageLayout
-      title="Image to PDF Converter – Combine Images to PDF Online Free"
+      title="PDF Converter – Convert Galaxy Tool"
       description="Combine multiple receipt photos, screenshots, and document scans into a single PDF. Customize page size (A4, Letter), margins, orientation, and reorder pages easily with 100% private browser processing."
       icon="📄"
       color="#f97316"

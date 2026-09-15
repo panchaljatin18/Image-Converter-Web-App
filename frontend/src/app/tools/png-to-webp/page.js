@@ -11,19 +11,16 @@ const PNGToWebPTool = dynamic(() => import("@/components/tools/PNGToWebPTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "PNG to WebP Converter – Convert PNG to WebP Online Free | ConvertGalaxy",
-  description: "Convert PNG to WebP online for free. Shrink image file size up to 80% while retaining full alpha transparency to boost website speed and Core Web Vitals.",
+  title: "PNG to WebP Converter – Online Convert Galaxy",
+  description: "PNG to WebP online free Converter tool. Shrink image file size up to 80% while retaining full alpha transparency to boost website speed and Core Web Vitals.",
   canonicalPath: "/tools/png-to-webp",
   ogImage: "https://www.convertgalaxy.com/png-to-webp.webp",
   keywords: [
     "png to webp",
     "png to webp converter",
-    "convert png to webp",
-    "convert png to webp online free",
     "png to webp converter free",
-    "png to webp transparency",
-    "batch convert png to webp",
-    "convert transparent png to webp",
+    "Online Image Converter for Free",
+    "png to webp online",
   ]
 });
 
@@ -41,8 +38,8 @@ const relatedTools = [
 export default function PNGToWebPPage() {
   return (
     <ToolPageLayout
-      title="PNG to WebP Converter – Convert PNG to WebP Online Free"
-      description="Convert PNG graphics to modern WebP format online. Reduce image file size by up to 80% while preserving alpha transparency for faster website load times."
+      title="PNG to WebP Converter – Online Convert Galaxy"
+      description="PNG to WebP online free Converter tool. Shrink image file size up to 80% while retaining full alpha transparency to boost website speed and Core Web Vitals."
       uiDescription={
         <span>
           Convert PNG graphics to modern WebP format online. Reduce image file size by up to 80% while preserving alpha transparency for faster website load times. 100% private browser processing.

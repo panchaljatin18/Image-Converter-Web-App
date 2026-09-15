@@ -66,6 +66,13 @@ function ParagraphBlock({
     "x-large": "text-2xl leading-snug font-semibold",
   };
 
+  const alignClasses = {
+    left: "text-left",
+    center: "text-center",
+    right: "text-right",
+    justify: "text-justify",
+  };
+
   const handleInput = (e) => {
     const rawText = inputRef.current ? inputRef.current.innerText : "";
     const htmlVal = e.currentTarget.innerHTML;
@@ -263,7 +270,7 @@ function ParagraphBlock({
         onInput={handleInput}
         onBlur={(e) => onChange({ content: e.currentTarget.innerHTML })}
         onKeyDown={handleKeyDown}
-        className={`w-full max-w-full min-w-0 break-words whitespace-pre-wrap [overflow-wrap:anywhere] outline-none transition-all ${fontSizes[fontSize] || fontSizes.normal} text-${align} empty:before:content-['Type_/_to_choose_a_block...'] empty:before:text-gray-500/50 empty:before:not-italic`}
+        className={`w-full max-w-full min-w-0 break-words whitespace-pre-wrap [overflow-wrap:anywhere] outline-none transition-all ${fontSizes[fontSize] || fontSizes.normal} ${alignClasses[align] || "text-left"} empty:before:content-['Type_/_to_choose_a_block...'] empty:before:text-gray-500/50 empty:before:not-italic`}
         style={{ color: textColor || "#ffffff" }}
       />
     </div>

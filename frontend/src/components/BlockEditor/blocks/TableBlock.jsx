@@ -10,13 +10,25 @@ import {
   ArrowRight,
   Sliders,
   Check,
+  FileCode,
 } from "lucide-react";
+
+function formatCellContent(val = "") {
+  if (!val || typeof val !== "string") return "";
+  let html = val;
+  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/__(.*?)__/g, "<strong>$1</strong>");
+  html = html.replace(/~~(.*?)~~/g, "<del class=\"line-through text-gray-400\">$1</del>");
+  html = html.replace(/`(.*?)`/g, "<code class=\"bg-white/10 text-indigo-300 px-1.5 py-0.5 rounded font-mono text-[0.9em]\">$1</code>");
+  return html;
+}
 
 export default function TableBlock({
   attributes = {},
   onChange,
   isSelected,
   onSelect,
+  onChangeType,
 }) {
   const {
     hasHeader = true,
@@ -372,6 +384,31 @@ export default function TableBlock({
                     <span>Striped Rows</span>
                     {striped && <Check size={14} className="text-indigo-400" />}
                   </button>
+
+                  {onChangeType && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTableMenu(false);
+                        let tableInner = "";
+                        if (hasHeader && head.length > 0) {
+                          tableInner += "<thead><tr>" + head.map((h) => `<th>${formatCellContent(h)}</th>`).join("") + "</tr></thead>";
+                        }
+                        if (rows.length > 0) {
+                          tableInner += "<tbody>" + rows.map((r) => "<tr>" + r.map((c) => `<td>${formatCellContent(c)}</td>`).join("") + "</tr>").join("") + "</tbody>";
+                        }
+                        if (hasFooter && foot.length > 0) {
+                          tableInner += "<tfoot><tr>" + foot.map((f) => `<td>${formatCellContent(f)}</td>`).join("") + "</tr></tfoot>";
+                        }
+                        const rawHtml = `<figure class="wp-block-table${striped ? " is-style-stripes" : ""}">\n<table>\n${tableInner}\n</table>\n</figure>`;
+                        onChangeType("custom-html", { content: rawHtml, html: rawHtml });
+                      }}
+                      className="w-full px-2.5 py-1.5 text-xs text-left text-indigo-300 hover:text-white hover:bg-indigo-600/20 rounded-lg flex items-center justify-between cursor-pointer font-semibold border-t border-white/10 mt-1 pt-2"
+                    >
+                      <span>Convert to Custom HTML</span>
+                      <FileCode size={13} />
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -403,7 +440,7 @@ export default function TableBlock({
                         handleCellChange("head", 0, colIdx, e.currentTarget.innerHTML)
                       }
                       onKeyDown={(e) => handleCellKeyDown(e, "head", 0, colIdx)}
-                      dangerouslySetInnerHTML={{ __html: head[colIdx] || "" }}
+                      dangerouslySetInnerHTML={{ __html: formatCellContent(head[colIdx] || "") }}
                       className="p-3 border border-white/10 outline-none focus:bg-indigo-600/20 focus:ring-1 focus:ring-indigo-400 min-w-[120px] transition-colors"
                       placeholder={`Header ${colIdx + 1}`}
                     />
@@ -440,7 +477,7 @@ export default function TableBlock({
                         handleCellChange("rows", rowIdx, colIdx, e.currentTarget.innerHTML)
                       }
                       onKeyDown={(e) => handleCellKeyDown(e, "rows", rowIdx, colIdx)}
-                      dangerouslySetInnerHTML={{ __html: row[colIdx] || "" }}
+                      dangerouslySetInnerHTML={{ __html: formatCellContent(row[colIdx] || "") }}
                       className="p-3 border border-white/10 outline-none focus:bg-indigo-600/20 focus:ring-1 focus:ring-indigo-400 min-w-[120px] transition-colors text-xs text-gray-300"
                       placeholder="..."
                     />
@@ -470,7 +507,7 @@ export default function TableBlock({
                         handleCellChange("foot", 0, colIdx, e.currentTarget.innerHTML)
                       }
                       onKeyDown={(e) => handleCellKeyDown(e, "foot", 0, colIdx)}
-                      dangerouslySetInnerHTML={{ __html: foot[colIdx] || "" }}
+                      dangerouslySetInnerHTML={{ __html: formatCellContent(foot[colIdx] || "") }}
                       className="p-3 border border-white/10 outline-none focus:bg-indigo-600/20 focus:ring-1 focus:ring-indigo-400 min-w-[120px] transition-colors"
                       placeholder={`Footer ${colIdx + 1}`}
                     />

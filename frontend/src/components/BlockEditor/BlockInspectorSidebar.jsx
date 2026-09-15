@@ -88,8 +88,14 @@ export default function BlockInspectorSidebar({
   };
 
   return (
-    <aside className="w-80 bg-[#12121e] border-l border-white/10 flex flex-col shrink-0 h-full overflow-y-auto select-none font-['Outfit']">
-      {/* Dual Tab Header */}
+    <>
+      {/* Mobile/Tablet Backdrop for Inspector Drawer */}
+      <div
+        className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+      <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-sm lg:relative lg:inset-auto lg:z-auto lg:w-80 bg-[#12121e] border-l border-white/10 flex flex-col shrink-0 h-full overflow-y-auto select-none font-['Outfit'] shadow-2xl lg:shadow-none animate-in slide-in-from-right duration-200">
+        {/* Dual Tab Header */}
       <div className="flex items-center border-b border-white/10 bg-[#161626] sticky top-0 z-20 px-1">
         {onClose && (
           <button
@@ -463,5 +469,6 @@ export default function BlockInspectorSidebar({
         )}
       </div>
     </aside>
-  );
+  </>
+);
 }

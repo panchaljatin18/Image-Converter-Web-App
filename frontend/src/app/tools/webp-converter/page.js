@@ -11,19 +11,16 @@ const WebPConverterTool = dynamic(() => import("@/components/tools/WebPConverter
 });
 
 export const metadata = constructMetadata({
-  title: "WebP Converter – Convert Images to WebP Online Free | ConvertGalaxy",
+  title: "WebP Converter – Image Converter tool",
   description: "Convert JPG, PNG, and photos to modern WebP format online. Reduce image file size by up to 80% without server-side tools or quality loss. 100% private in browser.",
   canonicalPath: "/tools/webp-converter",
   ogImage: "https://www.convertgalaxy.com/webp-converter.webp",
   keywords: [
     "webp converter",
     "convert to webp",
-    "image to webp",
-    "convert image to webp online free",
-    "jpg to webp converter free",
-    "png to webp free",
-    "webp converter no watermark",
-    "convert jpeg to webp online",
+    "jpg to webp converter",
+    "png to webp",
+    "jpg to png"
   ]
 });
 

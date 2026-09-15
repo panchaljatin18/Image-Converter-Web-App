@@ -11,19 +11,16 @@ const PdfToImageTool = dynamic(() => import("@/components/tools/PdfToImageTool")
 });
 
 export const metadata = constructMetadata({
-  title: "PDF to Image Converter – Convert PDF to JPG & PNG Online | ConvertGalaxy",
-  description: "Convert PDF pages into high-resolution JPG or transparent PNG images online for free. Extract pages and vector logos with custom resolution scaling in browser.",
+  title: "PDF to Image Converter – Convert Galaxy Tool",
+  description: "Convert PDF into JPG or PNG images online for free. Extract pages and vector logos with custom resolution scaling in browser.",
   canonicalPath: "/tools/pdf-to-image",
   ogImage: "https://www.convertgalaxy.com/pdf-to-image.webp",
   keywords: [
-    "pdf to image",
-    "pdf to image converter",
     "convert pdf to image",
     "pdf to jpg",
     "pdf to png",
     "pdf to jpg converter",
-    "convert pdf to jpg free online",
-    "extract images from pdf",
+    "convert to Image format",
   ]
 });
 
@@ -42,7 +39,7 @@ const relatedTools = [
 export default function PdfToImagePage() {
   return (
     <ToolPageLayout
-      title="PDF to Image Converter – Convert PDF to JPG & PNG Online Free"
+      title="PDF to Image Converter – Free Convert Galaxy Tool"
       description="Extract every page of a PDF document as high-resolution PNG or JPG images. Control rendering resolution scale for web or print quality output locally in your browser."
       icon="📑"
       color="#ec4899"

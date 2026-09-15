@@ -11,19 +11,16 @@ const ImageCompressorTool = dynamic(() => import("@/components/tools/ImageCompre
 });
 
 export const metadata = constructMetadata({
-  title: "Image Compressor – Reduce JPG, PNG & WebP Size Online | ConvertGalaxy",
-  description: "Compress JPG, PNG, and WebP images online for free without losing quality. Reduce file size up to 90% for web performance, Discord emojis, and email attachments.",
+  title: "Image Compressor – Convert Galaxy Official Tool",
+  description: "Compress The Images online for free without losing quality. Reduce file size up to 90% for web performance, Discord emojis, and email attachments.",
   canonicalPath: "/tools/image-compressor",
   ogImage: "https://www.convertgalaxy.com/image-compressor.webp",
   keywords: [
     "image compressor",
     "compress image",
     "compress image online free",
-    "compress image without losing quality",
-    "reduce photo size online free",
     "compress png online free",
     "compress jpeg online",
-    "reduce image size kb",
   ]
 });
 

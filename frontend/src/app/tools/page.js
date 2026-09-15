@@ -6,7 +6,7 @@ const MegaMenu = dynamic(() => import("@/components/MegaMenu"));
 
 export const metadata = constructMetadata({
   title: "All Free Image Tools & Online Converters | ConvertGalaxy",
-  description: "Browse all 11 free image tools in one place – format converters, batch compressor, resizer, cropper & PDF tools. 100% private, browser-based, no signup required.",
+  description: "Browse all Conveter Tools and PDF Tools – format converters, batch compressor, resizer, cropper & PDF tools. 100% private, browser-based, no signup required.",
   canonicalPath: "/tools",
   keywords: [
     "all image tools",

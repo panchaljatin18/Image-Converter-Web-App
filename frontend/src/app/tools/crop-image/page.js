@@ -11,19 +11,14 @@ const CropImageTool = dynamic(() => import("@/components/tools/CropImageTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "Crop Image Online – Free Image Cropper & Aspect Ratio Tool | ConvertGalaxy",
+  title: "Image Cropper Tool – Convert Galaxy Tool",
   description: "Crop images online for free with exact aspect ratio presets for Instagram, LinkedIn banners, and passport photos. Visual rule-of-thirds grid with instant download.",
   canonicalPath: "/tools/crop-image",
   ogImage: "https://www.convertgalaxy.com/crop-image.webp",
   keywords: [
-    "crop image",
+    "crop image for free",
     "crop image online",
     "free image cropper",
-    "crop photo online",
-    "crop image to square",
-    "image cropper free",
-    "crop photo aspect ratio",
-    "online image cropper",
   ]
 });
 
@@ -42,8 +37,8 @@ const relatedTools = [
 export default function CropImagePage() {
   return (
     <ToolPageLayout
-      title="Crop Image Online – Free Image Cropper & Aspect Ratio Tool"
-      description="Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly with 100% private processing."
+      title="Image Cropper Tool – Convert Galaxy Tool"
+      description="Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly."
       uiDescription={
         <span>
           Drag to crop images with precise aspect ratio presets (1:1 square, 16:9 banner, passport). Preview with a rule-of-thirds grid overlay and download instantly.

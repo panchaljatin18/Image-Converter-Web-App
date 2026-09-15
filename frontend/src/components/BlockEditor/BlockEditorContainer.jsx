@@ -1001,17 +1001,17 @@ export default function BlockEditorContainer({
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   const deviceWidths = {
-    desktop: "max-w-4xl",
-    tablet: "max-w-2xl",
-    mobile: "max-w-sm",
+    desktop: "max-w-[850px]",
+    tablet: "max-w-[640px]",
+    mobile: "max-w-[380px]",
   };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#090912] text-white font-['Outfit'] select-none">
       {/* Top Header Toolbar */}
-      <header className="h-12 sm:h-14 bg-[#141424] border-b border-indigo-500/20 px-2 sm:px-6 flex items-center justify-between shrink-0 z-40 shadow-xl gap-1 sm:gap-3">
+      <header className="h-12 sm:h-14 bg-[#141424] border-b border-indigo-500/20 px-2 sm:px-6 flex items-center justify-between shrink-0 z-40 shadow-xl gap-1 sm:gap-3 overflow-x-auto no-scrollbar">
         {/* Left Controls */}
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
           <button
             type="button"
             onClick={() => {
@@ -1027,20 +1027,20 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => setIsOutlineOpen(true)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer shrink-0"
             title="Block List Outline View"
           >
             <Layers size={18} />
           </button>
 
-          <div className="w-px h-5 bg-white/10 mx-0 sm:mx-1" />
+          <div className="w-px h-5 bg-white/10 mx-0.5" />
 
           {/* Undo / Redo */}
           <button
             type="button"
             onClick={handleUndo}
             disabled={historyIndex <= 0}
-            className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-white/5 rounded-xl transition-colors cursor-pointer shrink-0"
             title="Undo"
           >
             <Undo2 size={16} />
@@ -1049,7 +1049,7 @@ export default function BlockEditorContainer({
             type="button"
             onClick={handleRedo}
             disabled={historyIndex >= history.length - 1}
-            className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-white/5 rounded-xl transition-colors cursor-pointer shrink-0"
             title="Redo"
           >
             <Redo2 size={16} />
@@ -1059,7 +1059,7 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => setShowShortcutsModal(true)}
-            className="hidden sm:flex p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer ml-1"
+            className="hidden sm:flex p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer ml-1 shrink-0"
             title="Keyboard Shortcuts Help"
           >
             <Keyboard size={16} />
@@ -1069,7 +1069,7 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => setIsTopToolbar((prev) => !prev)}
-            className={`hidden sm:flex p-2 rounded-xl transition-colors cursor-pointer ml-1 ${
+            className={`hidden sm:flex p-2 rounded-xl transition-colors cursor-pointer ml-1 shrink-0 ${
               isTopToolbar
                 ? "bg-indigo-600/30 text-indigo-300 border border-indigo-500/40"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -1080,8 +1080,8 @@ export default function BlockEditorContainer({
           </button>
         </div>
 
-        {/* Device Responsiveness Toggle — hidden on mobile (use the preview on device) */}
-        <div className="hidden sm:flex items-center gap-1 bg-[#0a0a14] p-1 rounded-xl border border-white/10">
+        {/* Device Responsiveness Toggle — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-1 bg-[#0a0a14] p-1 rounded-xl border border-white/10 shrink-0">
           <button
             type="button"
             onClick={() => setDeviceMode("desktop")}
@@ -1119,7 +1119,7 @@ export default function BlockEditorContainer({
           <button
             type="button"
             onClick={() => setIsInspectorOpen((prev) => !prev)}
-            className={`p-2 rounded-xl border transition-all cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer ${
               isInspectorOpen
                 ? "bg-indigo-600/25 border-indigo-500/50 text-indigo-300 shadow-md shadow-indigo-600/20"
                 : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
@@ -1146,7 +1146,7 @@ export default function BlockEditorContainer({
               onSave && onSave(html, structured, "Draft");
             }}
             disabled={saving}
-            className="hidden sm:flex px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer border border-white/10"
+            className="hidden sm:flex px-3.5 py-1.5 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer border border-white/10 shrink-0"
           >
             Save Draft
           </button>
@@ -1167,7 +1167,7 @@ export default function BlockEditorContainer({
               onSave && onSave(html, structured, "Published");
             }}
             disabled={saving}
-            className="px-3.5 sm:px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-1.5"
+            className="px-3 sm:px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
             title={postStatus === "Published" ? "Update post" : "Publish post"}
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
@@ -1247,9 +1247,9 @@ export default function BlockEditorContainer({
               }
             }
           }}
-          className="flex-1 overflow-y-auto px-3 sm:px-8 md:px-16 py-5 sm:py-8 md:py-12 flex justify-center bg-[#0d0d18] cursor-text"
+          className="flex-1 overflow-y-auto px-2 sm:px-6 md:px-12 py-4 sm:py-8 flex justify-center bg-[#0d0d18] cursor-text"
         >
-          <div id="canvas-inner" className={`w-full ${deviceWidths[deviceMode]} px-2 sm:px-6 md:px-10 min-w-0 break-words transition-all duration-300 min-h-[500px] mx-auto`}>
+          <div id="canvas-inner" className={`w-full ${deviceWidths[deviceMode]} px-2 sm:px-6 md:px-8 min-w-0 break-words transition-all duration-300 min-h-[500px] mx-auto`}>
             {/* Post Title Field (Main Heading - Excluded from Select All) */}
             <input
               ref={titleInputRef}
@@ -1257,7 +1257,7 @@ export default function BlockEditorContainer({
               placeholder="Add post title..."
               value={postTitle}
               onChange={(e) => setPostTitle(e.target.value)}
-              className="w-full bg-transparent text-3xl sm:text-4xl font-extrabold text-white outline-none placeholder-gray-600 font-['Outfit'] tracking-tight mb-6"
+              className="w-full bg-transparent text-[clamp(1.65rem,4vw,2.75rem)] font-extrabold text-white outline-none placeholder-gray-600 font-['Outfit'] tracking-tight mb-6 break-words [overflow-wrap:anywhere]"
             />
 
             {/* Blocks Canvas List Container (Select All Target, excludes Main Heading) */}

@@ -11,7 +11,7 @@ const WebPToJpgTool = dynamic(() => import("@/components/tools/WebPToJpgTool"), 
 });
 
 export const metadata = constructMetadata({
-  title: "WebP to JPG Converter – Free, Fast & Private | ConvertGalaxy",
+  title: "Convert WebP to JPG – Online Tool for Convert Galaxy",
   description: "Convert WebP to JPG online for free. Easily transform WebP images downloaded from websites into standard JPG format for Amazon, Photoshop, and CMS platforms.",
   canonicalPath: "/tools/webp-to-jpg",
   ogImage: "https://www.convertgalaxy.com/webp-to-jpg.webp",

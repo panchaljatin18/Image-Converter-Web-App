@@ -11,19 +11,15 @@ const ImageResizerTool = dynamic(() => import("@/components/tools/ImageResizerTo
 });
 
 export const metadata = constructMetadata({
-  title: "Image Resizer – Resize Images Online for Free | ConvertGalaxy",
+  title: "Image Resize Tool – Resize Images Tool for Free | Convert Galaxy",
   description: "Resize images to exact pixel dimensions, percentages, or print inches online for free. Lock aspect ratios to prevent distortion with fast browser-based processing.",
   canonicalPath: "/tools/image-resizer",
   ogImage: "https://www.convertgalaxy.com/image-resizer.webp",
   keywords: [
     "image resizer",
     "resize image",
-    "resize image online free",
-    "photo resizer free",
     "resize image in pixels",
-    "resize photo online",
-    "bulk image resizer",
-    "resize image without losing quality",
+    "image resize for free",
   ]
 });
 

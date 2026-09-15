@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }) {
           <span className="inline-block py-1 px-3 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3 sm:mb-4">
             Guide
           </span>
-          <h1 className="font-['Outfit'] font-black text-[clamp(1.65rem,4.2vw,3rem)] leading-[1.2] tracking-tight text-[#f8fafc] mb-4 sm:mb-6">
+          <h1 className="font-['Outfit'] font-black text-[clamp(1.65rem,4.2vw,3rem)] leading-[1.2] tracking-tight text-[#f8fafc] mb-4 sm:mb-6 break-words [overflow-wrap:anywhere]">
             {post.frontmatter.title}
           </h1>
           <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-xs sm:text-sm text-[#cbd5e1] border-y border-white/6 py-3 sm:py-4">
