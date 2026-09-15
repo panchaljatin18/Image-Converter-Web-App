@@ -31,6 +31,7 @@ const relatedTools = [
   { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },
   { name: "JPG to PNG", href: "/tools/jpg-to-png", icon: "🔄" },
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
+  { name: "PNG to AVIF", href: "/tools/png-to-avif", icon: "🚀" },
   { name: "Crop Image", href: "/tools/crop-image", icon: "✂️" },
   { name: "Image to PDF", href: "/tools/image-to-pdf", icon: "📄" },
   { name: "PDF to Image", href: "/tools/pdf-to-image", icon: "📑" },

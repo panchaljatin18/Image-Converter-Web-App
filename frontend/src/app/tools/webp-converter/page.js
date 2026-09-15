@@ -29,6 +29,7 @@ const relatedTools = [
   { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },
   { name: "JPG to PNG", href: "/tools/jpg-to-png", icon: "🔄" },
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
+  { name: "PNG to AVIF", href: "/tools/png-to-avif", icon: "🚀" },
   { name: "Image Compressor", href: "/tools/image-compressor", icon: "🗜️" },
   { name: "Image Resizer", href: "/tools/image-resizer", icon: "📐" },
   { name: "Crop Image", href: "/tools/crop-image", icon: "✂️" },

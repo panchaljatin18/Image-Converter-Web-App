@@ -63,6 +63,15 @@ const categories = [
         gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
         tag: "New",
       },
+      {
+        name: "PNG to AVIF",
+        href: "/tools/png-to-avif",
+        icon: "🚀",
+        desc: "Convert PNG to next-gen AVIF with up to 90% size reduction",
+        color: "#6366f1",
+        gradient: "linear-gradient(135deg, #6366f1, #06b6d4)",
+        tag: "New",
+      },
     ],
   },
   {

@@ -309,7 +309,7 @@ export function getSoftwareApplicationSchema(tool: {
     "url": toolUrl,
     "description": tool.description,
     "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "All",
+    "operatingSystem": "Any",
     "browserRequirements": "Requires HTML5 browser.",
     "offers": {
       "@type": "Offer",

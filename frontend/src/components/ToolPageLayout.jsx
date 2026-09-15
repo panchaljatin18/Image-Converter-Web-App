@@ -126,14 +126,39 @@ export default async function ToolPageLayout({
           <Container className="flex flex-col gap-16">
             
             {/* Premium Discover Featured Image in Post Guide */}
-            {toolKey && (
-              <div className="max-w-[800px] mx-auto w-full border border-white/8 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            {toolKey && toolKey !== "png-to-avif" && (
+              <div className="max-w-[800px] mx-auto w-full border border-white/8 rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#141426]">
                 <img
                   src={`/${toolKey}.webp`}
                   alt={`How to use ${title} tool guide`}
-                  className="w-full h-auto object-cover aspect-[16/9]"
+                  className="w-full h-auto object-contain block"
                   loading="lazy"
                 />
+              </div>
+            )}
+
+            {/* About Q&A Section */}
+            {richContent.about && richContent.about.length > 0 && (
+              <div className="max-w-[800px] mx-auto w-full">
+                <h2 className="font-['Outfit'] font-extrabold text-2xl md:text-3xl text-[#f8fafc] tracking-tight mb-8 text-center">
+                  About {title.split("–")[0].trim()}
+                </h2>
+                <div className="flex flex-col gap-4">
+                  {richContent.about.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-6 bg-[#1a1a2e] border border-white/6 rounded-2xl flex flex-col gap-2.5 transition-colors hover:border-white/12"
+                    >
+                      <h3 className="font-bold text-[1.05rem] text-[#f8fafc] flex items-start gap-2">
+                        <span style={{ color }}>Q:</span>
+                        <span>{item.q.replace(/^Q:\s*/i, "")}</span>
+                      </h3>
+                      <p className="text-[#cbd5e1] text-[0.875rem] leading-relaxed pl-6">
+                        {item.a.replace(/^A:\s*/i, "")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -163,7 +188,7 @@ export default async function ToolPageLayout({
 
             {/* Benefits Grid */}
             {richContent.benefits && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className={`grid grid-cols-1 ${richContent.benefits.length === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"} gap-6`}>
                 {richContent.benefits.map((benefit, idx) => {
                   const Icon = ICON_MAP[benefit.icon] || Shield;
 
@@ -180,9 +205,9 @@ export default async function ToolPageLayout({
                         <Icon size={22} />
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <h4 className="font-bold text-[1rem] text-[#f8fafc]">
+                        <h3 className="font-bold text-[1rem] text-[#f8fafc]">
                           {benefit.title}
-                        </h4>
+                        </h3>
                         <p className="text-[#94a3b8] text-[0.85rem] leading-relaxed">
                           {benefit.text}
                         </p>
@@ -196,9 +221,9 @@ export default async function ToolPageLayout({
             {/* Technical Comparison Table */}
             {richContent.comparisonTable && (
               <div className="max-w-[800px] mx-auto w-full">
-                <h3 className="font-['Outfit'] font-extrabold text-xl md:text-2xl text-[#f8fafc] mb-6 text-center">
+                <h2 className="font-['Outfit'] font-extrabold text-xl md:text-2xl text-[#f8fafc] mb-6 text-center">
                   {richContent.comparisonTable.title}
-                </h3>
+                </h2>
                 <div className="overflow-x-auto border border-white/8 rounded-2xl bg-[#141426]">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -229,9 +254,9 @@ export default async function ToolPageLayout({
             {/* Technical details description */}
             {richContent.technicalDescription && (
               <div className="max-w-[800px] mx-auto w-full p-6 md:p-8 bg-[#1a1a2e]/50 border border-white/6 rounded-2xl">
-                <h3 className="font-['Outfit'] font-bold text-[1.2rem] text-[#f8fafc] mb-4">
+                <h2 className="font-['Outfit'] font-bold text-[1.2rem] text-[#f8fafc] mb-4">
                   Technical Specifications & Insights
-                </h3>
+                </h2>
                 <p className="text-[#cbd5e1] text-[0.925rem] leading-[1.8]">
                   {richContent.technicalDescription}
                 </p>

@@ -28,6 +28,7 @@ export const metadata = constructMetadata({
 const relatedTools = [
   { name: "HEIC to JPG", href: "/tools/heic-to-jpg", icon: "📱" },
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
+  { name: "PNG to AVIF", href: "/tools/png-to-avif", icon: "🚀" },
   { name: "WebP Converter", href: "/tools/webp-converter", icon: "⚡" },
   { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },
   { name: "Image Compressor", href: "/tools/image-compressor", icon: "🗜️" },

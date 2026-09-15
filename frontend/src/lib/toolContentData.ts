@@ -26,6 +26,7 @@ export interface ToolContent {
   benefits: BenefitItem[];
   comparisonTable?: ComparisonTable;
   technicalDescription: string;
+  about?: FAQItem[];
 }
 
 export const toolContentMap: Record<string, ToolContent> = Object.freeze({
@@ -378,5 +379,43 @@ export const toolContentMap: Record<string, ToolContent> = Object.freeze({
       ]
     },
     technicalDescription: "Converting PDF to images involves rasterizing vector and layout instructions into pixel values. The converter decodes page layouts, processes vector objects and text overlays, and renders the result onto a rasterized grid. It then encodes this grid into JPG or PNG formats. This allows users to view, share, or edit PDF pages without requiring a PDF reader."
+  },
+
+  "png-to-avif": {
+    howToUseSteps: [
+      { title: "Upload PNG Files", text: "Drag and drop your PNG image into the upload area or browse from your device." },
+      { title: "Choose Compression Mode", text: "Pick lossy (smallest file size) or lossless (pixel-perfect, larger file) depending on your needs." },
+      { title: "Adjust Quality", text: "Use the quality slider to balance file size against visual fidelity." },
+      { title: "Convert & Download", text: "Click \"Convert to AVIF\" and download your optimized image." }
+    ],
+    about: [
+      { q: "Why convert PNG to AVIF?", a: "AVIF (AV1 Image File Format) uses the AV1 video codec to compress images far more efficiently than PNG or even WebP, while still supporting full transparency (alpha channel) and lossless modes. For image-heavy pages, switching from PNG to AVIF is one of the single biggest wins for Core Web Vitals and page load speed." },
+      { q: "Is this conversion free?", a: "Yes, completely free. All processing happens in your browser — your images are never uploaded to any server." },
+      { q: "Will quality be affected?", a: "AVIF supports both lossy and lossless compression. At default settings you get visually identical results to PNG at a fraction of the file size; you can also choose lossless mode for pixel-perfect output." }
+    ],
+    benefits: [
+      { title: "Next-Gen Compression", text: "AV1-based encoding delivers dramatically smaller files than PNG or JPG at equal visual quality.", icon: "Zap" },
+      { title: "Transparency Preserved", text: "Full alpha channel support, unlike JPG.", icon: "Layers" },
+      { title: "Lossy or Lossless", text: "Choose pixel-perfect output or maximum compression.", icon: "Sparkles" },
+      { title: "Built for Core Web Vitals", text: "Smaller images mean faster LCP and better Google PageSpeed scores.", icon: "Shield" }
+    ],
+    comparisonTable: {
+      title: "PNG vs. AVIF Technical Comparison",
+      headers: ["Feature", "PNG Format", "AVIF Format"],
+      rows: [
+        ["Compression", "Lossless only", "Lossy & Lossless"],
+        ["Transparency", "Yes (Alpha channel)", "Yes (Alpha channel)"],
+        ["File Size", "Very Large", "Smallest (up to 90% smaller than PNG)"],
+        ["Browser Support", "Universal", "Modern browsers (Chrome, Edge, Firefox; Safari 16+)"],
+        ["Best Use Case", "Universal fallback, editing", "Web performance, hero images, product photos"]
+      ]
+    },
+    technicalDescription: "AVIF (AV1 Image File Format) is built on the AV1 video codec developed by the Alliance for Open Media. Unlike PNG's DEFLATE compression, AVIF uses block-based predictive coding — the same technology behind modern video compression — allowing it to eliminate far more redundant pixel data while preserving detail. Converting PNG to AVIF re-encodes the lossless pixel grid through AV1's intra-frame compression, producing files that are frequently 80-90% smaller than the source PNG with no perceptible quality loss, which is why AVIF is increasingly recommended for web images by Google's PageSpeed Insights.",
+    faqs: [
+      { q: "What is AVIF and why should I convert PNG to it?", a: "AVIF (AV1 Image File Format) is an open, royalty-free image format developed by the Alliance for Open Media. It uses advanced AV1 video compression algorithms to deliver images that are up to 90% smaller than PNG and 50% smaller than WebP at equivalent visual fidelity. Converting PNG to AVIF significantly reduces page weight, accelerates load times, and boosts Google Core Web Vitals scores." },
+      { q: "Will converting PNG to AVIF reduce image quality?", a: "AVIF supports both lossy and lossless compression. In lossy mode (recommended with quality around 75–85%), visual quality is virtually indistinguishable from the source PNG while cutting file size dramatically. If you require bit-for-bit exact pixel preservation, you can enable Lossless mode for pixel-perfect reproduction." },
+      { q: "Do all browsers support AVIF images?", a: "Modern versions of Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, and Safari (iOS 16+ / macOS Ventura+) have full native support for AVIF images. For older browsers, you can use standard HTML5 <picture> tags with a PNG or WebP fallback." },
+      { q: "Can I convert AVIF back to PNG or JPG?", a: "Yes! You can easily convert AVIF images back to standard PNG or JPG formats anytime using ConvertGalaxy's WebP and Image Converter tools right in your browser." }
+    ]
   }
 })

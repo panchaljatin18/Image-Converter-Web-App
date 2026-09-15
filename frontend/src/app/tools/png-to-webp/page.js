@@ -25,6 +25,7 @@ export const metadata = constructMetadata({
 });
 
 const relatedTools = [
+  { name: "PNG to AVIF", href: "/tools/png-to-avif", icon: "🚀" },
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
   { name: "WebP Converter", href: "/tools/webp-converter", icon: "⚡" },
   { name: "WebP to JPG", href: "/tools/webp-to-jpg", icon: "📸" },

@@ -26,6 +26,10 @@ export async function GET() {
       images: [{ loc: "/C.webp", title: "PNG to WebP Conversion Tool - Convert Galaxy", caption: "Convert PNG to WebP transparent files" }]
     },
     {
+      page: "/tools/png-to-avif",
+      images: [{ loc: "/png-to-avif.webp", title: "PNG to AVIF Conversion Tool - Convert Galaxy", caption: "Convert PNG to next-generation AVIF images" }]
+    },
+    {
       page: "/tools/webp-converter",
       images: [{ loc: "/C.webp", title: "WebP Conversion Tool - Convert Galaxy", caption: "Convert WebP next-gen format files" }]
     },
