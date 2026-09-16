@@ -18,7 +18,7 @@ const localIps = getLocalIps();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: process.env.NODE_ENV === "production",
+  reactCompiler: true,
   allowedDevOrigins: localIps,
   compress: true,
   poweredByHeader: false,
@@ -35,10 +35,6 @@ const nextConfig = {
       'framer-motion',
       '@vercel/analytics',
       '@vercel/speed-insights',
-      'browser-image-compression',
-      'pdf-lib',
-      'archiver',
-      'unzipper',
     ],
   },
 
