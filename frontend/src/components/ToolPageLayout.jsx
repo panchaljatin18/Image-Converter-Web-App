@@ -121,22 +121,23 @@ export default async function ToolPageLayout({
       </Container>
 
       {/* Rich Educational Content */}
-      {richContent && (
-        <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24 cv-auto-section">
+      {(richContent || toolKey) && (
+        <div className="border-t border-white/8 bg-[#0f0f1a] py-16 md:py-24">
           <Container className="flex flex-col gap-16">
             
             {/* Premium Discover Featured Image in Post Guide */}
             {toolKey && (
               <div className="max-w-[800px] mx-auto w-full relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/15 to-cyan-500/20 rounded-3xl blur-xl opacity-60 group-hover:opacity-90 transition duration-500 pointer-events-none" />
-                <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 bg-[#141426] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-indigo-500/40">
+                <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 bg-[#141426] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-indigo-500/40 min-h-[200px] flex items-center justify-center">
                   <img
                     src={`/${toolKey}.webp`}
                     alt={`How to use ${title} tool guide`}
                     width={1200}
                     height={670}
                     className="w-full h-auto object-contain block rounded-2xl md:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01]"
-                    loading="lazy"
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -285,7 +286,7 @@ export default async function ToolPageLayout({
 
       {/* Related Guides Section */}
       {relatedPosts && relatedPosts.length > 0 && (
-        <div className="bg-[#0f0f1a] border-t border-white/8 py-12 cv-auto-section">
+        <div className="bg-[#0f0f1a] border-t border-white/8 py-12">
           <Container>
             <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
               Related Guides & Tips
@@ -329,7 +330,7 @@ export default async function ToolPageLayout({
 
       {/* Related Tools */}
       {relatedTools.length > 0 && (
-        <div className="bg-[#13131f] border-t border-white/8 py-12 cv-auto-section">
+        <div className="bg-[#13131f] border-t border-white/8 py-12">
           <Container>
             <h2 className="font-['Outfit'] font-bold text-xl text-[#f8fafc] mb-6">
               Related Tools
