@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import ToolUploader from "@/components/ToolUploader";
 import { Download, RefreshCw, CheckCircle, Sliders, AlertCircle, Sparkles, Cpu, Layers } from "lucide-react";
 import Button from "@/components/Button";
@@ -9,6 +9,31 @@ import { downloadFile } from "@/lib/downloadFile";
 
 const MAX_FILE_SIZE_MB = 50;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const QUALITY_PRESETS = Object.freeze([
+  { label: "50% Max Shrink", val: 50 },
+  { label: "80% Balanced", val: 80 },
+  { label: "95% High Fidelity", val: 95 },
+]);
+
+let avifWasmPromise = null;
+const loadAvifCodec = () => {
+  if (!avifWasmPromise) {
+    avifWasmPromise = (async () => {
+      const mod = await import("@jsquash/avif");
+      try {
+        if (mod.init) {
+          await mod.init(undefined, {
+            locateFile: (path) => `/wasm/${path}`,
+          });
+        }
+      } catch {
+        // Safe to ignore if already initialized or custom locator not required
+      }
+      return mod;
+    })();
+  }
+  return avifWasmPromise;
+};
 
 export default function PngToAvifTool() {
   const { checkConversionLimit, incrementConversionCount } = useConversionLimit();
@@ -26,28 +51,28 @@ export default function PngToAvifTool() {
 
   // Pre-warm WASM encoder in background when idle so conversion starts instantly
   useEffect(() => {
-    let timeoutId;
-    const preload = async () => {
-      try {
-        const { init } = await import("@jsquash/avif");
-        await init(undefined, {
-          locateFile: (path) => `/wasm/${path}`,
-        });
-      } catch {
-        // Will initialize on demand during handleConvert
-      }
+    if (typeof window === "undefined") return;
+
+    const preload = () => {
+      loadAvifCodec().catch(() => {});
     };
 
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        window.requestIdleCallback(preload);
-      } else {
-        timeoutId = setTimeout(preload, 1200);
-      }
+    let idleId;
+    let timerId;
+
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(preload);
+    } else {
+      timerId = setTimeout(preload, 1000);
     }
 
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
+      if (idleId && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timerId) {
+        clearTimeout(timerId);
+      }
     };
   }, []);
 
@@ -60,7 +85,7 @@ export default function PngToAvifTool() {
     };
   }, [result?.url]);
 
-  const handleFileSelect = (selectedFile) => {
+  const handleFileSelect = useCallback((selectedFile) => {
     setErrorMessage("");
     if (!selectedFile) return;
 
@@ -81,22 +106,26 @@ export default function PngToAvifTool() {
     }
 
     setFile(selectedFile);
-  };
+  }, []);
 
-  const uploaderActivity = converting
-    ? {
+  const uploaderActivity = useMemo(() => {
+    if (converting) {
+      return {
         state: "processing",
         label: "Encoding PNG to AVIF",
         detail: statusMessage || "Re-encoding pixel grid with AV1 predictive coding",
         progress,
-      }
-    : file
-      ? {
-          state: "ready",
-          label: "PNG Image Selected",
-          detail: `${(file.size / 1024).toFixed(1)} KB · Ready to convert`,
-        }
-      : null;
+      };
+    }
+    if (file) {
+      return {
+        state: "ready",
+        label: "PNG Image Selected",
+        detail: `${(file.size / 1024).toFixed(1)} KB · Ready to convert`,
+      };
+    }
+    return null;
+  }, [converting, statusMessage, progress, file]);
 
   const handleConvert = useCallback(async () => {
     if (!file) return;
@@ -108,7 +137,6 @@ export default function PngToAvifTool() {
     setErrorMessage("");
 
     try {
-      // Clean up previous result URL if exists
       if (result?.url) {
         URL.revokeObjectURL(result.url);
       }
@@ -118,7 +146,7 @@ export default function PngToAvifTool() {
       const img = new window.Image();
 
       await new Promise((resolve, reject) => {
-        img.onload = resolve;
+        img.onload = () => resolve();
         img.onerror = () => reject(new Error("Failed to decode PNG image. The file may be corrupt."));
         img.src = objectUrl;
       });
@@ -149,39 +177,24 @@ export default function PngToAvifTool() {
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, width, height);
 
-      // Free canvas buffer memory immediately to minimize memory footprint on mobile devices
-      canvas.width = 1;
-      canvas.height = 1;
-
       setProgress(55);
       setStatusMessage("Initializing AV1 WebAssembly encoder...");
 
-      // Allow UI thread to update progress
-      await new Promise((r) => setTimeout(r, 60));
+      await new Promise((r) => setTimeout(r, 40));
 
       let avifBlob = null;
 
       try {
-        // Dynamic import of @jsquash/avif WASM encoder
-        const { default: encode, init } = await import("@jsquash/avif");
-
-        // Pre-initialize WASM module locating the binary in /wasm/ if needed
-        try {
-          await init(undefined, {
-            locateFile: (path) => `/wasm/${path}`,
-          });
-        } catch {
-          // If init with custom locateFile is already initialized or not needed, proceed
-        }
+        const { default: encode } = await loadAvifCodec();
 
         setProgress(70);
         setStatusMessage("Applying AV1 intra-frame predictive compression...");
-        await new Promise((r) => setTimeout(r, 60));
+        await new Promise((r) => setTimeout(r, 40));
 
         const encodeOptions = {
           quality: isLossless ? 100 : quality,
           lossless: isLossless,
-          speed: 6, // Optimized balance of speed and compression efficiency for browser
+          speed: 6, // Optimized balance of speed and compression efficiency
         };
 
         const avifBuffer = await encode(imageData, encodeOptions);
@@ -205,6 +218,10 @@ export default function PngToAvifTool() {
             "AVIF encoding failed in your browser. " + (wasmErr?.message || "WASM codec failure.")
           );
         }
+      } finally {
+        // Free canvas buffer memory after encoding attempt completes
+        canvas.width = 1;
+        canvas.height = 1;
       }
 
       setProgress(95);
@@ -248,7 +265,7 @@ export default function PngToAvifTool() {
     }
   }, [file, isLossless, quality, checkConversionLimit, incrementConversionCount, result?.url]);
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     if (!result?.url) return;
     setDownloading(true);
     try {
@@ -265,9 +282,9 @@ export default function PngToAvifTool() {
     } finally {
       setDownloading(false);
     }
-  };
+  }, [result]);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     if (result?.url) {
       URL.revokeObjectURL(result.url);
     }
@@ -276,7 +293,7 @@ export default function PngToAvifTool() {
     setProgress(0);
     setStatusMessage("");
     setErrorMessage("");
-  };
+  }, [result?.url]);
 
   return (
     <div className="max-w-[800px] mx-auto">
@@ -406,11 +423,7 @@ export default function PngToAvifTool() {
                     {/* Quick Preset Buttons for Mobile & Desktop */}
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       <span className="text-[0.725rem] text-[#94a3b8] mr-1">Presets:</span>
-                      {[
-                        { label: "50% Max Shrink", val: 50 },
-                        { label: "80% Balanced", val: 80 },
-                        { label: "95% High Fidelity", val: 95 },
-                      ].map((preset) => (
+                      {QUALITY_PRESETS.map((preset) => (
                         <button
                           key={preset.val}
                           type="button"
@@ -575,3 +588,4 @@ export default function PngToAvifTool() {
     </div>
   );
 }
+

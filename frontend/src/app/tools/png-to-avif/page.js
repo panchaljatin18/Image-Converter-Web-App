@@ -11,6 +11,10 @@ const PngToAvifTool = dynamic(() => import("@/components/tools/PngToAvifTool"), 
   ),
 });
 
+const TOOL_TITLE = "PNG to AVIF Converter – Free Online Tool";
+const TOOL_DESCRIPTION =
+  "Convert PNG images to AVIF, the next-generation format that's up to 50% smaller than WebP and 90% smaller than PNG — with no visible quality loss. Processed 100% privately in your browser, no upload required.";
+
 const baseMetadata = constructMetadata({
   title: "PNG to AVIF Converter | Convert Galaxy",
   description:
@@ -30,29 +34,27 @@ export const metadata = {
   ...baseMetadata,
   openGraph: {
     ...baseMetadata.openGraph,
-    title: "PNG to AVIF Converter – Free Online Tool",
-    description:
-      "Convert PNG to AVIF online free. Shrink images up to 50% smaller with next-gen compression, zero quality loss. 100% private, browser-based, no upload.",
+    title: TOOL_TITLE,
+    description: baseMetadata.description,
     images: [
       {
         url: "https://www.convertgalaxy.com/png-to-avif.webp",
         width: 1200,
         height: 630,
-        alt: "PNG to AVIF Converter – Free Online Tool",
+        alt: TOOL_TITLE,
       },
     ],
   },
   twitter: {
     ...baseMetadata.twitter,
     card: "summary_large_image",
-    title: "PNG to AVIF Converter – Free Online Tool",
-    description:
-      "Convert PNG to AVIF online free. Shrink images up to 50% smaller with next-gen compression, zero quality loss. 100% private, browser-based, no upload.",
+    title: TOOL_TITLE,
+    description: baseMetadata.description,
     images: ["https://www.convertgalaxy.com/png-to-avif.webp"],
   },
 };
 
-const relatedTools = [
+const relatedTools = Object.freeze([
   { name: "HEIC to JPG", href: "/tools/heic-to-jpg", icon: "📱" },
   { name: "PNG to JPG", href: "/tools/png-to-jpg", icon: "🖼️" },
   { name: "WebP Converter", href: "/tools/webp-converter", icon: "⚡" },
@@ -61,18 +63,14 @@ const relatedTools = [
   { name: "Image Resizer", href: "/tools/image-resizer", icon: "📐" },
   { name: "Crop Image", href: "/tools/crop-image", icon: "✂️" },
   { name: "Image to PDF", href: "/tools/image-to-pdf", icon: "📄" },
-];
+]);
 
 export default function PngToAvifPage() {
   return (
     <ToolPageLayout
-      title="PNG to AVIF Converter – Free Online Tool"
-      description="Convert PNG images to AVIF, the next-generation format that's up to 50% smaller than WebP and 90% smaller than PNG — with no visible quality loss. Processed 100% privately in your browser, no upload required."
-      uiDescription={
-        <span>
-          Convert PNG images to AVIF, the next-generation format that&apos;s up to 50% smaller than WebP and 90% smaller than PNG — with no visible quality loss. Processed 100% privately in your browser, no upload required.
-        </span>
-      }
+      title={TOOL_TITLE}
+      description={TOOL_DESCRIPTION}
+      uiDescription={TOOL_DESCRIPTION}
       icon="🚀"
       color="#6366f1"
       gradient="linear-gradient(135deg, #6366f1, #06b6d4)"
@@ -84,3 +82,4 @@ export default function PngToAvifPage() {
     </ToolPageLayout>
   );
 }
+
