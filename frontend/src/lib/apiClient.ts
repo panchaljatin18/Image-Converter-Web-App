@@ -15,8 +15,8 @@ function getAvifCodec() {
   if (!cachedAvifPromise) {
     cachedAvifPromise = (async () => {
       try {
-        const mod = await import("@jsquash/avif");
-        if (typeof mod.init === "function") {
+        const mod: any = await import("@jsquash/avif");
+        if (typeof mod?.init === "function") {
           await mod.init(undefined, {
             locateFile: (path: string) => `/wasm/${path}`,
           });
