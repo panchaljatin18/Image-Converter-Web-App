@@ -243,7 +243,6 @@ export default function PNGToWebPTool() {
                 </div>
 
                 <div className="p-3.5 bg-cyan-500/8 border border-cyan-500/20 rounded-xl flex items-center gap-2.5 text-xs text-[#94a3b8]">
-                  <Sparkles size={16} className="text-[#38bdf8] shrink-0" />
                   <span>
                     <strong>Alpha Transparency Preserved:</strong> PNG transparent backgrounds are kept 100% intact without adding white or solid background fills.
                   </span>

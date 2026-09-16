@@ -452,7 +452,6 @@ export default function PngToAvifTool() {
                   </div>
                 ) : (
                   <div className="p-3 bg-white/4 border border-white/8 rounded-xl flex items-center gap-2.5 text-xs text-[#cbd5e1]">
-                    <Sparkles size={16} className="text-indigo-400 shrink-0" aria-hidden="true" />
                     <span>Lossless mode active: Quality is automatically set to 100% for bit-exact reproduction.</span>
                   </div>
                 )}
@@ -507,7 +506,6 @@ export default function PngToAvifTool() {
 
             {parseFloat(result.savings) > 0 && (
               <div className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-xs flex items-center gap-1.5">
-                <Sparkles size={13} aria-hidden="true" />
                 {result.savings}% Smaller than PNG
               </div>
             )}
