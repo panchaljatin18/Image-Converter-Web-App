@@ -29,11 +29,6 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   webpack: (config, { isServer }) => {
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-      layers: true,
-    };
     config.module.exprContextCritical = false;
 
     if (isServer) {

@@ -397,15 +397,20 @@ export function parseMarkdownFile(fileContent) {
 import dbConnect from "@/lib/db";
 import { BlogPost, SeededLock } from "@/models/BlogPost";
 
+let isMemorySeeded = false;
+
 /**
  * Automatically seeds markdown posts from src/content/blog to MongoDB if database is empty.
  */
 async function seedMarkdownToDB() {
+  if (isMemorySeeded) return;
   try {
     // Check if we have already executed the initial migration before
     const hasSeeded = await SeededLock.findOne();
-    if (hasSeeded) return; // Exit immediately, database migration already executed once
-
+    if (hasSeeded) {
+      isMemorySeeded = true;
+      return; // Exit immediately, database migration already executed once
+    }
     if (!fs.existsSync(BLOG_DIR)) return;
 
     const files = fs.readdirSync(BLOG_DIR);

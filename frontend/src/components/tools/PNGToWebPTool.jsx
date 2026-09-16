@@ -30,7 +30,7 @@ export default function PNGToWebPTool() {
     };
   }, [result?.url]);
 
-  const handleFileSelect = (selectedFile) => {
+  const handleFileSelect = useCallback((selectedFile) => {
     setErrorMessage("");
     if (!selectedFile) return;
 
@@ -50,22 +50,26 @@ export default function PNGToWebPTool() {
     }
 
     setFile(selectedFile);
-  };
+  }, []);
 
-  const uploaderActivity = converting
-    ? {
+  const uploaderActivity = useMemo(() => {
+    if (converting) {
+      return {
         state: "processing",
         label: "Encoding PNG to WebP",
         detail: "Preserving alpha transparency & compressing image pixels",
         progress,
-      }
-    : file
-      ? {
-          state: "ready",
-          label: "PNG Image selected",
-          detail: `${(file.size / (1024 * 1024)).toFixed(2)} MB · Ready to convert`,
-        }
-      : null;
+      };
+    }
+    if (file) {
+      return {
+        state: "ready",
+        label: "PNG Image selected",
+        detail: `${(file.size / (1024 * 1024)).toFixed(2)} MB · Ready to convert`,
+      };
+    }
+    return null;
+  }, [converting, progress, file]);
 
   const handleConvert = useCallback(async () => {
     if (!file) return;
