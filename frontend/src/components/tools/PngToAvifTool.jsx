@@ -21,7 +21,7 @@ const loadAvifCodec = () => {
     avifWasmPromise = (async () => {
       const mod = await import("@jsquash/avif");
       try {
-        if (mod.init) {
+        if (typeof mod.init === "function") {
           await mod.init(undefined, {
             locateFile: (path) => `/wasm/${path}`,
           });
@@ -185,7 +185,12 @@ export default function PngToAvifTool() {
       let avifBlob = null;
 
       try {
-        const { default: encode } = await loadAvifCodec();
+        const mod = await loadAvifCodec();
+        const encodeFn = mod.encode || mod.default || mod;
+
+        if (typeof encodeFn !== "function") {
+          throw new Error("AVIF encoder function failed to initialize.");
+        }
 
         setProgress(70);
         setStatusMessage("Applying AV1 intra-frame predictive compression...");
@@ -197,7 +202,7 @@ export default function PngToAvifTool() {
           speed: 6, // Optimized balance of speed and compression efficiency
         };
 
-        const avifBuffer = await encode(imageData, encodeOptions);
+        const avifBuffer = await encodeFn(imageData, encodeOptions);
         avifBlob = new Blob([avifBuffer], { type: "image/avif" });
       } catch (wasmErr) {
         console.warn("WASM AVIF encoding error, checking browser native fallback:", wasmErr);
