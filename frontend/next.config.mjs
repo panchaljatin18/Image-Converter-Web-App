@@ -18,7 +18,6 @@ const localIps = getLocalIps();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: true,
   allowedDevOrigins: localIps,
   compress: true,
   poweredByHeader: false,
@@ -28,14 +27,6 @@ const nextConfig = {
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-  },
-  experimental: {
-    optimizePackageImports: [
-      'lucide-react',
-      'framer-motion',
-      '@vercel/analytics',
-      '@vercel/speed-insights',
-    ],
   },
 
   async headers() {
