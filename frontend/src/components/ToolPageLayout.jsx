@@ -126,14 +126,19 @@ export default async function ToolPageLayout({
           <Container className="flex flex-col gap-16">
             
             {/* Premium Discover Featured Image in Post Guide */}
-            {toolKey && toolKey !== "png-to-avif" && (
-              <div className="max-w-[800px] mx-auto w-full border border-white/8 rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#141426]">
-                <img
-                  src={`/${toolKey}.webp`}
-                  alt={`How to use ${title} tool guide`}
-                  className="w-full h-auto object-contain block"
-                  loading="lazy"
-                />
+            {toolKey && (
+              <div className="max-w-[800px] mx-auto w-full relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/15 to-cyan-500/20 rounded-3xl blur-xl opacity-60 group-hover:opacity-90 transition duration-500 pointer-events-none" />
+                <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 bg-[#141426] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-indigo-500/40">
+                  <img
+                    src={`/${toolKey}.webp`}
+                    alt={`How to use ${title} tool guide`}
+                    width={1200}
+                    height={670}
+                    className="w-full h-auto object-contain block rounded-2xl md:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01]"
+                    loading="lazy"
+                  />
+                </div>
               </div>
             )}
 

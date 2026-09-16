@@ -470,25 +470,6 @@ export default function PngToAvifTool() {
               </div>
             </div>
           )}
-
-          {/* Featured Visual Banner - Perfectly Adjusted */}
-          <div className="mt-8 relative group">
-            {/* Ambient colorful backlight glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/15 to-cyan-500/20 rounded-3xl blur-xl opacity-60 group-hover:opacity-90 transition duration-500 pointer-events-none" />
-            
-            {/* Card wrapper */}
-            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 bg-[#141426] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:border-indigo-500/40">
-              <img
-                src="/png-to-avif.webp"
-                alt="PNG to AVIF Converter – Free Online Tool"
-                width={1200}
-                height={670}
-                className="w-full h-auto object-contain block rounded-2xl md:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01]"
-                loading="eager"
-                fetchPriority="high"
-              />
-            </div>
-          </div>
         </>
       ) : (
         /* Conversion Result Card */
