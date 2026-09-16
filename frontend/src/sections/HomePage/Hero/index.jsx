@@ -673,10 +673,11 @@ export default function Hero() {
       let targetHeight = 2000;
       let blob = null;
 
-      const lookupTarget = SOURCE_FORMATS.find(f => f.extensions.includes(target?.value));
-      const targetMime = lookupTarget ? lookupTarget.mimes[0] : `image/${target?.value === "jpg" ? "jpeg" : target?.value === "svg" ? "svg+xml" : target?.value || "png"}`;
-      const mime = targetFormat ? targetMime : (file.type || "application/octet-stream");
-      const ext = targetFormat ? (lookupTarget ? `.${lookupTarget.extensions[0]}` : `.${target?.value || "png"}`) : "." + (file.name.split(".").pop() || "png");
+      const effectiveTargetFormat = (targetFormat || "png").toLowerCase().trim();
+      const lookupTarget = SOURCE_FORMATS.find(f => f.extensions.includes(effectiveTargetFormat));
+      const targetMime = lookupTarget ? lookupTarget.mimes[0] : `image/${effectiveTargetFormat === "jpg" ? "jpeg" : effectiveTargetFormat === "svg" ? "svg+xml" : effectiveTargetFormat}`;
+      const mime = targetMime || (file.type || "application/octet-stream");
+      const ext = lookupTarget ? `.${lookupTarget.extensions[0]}` : `.${effectiveTargetFormat}`;
 
       if (isImageLoaded) {
         targetWidth = img.naturalWidth || 2000;
@@ -760,7 +761,7 @@ export default function Hero() {
       const { processFileWithBackend } = await import("@/lib/apiClient");
 
       await processFileWithBackend(file, {
-        targetFormat: target?.value || ext.slice(1) || "png",
+        targetFormat: effectiveTargetFormat,
         options: {
           width: activeTool === "resize" ? targetWidth : undefined,
           height: activeTool === "resize" ? targetHeight : undefined,
