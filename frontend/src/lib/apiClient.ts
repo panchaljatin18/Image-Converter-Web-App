@@ -10,6 +10,26 @@ export interface UploadOptions {
 
 const BROWSER_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "avif", "bmp", "ico", "gif"];
 
+let cachedAvifPromise: Promise<any> | null = null;
+function getAvifCodec() {
+  if (!cachedAvifPromise) {
+    cachedAvifPromise = (async () => {
+      try {
+        const mod = await import("@jsquash/avif");
+        if (typeof mod.init === "function") {
+          await mod.init(undefined, {
+            locateFile: (path: string) => `/wasm/${path}`,
+          });
+        }
+        return mod;
+      } catch {
+        return import("@jsquash/avif");
+      }
+    })();
+  }
+  return cachedAvifPromise;
+}
+
 /**
  * Fast client-side browser image processing using HTML5 Canvas & WASM.
  * Converts images in ~50ms directly on the user's device.
@@ -25,6 +45,11 @@ async function processInBrowser(file: File, config: UploadOptions): Promise<bool
 
   if (!isBrowserSource || !isBrowserTarget) {
     return false; // Fall back to server processing for documents / non-browser formats
+  }
+
+  // Pre-warm WASM encoder if AVIF is target
+  if (cleanTarget === "avif") {
+    getAvifCodec().catch(() => {});
   }
 
   return new Promise<boolean>((resolve) => {
@@ -77,20 +102,21 @@ async function processInBrowser(file: File, config: UploadOptions): Promise<bool
 
         ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
 
-        if (config.onProgress) config.onProgress(70);
+        if (config.onProgress) config.onProgress(60);
 
         const quality = config.options?.quality !== undefined ? config.options.quality : 0.92;
 
         // In-browser AVIF encoding via WASM module
         if (cleanTarget === "avif") {
           try {
-            const mod = await import("@jsquash/avif");
+            if (config.onProgress) config.onProgress(75);
+            const mod = await getAvifCodec();
             const encodeFn = mod.encode || mod.default || mod;
             if (typeof encodeFn === "function") {
               const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
               const avifBuffer = await encodeFn(imageData, {
                 quality: Math.round(quality * 100),
-                speed: 6,
+                speed: 8, // Optimized 8x speed for instant sub-second browser encoding
               });
               const blob = new Blob([avifBuffer], { type: "image/avif" });
               URL.revokeObjectURL(objectUrl);
