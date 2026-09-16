@@ -8,10 +8,10 @@ export interface UploadOptions {
   onError?: (error: Error) => void;
 }
 
-const BROWSER_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "bmp", "ico", "gif"];
+const BROWSER_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "avif", "bmp", "ico", "gif"];
 
 /**
- * Fast client-side browser image processing using HTML5 Canvas.
+ * Fast client-side browser image processing using HTML5 Canvas & WASM.
  * Converts images in ~50ms directly on the user's device.
  */
 async function processInBrowser(file: File, config: UploadOptions): Promise<boolean> {
@@ -79,12 +79,43 @@ async function processInBrowser(file: File, config: UploadOptions): Promise<bool
 
         if (config.onProgress) config.onProgress(70);
 
-        // Target MIME & Quality
+        const quality = config.options?.quality !== undefined ? config.options.quality : 0.92;
+
+        // In-browser AVIF encoding via WASM module
+        if (cleanTarget === "avif") {
+          try {
+            const mod = await import("@jsquash/avif");
+            const encodeFn = mod.encode || mod.default || mod;
+            if (typeof encodeFn === "function") {
+              const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+              const avifBuffer = await encodeFn(imageData, {
+                quality: Math.round(quality * 100),
+                speed: 6,
+              });
+              const blob = new Blob([avifBuffer], { type: "image/avif" });
+              URL.revokeObjectURL(objectUrl);
+              const outputBlobUrl = URL.createObjectURL(blob);
+              if (config.onProgress) config.onProgress(100);
+              if (config.onSuccess) {
+                config.onSuccess({
+                  outputUrl: outputBlobUrl,
+                  outputSize: blob.size,
+                  message: "Converted instantly in browser",
+                });
+              }
+              resolve(true);
+              return;
+            }
+          } catch (avifErr) {
+            console.warn("WASM AVIF in Hero failed, attempting canvas toBlob fallback:", avifErr);
+          }
+        }
+
+        // Target MIME & Quality for Canvas toBlob fallback
         let mimeType = "image/png";
         if (cleanTarget === "jpg" || cleanTarget === "jpeg") mimeType = "image/jpeg";
         else if (cleanTarget === "webp") mimeType = "image/webp";
-
-        const quality = config.options?.quality !== undefined ? config.options.quality : 0.92;
+        else if (cleanTarget === "avif") mimeType = "image/avif";
 
         canvas.toBlob(
           (blob) => {
