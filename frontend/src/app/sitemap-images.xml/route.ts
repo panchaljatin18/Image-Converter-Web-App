@@ -14,6 +14,10 @@ export async function GET() {
       ]
     },
     {
+      page: "/tools/heic-to-jpg",
+      images: [{ loc: "/C.webp", title: "HEIC to JPG Conversion Tool - Convert Galaxy", caption: "Convert Apple HEIC to high-quality JPG photos" }]
+    },
+    {
       page: "/tools/jpg-to-png",
       images: [{ loc: "/C.webp", title: "JPG to PNG Conversion Tool - Convert Galaxy", caption: "Convert JPG to PNG lossless files" }]
     },

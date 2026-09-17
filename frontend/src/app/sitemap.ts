@@ -1,8 +1,6 @@
 import { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/metadata";
 import { getBlogPosts } from "@/lib/blog";
-import fs from "fs";
-import path from "path";
 
 export const revalidate = 0; // Dynamic sitemap revalidation
 
@@ -77,30 +75,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic tools pages (scan src/app/tools directory)
-  try {
-    const toolsDir = path.join(process.cwd(), "src/app/tools");
-    if (fs.existsSync(toolsDir)) {
-      const items = fs.readdirSync(toolsDir);
-      items.forEach((item) => {
-        const itemPath = path.join(toolsDir, item);
-        const stat = fs.statSync(itemPath);
-        if (stat.isDirectory() && !item.startsWith(".")) {
-          const hasPage = fs.existsSync(path.join(itemPath, "page.js")) || fs.existsSync(path.join(itemPath, "page.tsx"));
-          if (hasPage) {
-            routes.push({
-              url: `${SITE_URL}/tools/${item}`,
-              lastModified: currentDate,
-              changeFrequency: "weekly" as const,
-              priority: 0.9,
-            });
-          }
-        }
-      });
-    }
-  } catch (e) {
-    console.error("Error reading tools directory for sitemap:", e);
-  }
+  // Tool pages (12 total image processing tools)
+  const toolSlugs = [
+    "crop-image",
+    "heic-to-jpg",
+    "image-compressor",
+    "image-resizer",
+    "image-to-pdf",
+    "jpg-to-png",
+    "pdf-to-image",
+    "png-to-avif",
+    "png-to-jpg",
+    "png-to-webp",
+    "webp-converter",
+    "webp-to-jpg",
+  ];
+
+  toolSlugs.forEach((slug) => {
+    routes.push({
+      url: `${SITE_URL}/tools/${slug}`,
+      lastModified: currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    });
+  });
 
   // Dynamic published blog posts from DB & markdown storage
   try {
