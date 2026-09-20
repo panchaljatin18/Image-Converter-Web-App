@@ -9,53 +9,57 @@ export async function GET() {
     {
       page: "",
       images: [
-        { loc: "/C.webp", title: "Convert Galaxy Logo Icon", caption: "Convert Galaxy Brand Logo Icon" },
-        { loc: "/og-image.webp", title: "Convert Galaxy Tools Suite Banner", caption: "Convert Galaxy open graph social share banner" }
+        { loc: "/og-image.webp", title: "Convert Galaxy Online Image Tools Banner", caption: "Convert Galaxy open graph social share banner" },
+        { loc: "/C.webp", title: "Convert Galaxy Brand Logo Icon", caption: "Convert Galaxy Official Logo Icon" },
       ]
     },
     {
       page: "/tools/heic-to-jpg",
-      images: [{ loc: "/C.webp", title: "HEIC to JPG Conversion Tool - Convert Galaxy", caption: "Convert Apple HEIC to high-quality JPG photos" }]
+      images: [{ loc: "/heic-to-jpg.webp", title: "HEIC to JPG Conversion Tool - Convert Galaxy", caption: "Convert Apple HEIC photos to high quality JPG format online" }]
     },
     {
       page: "/tools/jpg-to-png",
-      images: [{ loc: "/C.webp", title: "JPG to PNG Conversion Tool - Convert Galaxy", caption: "Convert JPG to PNG lossless files" }]
+      images: [{ loc: "/jpg-to-png.webp", title: "JPG to PNG Conversion Tool - Convert Galaxy", caption: "Convert JPG images to lossless PNG format online" }]
     },
     {
       page: "/tools/png-to-jpg",
-      images: [{ loc: "/C.webp", title: "PNG to JPG Conversion Tool - Convert Galaxy", caption: "Convert PNG to JPG compressed files" }]
+      images: [{ loc: "/png-to-jpg.webp", title: "PNG to JPG Conversion Tool - Convert Galaxy", caption: "Convert PNG images to compressed JPG format online" }]
     },
     {
       page: "/tools/png-to-webp",
-      images: [{ loc: "/C.webp", title: "PNG to WebP Conversion Tool - Convert Galaxy", caption: "Convert PNG to WebP transparent files" }]
+      images: [{ loc: "/png-to-webp.webp", title: "PNG to WebP Conversion Tool - Convert Galaxy", caption: "Convert PNG to WebP transparent next-gen format" }]
     },
     {
       page: "/tools/png-to-avif",
-      images: [{ loc: "/png-to-avif.webp", title: "PNG to AVIF Conversion Tool - Convert Galaxy", caption: "Convert PNG to next-generation AVIF images" }]
+      images: [{ loc: "/png-to-avif.webp", title: "PNG to AVIF Conversion Tool - Convert Galaxy", caption: "Convert PNG to next-generation AVIF compressed images" }]
     },
     {
       page: "/tools/webp-converter",
-      images: [{ loc: "/C.webp", title: "WebP Conversion Tool - Convert Galaxy", caption: "Convert WebP next-gen format files" }]
+      images: [{ loc: "/webp-converter.webp", title: "WebP Conversion Tool - Convert Galaxy", caption: "Convert WebP images to next-gen formats online" }]
     },
     {
       page: "/tools/image-compressor",
-      images: [{ loc: "/C.webp", title: "Image Compressor Tool - Convert Galaxy", caption: "Compress images online browser-based" }]
+      images: [{ loc: "/image-compressor.webp", title: "Image Compressor Tool - Convert Galaxy", caption: "Compress JPG, PNG, and WebP images browser-based" }]
     },
     {
       page: "/tools/image-resizer",
-      images: [{ loc: "/C.webp", title: "Image Resizer Tool - Convert Galaxy", caption: "Resize images to custom width and height" }]
+      images: [{ loc: "/image-resizer.webp", title: "Image Resizer Tool - Convert Galaxy", caption: "Resize images to custom pixel dimensions and aspect ratios" }]
     },
     {
       page: "/tools/crop-image",
-      images: [{ loc: "/C.webp", title: "Crop Image Tool - Convert Galaxy", caption: "Crop images online interactively" }]
+      images: [{ loc: "/crop-image.webp", title: "Crop Image Tool - Convert Galaxy", caption: "Crop images online interactively with rectangle selection" }]
     },
     {
       page: "/tools/image-to-pdf",
-      images: [{ loc: "/C.webp", title: "Image to PDF Converter - Convert Galaxy", caption: "Convert and merge images into PDF documents" }]
+      images: [{ loc: "/image-to-pdf.webp", title: "Image to PDF Converter - Convert Galaxy", caption: "Convert and merge multiple images into PDF documents" }]
     },
     {
       page: "/tools/pdf-to-image",
-      images: [{ loc: "/C.webp", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF as images" }]
+      images: [{ loc: "/pdf-to-image.webp", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF files into JPG and PNG images" }]
+    },
+    {
+      page: "/tools/webp-to-jpg",
+      images: [{ loc: "/webp-to-jpg.webp", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files online" }]
     },
     {
       page: "/author/jatin-panchal",
@@ -67,10 +71,6 @@ export async function GET() {
         },
       ],
     },
-    {
-      page: "/tools/webp-to-jpg",
-      images: [{ loc: "/C.webp", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files" }]
-    }
   ];
 
   const currentDate = new Date().toISOString().split("T")[0];
