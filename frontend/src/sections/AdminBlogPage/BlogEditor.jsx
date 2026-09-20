@@ -240,31 +240,7 @@ function markdownToHtml(md) {
   const rawHtmlBlocks = [];
 
   const createWpBlockCard = (codeText) => {
-    const escapedText = codeText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const blockId = "wp_html_" + Math.random().toString(36).substring(2, 9);
-    const valResult = validateHtmlSnippet(codeText);
-    const initialStatusHtml = valResult.isValid
-      ? `<div class="wp-block-validation-status mt-2 p-2 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2"><span>✅ HTML Syntax Valid</span></div>`
-      : `<div class="wp-block-validation-status mt-2 p-2.5 px-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-start gap-2"><span class="text-rose-400 shrink-0 font-bold">⚠️ HTML Mistake:</span><span>${valResult.errors.join("; ")}</span></div>`;
-
-    return `<div id="${blockId}" class="wp-block-custom-html my-6 rounded-2xl border border-indigo-500/30 bg-[#0d0d18] overflow-hidden shadow-2xl" contenteditable="false" data-wp-block="true">
-  <div class="wp-block-header flex items-center justify-between px-4 py-2.5 bg-[#141424] border-b border-indigo-500/20 font-['Outfit'] select-none">
-    <div class="flex items-center gap-2 text-xs font-bold text-indigo-300">
-      <span>&lt;/&gt; Custom HTML / FAQ Schema Block</span>
-    </div>
-    <div class="flex items-center gap-1.5 bg-[#090912] p-1 rounded-lg border border-white/5">
-      <button type="button" data-tab-btn="html" class="wp-block-tab-btn active px-3 py-1 text-xs font-bold rounded-md bg-indigo-600 text-white shadow-sm transition-all cursor-pointer">HTML</button>
-      <button type="button" data-tab-btn="preview" class="wp-block-tab-btn px-3 py-1 text-xs font-bold rounded-md text-[#9494a3] hover:text-white transition-all cursor-pointer">Preview</button>
-    </div>
-  </div>
-  <div class="wp-block-editor-pane p-4">
-    <textarea class="wp-block-textarea w-full bg-[#090912] border border-white/10 rounded-xl p-3 text-xs font-mono text-cyan-300 outline-none focus:border-indigo-500 transition-colors leading-relaxed" rows="7" placeholder="Paste or write HTML code or FAQ schema here...">${escapedText}</textarea>
-    ${initialStatusHtml}
-  </div>
-  <div class="wp-block-preview-pane p-4 hidden">
-    <div class="wp-block-preview-content text-left text-white text-sm"></div>
-  </div>
-</div>`;
+    return `<!-- wp:html -->\n${codeText}\n<!-- /wp:html -->`;
   };
 
   // 1. Script tags (including <script type="application/ld+json">)

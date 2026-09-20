@@ -58,6 +58,16 @@ export async function GET() {
       images: [{ loc: "/C.webp", title: "PDF to Image Converter - Convert Galaxy", caption: "Extract pages of PDF as images" }]
     },
     {
+      page: "/author/jatin-panchal",
+      images: [
+        {
+          loc: "/author.webp",
+          title: "Jatin Panchal - Founder & Lead Web Developer at ConvertGalaxy",
+          caption: "Official portrait photo of Jatin Panchal, Founder of ConvertGalaxy",
+        },
+      ],
+    },
+    {
       page: "/tools/webp-to-jpg",
       images: [{ loc: "/C.webp", title: "WebP to JPG Converter - Convert Galaxy", caption: "Convert WebP images to compressed JPEG files" }]
     }

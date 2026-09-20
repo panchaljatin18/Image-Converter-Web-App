@@ -236,28 +236,33 @@ export function normalizeBlock(block) {
   }
 
   const rawType = (block.type || "paragraph").toLowerCase();
-  const type = rawType === "custom-html" ? "html" : rawType;
+  const type = rawType === "html" ? "custom-html" : rawType;
 
   const rawAttrs = block.attrs || block.attributes || {};
   const attrs = { ...rawAttrs };
 
-  let content = block.content !== undefined ? block.content : "";
-  if (content === "" && (type === "html" || type === "custom-html")) {
-    content = attrs.html !== undefined ? attrs.html : (attrs.content !== undefined ? attrs.content : "");
-  } else if (content === "" && type === "code") {
-    content = attrs.code !== undefined ? attrs.code : (attrs.content !== undefined ? attrs.content : "");
-  } else if (content === "" && attrs.content !== undefined) {
-    content = attrs.content;
+  let htmlStr = "";
+  if (typeof block.content === "object" && block.content !== null && typeof block.content.html === "string") {
+    htmlStr = block.content.html;
+  } else if (typeof block.content === "string") {
+    htmlStr = block.content;
+  } else if (typeof attrs.html === "string") {
+    htmlStr = attrs.html;
+  } else if (typeof attrs.content === "string") {
+    htmlStr = attrs.content;
   }
 
-  // Ensure mirrored attributes for backwards-compatible component prop access
-  if (type === "html" || type === "custom-html") {
-    attrs.html = content;
-    attrs.content = content;
+  let content = block.content;
+  if (type === "custom-html" || type === "html") {
+    content = { html: htmlStr };
+    attrs.html = htmlStr;
+    attrs.content = htmlStr;
   } else if (type === "code") {
+    if (typeof content !== "string") content = attrs.code !== undefined ? attrs.code : (attrs.content || "");
     attrs.code = content;
     attrs.content = content;
   } else {
+    if (content === undefined && attrs.content !== undefined) content = attrs.content;
     attrs.content = content;
   }
 
@@ -269,7 +274,7 @@ export function normalizeBlock(block) {
 
   return {
     id: block.id || generateBlockId(),
-    type,
+    type: type === "html" ? "custom-html" : type,
     attrs,
     attributes: attrs,
     content,
@@ -304,25 +309,35 @@ export function normalizeBlockState(raw) {
 }
 
 export function createBlock(type, attributes = {}, children = [], customId = null) {
-  const normType = type === "custom-html" ? "html" : type;
+  const normType = (type === "html" || type === "custom-html") ? "custom-html" : type;
   const def = BLOCK_DEFINITIONS.find((b) => b.type === normType || b.type === type);
   const defAttrs = def?.defaultAttributes || {};
   const mergedAttrs = { ...defAttrs, ...attributes };
 
-  let content = attributes.content;
-  if (content === undefined) {
-    if (normType === "html") content = mergedAttrs.html || "";
-    else if (normType === "code") content = mergedAttrs.code || "";
-    else content = mergedAttrs.content || "";
+  let htmlStr = "";
+  if (typeof attributes.content === "object" && attributes.content !== null && typeof attributes.content.html === "string") {
+    htmlStr = attributes.content.html;
+  } else if (typeof attributes.content === "string") {
+    htmlStr = attributes.content;
+  } else if (typeof attributes.html === "string") {
+    htmlStr = attributes.html;
+  } else if (typeof mergedAttrs.html === "string") {
+    htmlStr = mergedAttrs.html;
+  } else if (typeof mergedAttrs.content === "string") {
+    htmlStr = mergedAttrs.content;
   }
 
-  if (normType === "html") {
-    mergedAttrs.html = content;
-    mergedAttrs.content = content;
+  let content = attributes.content;
+  if (normType === "custom-html") {
+    content = { html: htmlStr };
+    mergedAttrs.html = htmlStr;
+    mergedAttrs.content = htmlStr;
   } else if (normType === "code") {
+    if (typeof content !== "string") content = mergedAttrs.code || mergedAttrs.content || "";
     mergedAttrs.code = content;
     mergedAttrs.content = content;
   } else {
+    if (content === undefined) content = mergedAttrs.content || "";
     mergedAttrs.content = content;
   }
 

@@ -78,7 +78,17 @@ export function blocksToHtml(blocks = [], options = {}) {
 
         case "html":
         case "custom-html": {
-          const rawHtml = block.content !== undefined ? block.content : (attrs.content !== undefined ? attrs.content : (attrs.html || ""));
+          let rawHtml = "";
+          if (typeof block.content === "object" && block.content !== null && typeof block.content.html === "string") {
+            rawHtml = block.content.html;
+          } else if (typeof block.content === "string") {
+            rawHtml = block.content;
+          } else if (typeof attrs.html === "string") {
+            rawHtml = attrs.html;
+          } else if (typeof attrs.content === "string") {
+            rawHtml = attrs.content;
+          }
+
           if (!includeDelimiters) return rawHtml;
           return `<!-- wp:html -->\n${rawHtml}\n<!-- /wp:html -->`;
         }
@@ -629,7 +639,7 @@ export function htmlToBlocks(html = "") {
           if (rawContent.endsWith("\r\n")) rawContent = rawContent.slice(0, -2);
           else if (rawContent.endsWith("\n")) rawContent = rawContent.slice(0, -1);
 
-          blocks.push(createBlock("custom-html", { ...attributes, content: rawContent, html: rawContent }));
+          blocks.push(createBlock("custom-html", { ...attributes, content: { html: rawContent }, html: rawContent }));
           break;
         }
 

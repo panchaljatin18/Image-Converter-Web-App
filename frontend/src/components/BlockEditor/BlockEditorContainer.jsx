@@ -152,7 +152,7 @@ export default function BlockEditorContainer({
   const isLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (initialBlocks) {
+    if (initialBlocks && !isLoadedRef.current) {
       const norm = normalizeBlockState(initialBlocks);
       if (norm.blocks.length > 0) {
         const clean = ensureUniqueBlockIds(norm.blocks);
@@ -634,17 +634,34 @@ export default function BlockEditorContainer({
   const handleUpdateBlockAttributes = React.useCallback((blockId, newAttributes, newChildren = null) => {
     const updated = blocks.map((b) => {
       if (b.id === blockId) {
-        const mergedAttrs = { ...(b.attrs || b.attributes), ...newAttributes };
+        const mergedAttrs = { ...(b.attrs || b.attributes), ...(newAttributes.attributes || newAttributes) };
         let newContent = b.content;
-        if (newAttributes.content !== undefined) newContent = newAttributes.content;
-        else if (newAttributes.html !== undefined) newContent = newAttributes.html;
-        else if (newAttributes.code !== undefined) newContent = newAttributes.code;
+
+        if (newAttributes.content !== undefined) {
+          newContent = newAttributes.content;
+        } else if (newAttributes.html !== undefined) {
+          newContent = { html: newAttributes.html };
+        } else if (newAttributes.code !== undefined) {
+          newContent = newAttributes.code;
+        }
+
+        if (b.type === "custom-html" || b.type === "html") {
+          let htmlStr = "";
+          if (typeof newContent === "object" && newContent !== null && typeof newContent.html === "string") {
+            htmlStr = newContent.html;
+          } else if (typeof newContent === "string") {
+            htmlStr = newContent;
+          }
+          newContent = { html: htmlStr };
+          mergedAttrs.html = htmlStr;
+          mergedAttrs.content = htmlStr;
+        }
 
         return {
           ...b,
           attrs: mergedAttrs,
           attributes: mergedAttrs,
-          content: newContent !== undefined ? newContent : b.content,
+          content: newContent,
           ...(newChildren ? { children: newChildren } : {}),
         };
       }
@@ -829,6 +846,11 @@ export default function BlockEditorContainer({
 
   const handlePaste = React.useCallback(
     (e) => {
+      const activeEl = document.activeElement;
+      if (activeEl && (["INPUT", "TEXTAREA"].includes(activeEl.tagName) || activeEl.getAttribute("contenteditable") === "false")) {
+        return; // Don't intercept paste inside code textareas or input fields!
+      }
+
       const htmlData = e.clipboardData?.getData("text/html") || "";
       const textData = e.clipboardData?.getData("text/plain") || "";
       const parsedBlocks = parseClipboardContent(htmlData, textData);
@@ -873,12 +895,17 @@ export default function BlockEditorContainer({
     const isSlashActive = showSlashMenu && slashBlockId === block.id;
 
     const props = {
+      block,
       attributes: block.attributes,
       children: block.children,
       onChange: (newAttrs, newChildren) => handleUpdateBlockAttributes(block.id, newAttrs, newChildren),
       isSelected,
       isSlashActive,
       onSelect: () => setSelectedBlockId(block.id),
+      onMoveUp: () => handleMoveUp(index),
+      onMoveDown: () => handleMoveDown(index),
+      onDuplicate: () => handleDuplicateBlock(index),
+      onDelete: () => handleDeleteBlock(block.id),
       onSelectSlashCommand: () => {
         const filtered = SLASH_COMMANDS.filter((cmd) => {
           if (!slashQuery) return true;
