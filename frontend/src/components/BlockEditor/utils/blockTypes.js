@@ -244,10 +244,10 @@ export function normalizeBlock(block) {
   let htmlStr = "";
   if (typeof block.content === "object" && block.content !== null && typeof block.content.html === "string") {
     htmlStr = block.content.html;
-  } else if (typeof block.content === "string") {
-    htmlStr = block.content;
   } else if (typeof attrs.html === "string") {
     htmlStr = attrs.html;
+  } else if (typeof block.content === "string") {
+    htmlStr = block.content;
   } else if (typeof attrs.content === "string") {
     htmlStr = attrs.content;
   }
@@ -257,6 +257,20 @@ export function normalizeBlock(block) {
     content = { html: htmlStr };
     attrs.html = htmlStr;
     attrs.content = htmlStr;
+  } else if (type === "heading") {
+    let headingText = typeof content === "string" ? content : (typeof attrs.content === "string" ? attrs.content : "");
+    let level = attrs.level || 2;
+    const hashMatch = typeof headingText === "string" ? headingText.match(/^(#{1,6})\s+(.*)$/s) : null;
+    if (hashMatch) {
+      if (!attrs.level) {
+        level = hashMatch[1].length;
+      }
+      headingText = hashMatch[2];
+    }
+    headingText = typeof headingText === "string" ? headingText.replace(/^#{1,6}\s+/g, "") : "";
+    content = headingText;
+    attrs.content = headingText;
+    attrs.level = Math.min(Math.max(level, 1), 6);
   } else if (type === "code") {
     if (typeof content !== "string") content = attrs.code !== undefined ? attrs.code : (attrs.content || "");
     attrs.code = content;
@@ -317,10 +331,10 @@ export function createBlock(type, attributes = {}, children = [], customId = nul
   let htmlStr = "";
   if (typeof attributes.content === "object" && attributes.content !== null && typeof attributes.content.html === "string") {
     htmlStr = attributes.content.html;
-  } else if (typeof attributes.content === "string") {
-    htmlStr = attributes.content;
   } else if (typeof attributes.html === "string") {
     htmlStr = attributes.html;
+  } else if (typeof attributes.content === "string") {
+    htmlStr = attributes.content;
   } else if (typeof mergedAttrs.html === "string") {
     htmlStr = mergedAttrs.html;
   } else if (typeof mergedAttrs.content === "string") {
@@ -332,6 +346,20 @@ export function createBlock(type, attributes = {}, children = [], customId = nul
     content = { html: htmlStr };
     mergedAttrs.html = htmlStr;
     mergedAttrs.content = htmlStr;
+  } else if (normType === "heading") {
+    let headingText = typeof content === "string" ? content : (typeof mergedAttrs.content === "string" ? mergedAttrs.content : "");
+    let level = mergedAttrs.level || 2;
+    const hashMatch = typeof headingText === "string" ? headingText.match(/^(#{1,6})\s+(.*)$/s) : null;
+    if (hashMatch) {
+      if (!mergedAttrs.level) {
+        level = hashMatch[1].length;
+      }
+      headingText = hashMatch[2];
+    }
+    headingText = typeof headingText === "string" ? headingText.replace(/^#{1,6}\s+/g, "") : "";
+    content = headingText;
+    mergedAttrs.content = headingText;
+    mergedAttrs.level = Math.min(Math.max(level, 1), 6);
   } else if (normType === "code") {
     if (typeof content !== "string") content = mergedAttrs.code || mergedAttrs.content || "";
     mergedAttrs.code = content;

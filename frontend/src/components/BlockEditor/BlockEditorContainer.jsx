@@ -651,6 +651,8 @@ export default function BlockEditorContainer({
             htmlStr = newContent.html;
           } else if (typeof newContent === "string") {
             htmlStr = newContent;
+          } else if (typeof mergedAttrs.html === "string") {
+            htmlStr = mergedAttrs.html;
           }
           newContent = { html: htmlStr };
           mergedAttrs.html = htmlStr;
@@ -725,12 +727,16 @@ export default function BlockEditorContainer({
 
     const updated = blocks.map((b) => {
       if (b.id === blockId) {
-        const targetContent =
+        let targetContent =
           (extraAttrs && typeof extraAttrs.content === "string" && extraAttrs.content.trim() !== "")
             ? extraAttrs.content
             : (domContent !== null && domContent.trim() !== "")
             ? domContent
             : (b.attributes?.content || "");
+
+        if (typeof targetContent === "string" && (newType === "heading" || b.type === "heading")) {
+          targetContent = targetContent.replace(/^#{1,6}\s+/g, "");
+        }
 
         let mergedAttrs = {
           ...b.attributes,

@@ -1,15 +1,6 @@
 import ToolPageLayout from "@/components/ToolPageLayout";
 import { constructMetadata } from "@/lib/metadata";
-import dynamic from "next/dynamic";
-
-const PNGToWebPTool = dynamic(() => import("@/components/tools/PNGToWebPTool"), {
-  loading: () => (
-    <div className="w-full max-w-4xl mx-auto p-8 sm:p-12 text-center text-slate-400 bg-[#141424] rounded-2xl border border-slate-800/80 animate-pulse min-h-[320px] flex flex-col items-center justify-center gap-3">
-      <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
-      <span className="text-sm font-medium text-slate-300">Loading PNG to WebP Converter...</span>
-    </div>
-  ),
-});
+import PNGToWebPTool from "@/components/tools/PNGToWebPTool";
 
 const TOOL_TITLE = "PNG to WebP Converter – Free Online Tool";
 const TOOL_DESCRIPTION =
@@ -66,6 +57,25 @@ const relatedTools = Object.freeze([
   { name: "Image to PDF", href: "/tools/image-to-pdf", icon: "📄" },
 ]);
 
+const toolFaqs = [
+  {
+    q: "How does the PNG to WebP converter work?",
+    a: "Our converter encodes your PNG image into Google's modern WebP image format directly inside your web browser using HTML5 Canvas technology. Your image file is never uploaded to any external server.",
+  },
+  {
+    q: "Will PNG transparent backgrounds be preserved in WebP?",
+    a: "Yes! WebP fully supports 8-bit alpha transparency. Our converter keeps transparent PNG backgrounds 100% intact without adding white or black borders.",
+  },
+  {
+    q: "How much file size reduction can I expect when converting PNG to WebP?",
+    a: "Converting lossless PNG graphics to lossy or lossless WebP typically reduces image file sizes by 40% to 80% with zero noticeable loss in visual quality.",
+  },
+  {
+    q: "Are my uploaded PNG photos safe and private?",
+    a: "100% safe. All conversions happen entirely on your device (client-side). No data, images, or metadata ever leave your web browser or touch cloud servers.",
+  },
+];
+
 export default function PNGToWebPPage() {
   return (
     <ToolPageLayout
@@ -78,6 +88,7 @@ export default function PNGToWebPPage() {
       relatedTools={relatedTools}
       toolPath="tools/png-to-webp"
       toolCategory="Image Conversion"
+      toolFaqs={toolFaqs}
     >
       <PNGToWebPTool />
     </ToolPageLayout>

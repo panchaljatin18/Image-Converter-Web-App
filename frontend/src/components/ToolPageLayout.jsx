@@ -136,7 +136,7 @@ export default async function ToolPageLayout({
                     width={1200}
                     height={670}
                     className="w-full h-auto object-contain block rounded-2xl md:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01]"
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 </div>

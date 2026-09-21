@@ -81,10 +81,10 @@ export function blocksToHtml(blocks = [], options = {}) {
           let rawHtml = "";
           if (typeof block.content === "object" && block.content !== null && typeof block.content.html === "string") {
             rawHtml = block.content.html;
-          } else if (typeof block.content === "string") {
-            rawHtml = block.content;
           } else if (typeof attrs.html === "string") {
             rawHtml = attrs.html;
+          } else if (typeof block.content === "string") {
+            rawHtml = block.content;
           } else if (typeof attrs.content === "string") {
             rawHtml = attrs.content;
           }
@@ -499,11 +499,17 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
       if (imgMatch) {
         blocks.push(createBlock("image", { url: imgMatch[1], alt: "", caption: "" }));
       } else {
-        blocks.push(createBlock("paragraph", { content: innerContent }));
+        const hashMatch = innerContent.match(/^(#{1,6})\s+(.*)$/s);
+        if (hashMatch) {
+          blocks.push(createBlock("heading", { level: hashMatch[1].length, content: hashMatch[2].trim() }));
+        } else {
+          blocks.push(createBlock("paragraph", { content: innerContent }));
+        }
       }
     } else if (/^h[1-6]$/.test(tagName)) {
       const level = parseInt(tagName.replace("h", ""), 10);
-      blocks.push(createBlock("heading", { level, content: innerContent }));
+      const cleanContent = innerContent.replace(/^#{1,6}\s+/g, "");
+      blocks.push(createBlock("heading", { level, content: cleanContent }));
     } else if (tagName === "pre") {
       const codeMatch = innerContent.match(/<code(?: class="language-([^"]+)")?[^>]*>([\s\S]*?)<\/code>/i);
       const codeText = codeMatch
@@ -569,7 +575,12 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
 
   const trailingText = cleanHtml.slice(lastIndex).trim();
   if (trailingText) {
-    blocks.push(createBlock("paragraph", { content: trailingText }));
+    const hashMatch = trailingText.match(/^(#{1,6})\s+(.*)$/s);
+    if (hashMatch) {
+      blocks.push(createBlock("heading", { level: hashMatch[1].length, content: hashMatch[2].trim() }));
+    } else {
+      blocks.push(createBlock("paragraph", { content: trailingText }));
+    }
   }
 
   if (!foundTags) {
@@ -577,7 +588,12 @@ export function parseLegacyHtmlToBlocks(rawHtml = "") {
     for (const line of lines) {
       const trimmed = line.trim();
       if (trimmed) {
-        blocks.push(createBlock("paragraph", { content: trimmed }));
+        const hashMatch = trimmed.match(/^(#{1,6})\s+(.*)$/s);
+        if (hashMatch) {
+          blocks.push(createBlock("heading", { level: hashMatch[1].length, content: hashMatch[2].trim() }));
+        } else {
+          blocks.push(createBlock("paragraph", { content: trimmed }));
+        }
       }
     }
   }

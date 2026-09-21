@@ -188,7 +188,10 @@ export default function BlockToolbar({
     setShowTypeSwitcher(false);
     if (newType === block.type) return;
 
-    const currentContent = block.attributes?.content || block.attributes?.code || "";
+    let currentContent = block.attributes?.content || block.attributes?.code || "";
+    if (typeof currentContent === "string") {
+      currentContent = currentContent.replace(/^#{1,6}\s+/g, "");
+    }
     let extraAttrs = {};
 
     if (newType === "paragraph") {
@@ -198,7 +201,7 @@ export default function BlockToolbar({
         extraAttrs = { content: currentContent };
       }
     } else if (newType === "heading") {
-      extraAttrs = { content: currentContent, level: 2 };
+      extraAttrs = { content: currentContent, level: block.attributes?.level || 2 };
     } else if (newType === "list") {
       let items = [""];
       if (currentContent) {

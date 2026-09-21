@@ -35,8 +35,8 @@ export default async function JatinPanchalAuthorPage() {
         {/* Author Bio Header Card */}
         <div className="max-w-[880px] mx-auto mb-16 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#121226]/90 via-[#0d0d1a]/95 to-[#171430]/90 border border-indigo-500/25 shadow-[0_16px_50px_rgba(15,15,30,0.8)] relative overflow-hidden">
           {/* Background Ambient Glow */}
-          <div className="absolute -top-16 -right-16 w-64 h-64 bg-indigo-500/12 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-cyan-500/12 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -right-16 w-64 h-64 bg-indigo-500/12 rounded-full blur-3xl pointer-events-none transform-gpu opacity-30" />
+          <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-cyan-500/12 rounded-full blur-3xl pointer-events-none transform-gpu opacity-30" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
             {/* Author Headshot Photo */}
@@ -46,10 +46,13 @@ export default async function JatinPanchalAuthorPage() {
                   <Image
                     src="/author.webp"
                     alt="Jatin Panchal - Founder & Lead Developer at ConvertGalaxy"
-                    width={350}
-                    height={350}
-                    quality={95}
+                    width={176}
+                    height={176}
+                    quality={85}
                     priority
+                    fetchPriority="high"
+                    decoding="async"
+                    sizes="(max-width: 640px) 144px, 176px"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -187,12 +190,10 @@ export default async function JatinPanchalAuthorPage() {
                         src={post.frontmatter.image}
                         alt={post.frontmatter.imageAlt || post.frontmatter.title}
                         fill
-                        unoptimized
-                        priority={index < 2}
-                        loading={index < 2 ? "eager" : "lazy"}
+                        loading="lazy"
                         decoding="async"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        sizes="(max-width: 768px) 100vw, 420px"
                       />
                     </div>
                   ) : (

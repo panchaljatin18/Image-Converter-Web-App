@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FileCode, MoreVertical, Copy, ChevronUp, ChevronDown, Trash2 } from "lucide-react";
+import { FileCode, MoreVertical, Copy, ChevronUp, ChevronDown, Trash2, Eye, Code2 } from "lucide-react";
 
 /**
  * CustomHtmlBlock - WordPress Gutenberg Custom HTML Block (core/html)
@@ -20,7 +20,7 @@ function CustomHtmlBlock({
   const [mode, setMode] = useState(attributes.mode || "html");
   const [showMenu, setShowMenu] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [iframeHeight, setIframeHeight] = useState(140);
+  const [iframeHeight, setIframeHeight] = useState(120);
 
   const textareaRef = useRef(null);
   const iframeRef = useRef(null);
@@ -47,7 +47,6 @@ function CustomHtmlBlock({
           attributes: {
             ...attributes,
             html: newVal,
-            content: newVal,
             mode,
           },
         });
@@ -66,7 +65,6 @@ function CustomHtmlBlock({
         attributes: {
           ...attributes,
           html: rawHtml,
-          content: rawHtml,
           mode: newMode,
         },
       });
@@ -94,7 +92,7 @@ function CustomHtmlBlock({
     }
   };
 
-  // Ensure paste inside textarea remains purely native text string without parent interception
+  // Intercept paste inside textarea so raw plain text inserts directly without parent block-splitting
   const handlePaste = (e) => {
     e.stopPropagation();
   };
@@ -104,7 +102,7 @@ function CustomHtmlBlock({
     const handleMessage = (event) => {
       if (event.data && event.data.type === "custom-html-iframe-resize") {
         if (block?.id && event.data.blockId === block.id && event.data.height) {
-          setIframeHeight(Math.max(event.data.height, 80));
+          setIframeHeight(Math.max(event.data.height, 60));
         }
       }
     };
@@ -128,7 +126,7 @@ function CustomHtmlBlock({
   <style>
     body {
       margin: 0;
-      padding: 16px;
+      padding: 12px;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #e2e8f0;
       background: transparent;
@@ -141,23 +139,23 @@ function CustomHtmlBlock({
   ${rawHtml}
   <script>
     function sendHeight() {
-      const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, 60);
+      const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, 40);
       window.parent.postMessage({ type: 'custom-html-iframe-resize', blockId: '${block?.id || "preview"}', height: h }, '*');
     }
     window.addEventListener('load', sendHeight);
     window.addEventListener('resize', sendHeight);
-    setTimeout(sendHeight, 100);
-    setTimeout(sendHeight, 500);
+    setTimeout(sendHeight, 50);
+    setTimeout(sendHeight, 300);
   </script>
 </body>
 </html>`;
 
   return (
     <div
-      className={`w-full my-3 rounded-2xl border transition-all duration-200 overflow-hidden ${
+      className={`w-full my-3 rounded-xl border transition-all duration-200 overflow-hidden ${
         isSelected
-          ? "border-indigo-500/80 ring-2 ring-indigo-500/30 shadow-[0_10px_30px_rgba(99,102,241,0.15)]"
-          : "border-white/10 hover:border-white/20 bg-[#070712]"
+          ? "border-indigo-500/80 ring-2 ring-indigo-500/30 shadow-[0_8px_25px_rgba(99,102,241,0.15)] bg-[#0a0a14]"
+          : "border-white/10 hover:border-white/20 bg-[#080810]"
       }`}
       onClick={(e) => {
         e.stopPropagation();
@@ -165,7 +163,7 @@ function CustomHtmlBlock({
       }}
     >
       {/* WordPress Gutenberg Custom HTML Block Header Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2 bg-[#121222] border-b border-white/10 font-['Outfit'] select-none">
+      <div className="flex items-center justify-between px-3 py-2 bg-[#121222] border-b border-white/10 font-['Outfit'] select-none">
         <div className="flex items-center gap-2">
           {onMoveUp && onMoveDown && (
             <div className="flex items-center text-gray-400">
@@ -175,7 +173,7 @@ function CustomHtmlBlock({
                   e.stopPropagation();
                   onMoveUp();
                 }}
-                className="p-1 hover:text-white hover:bg-white/10 rounded transition-colors"
+                className="p-1 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
                 title="Move Up"
               >
                 <ChevronUp size={13} />
@@ -186,7 +184,7 @@ function CustomHtmlBlock({
                   e.stopPropagation();
                   onMoveDown();
                 }}
-                className="p-1 hover:text-white hover:bg-white/10 rounded transition-colors"
+                className="p-1 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
                 title="Move Down"
               >
                 <ChevronDown size={13} />
@@ -196,26 +194,27 @@ function CustomHtmlBlock({
 
           <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
             <FileCode size={15} className="text-indigo-400" />
-            <span>HTML</span>
+            <span>Custom HTML</span>
           </div>
         </div>
 
-        {/* HTML / Preview Toggle Tabs */}
+        {/* HTML / Preview Toggle Tabs & Options */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center p-0.5 bg-[#080812] rounded-lg border border-white/10">
+          <div className="flex items-center p-0.5 bg-[#070710] rounded-lg border border-white/10">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 handleModeChange("html");
               }}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
                 mode === "html"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              HTML
+              <Code2 size={12} />
+              <span>HTML</span>
             </button>
             <button
               type="button"
@@ -223,13 +222,14 @@ function CustomHtmlBlock({
                 e.stopPropagation();
                 handleModeChange("preview");
               }}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
                 mode === "preview"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Preview
+              <Eye size={12} />
+              <span>Preview</span>
             </button>
           </div>
 
@@ -248,7 +248,10 @@ function CustomHtmlBlock({
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 z-50 bg-[#18182a] border border-white/15 rounded-xl p-1 shadow-2xl min-w-[150px] space-y-0.5">
+              <div
+                className="absolute right-0 top-full mt-1 z-50 bg-[#161628] border border-white/15 rounded-xl p-1 shadow-2xl min-w-[150px] space-y-0.5"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   type="button"
                   onClick={(e) => {
@@ -294,32 +297,34 @@ function CustomHtmlBlock({
         </div>
       </div>
 
-      {/* Editor Content Area */}
-      <div className="w-full bg-[#070710] p-3">
+      {/* Editor Content Body */}
+      <div className="w-full bg-[#06060e] p-3">
         {mode === "html" ? (
-          /* HTML Mode — Raw Monospace Textarea */
-          <textarea
-            ref={textareaRef}
-            value={rawHtml}
-            onChange={(e) => handleHtmlChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            placeholder="Write HTML…"
-            aria-label="Custom HTML Source"
-            spellCheck={false}
-            rows={7}
-            className="w-full bg-transparent text-xs text-indigo-100 caret-white outline-none placeholder:text-gray-600 resize-y min-h-[140px] leading-relaxed font-mono border-none p-0 selection:bg-indigo-500/40 whitespace-pre overflow-x-auto"
-            style={{
-              fontFamily: "Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-              tabSize: 2,
-            }}
-          />
+          /* HTML Source Mode — Raw Monospace Textarea */
+          <div className="w-full relative group">
+            <textarea
+              ref={textareaRef}
+              value={rawHtml}
+              onChange={(e) => handleHtmlChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              placeholder="Write HTML…"
+              aria-label="Custom HTML Source"
+              spellCheck={false}
+              rows={Math.max(4, rawHtml.split("\n").length)}
+              className="w-full bg-transparent text-xs text-indigo-100 caret-white outline-none placeholder:text-gray-600 resize-y min-h-[110px] max-h-[600px] leading-relaxed font-mono border border-white/5 focus:border-indigo-500/40 rounded-lg p-3 selection:bg-indigo-500/40 whitespace-pre overflow-x-auto"
+              style={{
+                fontFamily: "Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+                tabSize: 2,
+              }}
+            />
+          </div>
         ) : (
           /* Preview Mode — Sandboxed Frame */
-          <div className="w-full min-h-[120px] rounded-xl bg-[#0b0b18] overflow-hidden border border-white/5">
+          <div className="w-full rounded-lg bg-[#0a0a14] overflow-hidden border border-white/5">
             {!rawHtml || !rawHtml.trim() ? (
-              <div className="text-center py-8 text-xs text-gray-500 font-mono select-none">
-                (No HTML code entered to preview)
+              <div className="text-center py-6 text-xs text-gray-500 font-mono select-none">
+                HTML code is empty. Switch to HTML mode to enter code.
               </div>
             ) : (
               <iframe
@@ -339,3 +344,4 @@ function CustomHtmlBlock({
 }
 
 export default React.memo(CustomHtmlBlock);
+

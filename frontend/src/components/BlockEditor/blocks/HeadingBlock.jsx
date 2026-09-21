@@ -12,10 +12,13 @@ function HeadingBlock({
   const { content = "", level = 2, align = "left", anchor = "", textColor = "#ffffff" } = attributes;
   const inputRef = useRef(null);
 
+  // Clean initial content by stripping any accidental leading # markdown prefixes
+  const cleanContent = typeof content === "string" ? content.replace(/^#{1,6}\s+/g, "") : "";
+
   // Synchronously initialize DOM innerHTML on layout mount or when heading level changes
   useLayoutEffect(() => {
     if (inputRef.current) {
-      inputRef.current.innerHTML = content || "";
+      inputRef.current.innerHTML = cleanContent;
     }
   }, [level]);
 
@@ -23,11 +26,11 @@ function HeadingBlock({
   useEffect(() => {
     if (inputRef.current) {
       const isFocused = typeof document !== "undefined" && document.activeElement === inputRef.current;
-      if (!isFocused && inputRef.current.innerHTML !== (content || "")) {
-        inputRef.current.innerHTML = content || "";
+      if (!isFocused && inputRef.current.innerHTML !== cleanContent) {
+        inputRef.current.innerHTML = cleanContent;
       }
     }
-  }, [content]);
+  }, [cleanContent]);
 
   useEffect(() => {
     if (isSelected && inputRef.current) {
@@ -52,7 +55,7 @@ function HeadingBlock({
     3: "text-[clamp(1.15rem,2.4vw,1.45rem)] leading-[1.35] font-bold font-['Outfit'] mt-3 mb-1.5",
     4: "text-[clamp(1.02rem,2vw,1.2rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2.5 mb-1",
     5: "text-[clamp(0.95rem,1.8vw,1.1rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2 mb-1",
-    6: "text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.4] font-bold tracking-wider uppercase font-['Outfit'] mt-2 mb-1 text-indigo-300",
+    6: "text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.4] font-bold tracking-wider font-['Outfit'] mt-2 mb-1 text-indigo-300",
   };
 
   const alignClasses = {
@@ -66,40 +69,21 @@ function HeadingBlock({
     const rawText = inputRef.current ? inputRef.current.innerText : "";
     const htmlVal = e.currentTarget.innerHTML;
 
-    if (onChangeType && rawText) {
-      if (/^######\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^######\s/, "").trim();
-        onChange({ level: 6, content: cleanContent });
-        return;
-      }
-      if (/^#####\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^#####\s/, "").trim();
-        onChange({ level: 5, content: cleanContent });
-        return;
-      }
-      if (/^####\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^####\s/, "").trim();
-        onChange({ level: 4, content: cleanContent });
-        return;
-      }
-      if (/^###\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^###\s/, "").trim();
-        onChange({ level: 3, content: cleanContent });
-        return;
-      }
-      if (/^##\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^##\s/, "").trim();
-        onChange({ level: 2, content: cleanContent });
-        return;
-      }
-      if (/^#\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^#\s/, "").trim();
-        onChange({ level: 1, content: cleanContent });
+    // Check if user typed markdown heading shortcut (e.g., "# ", "## ") inside the heading block
+    if (rawText) {
+      const match = rawText.match(/^(#{1,6})\s+(.*)$/s);
+      if (match) {
+        const newLvl = match[1].length;
+        const cleanedText = match[2];
+        if (inputRef.current) {
+          inputRef.current.innerHTML = cleanedText;
+        }
+        onChange({ level: newLvl, content: cleanedText });
         return;
       }
     }
 
-    const cleanHtml = htmlVal.replace(/^(#{1,6}\s+|&nbsp;)+/i, "");
+    const cleanHtml = htmlVal.replace(/^#{1,6}\s+/g, "");
     onChange({ content: cleanHtml });
   };
 
@@ -204,7 +188,10 @@ function HeadingBlock({
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
-        onBlur={(e) => onChange({ content: e.currentTarget.innerHTML })}
+        onBlur={(e) => {
+          const cleanHtml = e.currentTarget.innerHTML.replace(/^#{1,6}\s+/g, "");
+          onChange({ content: cleanHtml });
+        }}
         onKeyDown={handleKeyDown}
         className={`w-full max-w-full min-w-0 break-words whitespace-pre-wrap [overflow-wrap:anywhere] outline-none transition-all ${headingClasses[level] || headingClasses[2]} ${alignClasses[align] || "text-left"} empty:before:content-['Heading_${level}...'] empty:before:text-gray-500/60 empty:before:italic`}
         style={{ color: textColor || "#ffffff" }}

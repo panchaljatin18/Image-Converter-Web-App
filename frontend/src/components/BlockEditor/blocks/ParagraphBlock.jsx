@@ -97,34 +97,11 @@ function ParagraphBlock({
 
     // Check for WordPress / Markdown auto-formatting triggers on space
     if (onChangeType && rawText) {
-      if (/^######\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^######\s/, "").trim();
-        onChangeType("heading", { level: 6, content: cleanContent });
-        return;
-      }
-      if (/^#####\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^#####\s/, "").trim();
-        onChangeType("heading", { level: 5, content: cleanContent });
-        return;
-      }
-      if (/^####\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^####\s/, "").trim();
-        onChangeType("heading", { level: 4, content: cleanContent });
-        return;
-      }
-      if (/^###\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^###\s/, "").trim();
-        onChangeType("heading", { level: 3, content: cleanContent });
-        return;
-      }
-      if (/^##\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^##\s/, "").trim();
-        onChangeType("heading", { level: 2, content: cleanContent });
-        return;
-      }
-      if (/^#\s/.test(rawText)) {
-        const cleanContent = rawText.replace(/^#\s/, "").trim();
-        onChangeType("heading", { level: 1, content: cleanContent });
+      const headingMatch = rawText.match(/^(#{1,6})\s+(.*)$/s);
+      if (headingMatch) {
+        const lvl = headingMatch[1].length;
+        const cleanContent = headingMatch[2];
+        onChangeType("heading", { level: lvl, content: cleanContent });
         return;
       }
       if (/^>\s/.test(rawText)) {
