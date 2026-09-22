@@ -39,16 +39,6 @@ export function blocksToHtml(blocks = [], options = {}) {
       switch (type) {
         case "paragraph": {
           let content = block.content !== undefined ? block.content : (attrs.content || "");
-          const hashMatch = typeof content === "string" ? content.match(/^(#{1,6})\s+(.*)$/s) : null;
-          if (hashMatch) {
-            const level = hashMatch[1].length;
-            const cleanContent = hashMatch[2].trim();
-            const hTag = `h${level}`;
-            const hHtml = `<${hTag}>${cleanContent}</${hTag}>`;
-            if (!includeDelimiters) return hHtml;
-            const meta = ` ${JSON.stringify({ level, align: "left", anchor: "", textColor: "" })}`;
-            return `<!-- block:heading${meta} -->\n${hHtml}\n<!-- /block:heading -->`;
-          }
           const { fontSize = "normal", align = "left", textColor = "" } = attrs;
           const styleAttr = `text-align: ${align};${textColor ? ` color: ${textColor};` : ""}`;
           const classAttr = fontSize !== "normal" ? ` class="text-${fontSize}"` : "";
@@ -90,7 +80,7 @@ export function blocksToHtml(blocks = [], options = {}) {
           }
 
           if (!includeDelimiters) return rawHtml;
-          return `<!-- wp:html -->\n${rawHtml}\n<!-- /wp:html -->`;
+          return `<!-- block:${type} -->\n${rawHtml}\n<!-- /block:${type} -->`;
         }
 
         case "code": {
@@ -655,7 +645,7 @@ export function htmlToBlocks(html = "") {
           if (rawContent.endsWith("\r\n")) rawContent = rawContent.slice(0, -2);
           else if (rawContent.endsWith("\n")) rawContent = rawContent.slice(0, -1);
 
-          blocks.push(createBlock("custom-html", { ...attributes, content: { html: rawContent }, html: rawContent }));
+          blocks.push(createBlock(rawType, { ...attributes, content: { html: rawContent }, html: rawContent }));
           break;
         }
 

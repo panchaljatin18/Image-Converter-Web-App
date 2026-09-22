@@ -21,6 +21,8 @@ console.log("\n========================================================");
 console.log("  CMS Editor Block Identity & Persistence Test Suite  ");
 console.log("========================================================\n");
 
+const getBlockHtml = (b) => (typeof b?.content === "object" && b?.content !== null && typeof b.content.html === "string" ? b.content.html : b?.content);
+
 // --- TEST CASE 1: Paragraph save and reopen ---
 test("Case 1: Paragraph block preserves type and content through save/reopen cycle", () => {
   const original = [
@@ -68,12 +70,12 @@ test("Case 2: HTML block preserves type and raw markup verbatim through save/reo
   // 3. Reopen from structured
   const reopenedFromBlocks = normalizeBlockState(savedState).blocks;
   assert.strictEqual(reopenedFromBlocks[0].type, "html");
-  assert.strictEqual(reopenedFromBlocks[0].content, htmlContent);
+  assert.strictEqual(getBlockHtml(reopenedFromBlocks[0]), htmlContent);
 
   // 4. Reopen from HTML
   const reopenedFromHtml = htmlToBlocks(delimitedHtml);
   assert.strictEqual(reopenedFromHtml[0].type, "html");
-  assert.strictEqual(reopenedFromHtml[0].content, htmlContent);
+  assert.strictEqual(getBlockHtml(reopenedFromHtml[0]), htmlContent);
 });
 
 // --- TEST CASE 3: Paragraph + HTML Block combination ---
@@ -92,7 +94,7 @@ test("Case 3: Paragraph + HTML block preserves distinct identities without cross
   assert.strictEqual(reopenedFromBlocks[0].type, "paragraph");
   assert.strictEqual(reopenedFromBlocks[0].content, "Introduction text before the widget.");
   assert.strictEqual(reopenedFromBlocks[1].type, "html");
-  assert.strictEqual(reopenedFromBlocks[1].content, '<div class="alert-box"><strong>Warning:</strong> Be careful!</div>');
+  assert.strictEqual(getBlockHtml(reopenedFromBlocks[1]), '<div class="alert-box"><strong>Warning:</strong> Be careful!</div>');
 
   // Reopen from delimited HTML
   const reopenedFromHtml = htmlToBlocks(delimitedHtml);
@@ -100,7 +102,7 @@ test("Case 3: Paragraph + HTML block preserves distinct identities without cross
   assert.strictEqual(reopenedFromHtml[0].type, "paragraph");
   assert.strictEqual(reopenedFromHtml[0].content, "Introduction text before the widget.");
   assert.strictEqual(reopenedFromHtml[1].type, "html");
-  assert.strictEqual(reopenedFromHtml[1].content, '<div class="alert-box"><strong>Warning:</strong> Be careful!</div>');
+  assert.strictEqual(getBlockHtml(reopenedFromHtml[1]), '<div class="alert-box"><strong>Warning:</strong> Be careful!</div>');
 });
 
 // --- TEST CASE 4: Multiple consecutive Paragraphs ---
@@ -153,13 +155,13 @@ test("Case 5: HTML block with complex nested tags is preserved intact without sp
   const reopenedFromBlocks = normalizeBlockState(savedState).blocks;
   assert.strictEqual(reopenedFromBlocks.length, 1);
   assert.strictEqual(reopenedFromBlocks[0].type, "html");
-  assert.strictEqual(reopenedFromBlocks[0].content, complexHtml);
+  assert.strictEqual(getBlockHtml(reopenedFromBlocks[0]), complexHtml);
 
   // Verify single block when parsed from delimited HTML
   const reopenedFromHtml = htmlToBlocks(delimitedHtml);
   assert.strictEqual(reopenedFromHtml.length, 1, "Must NOT split into multiple heading/paragraph blocks");
   assert.strictEqual(reopenedFromHtml[0].type, "html");
-  assert.strictEqual(reopenedFromHtml[0].content, complexHtml);
+  assert.strictEqual(getBlockHtml(reopenedFromHtml[0]), complexHtml);
 });
 
 // --- TEST CASE 6: Heading save and reopen ---
@@ -229,7 +231,7 @@ test("Case 8: Mixed sequence (Paragraph -> Heading -> HTML -> Paragraph -> Code)
   assert.deepStrictEqual(htmlBlockTypes, expectedTypes);
   assert.strictEqual(reopenedFromHtml[0].content, "Introductory remarks.");
   assert.strictEqual(reopenedFromHtml[1].content, "Main Section");
-  assert.strictEqual(reopenedFromHtml[2].content, '<div class="banner">Custom Widget</div>');
+  assert.strictEqual(getBlockHtml(reopenedFromHtml[2]), '<div class="banner">Custom Widget</div>');
   assert.strictEqual(reopenedFromHtml[3].content, "Post-widget commentary.");
   assert.strictEqual(reopenedFromHtml[4].content, 'print("Finished")');
 });
@@ -306,7 +308,7 @@ test("Case 11: Refresh browser before saving (localStorage draft restore simulat
   assert.strictEqual(restoredBlocks[0].type, "paragraph");
   assert.strictEqual(restoredBlocks[0].content, "Unsaved live paragraph");
   assert.strictEqual(restoredBlocks[1].type, "html");
-  assert.strictEqual(restoredBlocks[1].content, "<form><input type='email' /></form>");
+  assert.strictEqual(getBlockHtml(restoredBlocks[1]), "<form><input type='email' /></form>");
 });
 
 // --- TEST CASE 12: Neighbor block isolation ---
@@ -333,14 +335,14 @@ test("Case 12: Neighbor block modification strictly isolates changes without aff
   // Verify HTML block is 100% identical
   assert.strictEqual(updatedBlocks[1].id, htmlBlockOriginal.id);
   assert.strictEqual(updatedBlocks[1].type, "html");
-  assert.strictEqual(updatedBlocks[1].content, htmlBlockOriginal.content);
+  assert.strictEqual(getBlockHtml(updatedBlocks[1]), getBlockHtml(htmlBlockOriginal));
 
   // Verify serialized & re-parsed output preserves HTML block untouched
   const delimited = blocksToHtml(updatedBlocks, { includeDelimiters: true });
   const reloaded = htmlToBlocks(delimited);
   assert.strictEqual(reloaded[0].content, "First paragraph - updated");
   assert.strictEqual(reloaded[1].type, "html");
-  assert.strictEqual(reloaded[1].content, '<div class="static-widget">Do Not Touch Me</div>');
+  assert.strictEqual(getBlockHtml(reloaded[1]), '<div class="static-widget">Do Not Touch Me</div>');
   assert.strictEqual(reloaded[2].content, "Third paragraph - updated");
 });
 
@@ -362,7 +364,7 @@ test("Case 13 (Bonus): Backward compatibility for legacy posts without metadata"
   assert.strictEqual(parsed[2].content, "Legacy paragraph two.");
   assert.strictEqual(parsed[3].type, "code");
   assert.strictEqual(parsed[4].type, "html");
-  assert.strictEqual(parsed[4].content, '<div class="custom-legacy-embed"><span>Special</span></div>');
+  assert.strictEqual(getBlockHtml(parsed[4]), '<div class="custom-legacy-embed"><span>Special</span></div>');
 });
 
 console.log("\n========================================================");

@@ -32,7 +32,7 @@ export const SLASH_COMMANDS = [
   { id: "divider", label: "Divider Line", desc: "Horizontal rule section separator", icon: <Minus size={16} />, type: "divider", keywords: ["divider", "hr", "line"] },
 ];
 
-export default function SlashMenuPopover({
+function SlashMenuPopover({
   query = "",
   position = { top: 0, left: 0 },
   onSelect,
@@ -116,3 +116,5 @@ export default function SlashMenuPopover({
     </div>
   );
 }
+
+export default React.memo(SlashMenuPopover);

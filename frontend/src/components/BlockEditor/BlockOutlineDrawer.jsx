@@ -2,7 +2,7 @@ import React from "react";
 import { X, Layers, Trash2 } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
-export default function BlockOutlineDrawer({ isOpen, onClose, blocks = [], selectedBlockId, onSelectBlock, onDeleteBlock }) {
+function BlockOutlineDrawer({ isOpen, onClose, blocks = [], selectedBlockId, onSelectBlock, onDeleteBlock }) {
   if (!isOpen) return null;
 
   return (
@@ -63,3 +63,5 @@ export default function BlockOutlineDrawer({ isOpen, onClose, blocks = [], selec
     </div>
   );
 }
+
+export default React.memo(BlockOutlineDrawer);

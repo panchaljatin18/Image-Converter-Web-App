@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
-export default function BlockToolbar({
+function BlockToolbar({
   block,
   onMoveUp,
   onMoveDown,
@@ -40,6 +40,8 @@ export default function BlockToolbar({
   onChangeAttributes,
   isTopToolbar = false,
 }) {
+  // component body remains identical...
+
   const [showTypeSwitcher, setShowTypeSwitcher] = useState(false);
   const [showHeadingMenu, setShowHeadingMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -760,3 +762,5 @@ export default function BlockToolbar({
     </div>
   );
 }
+
+export default React.memo(BlockToolbar);

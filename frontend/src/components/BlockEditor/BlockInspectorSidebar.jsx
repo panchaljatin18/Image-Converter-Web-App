@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Sliders, FileText, Image as ImageIcon, Sparkles, ChevronRight, Upload, Loader2, Trash2 } from "lucide-react";
 import { BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
-export default function BlockInspectorSidebar({
+function BlockInspectorSidebar({
   selectedBlock,
   onChangeBlockAttributes,
   onClose,
@@ -470,5 +470,7 @@ export default function BlockInspectorSidebar({
       </div>
     </aside>
   </>
-);
+  );
 }
+
+export default React.memo(BlockInspectorSidebar);

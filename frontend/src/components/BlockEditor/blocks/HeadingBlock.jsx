@@ -50,12 +50,12 @@ function HeadingBlock({
   }, [isSelected]);
 
   const headingClasses = {
-    1: "text-[clamp(1.65rem,4vw,2.5rem)] leading-[1.25] font-extrabold tracking-tight font-['Outfit'] mt-4 mb-2",
-    2: "text-[clamp(1.35rem,3vw,1.85rem)] leading-[1.3] font-bold tracking-tight font-['Outfit'] mt-3.5 mb-2 pb-1.5 border-b border-indigo-500/20",
-    3: "text-[clamp(1.15rem,2.4vw,1.45rem)] leading-[1.35] font-bold font-['Outfit'] mt-3 mb-1.5",
-    4: "text-[clamp(1.02rem,2vw,1.2rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2.5 mb-1",
-    5: "text-[clamp(0.95rem,1.8vw,1.1rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2 mb-1",
-    6: "text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.4] font-bold tracking-wider font-['Outfit'] mt-2 mb-1 text-indigo-300",
+    1: "text-[clamp(1.65rem,4vw,2.5rem)] leading-[1.25] font-extrabold tracking-tight font-['Outfit'] mt-4 mb-2 [text-transform:none]",
+    2: "text-[clamp(1.35rem,3vw,1.85rem)] leading-[1.3] font-bold tracking-tight font-['Outfit'] mt-3.5 mb-2 pb-1.5 border-b border-indigo-500/20 [text-transform:none]",
+    3: "text-[clamp(1.15rem,2.4vw,1.45rem)] leading-[1.35] font-bold font-['Outfit'] mt-3 mb-1.5 [text-transform:none]",
+    4: "text-[clamp(1.02rem,2vw,1.2rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2.5 mb-1 [text-transform:none]",
+    5: "text-[clamp(0.95rem,1.8vw,1.1rem)] leading-[1.4] font-semibold font-['Outfit'] mt-2 mb-1 [text-transform:none]",
+    6: "text-[clamp(0.875rem,1.5vw,1rem)] leading-[1.4] font-bold tracking-wider font-['Outfit'] mt-2 mb-1 text-indigo-300 [text-transform:none]",
   };
 
   const alignClasses = {

@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import BlockEditorContainer from "@/components/BlockEditor/BlockEditorContainer";
+import dynamic from "next/dynamic";
+
+const BlockEditorContainer = dynamic(() => import("@/components/BlockEditor/BlockEditorContainer"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-screen bg-[#090912] text-indigo-300 font-['Outfit'] font-bold text-sm gap-3">
+      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <span>Loading WordPress Gutenberg Editor...</span>
+    </div>
+  ),
+});
 import { 
   Bold, 
   Italic, 

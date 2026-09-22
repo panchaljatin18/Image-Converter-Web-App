@@ -236,7 +236,7 @@ export function normalizeBlock(block) {
   }
 
   const rawType = (block.type || "paragraph").toLowerCase();
-  const type = rawType === "html" ? "custom-html" : rawType;
+  const type = rawType;
 
   const rawAttrs = block.attrs || block.attributes || {};
   const attrs = { ...rawAttrs };
@@ -260,14 +260,9 @@ export function normalizeBlock(block) {
   } else if (type === "heading") {
     let headingText = typeof content === "string" ? content : (typeof attrs.content === "string" ? attrs.content : "");
     let level = attrs.level || 2;
-    const hashMatch = typeof headingText === "string" ? headingText.match(/^(#{1,6})\s+(.*)$/s) : null;
-    if (hashMatch) {
-      if (!attrs.level) {
-        level = hashMatch[1].length;
-      }
-      headingText = hashMatch[2];
+    if (typeof headingText === "string" && /^#{1,6}\s+/.test(headingText)) {
+      headingText = headingText.replace(/^#{1,6}\s+/, "");
     }
-    headingText = typeof headingText === "string" ? headingText.replace(/^#{1,6}\s+/g, "") : "";
     content = headingText;
     attrs.content = headingText;
     attrs.level = Math.min(Math.max(level, 1), 6);
@@ -288,7 +283,7 @@ export function normalizeBlock(block) {
 
   return {
     id: block.id || generateBlockId(),
-    type: type === "html" ? "custom-html" : type,
+    type,
     attrs,
     attributes: attrs,
     content,
@@ -323,7 +318,7 @@ export function normalizeBlockState(raw) {
 }
 
 export function createBlock(type, attributes = {}, children = [], customId = null) {
-  const normType = (type === "html" || type === "custom-html") ? "custom-html" : type;
+  const normType = type;
   const def = BLOCK_DEFINITIONS.find((b) => b.type === normType || b.type === type);
   const defAttrs = def?.defaultAttributes || {};
   const mergedAttrs = { ...defAttrs, ...attributes };
@@ -342,21 +337,16 @@ export function createBlock(type, attributes = {}, children = [], customId = nul
   }
 
   let content = attributes.content;
-  if (normType === "custom-html") {
+  if (normType === "custom-html" || normType === "html") {
     content = { html: htmlStr };
     mergedAttrs.html = htmlStr;
     mergedAttrs.content = htmlStr;
   } else if (normType === "heading") {
     let headingText = typeof content === "string" ? content : (typeof mergedAttrs.content === "string" ? mergedAttrs.content : "");
     let level = mergedAttrs.level || 2;
-    const hashMatch = typeof headingText === "string" ? headingText.match(/^(#{1,6})\s+(.*)$/s) : null;
-    if (hashMatch) {
-      if (!mergedAttrs.level) {
-        level = hashMatch[1].length;
-      }
-      headingText = hashMatch[2];
+    if (typeof headingText === "string" && /^#{1,6}\s+/.test(headingText)) {
+      headingText = headingText.replace(/^#{1,6}\s+/, "");
     }
-    headingText = typeof headingText === "string" ? headingText.replace(/^#{1,6}\s+/g, "") : "";
     content = headingText;
     mergedAttrs.content = headingText;
     mergedAttrs.level = Math.min(Math.max(level, 1), 6);

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from "./utils/blockTypes";
 
-export default function BlockInserter({ isOpen, onClose, onSelectBlock }) {
+function BlockInserter({ isOpen, onClose, onSelectBlock }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -138,3 +138,5 @@ export default function BlockInserter({ isOpen, onClose, onSelectBlock }) {
     </div>
   );
 }
+
+export default React.memo(BlockInserter);
